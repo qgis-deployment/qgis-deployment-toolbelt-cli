@@ -12,6 +12,7 @@
         "ms-python.flake8",
         "ms-python.isort",
         "njpwerner.autodocstring",
-        "redhat.vscode-yaml"
+        "redhat.vscode-yaml",
+        "tamasfe.even-better-toml"
     ]
 }
