@@ -1,0 +1,99 @@
+[build-system]
+requires = ["setuptools >= 64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qgis-deployment-toolbelt"
+description = """QGIS deployment toolbelt is a CLI (Command Line Interface)
+    to perform redundant operations after a QGIS deployment,
+    managing QGIS profiles, plugins, environment variables,
+    start menu / desktop shortcuts and many things to rationalize
+    your QGIS installations."""
+dynamic = ["version"]
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.10,<4"
+authors = [
+    { name = "Julien Moura (Oslandia)", email = "qgis+qdt@oslandia.com" },
+    { name = "Jean-Marie Kerloch (Oslandia)", email = "qgis+qdt@oslandia.com" },
+    { name = "Vincent Bré (Oslandia)", email = "qgis+qdt@oslandia.com" },
+]
+maintainers = [
+    { name = "Julien Moura (Oslandia)", email = "qgis+qdt@oslandia.com" },
+]
+keywords = ["GIS", "QGIS", "cli", "deployment", "profiles", "qdt"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: Microsoft :: Windows :: Windows 10",
+    "Operating System :: Microsoft :: Windows :: Windows 11",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Topic :: System :: Installation/Setup",
+]
+dependencies = [
+    "distro==1.9.* ; sys_platform == 'linux'",
+    "dulwich>=0.22,<0.22.2",
+    "giturlparse>=0.12,<0.13",
+    "imagesize>=1.4,<1.5",
+    "packaging>=22,<25",
+    "python-rule-engine>=0.5,<0.6",
+    "python-win-ad>=0.6.2,<1 ; sys_platform == 'win32'",
+    "pywin32==306 ; sys_platform == 'win32'",
+    "pyyaml>=5.4,<7",
+    "requests>=2.31,<3",
+    "truststore>=0.8,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "flake8-bugbear>=23.1,<24.9",
+    "flake8-builtins>=2.1,<3",
+    "flake8-eradicate>=1.0,<2",
+    "flake8-isort>=5,<6.2",
+    "flake8>=7.1",
+    "pre-commit>=3.5,<3.9",
+]
+doc = [
+    "furo==2024.*",
+    "matplotlib>=3.8.2,<4",
+    "myst-parser[linkify]>=2",
+    "sphinx-argparse-cli>=1,<2",
+    "sphinx-autobuild==2024.*",
+    "sphinx-copybutton<1",
+    "sphinx-design>=0.5,<1",
+    "sphinx-sitemap>=2.4,<3",
+    "sphinxcontrib-mermaid>=0.9,<1",
+    "sphinxext-opengraph>=0.4,<1",
+]
+test = [
+    "GitPython>=3.1,<3.2",
+    "Pillow>=10.4.0,<10.5",
+    "pytest-cov>=4,<5.1",
+    "validators>=0.29.0,<0.34",
+]
+
+[project.scripts]
+qdt = "qgis_deployment_toolbelt.cli:main"
+
+[project.entry-points]
+
+[project.urls]
+Homepage = "https://guts.github.io/qgis-deployment-cli/"
+Documentation = "https://guts.github.io/qgis-deployment-cli/"
+Repository = "https://github.com/Guts/qgis-deployment-cli.git"
+Issues = "https://github.com/Guts/qgis-deployment-cli/issues"
+Changelog = "https://github.com/Guts/qgis-deployment-cli/blob/main/CHANGELOG.md"
+
+[tool.setuptools.dynamic]
+version = { attr = "__about__.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["qgis_deployment_toolbelt"]
+namespaces = false

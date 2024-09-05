@@ -28,8 +28,10 @@ __package_name__ = "qgis-deployment-toolbelt"
 __keywords__ = ["cli", "deployment", "profiles", "qdt", "QGIS"]
 __license__ = "Apache-2.0"
 __summary__ = (
-    "QGIS deployment toolbelt is a CLI (Command Line Interface) to perform "
-    "redundant operations after a QGIS deployment."
+    "QGIS deployment toolbelt is a CLI (Command Line Interface) "
+    "to perform redundant operations after a QGIS deployment, "
+    "managing QGIS profiles, plugins, environment variables, "
+    "start menu / desktop shortcuts and many things to rationalize your QGIS installations."
 )
 __title__ = "QGIS Deployment Toolbelt"
 __title_clean__ = "".join(e for e in __title__ if e.isalnum())
