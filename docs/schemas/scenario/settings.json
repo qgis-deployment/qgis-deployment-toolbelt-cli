@@ -4,6 +4,14 @@
   "title": "QGIS Deployment Toolbelt - Environment variables",
   "description": "Define environment variables for the QGIS Deployment CLI execution, prefixing them with 'QDT_'. Attention, no confusion: these are the settings for the toolbelt, not for the QGIS installation.",
   "type": "object",
+  "patternProperties": {
+    ".*": {
+      "type": "string",
+      "not": {
+        "pattern": "^QDT_"
+      }
+    }
+  },
   "properties": {
     "DEBUG": {
       "default": false,
@@ -43,7 +51,7 @@
         "windows": {
           "description": "Path to QGIS on Windows.",
           "examples": [
-            "%PROGRAMFILES%/QGIS/3_22/bin/qgis-bin.exe"
+            "%PROGRAMFILES%/QGIS/3_40/bin/qgis-bin.exe"
           ],
           "type": "string"
         }
@@ -56,5 +64,5 @@
       "type": "boolean"
     }
   },
-  "additionalProperties": false
+  "additionalProperties": true
 }
