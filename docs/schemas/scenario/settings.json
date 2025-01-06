@@ -61,5 +61,5 @@
       "type": "boolean"
     }
   },
-  "additionalProperties": true
+  "additionalProperties": false
 }
