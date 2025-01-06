@@ -4,12 +4,9 @@
   "title": "QGIS Deployment Toolbelt - Environment variables",
   "description": "Define environment variables for the QGIS Deployment CLI execution, prefixing them with 'QDT_'. Attention, no confusion: these are the settings for the toolbelt, not for the QGIS installation.",
   "type": "object",
-  "patternProperties": {
-    ".*": {
-      "type": "string",
-      "not": {
-        "pattern": "^QDT_"
-      }
+  "propertyNames": {
+    "not": {
+      "pattern": "^QDT_"
     }
   },
   "properties": {
