@@ -16,6 +16,25 @@ Unreleased
 
 -->
 
+## 0.36.2 - 2025-01-06
+
+### Bugs fixes 🐛
+
+* fix(test): make sure dl_url is a string by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/594>
+* fix(proxy): HTTP_PROXY env variable was not removed after os_env_proxy wrapper by @jmkerloch in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/596>
+* Fix schemas by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/600>
+* fix(docs): simplify JSON schema of job qgis-finder by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/601>
+* Improve: automatically remove prefix from scenario env vars by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/605>
+
+### Tooling 🔧
+
+* Docs: update json schemas by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/559>
+* update(ci): use macos-15 since macos-12 is deprecated by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/597>
+
+### Documentation 📖
+
+* add(docs): add script to download latest QDT version with PowerShell by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/595>
+
 ## 0.36.1 - 2024-11-29
 
 ### Bugs fixes 🐛
