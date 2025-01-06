@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/refs/heads/improve/scenario-prefixed-env-vars/docs/schemas/scenario/qdt_scenario.json",
+  "$id": "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/docs/schemas/scenario/qdt_scenario.json",
   "$comment": "Deploy and configure QGIS and related components (plugins, shortcuts, etc.).",
   "type": "object",
   "properties": {
