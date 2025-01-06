@@ -188,6 +188,39 @@ class QdtProfile:
             **profile_data,
         )
 
+    @classmethod
+    def from_profile_folder(cls, input_profile_folder: Path) -> Self:
+        """Create object from a QGIS profile folder. Must contain a QGIS/QGIS3.ini file.
+
+        Args:
+            input_profile_folder (Path): path to the folder containgin a QGIS plugin
+
+        Returns:
+            Self: instanciated object
+        """
+        # check that input path is a folder
+        check_path(
+            input_path=input_profile_folder,
+            must_exists=True,
+            must_be_a_folder=True,
+            must_be_a_file=False,
+            must_be_readable=True,
+        )
+        # check if the folder contains a QGIS3.ini file
+        profile_qgis_ini = input_profile_folder / "QGIS/QGIS3.ini"
+        check_path(
+            input_path=profile_qgis_ini,
+            must_be_a_file=True,
+            must_be_readable=True,
+            must_exists=True,
+        )
+
+        # return new instance with loaded object
+        return cls(
+            folder=input_profile_folder.name,
+            loaded_from_json=False,
+        )
+
     @property
     def alias(self) -> str:
         """Returns the profile's alias.
