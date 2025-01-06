@@ -165,17 +165,34 @@ def run(args: argparse.Namespace):
     # -- Run --
 
     # Use metadata to inform which scenario is running
-    logger.info(
-        "Running scenario: {title} ({id}). {description}".format(**scenario.metadata)
-    )
+    if isinstance(scenario.metadata, dict):
+        logger.info(
+            "Running scenario: {title} ({id}). {description}".format(
+                **scenario.metadata
+            )
+        )
 
     # Set environment vars for the scenario
-    for var, value in scenario.settings.items():
-        if value is not None:
-            logger.debug(f"Setting environment variable QDT_{var} = {value}.")
-            environ[f"QDT_{var}"] = str(value)
-        else:
-            logger.debug(f"Ignored None value: {var}.")
+    if isinstance(scenario.settings, dict):
+        for envvar_name, envvar_value in scenario.settings.items():
+            if envvar_value is not None:
+                logger.debug(
+                    f"Setting environment variable QDT_{envvar_name} = {envvar_value}."
+                )
+                if isinstance(envvar_name, str) and envvar_name.startswith("QDT_"):
+                    logger.warning(
+                        "Do not prefix environment variable name with 'QDT_' in "
+                        "scenario settings, it's automatically done during scenario "
+                        f"processing. Prefix has been removed from {envvar_name}. "
+                        "Please, edit your scenario to not see this warning anymore."
+                    )
+                    envvar_name = envvar_name.removeprefix("QDT_")
+
+                environ[f"QDT_{envvar_name}"] = str(envvar_value)
+            else:
+                logger.debug(f"Ignored None value: {envvar_name}.")
+    else:
+        logger.debug("No settings defined in the scenario.")
 
     qdt_local_working_folder = get_qdt_working_directory(
         specific_value=scenario.settings.get("LOCAL_QDT_WORKDIR"),

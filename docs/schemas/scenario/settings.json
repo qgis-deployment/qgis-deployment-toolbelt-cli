@@ -2,8 +2,13 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/docs/schemas/scenario/settings.json",
   "title": "QGIS Deployment Toolbelt - Environment variables",
-  "description": "Define environment variables for the QGIS Deployment CLI execution, prefixing them with 'QDT_'. Attention, no confusion: these are the settings for the toolbelt, not for the QGIS installation.",
+  "description": "This section allow to define certain options applied during QDT execution. Addtionnally, those settings are automatically transformed into environment variables, prefixed with 'QDT_'. Caution, it can be confusing: these settings are impacting QDT only and only during its execution.",
   "type": "object",
+  "propertyNames": {
+    "not": {
+      "pattern": "^QDT_"
+    }
+  },
   "properties": {
     "DEBUG": {
       "default": false,
@@ -14,7 +19,34 @@
     "LOCAL_WORK_DIR": {
       "default": null,
       "description": "Where QDT stores locally everything it uses: profiles, plugins, etc.",
-      "title": "Local working folder.",
+      "title": "Local working folder",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "OSGEO4W_INSTALL_DIR": {
+      "default": "C:\\OSGeo4W",
+      "description": "Path to the OSGEO4W install directory. Used to search for installed QGIS and shortcuts creation. Only relevant on Windows.",
+      "title": "QGIS installation path",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "PAC_FILE": {
+      "default": null,
+      "description": "Define PAC file for proxy definition. See also [How to use behind a proxy](../guides/howto_behind_proxy.md).",
+      "title": "Network Proxy Auto Configuration",
+      "type": [
+        "null",
+        "string"
+      ]
+    },
+    "PROXY_HTTP": {
+      "default": null,
+      "description": "HTTP proxy that QDT should specifically use for network requests: repository sync, plugin download...",
+      "title": "Network proxy URL",
       "type": [
         "null",
         "string"
@@ -22,8 +54,8 @@
     },
     "QGIS_EXE_PATH": {
       "default": null,
-      "description": "QGIS executable to use for shortcuts and more.",
-      "title": "QGIS binary path.",
+      "description": "QGIS executable to use for shortcuts and more. Prefer using the [qgis-installation-finder](https://qgis-deployment.github.io/qgis-deployment-toolbelt-cli/jobs/qgis_installation_finder.html) job.",
+      "title": "QGIS installation path",
       "type": "object",
       "properties": {
         "linux": {
@@ -43,7 +75,7 @@
         "windows": {
           "description": "Path to QGIS on Windows.",
           "examples": [
-            "%PROGRAMFILES%/QGIS/3_22/bin/qgis-bin.exe"
+            "%PROGRAMFILES%/QGIS/3_40/bin/qgis-bin.exe"
           ],
           "type": "string"
         }
@@ -53,6 +85,24 @@
       "default": false,
       "description": "Enable scenario validation. This will check the scenario against the JSON schema.",
       "title": "Scenario validation",
+      "type": "boolean"
+    },
+    "SSL_USE_SYSTEM_STORES": {
+      "default": false,
+      "title": "Network security certificates to use",
+      "description": "By default, a bundle of SSL certificates is used, through [certifi](https://pypi.org/project/certifi/). If this environment variable is set to `true`, QDT tries to uses the system certificates store. Based on [truststore](https://truststore.readthedocs.io/). See also [How to use custom SSL certificates](../guides/howto_use_custom_ssl_certs.md).",
+      "type": "boolean"
+    },
+    "SSL_VERIFY": {
+      "default": false,
+      "title": "Network security bypass",
+      "description": "Enables/disables SSL certificate verification. Useful for environments where the proxy is unreliable with HTTPS connections. Useful for debugging network issues or as a temporary workaround.",
+      "type": "boolean"
+    },
+    "STREAMED_DOWNLOADS": {
+      "default": true,
+      "description": " If set to `false`, the content of remote files is fully downloaded before being written locally. Useful in case of network issues (proxy, firewall...).",
+      "title": "Downloader behavior",
       "type": "boolean"
     }
   },

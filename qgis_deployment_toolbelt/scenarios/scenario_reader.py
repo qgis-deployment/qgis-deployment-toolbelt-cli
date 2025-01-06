@@ -38,10 +38,18 @@ logger = logging.getLogger(__name__)
 class ScenarioReader:
     """Read and validate scenario files."""
 
-    scenario: dict = None
+    scenario: dict | None = None
 
     def __init__(self, in_yaml: str | Path | BufferedIOBase):
-        """Instanciating YAML scenario reader."""
+        """Instanciajeting YAML scenario reader.
+
+        Args:
+            in_yaml (str | Path | BufferedIOBase): input YAML file. Can be a path
+                (as str or pathlib.Path) or an opened file.
+
+        Raises:
+            TypeError: unsupported
+        """
         # check and get YAML path
         if isinstance(in_yaml, (str, Path)):
             self.input_yaml = self.check_yaml_file(in_yaml)
@@ -53,16 +61,24 @@ class ScenarioReader:
             # extract data from input file
             self.scenario = yaml.safe_load(self.input_yaml)
         else:
-            raise TypeError
+            raise TypeError(
+                "Unsupported data type. Expects a str, Path or buffered IO. "
+                f"Got: {type(in_yaml)}"
+            )
 
-    # CHECKS
+    # -- CHECKS --
     def check_yaml_file(self, yaml_path: str | Path) -> Path:
         """Perform some checks on passed yaml file and load it as Path object.
 
-        :param yaml_path: path to the yaml file to check
+        Args:
+            yaml_path (str | Path): path to the yaml file to check
 
-        :returns: sanitized yaml path
-        :rtype: Path
+        Raises:
+            yaml.YAMLError: if YAML is not readable or invalid
+            Exception: unhandled error
+
+        Returns:
+            Path: sanitized yaml path
         """
         # if path as string load it in Path object
         check_path(
@@ -81,7 +97,10 @@ class ScenarioReader:
                 logger.error(msg=f"YAML file is invalid: {yaml_path.resolve()}")
                 raise exc
             except Exception as exc:
-                logger.error(msg=f"Structure of YAML file is incorrect: {exc}")
+                logger.error(
+                    f"Something went wrong when reading the scenario file: {yaml_path}. "
+                    f"Maybe the structure of YAML file is incorrect? Trace: {exc}"
+                )
                 raise exc
 
         # return sanitized path
@@ -90,29 +109,39 @@ class ScenarioReader:
     def check_yaml_buffer(self, yaml_buffer: BufferedIOBase) -> BufferedIOBase:
         """Perform some checks on passed yaml file.
 
-        :param yaml_buffer: bytes reader of the yaml file to check
+        Args:
+            yaml_buffer (BufferedIOBase): bytes reader of the yaml file to check
 
-        :returns: checked bytes object
-        :rtype: BufferedIOBase
+        Raises:
+            yaml.YAMLError: if YAML is not readable or invalid
+            Exception: unhandled error
+
+        Returns:
+            BufferedIOBase: checked bytes object
         """
+
         # check integrity
         try:
             yaml.safe_load_all(yaml_buffer)
         except yaml.YAMLError as exc:
             logger.error(f"Invalid YAML {yaml_buffer}. Trace: {exc}")
             raise exc
+        except Exception as exc:
+            logger.error(
+                f"Something went wrong when reading the scenario file. "
+                f"Maybe the structure of YAML file is incorrect? Trace: {exc}"
+            )
+            raise exc
 
         # return sanitized path
         return yaml_buffer
 
-    def validate_scenario(self) -> tuple[bool, list[str]]:
+    def validate_scenario(self) -> tuple[bool, list[str] | None]:
         """Validate scenario file.
 
-        TODO: use json schema to validate scenario file.
-
-        :returns: True if scenario is valid, False otherwise and a report of validation
-        errors (which is None if the scenario is valid).
-        :rtype: Tuple[bool, List[str]]
+        Returns:
+            True if scenario is valid, False otherwise and a
+            report of validation errors (which is None if the scenario is valid).
         """
         # variables
         required_root_keys: tuple = ("metadata", "settings", "steps")
@@ -143,42 +172,31 @@ class ScenarioReader:
         return valid, report
 
     @property
-    def metadata(self) -> dict:
+    def metadata(self) -> dict | None:
         """Get metadata from scenario.
 
-        :returns: metadata
-        :rtype: dict
+        Returns:
+            metadata if it does exist
         """
-        return self.scenario.get("metadata")
+        if isinstance(self.scenario, dict):
+            return self.scenario.get("metadata")
 
     @property
-    def settings(self) -> dict:
-        """Get toolbelt settings from scenario.
+    def settings(self) -> dict | None:
+        """Get scenario settings from scenario.
 
-        :returns: settings
-        :rtype: dict
+        Returns:
+            settings section if it does exist
         """
-        return self.scenario.get("settings")
+        if isinstance(self.scenario, dict):
+            return self.scenario.get("settings")
 
     @property
-    def steps(self) -> list[dict]:
+    def steps(self) -> list[dict] | None:
         """Get steps from scenario.
 
-        :returns: steps
-        :rtype: List[dict]
+        Returns:
+            list of scenario's steps
         """
-        return self.scenario.get("steps")
-
-
-# #############################################################################
-# ##### Stand alone program ########
-# ##################################
-
-if __name__ == "__main__":
-    """Standalone execution."""
-    from pprint import pprint
-
-    reader = ScenarioReader(
-        Path("tests/fixtures/scenarios/good_scenario_sample.qdt.yml")
-    )
-    pprint(reader.scenario)
+        if isinstance(self.scenario, dict):
+            return self.scenario.get("steps")
