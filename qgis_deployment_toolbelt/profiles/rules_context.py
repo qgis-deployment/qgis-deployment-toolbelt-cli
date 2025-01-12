@@ -14,6 +14,7 @@
 # Standard library
 import json
 import logging
+import os
 import platform
 from datetime import date
 from getpass import getuser
@@ -59,6 +60,16 @@ class QdtRulesContext:
             "current_month": today.month,
             "current_year": today.year,
         }
+
+    @property
+    def _context_env(self) -> dict:
+        """Returns a dictionary containing environment variables that can be used in
+            QDT various places: rules...
+
+        Returns:
+            dict: dict with environment variables to use in rules.
+        """
+        return dict(**dict(os.environ))
 
     @property
     def _context_environment(self) -> dict:
