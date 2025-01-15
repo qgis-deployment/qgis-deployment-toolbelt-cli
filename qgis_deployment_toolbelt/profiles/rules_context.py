@@ -44,6 +44,13 @@ logger = logging.getLogger(__name__)
 
 
 class QdtRulesContext:
+    def __init__(
+        self,
+        only_prefixed_variables: bool = True,
+        variables_prefix: list[str] = ["QDT_", "QGIS_"],
+    ) -> None:
+        self.only_prefixed_variables = only_prefixed_variables
+        self.variables_prefix = variables_prefix
 
     @property
     def _context_date(self) -> dict:
@@ -66,10 +73,23 @@ class QdtRulesContext:
         """Returns a dictionary containing environment variables that can be used in
             QDT various places: rules...
 
+        The environment variables can be filtered based on self.only_prefixed_variables
+        and self.variables_prefix settings.
+
         Returns:
             dict: dict with environment variables to use in rules.
         """
-        return dict(**dict(os.environ))
+        env_vars = dict(os.environ)
+
+        if self.only_prefixed_variables:
+            # Filter variables that start with any of the prefixes
+            return {
+                key: value
+                for key, value in env_vars.items()
+                if any(key.startswith(prefix) for prefix in self.variables_prefix)
+            }
+
+        return env_vars
 
     @property
     def _context_environment(self) -> dict:
