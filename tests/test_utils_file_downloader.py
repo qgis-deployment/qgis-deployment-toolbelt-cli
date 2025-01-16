@@ -11,6 +11,7 @@
 """
 
 # standard library
+import filecmp
 import tempfile
 import unittest
 from pathlib import Path
@@ -56,6 +57,30 @@ class TestUtilsFileDownloader(unittest.TestCase):
             self.assertIsInstance(downloaded_file, Path)
             self.assertTrue(downloaded_file.exists())
             self.assertTrue(downloaded_file.is_file())
+
+    def test_download_url_with_params(self):
+        """Test download remote file locally from url with params"""
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_downloader_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            # file that already exist locally
+            downloaded_file_one = download_remote_file_to_local(
+                remote_url_to_download="https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/README.md",
+                local_file_path=Path(tmpdirname).joinpath("README1.md"),
+            )
+            self.assertIsInstance(downloaded_file_one, Path)
+            self.assertTrue(downloaded_file_one.exists())
+            self.assertTrue(downloaded_file_one.is_file())
+
+            downloaded_file_two = download_remote_file_to_local(
+                remote_url_to_download="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/README.md?raw=true",
+                local_file_path=Path(tmpdirname).joinpath("README2.md"),
+            )
+            self.assertIsInstance(downloaded_file_two, Path)
+            self.assertTrue(downloaded_file_two.exists())
+            self.assertTrue(downloaded_file_two.is_file())
+
+            self.assertTrue(filecmp.cmp(downloaded_file_one, downloaded_file_two))
 
     def test_download_file_raise_http_error(self):
         """Test download handling an HTTP error."""

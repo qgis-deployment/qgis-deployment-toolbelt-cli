@@ -11,6 +11,7 @@ import ssl
 import warnings
 from os import getenv
 from pathlib import Path
+from urllib.parse import parse_qs, unquote, urlparse
 
 # 3rd party
 import truststore
@@ -131,8 +132,19 @@ def download_remote_file_to_local(
                 )
                 dl_session.mount("https://", TruststoreAdapter())
 
+            # Clean url
+            parsed_url = urlparse(unquote(remote_url_to_download))
+            # Reconstruct base URL
+            base_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}"
+            # Get existing params if any exist
+            params = (
+                parse_qs(parsed_url.query, keep_blank_values=True)
+                if parsed_url.query
+                else {}
+            )
             with dl_session.get(
-                url=requote_uri(remote_url_to_download),
+                url=base_url,
+                params=params,
                 stream=use_stream,
                 timeout=timeout,
             ) as req:

@@ -22,7 +22,7 @@ from dataclasses import dataclass, fields
 from enum import Enum
 from os.path import expanduser, expandvars
 from pathlib import Path
-from urllib.parse import quote, urlsplit, urlunsplit
+from urllib.parse import urlsplit, urlunsplit
 
 # 3rd party
 from packaging.version import InvalidVersion, Version
@@ -200,7 +200,7 @@ class QgisPlugin:
             str: download URL
         """
         if self.url:
-            return quote(self.url, safe="/:")
+            return self.url
         elif self.repository_url_xml and self.folder_name and self.version:
             split_url = urlsplit(self.repository_url_xml)
             new_url = split_url._replace(path=split_url.path.replace("plugins.xml", ""))
