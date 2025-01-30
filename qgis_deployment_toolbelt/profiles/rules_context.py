@@ -14,10 +14,10 @@
 # Standard library
 import json
 import logging
-import os
 import platform
 from datetime import date
 from getpass import getuser
+from os import _Environ, environ
 from sys import platform as opersys
 
 # package
@@ -49,6 +49,14 @@ class QdtRulesContext:
         only_prefixed_variables: bool = True,
         variables_prefix: list[str] = ["QDT_", "QGIS_"],
     ) -> None:
+        """Initialize a QDT rules context object.
+
+        Args:
+            only_prefixed_variables (bool, optional): Option to only list prefixed
+            variables. Defaults to True.
+            variables_prefix (list[str], optional): List of allowed prefixes.
+            Defaults to ["QDT_", "QGIS_"].
+        """
         self.only_prefixed_variables = only_prefixed_variables
         self.variables_prefix = variables_prefix
 
@@ -69,7 +77,7 @@ class QdtRulesContext:
         }
 
     @property
-    def _context_env(self) -> dict:
+    def _context_env(self) -> dict[str, str] | _Environ[str]:
         """Returns a dictionary containing environment variables that can be used in
             QDT various places: rules...
 
@@ -77,19 +85,19 @@ class QdtRulesContext:
         and self.variables_prefix settings.
 
         Returns:
-            dict: dict with environment variables to use in rules.
+            dict[str, str] | _Environ[str]: dict with environment variables to use in
+            rules
         """
-        env_vars = dict(os.environ)
 
         if self.only_prefixed_variables:
             # Filter variables that start with any of the prefixes
             return {
                 key: value
-                for key, value in env_vars.items()
+                for key, value in environ.items()
                 if any(key.startswith(prefix) for prefix in self.variables_prefix)
             }
 
-        return env_vars
+        return environ
 
     @property
     def _context_environment(self) -> dict:
