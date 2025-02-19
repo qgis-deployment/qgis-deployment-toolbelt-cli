@@ -1,0 +1,13 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/docs/schemas/scenario/jobs/shortcuts-manager.json",
+    "description": "Set the default profile ine profile.ini",
+    "title": "Default profile paths.",
+    "type": "object",
+    "profile": {
+        "action": {
+            "description": "Name of the profile to set as default profile.",
+            "type": "string"
+        }
+    }
+}
