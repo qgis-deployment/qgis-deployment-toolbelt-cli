@@ -16,6 +16,12 @@ Unreleased
 
 -->
 
+## 0.36.3 - 2025-02-19
+
+### Bugs fixes 🐛
+
+* Let requests handle url encoding by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/610>
+
 ## 0.36.2 - 2025-01-06
 
 ### Bugs fixes 🐛
