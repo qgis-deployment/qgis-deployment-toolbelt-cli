@@ -103,7 +103,7 @@ class GenericJob:
             `%APPDATA%/QGIS/QGIS3/profiles/geotribu`).
 
         Returns:
-            tuple[QdtProfile] | None: tuple of profiles objects or Non if no profile is
+            tuple[QdtProfile] | None: tuple of profiles objects or None if no profile is
                 installed in QGIS3/profiles
         """
         return self.filter_profiles_folder(start_parent_folder=self.qgis_profiles_path)
