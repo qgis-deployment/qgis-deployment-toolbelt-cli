@@ -85,7 +85,7 @@ class JobDefaultProfileSetter(GenericJob):
             )
             ini_profiles_path.touch(exist_ok=True)
             ini_profiles_path.write_text(
-                data=f"[core]\ndefaultProfile={self.options.get("profile")}\nselectionPolicy=1",
+                data=f"[core]\ndefaultProfile={self.options.get('profile')}\nselectionPolicy=1",
                 encoding="UTF8",
             )
             logger.info(f"Default profile set to {self.options.get('profile')}")
