@@ -93,6 +93,7 @@ class JobDefaultProfileSetter(GenericJob):
             return
 
         ini_profiles = CustomConfigParser()
+        ini_profiles.optionxform = str
         ini_profiles.read(self.qgis_profiles_path / "profiles.ini", encoding="UTF8")
 
         # set the default profile
