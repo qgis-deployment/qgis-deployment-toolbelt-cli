@@ -72,3 +72,8 @@ steps:
     with:
       action: create_or_restore
       strict: false
+
+  - name: Set default profile
+    uses: default-profile-setter
+    with:
+      profile: qdt_demo
