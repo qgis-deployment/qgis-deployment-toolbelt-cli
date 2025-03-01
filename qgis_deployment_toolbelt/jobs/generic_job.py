@@ -61,7 +61,7 @@ class GenericJob:
         only_prefixed_variables = str2bool(
             getenv("QDT_RULES_ONLY_PREFIXED_VARIABLES", "true")
         )
-        variables_prefix = getenv("QDT_RULES_VARIABLES_PREFIX", "QDT,QGIS").split(",")
+        variables_prefix = getenv("QDT_RULES_VARIABLES_PREFIX", "QDT_,QGIS_").split(",")
         self.qdt_rules_context = QdtRulesContext(
             only_prefixed_variables=only_prefixed_variables,
             variables_prefix=variables_prefix,
