@@ -32,6 +32,7 @@ from qgis_deployment_toolbelt.exceptions import (
 )
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 from qgis_deployment_toolbelt.profiles.rules_context import QdtRulesContext
+from qgis_deployment_toolbelt.utils.str2bool import str2bool
 
 # #############################################################################
 # ########## Globals ###############
@@ -55,7 +56,16 @@ class GenericJob:
         """Object instanciation."""
         # operating system configuration
         self.os_config = OSConfiguration.from_opersys()
-        self.qdt_rules_context = QdtRulesContext()
+
+        # QDT rules context
+        only_prefixed_variables = str2bool(
+            getenv("QDT_RULES_ONLY_PREFIXED_VARIABLES", "true")
+        )
+        variables_prefix = getenv("QDT_RULES_VARIABLES_PREFIX", "QDT_,QGIS_").split(",")
+        self.qdt_rules_context = QdtRulesContext(
+            only_prefixed_variables=only_prefixed_variables,
+            variables_prefix=variables_prefix,
+        )
 
         # local QDT folders
         self.qdt_working_folder = get_qdt_working_directory()
