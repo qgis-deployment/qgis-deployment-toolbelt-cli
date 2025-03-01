@@ -188,7 +188,15 @@ def run(args: argparse.Namespace):
                     )
                     envvar_name = envvar_name.removeprefix("QDT_")
 
-                environ[f"QDT_{envvar_name}"] = str(envvar_value)
+                prefixed_envvar_name = f"QDT_{envvar_name}"
+
+                if prefixed_envvar_name in environ:
+                    logger.warning(
+                        f"Environment variable {prefixed_envvar_name} already set. "
+                        "Overwriting it with new value."
+                    )
+
+                environ[prefixed_envvar_name] = str(envvar_value)
             else:
                 logger.debug(f"Ignored None value: {envvar_name}.")
     else:
