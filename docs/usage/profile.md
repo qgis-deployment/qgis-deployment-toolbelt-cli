@@ -22,7 +22,7 @@ Editing a profile.json file can be tricky and since it's a critical piece of the
 
 ## Typical structure of a project with profiles
 
-Given 3 profiles to be deployed: `avdanced`, `beginner` and `readonly`. Here comes a typical organization of folders, subfolers and files into your repository:
+Given 3 profiles to be deployed: `advanced`, `beginner` and `readonly`. Here comes a typical organization of folders, subfolers and files into your repository:
 
 ```sh
 qgis-profiles/
