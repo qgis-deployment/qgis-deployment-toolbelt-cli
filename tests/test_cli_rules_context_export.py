@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Test CLI's rules context export command.
+Test CLI's rules context export command.
 
-    Author: Julien Moura (Oslandia)
+Author: Julien Moura (Oslandia)
 """
 
 # #############################################################################

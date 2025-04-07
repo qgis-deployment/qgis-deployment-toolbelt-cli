@@ -1,10 +1,10 @@
 #! python3  # noqa: E265
 
 """
-    Synchronize profiles between downloaded (in QDT working folder) and installed
-        profiles (in QGIS profiles'folder).
+Synchronize profiles between downloaded (in QDT working folder) and installed
+    profiles (in QGIS profiles'folder).
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 

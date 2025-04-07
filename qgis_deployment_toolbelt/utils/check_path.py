@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Helpers to check file: readable, exists, etc..
+Helpers to check file: readable, exists, etc..
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 # #############################################################################

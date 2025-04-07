@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Define toolbelt constant types and values.
+Define toolbelt constant types and values.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 

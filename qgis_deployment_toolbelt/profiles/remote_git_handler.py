@@ -1,11 +1,11 @@
 #! python3  # noqa: E265
 
 """
-    Handle remote git repository.
+Handle remote git repository.
 
-    Author: Julien Moura (https://github.com/guts).
+Author: Julien Moura (https://github.com/guts).
 
-    Inspired from: QGIS Resource Sharing
+Inspired from: QGIS Resource Sharing
 """
 
 

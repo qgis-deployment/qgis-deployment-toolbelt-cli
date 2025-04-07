@@ -1,7 +1,7 @@
 #! python3  # noqa: E265
 
 """
-    Create tldextract update cache folder
+Create tldextract update cache folder
 
 """
 

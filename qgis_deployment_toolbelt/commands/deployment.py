@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Sub-command in charge of running the main logic.
+Sub-command in charge of running the main logic.
 
-    Author: Julien M. (https://github.com/guts)
+Author: Julien M. (https://github.com/guts)
 """
 
 # #############################################################################

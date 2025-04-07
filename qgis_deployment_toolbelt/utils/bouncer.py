@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Shortcuts to exit CLI properly and with pretty messages.
+Shortcuts to exit CLI properly and with pretty messages.
 
-    Author: Julien Moura (github.com/guts)
+Author: Julien Moura (github.com/guts)
 """
 
 # #############################################################################

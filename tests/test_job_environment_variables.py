@@ -2,13 +2,13 @@
 
 """Usage from the repo root folder:
 
-    .. code-block:: python
+.. code-block:: python
 
-        # for whole test
-        python -m unittest tests.test_job_environment_variables
-        # for specific
-        python -m unittest tests.test_job_environment_variables
-            .TestJobEnvironmentVariables.test_environment_variables_set
+    # for whole test
+    python -m unittest tests.test_job_environment_variables
+    # for specific
+    python -m unittest tests.test_job_environment_variables
+        .TestJobEnvironmentVariables.test_environment_variables_set
 """
 
 # #############################################################################

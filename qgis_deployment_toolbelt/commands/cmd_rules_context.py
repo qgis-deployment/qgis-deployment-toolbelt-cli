@@ -2,9 +2,9 @@
 
 
 """
-    Sub-command to export local rules context.
+Sub-command to export local rules context.
 
-    Author: Julien M. (https://github.com/guts)
+Author: Julien M. (https://github.com/guts)
 """
 
 

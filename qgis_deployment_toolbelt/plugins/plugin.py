@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Plugin object model.
+Plugin object model.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 

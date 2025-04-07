@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Manage splash screens for QGIS Profiles.
+Manage splash screens for QGIS Profiles.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 

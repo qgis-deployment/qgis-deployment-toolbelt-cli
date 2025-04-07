@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Tools to manage the environment setup (variables, etc.)
+Tools to manage the environment setup (variables, etc.)
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 # #############################################################################

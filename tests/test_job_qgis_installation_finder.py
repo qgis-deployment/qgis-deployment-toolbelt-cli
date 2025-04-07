@@ -2,13 +2,13 @@
 
 """Usage from the repo root folder:
 
-    .. code-block:: python
+.. code-block:: python
 
-        # for whole test
-        python -m unittest tests.job_qgis_installation_finder
-        # for specific
-        python -m unittest tests.job_qgis_installation_finder
-            .TestJobQgisInstallationFinder.test_get_latest_version_from_list
+    # for whole test
+    python -m unittest tests.job_qgis_installation_finder
+    # for specific
+    python -m unittest tests.job_qgis_installation_finder
+        .TestJobQgisInstallationFinder.test_get_latest_version_from_list
 """
 
 # #############################################################################

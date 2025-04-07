@@ -2,12 +2,12 @@
 
 """Usage from the repo root folder:
 
-    .. code-block:: python
+.. code-block:: python
 
-        # for whole test
-        python -m unittest tests.test_job_profiles_sync
-        # for specific
-        python -m unittest tests.test_job_profiles_sync.TestJobProfilesSync.test_fresh_install
+    # for whole test
+    python -m unittest tests.test_job_profiles_sync
+    # for specific
+    python -m unittest tests.test_job_profiles_sync.TestJobProfilesSync.test_fresh_install
 """
 
 # #############################################################################

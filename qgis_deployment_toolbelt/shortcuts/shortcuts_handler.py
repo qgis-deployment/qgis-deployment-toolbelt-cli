@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Cross-platform shortcuts manager. Derived from pycrosskit, by  Jiri Otoupal.
-    See also: https://github.com/newville/pyshortcuts/
-    Author: Julien Moura (https://github.com/guts)
+Cross-platform shortcuts manager. Derived from pycrosskit, by  Jiri Otoupal.
+See also: https://github.com/newville/pyshortcuts/
+Author: Julien Moura (https://github.com/guts)
 """
 
 

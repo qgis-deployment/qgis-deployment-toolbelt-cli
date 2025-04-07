@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Minimalist slugifier.
+Minimalist slugifier.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 # #############################################################################

@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Synchronize plugins between downloaded and installed profiles.
+Synchronize plugins between downloaded and installed profiles.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 

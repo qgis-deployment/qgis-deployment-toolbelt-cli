@@ -1,13 +1,13 @@
 #! python3  # noqa E265
 
 """
-    Usage from the repo root folder:
+Usage from the repo root folder:
 
-    .. code-block:: bash
-        # for whole tests
-        python -m unittest tests.test_utils_check_path
-        # for specific test
-        python -m unittest tests.test_utils_check_path.TestUtilsCheckPath.test_check_path_as_str_ok
+.. code-block:: bash
+    # for whole tests
+    python -m unittest tests.test_utils_check_path
+    # for specific test
+    python -m unittest tests.test_utils_check_path.TestUtilsCheckPath.test_check_path_as_str_ok
 """
 
 

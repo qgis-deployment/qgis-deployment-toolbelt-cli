@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Utilities to manage user security groups either on Linux and Windows.
+Utilities to manage user security groups either on Linux and Windows.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 # #############################################################################

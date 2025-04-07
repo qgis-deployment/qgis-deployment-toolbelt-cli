@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Handle remote HTTP repository.
+Handle remote HTTP repository.
 
-    Author: Julien Moura (https://github.com/guts).
+Author: Julien Moura (https://github.com/guts).
 """
 
 

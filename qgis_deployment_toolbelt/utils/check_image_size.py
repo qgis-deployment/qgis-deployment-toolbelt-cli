@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Check image size using pure Python <https://github.com/shibukawa/imagesize_py>.
+Check image size using pure Python <https://github.com/shibukawa/imagesize_py>.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 # #############################################################################

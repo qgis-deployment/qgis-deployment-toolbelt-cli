@@ -1,13 +1,13 @@
 #! python3  # noqa E265
 
 """
-    Usage from the repo root folder:
+Usage from the repo root folder:
 
-    .. code-block:: bash
-        # for whole tests
-        python -m unittest tests.test_utils_bouncer
-        # for specific test
-        python -m unittest tests.test_utils_bouncer.TestUtilsBouncer.test_bouncer_error
+.. code-block:: bash
+    # for whole tests
+    python -m unittest tests.test_utils_bouncer
+    # for specific test
+    python -m unittest tests.test_utils_bouncer.TestUtilsBouncer.test_bouncer_error
 """
 
 # standard library

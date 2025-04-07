@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Download remote QGIS profiles to QDT working folder.
+Download remote QGIS profiles to QDT working folder.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 

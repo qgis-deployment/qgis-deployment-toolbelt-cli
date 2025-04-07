@@ -1,13 +1,13 @@
 #! python3  # noqa E265
 
 """
-    Usage from the repo root folder:
+Usage from the repo root folder:
 
-    .. code-block:: bash
-        # for whole tests
-        python -m unittest tests.test_utils_formatters
-        # for specific test
-        python -m unittest tests.test_utils_formatters.TestUtilsFormatters.test_convert_octets
+.. code-block:: bash
+    # for whole tests
+    python -m unittest tests.test_utils_formatters
+    # for specific test
+    python -m unittest tests.test_utils_formatters.TestUtilsFormatters.test_convert_octets
 """
 
 # standard library
