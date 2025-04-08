@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Read and validate scenario files.
+Read and validate scenario files.
 
-    Author: Julien Moura (https://github.com/guts, Oslandia)
+Author: Julien Moura (https://github.com/guts, Oslandia)
 """
 
 

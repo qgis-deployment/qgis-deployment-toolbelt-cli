@@ -2,12 +2,12 @@
 
 """Usage from the repo root folder:
 
-    .. code-block:: python
+.. code-block:: python
 
-        # for whole test
-        python -m unittest tests.test_scenario_reader
-        # for specific
-        python -m unittest tests.test_scenario_reader.TestScenarioReader.test_load_from_yaml
+    # for whole test
+    python -m unittest tests.test_scenario_reader
+    # for specific
+    python -m unittest tests.test_scenario_reader.TestScenarioReader.test_load_from_yaml
 """
 
 # #############################################################################

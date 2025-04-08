@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Tools to find installed QGIS version
+Tools to find installed QGIS version
 
-    Author: Jean-Marie KERLOCH (https://github.com/jmkerloch)
+Author: Jean-Marie KERLOCH (https://github.com/jmkerloch)
 """
 
 # #############################################################################

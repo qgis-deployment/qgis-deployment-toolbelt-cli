@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Utilities specific for Linux.
+Utilities specific for Linux.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 
 """
 

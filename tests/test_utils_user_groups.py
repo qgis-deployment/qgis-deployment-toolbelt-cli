@@ -1,13 +1,13 @@
 #! python3  # noqa E265
 
 """
-    Usage from the repo root folder:
+Usage from the repo root folder:
 
-    .. code-block:: bash
-        # for whole tests
-        python -m unittest tests.test_user_groups
-        # for specific test
-        python -m unittest tests.test_user_groups.TestUtilsUserGroups.test_win32_getenv
+.. code-block:: bash
+    # for whole tests
+    python -m unittest tests.test_user_groups
+    # for specific test
+    python -m unittest tests.test_user_groups.TestUtilsUserGroups.test_win32_getenv
 """
 
 # standard library

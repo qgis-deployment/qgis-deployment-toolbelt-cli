@@ -2,12 +2,12 @@
 
 """Usage from the repo root folder:
 
-    .. code-block:: python
+.. code-block:: python
 
-        # for whole test
-        python -m unittest tests.test_git_handler_local
-        # for specific
-        python -m unittest tests.test_git_handler_local.TestGitHandlerLocal.test_git_url_parsed
+    # for whole test
+    python -m unittest tests.test_git_handler_local
+    # for specific
+    python -m unittest tests.test_git_handler_local.TestGitHandlerLocal.test_git_url_parsed
 """
 
 # #############################################################################

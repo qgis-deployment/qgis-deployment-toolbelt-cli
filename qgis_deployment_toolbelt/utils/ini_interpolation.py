@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Custom INI files interpolation.
+Custom INI files interpolation.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 

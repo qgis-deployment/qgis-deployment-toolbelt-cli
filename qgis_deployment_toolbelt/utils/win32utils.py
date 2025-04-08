@@ -1,11 +1,11 @@
 #! python3  # noqa: E265
 
 """
-    Utilities specific for Windows.
+Utilities specific for Windows.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 
-    Inspired from py-setenv: <https://github.com/beliaev-maksim/py_setenv> (MIT)
+Inspired from py-setenv: <https://github.com/beliaev-maksim/py_setenv> (MIT)
 """
 
 # #############################################################################

@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Read and write QGIS configuration files.
+Read and write QGIS configuration files.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 

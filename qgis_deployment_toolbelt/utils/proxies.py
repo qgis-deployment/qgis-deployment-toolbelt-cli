@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Small module to get network proxies configuration.
+Small module to get network proxies configuration.
 
-    Author: Julien Moura (github.com/guts)
+Author: Julien Moura (github.com/guts)
 """
 
 # #############################################################################

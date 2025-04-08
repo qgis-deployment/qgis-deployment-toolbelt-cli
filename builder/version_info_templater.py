@@ -1,12 +1,12 @@
 #! python3  # noqa: E265
 
 """
-    Microsoft Version Info templater.
+Microsoft Version Info templater.
 
-    See:
+See:
 
-        - https://docs.microsoft.com/en-us/windows/win32/menurc/versioninfo-resource
-        - https://docs.microsoft.com/en-us/windows/win32/api/verrsrc/ns-verrsrc-vs_fixedfileinfo
+    - https://docs.microsoft.com/en-us/windows/win32/menurc/versioninfo-resource
+    - https://docs.microsoft.com/en-us/windows/win32/api/verrsrc/ns-verrsrc-vs_fixedfileinfo
 """
 
 # #############################################################################

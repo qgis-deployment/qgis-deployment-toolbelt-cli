@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Test CLI's clean command.
+Test CLI's clean command.
 
-    Author: Julien Moura (Oslandia)
+Author: Julien Moura (Oslandia)
 """
 
 # #############################################################################

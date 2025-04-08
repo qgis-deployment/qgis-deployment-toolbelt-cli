@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Base of QDT jobs.
+Base of QDT jobs.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 

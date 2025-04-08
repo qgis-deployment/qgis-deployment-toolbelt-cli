@@ -2,12 +2,12 @@
 
 """Usage from the repo root folder:
 
-    .. code-block:: python
+.. code-block:: python
 
-        # for whole test
-        python -m unittest tests.test_jobs_launch
-        # for specific
-        python -m unittest tests.test_jobs_launch.TestJobsLaunch.test_jobs_launcher
+    # for whole test
+    python -m unittest tests.test_jobs_launch
+    # for specific
+    python -m unittest tests.test_jobs_launch.TestJobsLaunch.test_jobs_launcher
 """
 
 # #############################################################################

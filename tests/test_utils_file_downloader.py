@@ -1,13 +1,13 @@
 #! python3  # noqa E265
 
 """
-    Usage from the repo root folder:
+Usage from the repo root folder:
 
-    .. code-block:: bash
-        # for whole tests
-        python -m unittest tests.test_utils_file_downloader
-        # for specific test
-        python -m unittest tests.test_utils_file_downloader.TestUtilsFileDownloader.test_download_file_exists
+.. code-block:: bash
+    # for whole tests
+    python -m unittest tests.test_utils_file_downloader
+    # for specific test
+    python -m unittest tests.test_utils_file_downloader.TestUtilsFileDownloader.test_download_file_exists
 """
 
 # standard library

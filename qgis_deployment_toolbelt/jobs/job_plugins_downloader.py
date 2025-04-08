@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Download plugins listed into profiles.
+Download plugins listed into profiles.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 

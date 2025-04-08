@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Sub-command in charge of checking if new versions are available.
+Sub-command in charge of checking if new versions are available.
 
-    Author: Julien M. (https://github.com/guts)
+Author: Julien M. (https://github.com/guts)
 """
 
 # #############################################################################

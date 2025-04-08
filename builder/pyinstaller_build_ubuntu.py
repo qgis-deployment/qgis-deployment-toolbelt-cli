@@ -1,7 +1,7 @@
 #! python3  # noqa: E265
 
 """
-    Launch PyInstaller using a Python script.
+Launch PyInstaller using a Python script.
 """
 
 # #############################################################################

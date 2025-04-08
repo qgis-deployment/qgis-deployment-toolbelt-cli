@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Rules context.
+Rules context.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 

@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Manage application shortcuts on end-user machine.
+Manage application shortcuts on end-user machine.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 

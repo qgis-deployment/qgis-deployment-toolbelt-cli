@@ -1,13 +1,13 @@
 #! python3  # noqa E265
 
 """
-    Usage from the repo root folder:
+Usage from the repo root folder:
 
-    .. code-block:: bash
-        # for whole tests
-        python -m unittest tests.test_rules_context
-        # for specific test
-        python -m unittest tests.test_rules_context.testQdtRulesContext.test_rules_export_to_json
+.. code-block:: bash
+    # for whole tests
+    python -m unittest tests.test_rules_context
+    # for specific test
+    python -m unittest tests.test_rules_context.testQdtRulesContext.test_rules_export_to_json
 """
 
 

@@ -2,12 +2,12 @@
 
 """Usage from the repo root folder:
 
-    .. code-block:: python
+.. code-block:: python
 
-        # for whole test
-        python -m unittest tests.test_tree_qdt-files_json
-        # for specific
-        python -m unittest tests.test_tree_qdt-files_json.TestTreeQdtFilesReader.test_load_tree_json_files
+    # for whole test
+    python -m unittest tests.test_tree_qdt-files_json
+    # for specific
+    python -m unittest tests.test_tree_qdt-files_json.TestTreeQdtFilesReader.test_load_tree_json_files
 """
 
 # #############################################################################

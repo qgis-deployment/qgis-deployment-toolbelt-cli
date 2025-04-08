@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    QDT QGIS Profile object and related sugar.
+QDT QGIS Profile object and related sugar.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 
