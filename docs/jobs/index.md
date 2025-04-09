@@ -6,6 +6,7 @@ caption: Jobs
 maxdepth: 1
 glob:
 ---
+default_profile_setter.md
 environment_variables.md
 qgis_installation_finder.md
 plugins_downloader.md
