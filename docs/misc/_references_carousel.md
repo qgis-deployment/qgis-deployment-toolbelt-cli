@@ -21,7 +21,13 @@
 :text-align: center
 :::
 
-:::{card} Métropole de Grenoble
+:::{card} Département de la Loire
+:img-top: /static/logo_cd-loire.png
+:link: https://www.loire.fr/
+:text-align: center
+:::
+
+:::{card} Grenoble Alpes Métropole
 :img-top: /static/logo_grenoble.png
 :link: https://www.grenoblealpesmetropole.fr/
 :text-align: center
@@ -42,6 +48,12 @@
 :::{card} EP Eaux et Vilaine
 :img-top: /static/logo_eaux-et-vilaine.png
 :link: https://www.eaux-et-vilaine.bzh/
+:text-align: center
+:::
+
+:::{card} Métropole Aix Marseille Provence
+:img-top: /static/logo_amp.png
+:link: https://ampmetropole.fr/
 :text-align: center
 :::
 
