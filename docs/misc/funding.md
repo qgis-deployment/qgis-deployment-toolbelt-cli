@@ -32,7 +32,7 @@ Contact us by email {material-regular}`mail;1.5em`
 * initial funding (Proof Of Concept)
 ::::
 
-::::{grid-item-card} EP Public Loire
+::::{grid-item-card} EP Loire
 :img-top: /static/logo_etablissement_public_loire.png
 :link: https://www.eptb-loire.fr/
 

@@ -1,4 +1,4 @@
-*Known and active users. You use QDT and are listed here? Please let us know!*
+*Known and active users. You do use QDT and are not listed here? Please let us know!*
 
 <!-- markdownlint-disable MD034 -->
 ::::{card-carousel} 4
