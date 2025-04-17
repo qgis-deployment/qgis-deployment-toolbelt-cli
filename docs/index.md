@@ -15,6 +15,11 @@
 
 ![QGIS Deployment Toolbelt CLI](./static/qgis-deployment-toolbelt_cli_help.png)
 
+## They use QDT
+
+```{include} misc/_references_carousel.md
+```
+
 ## What it is and the underlying philosophy
 
 Development is leaded by the following principles and goals:
@@ -163,6 +168,7 @@ caption: Miscellaneous
 maxdepth: 1
 ---
 misc/examples
+misc/references
 misc/security
 misc/compatibility
 misc/credits

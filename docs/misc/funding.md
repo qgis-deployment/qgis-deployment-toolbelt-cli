@@ -32,7 +32,7 @@ Contact us by email {material-regular}`mail;1.5em`
 * initial funding (Proof Of Concept)
 ::::
 
-::::{grid-item-card} Etablissement Public Loire
+::::{grid-item-card} EP Public Loire
 :img-top: /static/logo_etablissement_public_loire.png
 :link: https://www.eptb-loire.fr/
 
@@ -43,6 +43,21 @@ Contact us by email {material-regular}`mail;1.5em`
 * documentation
 * JSON schemas
 ::::
+
+::::{grid-item-card} Métropole Grand Lyon
+:img-top: /static/logo_lyon.png
+:link: https://www.grandlyon.com/
+
+* deployment rules mechanism
+::::
+
+::::{grid-item-card} ISL Ingénierie
+:img-top: /static/logo_isl.png
+:link: https://isl.fr/
+
+* hosts core developer and main mainteners
+::::
+
 :::::
 
 <!-- markdownlint-enable MD034 -->
