@@ -12,6 +12,7 @@ Usage from the repo root folder:
 
 
 # standard library
+import platform
 import stat
 import tempfile
 import unittest
@@ -38,8 +39,14 @@ class TestUtilsCheckPath(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        Path("tests/fixtures/tmp_file_no_readable.txt").unlink(missing_ok=True)
-        Path("tests/fixtures/tmp_file_no_writable.txt").unlink(missing_ok=True)
+        file_no_readable = Path("tests/fixtures/tmp_file_no_readable.txt")
+        file_no_writable = Path("tests/fixtures/tmp_file_no_writable.txt")
+        if file_no_readable.exists():
+            file_no_readable.chmod(0o666)
+            file_no_readable.unlink()
+        if file_no_writable.exists():
+            file_no_writable.chmod(0o666)
+            file_no_writable.unlink()
         return super().tearDownClass()
 
     def test_check_path_as_str_ok(self):
@@ -99,7 +106,8 @@ class TestUtilsCheckPath(unittest.TestCase):
         self.assertFalse(check_path_is_readable(input_path=1000, raise_error=False))
 
     @unittest.skipIf(
-        getenv("CI"), "Creating file on CI with specific rights is not working."
+        getenv("CI") or platform.system() == "Windows",
+        "Skip on CI or Windows - file permission tests not reliable",
     )
     def test_check_path_readable_ko_specific(self):
         """Test path is readable fail cases."""
@@ -298,8 +306,6 @@ class TestUtilsCheckPath(unittest.TestCase):
                 raise_error=False,
             )
         )
-
-        not_writable_file.unlink()
 
     def test_check_folder_is_empty(self):
         """Test empty folder recognition."""

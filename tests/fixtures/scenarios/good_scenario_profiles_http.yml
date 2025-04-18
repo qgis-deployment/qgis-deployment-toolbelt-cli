@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=../../../docs/schemas/scenario/qdt_scenario.json
+
 # This is a sample of a YAML file for the QGIS Deployment Toolbelt scenario.
 # For now, it's more a roadmap than a real description of what it's implemented.
 
