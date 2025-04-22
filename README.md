@@ -20,14 +20,14 @@ Cross-platform (but Windows focused) CLI to perform deployment operations relate
 
 ## Try it quickly
 
-Using Python and the officiel package installer `pip`:
+Using Python and the official package installer `pip`:
 
 ```sh
 pip install qgis-deployment-toolbelt
 qdt -s https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/examples/scenarios/demo-scenario.qdt.yml
 ```
 
-Or using a pre-built executable (downloadable [through releases assets](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/releases/latest)), for example on Windows:
+Or using a pre-built executable (downloadable [through releases assets](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/releases/latest)). For example on Windows:
 
 ```powershell
 QGISDeploymentToolbelt_0-27-0_Windows.exe -s https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/examples/scenarios/demo-scenario.qdt.yml
