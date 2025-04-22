@@ -158,6 +158,7 @@ autodoc_default_options = {
 }
 
 # mermaid
+mermaid_d3_zoom = True
 mermaid_params = [
     "--theme",
     "forest",
@@ -166,7 +167,7 @@ mermaid_params = [
     "--backgroundColor",
     "transparent",
 ]
-mermaid_d3_zoom = True
+mermaid_version = "11.6.0"
 
 # MyST Parser
 myst_enable_extensions = [
