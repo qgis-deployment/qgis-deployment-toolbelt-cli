@@ -74,7 +74,7 @@ try {
         # Return to the original directory
         Pop-Location
     } else {
-        Write-Host "No Git repository identified. Cloning remote repository to $repoPath..."
+        Write-Host "No Git repository identified. Cloning remote repository to $repoPath..." -ForegroundColor Cyan
 
         # Clone the repository
         git clone --config remote.origin.pushurl="DISABLED" `
