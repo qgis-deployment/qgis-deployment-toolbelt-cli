@@ -10,7 +10,6 @@ Author: Julien Moura (Oslandia)
 # ########## Libraries #############
 # ##################################
 
-
 # 3rd party
 import pytest
 

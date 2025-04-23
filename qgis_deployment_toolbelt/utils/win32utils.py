@@ -12,7 +12,6 @@ Inspired from py-setenv: <https://github.com/beliaev-maksim/py_setenv> (MIT)
 # ########## Libraries #############
 # ##################################
 
-
 # Standard library
 import ctypes
 import logging

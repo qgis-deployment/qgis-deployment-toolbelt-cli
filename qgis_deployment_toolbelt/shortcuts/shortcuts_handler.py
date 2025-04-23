@@ -6,7 +6,6 @@ See also: https://github.com/newville/pyshortcuts/
 Author: Julien Moura (https://github.com/guts)
 """
 
-
 # #############################################################################
 # ########## Libraries #############
 # ##################################

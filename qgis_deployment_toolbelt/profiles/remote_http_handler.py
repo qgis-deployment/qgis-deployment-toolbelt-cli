@@ -11,7 +11,6 @@ Author: Julien Moura (https://github.com/guts).
 # ########## Libraries #############
 # ##################################
 
-
 # Standard library
 import logging
 from concurrent.futures import ThreadPoolExecutor

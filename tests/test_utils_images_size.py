@@ -10,7 +10,6 @@ Usage from the repo root folder:
     python -m unittest tests.test_utils_images_size.TestUtilsImagesSizeChecker.get_svg_size
 """
 
-
 # standard library
 import unittest
 from pathlib import Path

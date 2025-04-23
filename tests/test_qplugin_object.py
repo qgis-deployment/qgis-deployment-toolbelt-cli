@@ -52,9 +52,9 @@ class TestQgisPluginObject(unittest.TestCase):
             )
 
         # check download worked
-        assert (
-            cls.sample_plugin_downloaded.is_file() is True
-        ), "Downloading fixture plugin failed."
+        assert cls.sample_plugin_downloaded.is_file() is True, (
+            "Downloading fixture plugin failed."
+        )
 
     @classmethod
     def tearDownClass(cls) -> None:

@@ -181,8 +181,7 @@ class JobShortcutsManager(GenericJob):
 
         qdt_profile = matching_qdt_profile[0]
         logger.info(
-            f"Downloaded profile matched: {qdt_profile.name} from "
-            f"{qdt_profile.folder}"
+            f"Downloaded profile matched: {qdt_profile.name} from {qdt_profile.folder}"
         )
         return qdt_profile
 

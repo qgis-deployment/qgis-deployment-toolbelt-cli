@@ -68,7 +68,7 @@ def get_proxy_settings(url: str | None = None) -> dict:
             )
     elif pac := get_pac():
         proxy_settings = get_proxy_settings_from_pac_file(url=url, pac=pac)
-        logger.info("Proxies settings from system PAC file: " f"{proxy_settings}")
+        logger.info(f"Proxies settings from system PAC file: {proxy_settings}")
     elif getproxies():
         proxy_settings = getproxies()
         logger.debug(f"Proxies settings found in the OS: {proxy_settings}")

@@ -43,7 +43,6 @@ logger = logging.getLogger(__name__)
 
 
 class QdtRulesContext:
-
     @property
     def _context_date(self) -> dict:
         """Returns a context dictionary with date informations that can be used in QDT

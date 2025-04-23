@@ -10,7 +10,6 @@ Author: Jean-Marie KERLOCH (https://github.com/jmkerloch)
 # ########## Libraries #############
 # ##################################
 
-
 # Standard library
 import logging
 import os

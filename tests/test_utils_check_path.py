@@ -10,7 +10,6 @@ Usage from the repo root folder:
     python -m unittest tests.test_utils_check_path.TestUtilsCheckPath.test_check_path_as_str_ok
 """
 
-
 # standard library
 import stat
 import tempfile
