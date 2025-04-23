@@ -143,3 +143,4 @@ safety_report.txt
 bandit_report.csv
 tests/fixtures/http-test-local/qdt-files.json
 docs/reference/rules_context.json
+safety_report.html
