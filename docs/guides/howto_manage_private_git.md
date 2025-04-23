@@ -12,7 +12,7 @@ flowchart LR
     D --->|"QDT"| F["QGIS end-user<br/>profiles"]
 ```
 
-In the meanwhile, it's not a blocking lack, since QDT support local git repositories, i.e. stored on a network drive. Here comes a diagram illustrating the typical workflow used by most of end-users:
+In the meantime, this isn't a critical limitation, as QDT supports local git repositories, i.e. stored on a network drive. Here comes a diagram illustrating the typical workflow used by most of end-users:
 
 ```{mermaid}
 ---
