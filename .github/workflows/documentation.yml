@@ -106,7 +106,7 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         if: ${{ env.CONDITION_IS_PUSH || env.CONDITION_IS_WORKFLOW_RUN }}
         with:
-          name: doc_to_be_published
+          name: github-pages
           path: docs/_build/html/
 
       - name: Deploy to GitHub Pages
