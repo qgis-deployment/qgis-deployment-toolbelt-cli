@@ -64,7 +64,7 @@ jobs:
         run: pytest
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5.4.0
+        uses: codecov/codecov-action@v5.4.2
         with:
           env_vars: OS,PYTHON
           flags: unittests
