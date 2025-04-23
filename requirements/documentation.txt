@@ -4,13 +4,13 @@
 furo==2024.*
 matplotlib>=3.8.2,<4
 myst-parser[linkify]>=2,<5
-sphinx-argparse-cli>=1,<2
+sphinx-argparse-cli>=1.19,<2
 sphinx-autobuild==2024.*
 sphinx-copybutton<1
-sphinx-design>=0.5,<1
-sphinxcontrib-mermaid>=0.9,<2
-sphinxext-opengraph>=0.4,<1
-sphinx-sitemap>=2.4,<3
+sphinx-design>=0.6.1,<1
+sphinxcontrib-mermaid>=1,<2
+sphinxext-opengraph>=0.10,<1
+sphinx-sitemap>=2.6,<3
 
 # -- 'HIDDEN' dependencies, used during CI
 # pip-licenses<5
