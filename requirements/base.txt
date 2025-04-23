@@ -2,7 +2,7 @@ distro==1.9.* ; sys_platform == 'linux'
 dulwich>=0.21.7,<0.22.8
 giturlparse>=0.12,<0.13
 imagesize>=1.4,<1.5
-packaging>=20,<25
+packaging>=20,<26
 pypac>=0.16.3,<1
 python-rule-engine>=0.5,<0.6
 python-win-ad==0.6.2 ; sys_platform == 'win32'
