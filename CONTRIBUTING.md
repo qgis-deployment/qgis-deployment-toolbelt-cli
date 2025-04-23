@@ -20,7 +20,7 @@ See the relevant configuration file: `.pre-commit-config.yaml`.
 Make sure your code *roughly* follows [PEP-8](https://www.python.org/dev/peps/pep-0008/) and keeps things consistent with the rest of the code:
 
 - docstrings: [sphinx-style](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html#the-sphinx-docstring-format) is used to write technical documentation.
-- formatting: [black](https://black.readthedocs.io/) is used to automatically format the code without debate.
+- formatting: [Ruff Formatter](https://docs.astral.sh/ruff/formatter/#style-guide) is used to automatically format the code without debate.
 - sorted imports: [isort](https://pycqa.github.io/isort/) is used to sort imports
 - static analisis: [flake8](https://flake8.pycqa.org/en/latest/) is used to catch some dizziness and keep the source code healthy.
 
