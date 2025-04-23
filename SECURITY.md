@@ -56,16 +56,22 @@ Then open the `bandit_report.csv` file.
 
 ### Run Safety check
 
-In a terminal:
+To run Safety CLI locally, an authenticated account is required:
 
 ```sh
-safety check --full-report --output screen -r requirements/base.txt
+safety auth
 ```
 
-It's also possible to get results in a text format:
+Then:
 
 ```sh
-safety check --full-report --output text -r requirements/base.txt > safety_report.txt
+safety scan --full-report --output screen -r requirements/base.txt
 ```
 
-Then open the `safety_report.txt` file.
+It's also possible to get results as HTML:
+
+```sh
+safety scan --full-report --output html -r requirements/base.txt > safety_report.html
+```
+
+Then open the `safety_report.html` file.

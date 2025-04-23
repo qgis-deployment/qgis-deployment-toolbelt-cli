@@ -29,7 +29,7 @@ env:
 jobs:
   check-bandit:
     name: "🦹‍♂️ Bandit"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Get source code
@@ -43,8 +43,7 @@ jobs:
           cache-dependency-path: "requirements/security.txt"
 
       - name: Install project requirements
-        run: |
-          python -m pip install -U pip setuptools wheel
+        run: python -m pip install -U pip setuptools wheel
 
       - name: Install security dependencies
         run: python -m pip install -U -r requirements/security.txt
@@ -54,7 +53,7 @@ jobs:
 
   check-safety:
     name: "🛡 Safety PyUp"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Get source code
@@ -68,11 +67,12 @@ jobs:
           cache-dependency-path: "requirements/security.txt"
 
       - name: Install project requirements
-        run: |
-          python -m pip install -U pip setuptools wheel
+        run: python -m pip install -U pip setuptools wheel
 
       - name: Install security dependencies
         run: python -m pip install -U -r requirements/security.txt
 
-      - name: Run Safety check
-        run: safety check --output text --short-report -r requirements/base.txt
+      - name: Run Safety scan (pyupio)
+        uses: pyupio/safety-action@v1
+        with:
+          api-key: ${{ secrets.SAFETY_API_KEY }}
