@@ -25,7 +25,7 @@ flowchart LR
     E --->|"QDT"| F["QGIS end-user<br/>profiles"]
 ```
 
-To perform the intermediary git pull, it depends on the organization and GIS team habits. It can be performed manually through the command-line, with a GUI like the excellent [GitHub Desktop](https://github.com/apps/desktop) or with a script. We give below an example in PowerShell for Windows.
+To execute the intermediate git pull, the approach depends on the organization and GIS team habits. This can be done manually through the command-line, with a GUI like the excellent [GitHub Desktop](https://github.com/apps/desktop) or with a script. Below is an example PowerShell script for Windows.
 
 :::{info}
 This script is a sample and might not comply with your environment and/or IT policy. If you intend to use it in production, take time to review it before. If you improve or fix it, please share it.
