@@ -60,7 +60,7 @@ if (-not (Test-Path -Path $basePath)) {
 try {
     # Check if the repository already exists locally
     if (Test-Path -Path $repoPath) {
-        Write-Host "Repository already exists locally at $repoPath. Performing 'git pull'..."
+        Write-Host "Repository already exists locally at $repoPath. Performing 'git pull'..." -ForegroundColor Cyan
 
         # Change to the repository directory
         Push-Location -Path $repoPath
