@@ -28,7 +28,7 @@ flowchart LR
 To execute the intermediate git pull, the approach depends on the organization and GIS team habits. This can be done manually through the command-line, with a GUI like the excellent [GitHub Desktop](https://github.com/apps/desktop) or with a script. Below is an example PowerShell script for Windows.
 
 :::{info}
-This script is a sample and might not comply with your environment and/or IT policy. If you intend to use it in production, take time to review it before. If you improve or fix it, please share it.
+This script is provided as a sample and may not fully comply with your environment or IT policies. Before implementing in production, take time to review and test it in your environment. If you make improvements or fixes, please share them.
 :::
 
 ```{eval-rst}
