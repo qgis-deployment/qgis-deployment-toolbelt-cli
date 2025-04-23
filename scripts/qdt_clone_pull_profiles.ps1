@@ -51,7 +51,7 @@ if (-not (Test-GitInstalled)) {
 
 # Ensure the base directory exists, create it if necessary
 if (-not (Test-Path -Path $basePath)) {
-    Write-Host "The directory '$basePath' does not exist. Creating it..."
+    Write-Host "The directory '$basePath' does not exist. Creating it..." -ForegroundColor Yellow
     New-Item -ItemType Directory -Path $basePath | Out-Null
 }
 
