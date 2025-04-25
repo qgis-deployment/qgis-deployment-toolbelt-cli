@@ -1,8 +1,6 @@
 name: "📚 Documentation"
 
 env:
-  CONDITION_IS_PUSH: ${{ github.event_name == 'push' && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main') }}
-  CONDITION_IS_WORKFLOW_RUN: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' }}
   PYTHON_VERSION: "3.11"
 
 # Allow one concurrent deployment
@@ -14,7 +12,7 @@ concurrency:
 on:
   push:
     branches:
-        - main
+      - main
     paths:
       - ".github/workflows/documentation.yml"
       - "docs/**/*"
@@ -26,7 +24,7 @@ on:
 
   pull_request:
     branches:
-        - main
+      - main
     paths:
       - ".github/workflows/documentation.yml"
       - docs/**/*
@@ -39,9 +37,6 @@ permissions:
   contents: read
   id-token: write
   pages: write
-
-
-
 
 jobs:
   build-docs:
@@ -98,13 +93,23 @@ jobs:
           path: docs/_build/html/*
           retention-days: 30
 
+  deploy-docs:
+    needs: build-docs
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') }}
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: documentation
+          path: docs/_build/html
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        if: ${{ env.CONDITION_IS_PUSH || env.CONDITION_IS_WORKFLOW_RUN }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
-        if: ${{ env.CONDITION_IS_PUSH || env.CONDITION_IS_WORKFLOW_RUN }}
         with:
           name: github-pages
           path: docs/_build/html/
@@ -112,4 +117,3 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
         id: deployment
-        if: ${{ env.CONDITION_IS_PUSH || env.CONDITION_IS_WORKFLOW_RUN }}
