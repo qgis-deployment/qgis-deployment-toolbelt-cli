@@ -11,7 +11,7 @@ metadata:
     enforce scenario processing.
 
 settings:
-  QDT_DEBUG: false
+  QDT_DEBUG: true
   LOCAL_WORK_DIR: ~/.cache/qgis-deployment-toolbelt/tests/
   SCENARIO_VALIDATION: true
 
@@ -29,3 +29,15 @@ steps:
       search_paths:
         - "%PROGRAMFILES%/QGIS"
       if_not_found: warning
+
+  - name: Download profiles from remote git repository
+    uses: qprofiles-downloader
+    with:
+      source: https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli.git
+      protocol: git_remote
+      branch: main
+
+  - name: Synchronize downloaded profiles with installed ones
+    uses: qprofiles-synchronizer
+    with:
+      sync_mode: only_new_version
