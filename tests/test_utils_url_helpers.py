@@ -10,7 +10,6 @@ Usage from the repo root folder:
     python -m unittest tests.test_utils_url_helpers.TestUtilsUrlHelpers.test_check_str_is_url
 """
 
-
 # standard library
 import unittest
 from pathlib import Path

@@ -276,8 +276,7 @@ def delete_environment_variable(
     if line_found:
         pos.append(line_begin_line)
         logger.debug(
-            f"Environment variable and key {envvar_name} was found. "
-            "It will be removed"
+            f"Environment variable and key {envvar_name} was found. It will be removed"
         )
     if block_start_found:
         pos.append(block_start_line)
@@ -288,8 +287,7 @@ def delete_environment_variable(
     if block_end_found:
         pos.append(block_end_line)
         logger.info(
-            f"QDT block end was found for: '{envvar_name}'. "
-            "Block end will be removed."
+            f"QDT block end was found for: '{envvar_name}'. Block end will be removed."
         )
     # memo: pos = [block_start_line, line_begin_line, block_end_line]
     new_lines = [lines[i] for i, e in enumerate(lines) if i not in pos]

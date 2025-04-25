@@ -56,8 +56,8 @@ PyInstaller.__main__.run(
     [
         "--add-data=LICENSE:.",
         "--add-data=README.md:.",
-        f"--add-data={Path(__file__).parent / 'build' / 'tldextract_cache'/ '.suffix_cache'}:tldextract/.suffix_cache",
-        f"--add-data={Path(__file__).parent / 'build' / 'tldextract_cache'/'.tld_set_snapshot'}:tldextract/",
+        f"--add-data={Path(__file__).parent / 'build' / 'tldextract_cache' / '.suffix_cache'}:tldextract/.suffix_cache",
+        f"--add-data={Path(__file__).parent / 'build' / 'tldextract_cache' / '.tld_set_snapshot'}:tldextract/",
         f"--add-data={package_folder.joinpath('shortcuts/shortcut_freedesktop.template').resolve()}:profiles/",
         f"--log-level={getenv('PYINSTALLER_LOG_LEVEL', 'WARN')}",
         f"--name={output_filename}",

@@ -10,7 +10,6 @@ Usage from the repo root folder:
     python -m unittest tests.test_constants.TestConstants.test_constants
 """
 
-
 # standard
 import tempfile
 import unittest

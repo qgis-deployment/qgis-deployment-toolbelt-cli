@@ -10,7 +10,6 @@ Author: Julien Moura (Oslandia)
 # ########## Libraries #############
 # ##################################
 
-
 # Standard library
 import tempfile
 from os import environ, getenv

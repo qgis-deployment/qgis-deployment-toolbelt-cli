@@ -4,7 +4,6 @@
 Configuration for project documentation using Sphinx.
 """
 
-
 # standard
 import logging
 import os

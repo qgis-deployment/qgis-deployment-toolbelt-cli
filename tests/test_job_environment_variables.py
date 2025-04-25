@@ -15,7 +15,6 @@
 # ########## Libraries #############
 # ##################################
 
-
 # Standard library
 import unittest
 from os.path import expanduser

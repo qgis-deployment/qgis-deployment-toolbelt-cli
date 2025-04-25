@@ -10,7 +10,6 @@ Author: Julien Moura (https://github.com/guts)
 # ########## Libraries #############
 # ##################################
 
-
 # Standard library
 import logging
 import os
@@ -176,7 +175,7 @@ class JobEnvironmentVariables(GenericJob):
                 )
             else:
                 logger.warning(
-                    f"{value} seems to be an invalid URL. " "It will be applied anyway."
+                    f"{value} seems to be an invalid URL. It will be applied anyway."
                 )
 
             return value.strip()
