@@ -5,7 +5,7 @@
    This script will:
       1. retrieve latest version of QDT from GitHub Releases API
       2. identify the asset to download (*.exe)
-      3. download it as C:\Users\{username}/AppData/Roaming/QDT/qdt.exe
+      3. download it as C:\Users\{username}\AppData\Roaming\QDT\qdt.exe
       4. launch it with --help args to check it runs well
 .LICENSE
    SPDX-License-Identifier: Apache-2.0
