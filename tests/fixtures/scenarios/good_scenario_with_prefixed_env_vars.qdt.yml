@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=../../../docs/schemas/scenario/qdt_scenario.json
+
+# This is a sample of a YAML file for the QGIS Deployment Toolbelt scenario.
+# For now, it's more a roadmap than a real description of what it's implemented.
+
+metadata:
+  title: "Test scenario of QDT with some settings already prefixed with QDT_"
+  id: test-scenario-good-env-var-prefixed
+  description: >-
+    This is an example a scenario YAML file for the QGIS Deployment Toolbelt to
+    enforce scenario processing.
+
+settings:
+  QDT_DEBUG: true
+  LOCAL_WORK_DIR: ~/.cache/qgis-deployment-toolbelt/tests/
+  SCENARIO_VALIDATION: true
+
+steps:
+  - name: Find installed QGIS
+    uses: qgis-installation-finder
+    with:
+      version_priority:
+        - "3.40"
+        - "3.34.9"
+        - "3.28"
+        - "3.38"
+        - "3.36"
+        - "3.32"
+      search_paths:
+        - "%PROGRAMFILES%/QGIS"
+      if_not_found: warning
+
+  - name: Download profiles from remote git repository
+    uses: qprofiles-downloader
+    with:
+      source: https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli.git
+      protocol: git_remote
+      branch: main
+
+  - name: Synchronize downloaded profiles with installed ones
+    uses: qprofiles-synchronizer
+    with:
+      sync_mode: only_new_version
