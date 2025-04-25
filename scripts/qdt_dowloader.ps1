@@ -24,6 +24,7 @@ $apiHeaders = @{"User-Agent" = "QDT upgrader from $env:computername" }
 
 # destination path
 $destinationFile = "$env:USERPROFILE/qdt.exe"
+New-Item -ItemType Directory -Path (Split-Path $destinationFile) -Force
 
 # -- MAIN
 try {
