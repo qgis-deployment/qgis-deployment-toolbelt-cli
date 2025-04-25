@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/docs/schemas/scenario/jobs/shortcuts-manager.json",
-    "description": "create shortcuts in desktop and/or start menu allowing the end-user opening QGIS with a profile.",
+    "description": "Create shortcuts in desktop and/or start menu allowing the end-user opening QGIS with a profile.",
     "title": "Shortcuts Manager.",
     "type": "object",
     "properties": {

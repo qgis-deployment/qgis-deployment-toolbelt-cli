@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/refs/heads/main/docs/schemas/scenario/qdt_scenario.json
+# yaml-language-server: $schema=../../../docs/schemas/scenario/qdt_scenario.json
 
 # This is a sample of a YAML file for the QGIS Deployment Toolbelt scenario.
 # For now, it's more a roadmap than a real description of what it's implemented.
@@ -72,3 +72,8 @@ steps:
     with:
       action: create_or_restore
       strict: false
+
+  - name: Set default profile
+    uses: default-profile-setter
+    with:
+      profile: qdt_demo
