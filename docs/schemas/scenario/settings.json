@@ -81,6 +81,23 @@
         }
       }
     },
+    "RULES_ONLY_PREFIXED_VARIABLES": {
+      "default": true,
+      "description": "If set to `true` (default), only environment variables prefixed with prefixes listed in RULES_VARIABLES_PREFIX are considered in rules for security concerns. If set to `false`, all environment variables are considered in rules.",
+      "title": "Only prefixed variables",
+      "type": "boolean"
+    },
+    "RULES_VARIABLES_PREFIX": {
+      "default": [
+        "QDT_,QGIS_"
+      ],
+      "description": "List of prefixes of environment variables considered in rules. Only relevant if RULES_ONLY_PREFIXED_VARIABLES is set to `true`.",
+      "title": "Variables prefixes",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "SCENARIO_VALIDATION": {
       "default": false,
       "description": "Enable scenario validation. This will check the scenario against the JSON schema.",
