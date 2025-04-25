@@ -7,6 +7,9 @@ on:
     paths:
       - "**/*.py"
       - ".github/workflows/tests.yml"
+      - "requirements/base.txt"
+      - "requirements/testing.txt"
+      - tests/fixtures/*
 
   pull_request:
     branches:
@@ -16,7 +19,7 @@ on:
       - ".github/workflows/tests.yml"
       - "requirements/base.txt"
       - "requirements/testing.txt"
-      - tests/fixtures/
+      - tests/fixtures/*
 
 env:
   PROJECT_FOLDER: "qgis_deployment_toolbelt"
