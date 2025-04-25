@@ -26,6 +26,7 @@ from qgis_deployment_toolbelt.exceptions import (
     JobOptionBadValueType,
 )
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
+from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 
 # #############################################################################
 # ########## Classes ###############
@@ -91,6 +92,33 @@ class TestJobGeneric(unittest.TestCase):
                 len(filtered_profiles),
                 len(list(tmp_folder_path.glob("**/profile.json"))) - 1,
             )
+
+    def test_get_matching_profile_from_name(self):
+        """Test get_matching_profile_from_name method."""
+        fixtures_profiles_folder = Path("tests/fixtures/profiles")
+        with tempfile.TemporaryDirectory(
+            prefix="QDT_test_get_matching_profile_",
+            ignore_cleanup_errors=True,
+        ) as tmpdirname:
+            tmp_folder_path = Path(tmpdirname).joinpath("profiles")
+            # simulate a QGIS profiles folder structure in the temp folder
+            for p in fixtures_profiles_folder.glob("good_profile_*.json"):
+                dest_file = tmp_folder_path.joinpath(f"test_{p.stem}/profile.json")
+                dest_file.parent.mkdir(parents=True, exist_ok=True)
+                dest_file.write_text(p.read_text(encoding="UTF-8"), encoding="UTF-8")
+
+            filtered_profiles = self.generic_job.filter_profiles_folder(
+                start_parent_folder=tmp_folder_path
+            )
+            matching_profile = self.generic_job.get_matching_profile_from_name(
+                filtered_profiles, "qdt_test_profile_minimal"
+            )
+            self.assertIsInstance(matching_profile, QdtProfile)
+
+            matching_profile = self.generic_job.get_matching_profile_from_name(
+                filtered_profiles, "qdt_test_profile_minimal_not_found"
+            )
+            self.assertIsNone(matching_profile)
 
     def test_validate_options_bad_input_type(self):
         """Test validate_options method"""

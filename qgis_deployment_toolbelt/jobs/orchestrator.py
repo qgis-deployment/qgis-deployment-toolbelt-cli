@@ -17,6 +17,9 @@ from os import environ
 
 # project
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
+from qgis_deployment_toolbelt.jobs.job_default_profile_setter import (
+    JobDefaultProfileSetter,
+)
 from qgis_deployment_toolbelt.jobs.job_environment_variables import (
     JobEnvironmentVariables,
 )
@@ -50,6 +53,7 @@ class JobsOrchestrator:
     """Orchestrate jobs."""
 
     JOBS: tuple = (
+        JobDefaultProfileSetter,
         JobEnvironmentVariables,
         JobPluginsDownloader,
         JobPluginsSynchronizer,

@@ -23,6 +23,7 @@
         "minLength": 1,
         "maxLength": 255,
         "enum": [
+          "default-profile-setter",
           "manage-env-vars",
           "qgis-installation-finder",
           "qplugins-downloader",
@@ -46,6 +47,16 @@
       }
     },
     "oneOf": [
+      {
+        "properties": {
+          "uses": {
+            "const": "default-profile-setter"
+          },
+          "with": {
+            "$ref": "default-profile-setter.json"
+          }
+        }
+      },
       {
         "properties": {
           "uses": {
