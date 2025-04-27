@@ -65,21 +65,40 @@ class TestJobDefaultProfileSetter(unittest.TestCase):
         self.assertTrue(self.profiles_ini.exists())
 
         content = self.profiles_ini.read_text()
-        expected_content = (
-            "[core]\ndefaultProfile=qdt_test_profile_minimal\nselectionPolicy=1"
-        )
+        expected_content = "[core]\ndefaultprofile=qdt_test_profile_minimal"
         self.assertEqual(content, expected_content)
 
     def test_job_default_profile_setter_run_with_existing_profiles_ini(self):
         """Run the job with existing profiles.ini."""
+        self.profiles_ini.write_text("[core]\ndefaultprofile=existing_profile")
+        self.default_profile_setter_job.run()
+        self.assertTrue(self.profiles_ini.exists())
+
+        content = self.profiles_ini.read_text()
+        expected_content = "[core]\ndefaultprofile=qdt_test_profile_minimal\n\n"
+        self.assertEqual(content, expected_content)
+
+    def test_job_default_profile_setter_run_with_force_profile_selection_policy(self):
+        """Run the job with force profile selection policy."""
+        self.default_profile_setter_job.options["force_profile_selection_policy"] = True
+        self.profiles_ini.write_text("[core]\ndefaultprofile=existing_profile")
+        self.default_profile_setter_job.run()
+        self.assertTrue(self.profiles_ini.exists())
+
+        content = self.profiles_ini.read_text()
+        expected_content = (
+            "[core]\ndefaultprofile=qdt_test_profile_minimal\nselectionpolicy=1\n\n"
+        )
+        self.assertEqual(content, expected_content)
+
         self.profiles_ini.write_text(
-            "[core]\ndefaultProfile=existing_profile\nselectionPolicy=1"
+            "[core]\ndefaultprofile=existing_profile\nselectionpolicy=2"
         )
         self.default_profile_setter_job.run()
         self.assertTrue(self.profiles_ini.exists())
 
         content = self.profiles_ini.read_text()
         expected_content = (
-            "[core]\ndefaultProfile=qdt_test_profile_minimal\nselectionPolicy=1\n\n"
+            "[core]\ndefaultprofile=qdt_test_profile_minimal\nselectionpolicy=1\n\n"
         )
         self.assertEqual(content, expected_content)
