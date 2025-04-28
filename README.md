@@ -1,4 +1,4 @@
-# QGIS Deployment CLI
+# QGIS Deployment Toolbelt (QDT)
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![flake8](https://img.shields.io/badge/linter-flake8-green)](https://flake8.pycqa.org/)
@@ -16,27 +16,71 @@
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/qgis-deployment-toolbelt)](https://pypi.org/project/qgis-deployment-toolbelt/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/qgis-deployment-toolbelt)](https://pypi.org/project/qgis-deployment-toolbelt/)
 
-Cross-platform (but Windows focused) CLI to perform deployment operations related to QGIS: profiles, plugins, etc.
+**QGIS Deployment Toolbelt (QDT)** is a cross-platform (primarily Windows-focused) command-line tool that streamlines the deployment and management of **QGIS profiles**, **plugins**, and related settings within organizations.
 
-## Try it quickly
+It helps **standardize** user environments, **simplify** updates, and **integrate** with IT deployment strategies like **GPO**, **SCCM**, or **InTune**.
 
-Using Python and the official package installer `pip`:
+## ⭐ Why QDT?
 
-```sh
-pip install qgis-deployment-toolbelt
-qdt -s https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/examples/scenarios/demo-scenario.qdt.yml
-```
+- Save hours of manual QGIS configuration and profile management
+- Reduce configuration errors and user friction
+- Scale QGIS deployments in professional environments easily
 
-Or using a pre-built executable (downloadable [through releases assets](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/releases/latest)). For example on Windows:
+## ✨ Features
 
-```powershell
-QGISDeploymentToolbelt_0-27-0_Windows.exe -s https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/examples/scenarios/demo-scenario.qdt.yml
-```
+- **Manage QGIS profiles easily**: define, store, and deploy profiles with a simple `profile.json` file.
+- **Version control integration**: Git-powered backend for tracking changes and enabling collaborative profile management.
+- **IT-friendly**: designed to work with Active Directory, GPOs, SCCM, InTune, and other enterprise tools.
+- **Seamless user experience**: deliver a consistent QGIS experience across your organization with minimal friction.
+- **Advanced configuration handling**: use variabilized `QGIS3.ini` files to handle dynamic or environment-specific settings.
+- **Conditional deployments**: deploy specific profiles based on rules, environment variables, or user criteria.
+- **Optimized plugin management** : reduce bandwidth usage by rationalizing plugin downloads and installations.
 
-Look for new icons in start menu or desktop!
+## 🚀 Try it quickly
 
-**Interested**? For further details, [read the documentation](https://qgis-deployment.github.io/qgis-deployment-toolbelt-cli/) :books:.
+You have multiple options to try QDT:
 
-## Contribute
+- Using Python and the official modern CLI installer [pipx](https://pipx.pypa.io/):
 
-Read the [contribution guidelines](CONTRIBUTING.md) and the documentation.
+    ```sh
+    pipx run qgis-deployment-toolbelt -s https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/examples/scenarios/demo-scenario.qdt.yml
+    ```
+
+- Using Python and the official package installer `pip`:
+
+    ```sh
+    pip install qgis-deployment-toolbelt
+    qdt -s https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/examples/scenarios/demo-scenario.qdt.yml
+    ```
+
+- Using a pre-built executable (downloadable [through releases assets](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/releases/latest)). For example on Windows:
+
+    ```powershell
+    ./Windows_QGISDeploymentToolbelt_0-37-0.exe  -s https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/examples/scenarios/demo-scenario.qdt.yml
+    ```
+
+Once completed, check:
+
+- The **Start menu** / **Desktop** for new shortcuts.
+- The **QGIS Profiles menu** for new profiles.
+
+![QGIS - List of profiles with ones added by QDT demonstration scenario](./docs/static/examples_qgis_profiles_menu.png)
+
+Splash screen when launching the **Demo Profile**:
+
+![QGIS splash screen - QDT Demo Profile](./examples/profiles/demo/images/splash.png)
+
+Splash screen for the **Viewer Profile**:
+
+![QGIS splash screen - QDT Viewer Profile](./examples/profiles/Viewer%20Mode/images/splash.png)
+
+Have you tried it on Linux? Well you should find an additionnal profil simply named "QDT Only Linux".
+
+> [!TIP]
+> **Interested**? For further details, [read the documentation](https://qgis-deployment.github.io/qgis-deployment-toolbelt-cli/) :books:.
+
+## 🤝 Contribute
+
+Want to help?
+
+Check out the [contribution guide and "Development" section in the documentation](https://qgis-deployment.github.io/qgis-deployment-toolbelt-cli/development/contribute.html).

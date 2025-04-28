@@ -1,5 +1,12 @@
 {
     "recommendations": [
+        "bierner.markdown-checkbox",
+        "bierner.markdown-footnotes",
+        "bierner.markdown-mermaid",
+        "davidanson.vscode-markdownlint",
+        "executablebookproject.myst-highlight",
+        "github.vscode-github-actions",
+        "github.vscode-pull-request-github",
         "ms-python.python",
         "ms-python.black-formatter",
         "ms-python.flake8",
