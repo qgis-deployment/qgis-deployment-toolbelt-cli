@@ -16,6 +16,33 @@ Unreleased
 
 -->
 
+## 0.37.0 - 2025-04-28
+
+### Bugs fixes 🐛
+
+* update(ci): improve jobs conditions to fix documentation build by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/641>
+* fix(ci): split build and deploy in 2 jobs by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/647>
+
+### Features and enhancements 🎉
+
+* Add new job "default-profile-setter" by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/619>
+* Extend default profile setter job with force_profile_selection_policy option by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/648>
+* improve(test): add case with a prefixed environment variable by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/646>
+
+### Tooling 🔧
+
+* update(security): bump security tooling versions and parameters by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/636>
+* update(packaging): add Python 3.13 to tested and supported versions by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/642>
+
+### Documentation 📖
+
+* add(docs): how to make QDT work with private git repositories by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/634>
+* add(docs): reference QDT active and known users by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/632>
+* update(docs): Change the icons in the "They use QDT" section by @florentfougeres in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/633>
+* update(docs): add ExecutionPolicy and parent folder creation to QDT downloader script by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/644>
+
+**Full Changelog**: <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/compare/0.36.3...0.37.0>
+
 ## 0.36.3 - 2025-02-19
 
 ### Bugs fixes 🐛
@@ -215,7 +242,7 @@ Killer feature introduced: rules engine. Funded by [Métropole du Grand Lyon](ht
 * docs: add how to check using git hooks by @Guts in <https://github.com/Guts/qgis-deployment-cli/pull/457>
 * docs: add robots.txt for SEO engines by @Guts in <https://github.com/Guts/qgis-deployment-cli/pull/458>
 * docs: enable zoom in mermaid diagrams by @Guts in <https://github.com/Guts/qgis-deployment-cli/pull/459>
-* docs: autodoc __init__ functions by @Guts in <https://github.com/Guts/qgis-deployment-cli/pull/460>
+* docs: autodoc **init** functions by @Guts in <https://github.com/Guts/qgis-deployment-cli/pull/460>
 * docs: add a page referencing QDT projects by @Guts in <https://github.com/Guts/qgis-deployment-cli/pull/465>
 * docs: move how to publish to an HTTP server in a specific guide page by @Guts in <https://github.com/Guts/qgis-deployment-cli/pull/466>
 
@@ -473,7 +500,7 @@ Killer feature introduced: rules engine. Funded by [Métropole du Grand Lyon](ht
 
 * @sigeal made their first contribution in <https://github.com/Guts/qgis-deployment-cli/pull/315>
 
-__Full Changelog__: <https://github.com/Guts/qgis-deployment-cli/compare/0.26.0...0.27.0>
+**Full Changelog**: <https://github.com/Guts/qgis-deployment-cli/compare/0.26.0...0.27.0>
 
 ## 0.26.0 - 2023-06-11
 
