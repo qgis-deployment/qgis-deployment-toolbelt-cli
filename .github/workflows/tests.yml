@@ -24,6 +24,10 @@ on:
 env:
   PROJECT_FOLDER: "qgis_deployment_toolbelt"
 
+# Sets permissions of the GITHUB_TOKEN
+permissions:
+  contents: read
+
 jobs:
   unit-test:
     strategy:
