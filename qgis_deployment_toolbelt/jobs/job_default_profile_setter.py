@@ -45,6 +45,13 @@ class JobDefaultProfileSetter(GenericJob):
             "possible_values": None,
             "condition": None,
         },
+        "force_profile_selection_policy": {
+            "type": bool,
+            "required": False,
+            "default": False,
+            "possible_values": None,
+            "condition": None,
+        },
     }
 
     def __init__(self, options: dict) -> None:
@@ -84,8 +91,11 @@ class JobDefaultProfileSetter(GenericJob):
                 "It will be created but maybe it was not the expected behavior."
             )
             ini_profiles_path.touch(exist_ok=True)
+            data = f"[core]\ndefaultProfile={self.options.get('profile')}"
+            if self.options.get("force_profile_selection_policy"):
+                data += "\nselectionPolicy=1"
             ini_profiles_path.write_text(
-                data=f"[core]\ndefaultProfile={self.options.get('profile')}\nselectionPolicy=1",
+                data=data,
                 encoding="UTF8",
             )
             logger.info(f"Default profile set to {self.options.get('profile')}")
@@ -101,7 +111,16 @@ class JobDefaultProfileSetter(GenericJob):
             ini_profiles.add_section("core")
 
         ini_profiles.set("core", "defaultProfile", self.options.get("profile"))
-        ini_profiles.set("core", "selectionPolicy", "1")
+        if self.options.get("force_profile_selection_policy") and (
+            not ini_profiles.has_option("core", "selectionPolicy")
+            or ini_profiles.get("core", "selectionPolicy") != "1"
+        ):
+            if ini_profiles.has_option("core", "selectionPolicy"):
+                logger.warning(
+                    "The selection policy is already set in the profiles.ini file. "
+                    "It will be overridden."
+                )
+            ini_profiles.set("core", "selectionPolicy", "1")
 
         with ini_profiles_path.open("w", encoding="UTF8") as wf:
             ini_profiles.write(wf, space_around_delimiters=False)
