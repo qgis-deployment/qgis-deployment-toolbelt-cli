@@ -74,7 +74,7 @@ Splash screen for the **Viewer Profile**:
 
 ![QGIS splash screen - QDT Viewer Profile](./examples/profiles/Viewer%20Mode/images/splash.png)
 
-Have you tried it on Linux? Well you should find an additional profile simply named "QDT Only Linux".
+Have you tried it on Linux? Well, you should find an additional profile simply named "QDT Only Linux".
 
 > [!TIP]
 > **Interested**? For further details, [read the documentation](https://qgis-deployment.github.io/qgis-deployment-toolbelt-cli/) :books:.
