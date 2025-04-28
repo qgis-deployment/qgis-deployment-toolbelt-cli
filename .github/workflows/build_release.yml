@@ -28,6 +28,10 @@ env:
   PYTHON_VERSION: "3.12"
   PYINSTALLER_LOG_LEVEL: "DEBUG"
 
+# Sets permissions of the GITHUB_TOKEN
+permissions:
+  contents: read
+
 # Jobs definition
 jobs:
   build-python-wheel:

@@ -25,7 +25,11 @@ env:
   PROJECT_FOLDER: "qgis_deployment_toolbelt"
   PYTHON_VERSION: "3.11"
 
-  # Jobs definition
+# Sets permissions of the GITHUB_TOKEN
+permissions:
+  contents: read
+
+# Jobs definition
 jobs:
   check-bandit:
     name: "🦹‍♂️ Bandit"
