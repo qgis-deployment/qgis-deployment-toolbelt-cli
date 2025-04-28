@@ -1,3 +1,9 @@
+<div align="center">
+  <a href="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli">
+    <img alt="QDT logo" src="docs/static/logo_qdt.png" height="120">
+  </a>
+</div>
+
 # QGIS Deployment Toolbelt (QDT)
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
