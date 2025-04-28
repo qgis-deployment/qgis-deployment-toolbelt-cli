@@ -9,7 +9,8 @@ on:
       - ".github/workflows/tests.yml"
       - "requirements/base.txt"
       - "requirements/testing.txt"
-      - tests/fixtures/*
+      - "tests/fixtures/**"
+      - "requirements.txt"
 
   pull_request:
     branches:
@@ -19,7 +20,8 @@ on:
       - ".github/workflows/tests.yml"
       - "requirements/base.txt"
       - "requirements/testing.txt"
-      - tests/fixtures/*
+      - "tests/fixtures/**"
+      - "requirements.txt"
 
 env:
   PROJECT_FOLDER: "qgis_deployment_toolbelt"
