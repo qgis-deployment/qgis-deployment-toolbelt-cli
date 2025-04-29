@@ -16,6 +16,21 @@ Unreleased
 
 -->
 
+## 0.37.1 - 2025-04-29
+
+### Bugs fixes 🐛
+
+* fix: correctly handle UNC paths by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/657>
+
+### Tooling 🔧
+
+* update(ci): set GH permission scope to improve security by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/656>
+
+### Documentation 📖
+
+* README: fix typos by @sguimmara in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/653>
+* README: Add QDT logo by @sguimmara in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/654>
+
 ## 0.37.0 - 2025-04-28
 
 ### Bugs fixes 🐛
