@@ -505,7 +505,7 @@ class RemoteProfilesHandlerBase:
 
         if self.SOURCE_REPOSITORY_TYPE in ("git_local", "local"):
             with porcelain.open_repo_closing(
-                path_or_repo=self.SOURCE_REPOSITORY_PATH_OR_URL
+                path_or_repo=self.SOURCE_REPOSITORY_PATH_OR_URL.as_posix()
             ) as repo_obj:
                 repo_obj.clone(
                     target_path=f"{local_path.resolve()}",
