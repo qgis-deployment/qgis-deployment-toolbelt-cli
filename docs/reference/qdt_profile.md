@@ -39,7 +39,7 @@ The rules engine is based on [Python Rule Engine](https://github.com/santalvarez
 
 > Added in version 0.38
 
-You can also deploy profiles based on environment variables. In the following example, the profile will be deployed only if `IS_GIS_ADMIN` exists:
+You can also deploy profiles based on environment variables. In the following example, the profile will be deployed only if `QDT_IS_GIS_ADMIN` exists:
 
 ```json
 {
