@@ -156,36 +156,6 @@ class JobShortcutsManager(GenericJob):
             raise NotImplementedError
 
     # -- INTERNAL LOGIC ------------------------------------------------------
-    def get_matching_profile_from_name(
-        self, li_profiles: list[QdtProfile], profile_name: str
-    ) -> QdtProfile:
-        """Get a profile from list of profiles using a profile's name to match.
-
-        Args:
-            li_profiles (list[QdtProfile]): list of profile to look into
-            profile_name (str): profile name
-
-        Returns:
-            QdtProfile: matching profile object
-        """
-        # load profile
-        matching_qdt_profile = [
-            pr for pr in li_profiles if profile_name in (pr.name, pr.folder.name)
-        ]
-        if not len(matching_qdt_profile):
-            logger.error(
-                "Unable to get a matching profile among downloaded ones with "
-                f"the name: {profile_name}"
-            )
-            return None
-
-        qdt_profile = matching_qdt_profile[0]
-        logger.info(
-            f"Downloaded profile matched: {qdt_profile.name} from "
-            f"{qdt_profile.folder}"
-        )
-        return qdt_profile
-
     def get_icon_path(self, profile: QdtProfile, icon_filename: str) -> Path | None:
         """Get icon path to use with the shortcut. Looking for:
 

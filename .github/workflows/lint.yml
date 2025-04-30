@@ -2,12 +2,14 @@ name: "🐍 Linter"
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
       - "**.py"
 
   pull_request:
-    branches: [main]
+    branches:
+      - main
     paths:
       - "**.py"
 
@@ -15,9 +17,13 @@ env:
   PROJECT_FOLDER: "qgis_deployment_toolbelt"
   PYTHON_VERSION: "3.10"
 
+# Sets permissions of the GITHUB_TOKEN
+permissions:
+  contents: read
+
 jobs:
   lint-ubuntu:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Get source code

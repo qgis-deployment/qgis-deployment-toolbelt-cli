@@ -1,0 +1,18 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/docs/schemas/scenario/jobs/default-profile-setter.json",
+    "description": "Set the default profile in profile.ini",
+    "title": "Default profile setter",
+    "type": "object",
+    "properties": {
+        "profile": {
+            "description": "Name of the profile to set as default profile.",
+            "type": "string"
+        },
+        "force_profile_selection_policy": {
+            "description": "Force the profile selection policy to 1 (always open default profile).",
+            "type": "boolean",
+            "default": false
+        }
+    }
+}

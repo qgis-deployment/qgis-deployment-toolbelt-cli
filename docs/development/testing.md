@@ -56,4 +56,6 @@ Every time you edit the profiles stored in the `examples` folder, don't forget t
 ```sh
 git commit examples/ -m "wip"
 QGIS_CUSTOM_CONFIG_PATH=tests/fixtures/tmp/ qdt -vv -s scenario.qdt.yml
+# On Windows PowerShell
+# $env:QGIS_CUSTOM_CONFIG_PATH="tests/fixtures/tmp/"; qdt -vv -s .\scenario.qdt.yml
 ```

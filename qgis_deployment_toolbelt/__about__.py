@@ -19,7 +19,7 @@ __all__ = [
 ]
 
 __author__ = (
-    "Julien Moura (Oslandia), Vincent Bré (Oslandia), Jean-Marie Kerloch (Oslandia)"
+    "Julien Moura (Oslandia), Jean-Marie Kerloch (Oslandia), Nicolas Godet (ISL)"
 )
 __copyright__ = f"2021 - {date.today().year}, {__author__}"
 __email__ = "qgis@oslandia.com"
@@ -38,7 +38,7 @@ __uri_repository__ = "https://github.com/qgis-deployment/qgis-deployment-toolbel
 __uri_tracker__ = f"{__uri_repository__}issues/"
 __uri__ = __uri_repository__
 
-__version__ = "0.36.3"
+__version__ = "0.37.1"
 __version_info__ = tuple(
     [
         int(num) if num.isdigit() else num

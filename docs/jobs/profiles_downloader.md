@@ -47,6 +47,17 @@ See this guide on [how to generate the qdt-files.json](../usage/profile.md#gener
     source: file:///home/jmo/Git/Geotribu/profils-qgis
 ```
 
+With repository on [UNC path](https://en.wikipedia.org/wiki/Path_(computing)#Uniform_Naming_Convention):
+
+```yaml
+- name: Download profiles from Git repository stored on a local and "hidden" network drive
+  uses: qprofiles-downloader
+  with:
+    branch: main
+    protocol: git_local
+    source: file://\\srv-01\QDT$
+```
+
 ----
 
 ## Vocabulary

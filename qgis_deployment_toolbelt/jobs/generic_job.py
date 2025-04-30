@@ -113,7 +113,7 @@ class GenericJob:
             `%APPDATA%/QGIS/QGIS3/profiles/geotribu`).
 
         Returns:
-            tuple[QdtProfile] | None: tuple of profiles objects or Non if no profile is
+            tuple[QdtProfile] | None: tuple of profiles objects or None if no profile is
                 installed in QGIS3/profiles
         """
         return self.filter_profiles_folder(start_parent_folder=self.qgis_profiles_path)
@@ -161,6 +161,36 @@ class GenericJob:
             )
 
         return tuple(profiles_matched)
+
+    def get_matching_profile_from_name(
+        self, li_profiles: list[QdtProfile], profile_name: str
+    ) -> QdtProfile:
+        """Get a profile from list of profiles using a profile's name to match.
+
+        Args:
+            li_profiles (list[QdtProfile]): list of profile to look into
+            profile_name (str): profile name
+
+        Returns:
+            QdtProfile: matching profile object
+        """
+        # load profile
+        matching_qdt_profile = [
+            pr for pr in li_profiles if profile_name in (pr.name, pr.folder.name)
+        ]
+        if not len(matching_qdt_profile):
+            logger.error(
+                "Unable to get a matching profile among downloaded ones with "
+                f"the name: {profile_name}"
+            )
+            return None
+
+        qdt_profile = matching_qdt_profile[0]
+        logger.info(
+            f"Downloaded profile matched: {qdt_profile.name} from "
+            f"{qdt_profile.folder}"
+        )
+        return qdt_profile
 
     @lru_cache(maxsize=1024)
     def filter_profiles_on_rules(

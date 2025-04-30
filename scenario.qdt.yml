@@ -74,3 +74,9 @@ steps:
     with:
       action: create_or_restore
       strict: false
+
+  - name: Set default profile to QDT Demonstration Profile
+    uses: default-profile-setter
+    with:
+      profile: qdt_demo
+      force_profile_selection_policy: false
