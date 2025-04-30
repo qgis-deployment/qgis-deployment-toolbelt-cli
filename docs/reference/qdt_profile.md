@@ -37,6 +37,39 @@ You can add rules to make the profile deployment conditional. In the following e
 
 The rules engine is based on [Python Rule Engine](https://github.com/santalvarez/python-rule-engine/) project whom rules syntax belongs to [JSON Rules Engine](https://github.com/CacheControl/json-rules-engine).
 
+> Added in version 0.38
+
+You can also deploy profiles based on environment variables. In the following example, the profile will be deployed only if `QDT_IS_GIS_ADMIN` exists:
+
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/docs/schemas/profile/qgis_profile.json",
+  "name": "only_gis_admin",
+  "folder_name": "qdt_only_gis_admin",
+  "description": "A QGIS profile for QDT with a conditional deployment rule for GIS admin",
+  "author": "Julien Moura",
+  "email": "infos+qdt@oslandia.com",
+  "qgisMinimumVersion": "3.34.0",
+  "qgisMaximumVersion": "3.99.10",
+  "version": "1.7.0",
+  "rules": [
+    {
+      "name": "QDT_IS_GIS_ADMIN exists",
+      "description": "Deploy only if $env:QDT_IS_GIS_ADMIN exists",
+      "conditions": {
+        "all": [
+          {
+            "path": "$.env.QDT_IS_GIS_ADMIN",
+            "operator": "not_equal",
+            "value": ""
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
 ### Conditions and rules context
 
 Rules is a set of conditions that use logical operators to compare values with context (a set of facts) which is exposed as a JSON object. Here comes the context for a Linux environment:

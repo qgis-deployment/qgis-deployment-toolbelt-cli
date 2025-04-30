@@ -29,7 +29,7 @@ def str2bool(input_var: bool | str, raise_exc: bool = False) -> bool | None:
 
     Args:
         input_var (str): value to convert
-        raise_exc (bool, optional): strict mode, defaults to False. Defaults to False.
+        raise_exc (bool, optional): strict mode, defaults to False.
 
     Raises:
         ValueError: input_var is not in true and false sets

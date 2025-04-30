@@ -17,6 +17,7 @@ import logging
 import platform
 from datetime import date
 from getpass import getuser
+from os import _Environ, environ
 from sys import platform as opersys
 
 # package
@@ -43,6 +44,25 @@ logger = logging.getLogger(__name__)
 
 
 class QdtRulesContext:
+    def __init__(
+        self,
+        only_prefixed_variables: bool = True,
+        variables_prefix: list[str] | None = None,
+    ) -> None:
+        """Initialize a QDT rules context object.
+
+        Args:
+            only_prefixed_variables (bool, optional): Option to only list prefixed
+            variables. Defaults to True.
+            variables_prefix (list[str] | None, optional): List of allowed prefixes.
+            Defaults to None.
+        """
+        self.only_prefixed_variables = only_prefixed_variables
+
+        if variables_prefix is None:
+            self.variables_prefix = ["QDT_", "QGIS_"]
+        else:
+            self.variables_prefix = variables_prefix
 
     @property
     def _context_date(self) -> dict:
@@ -59,6 +79,29 @@ class QdtRulesContext:
             "current_month": today.month,
             "current_year": today.year,
         }
+
+    @property
+    def _context_env(self) -> dict[str, str] | _Environ[str]:
+        """Returns a dictionary containing environment variables that can be used in
+            QDT various places: rules...
+
+        The environment variables can be filtered based on self.only_prefixed_variables
+        and self.variables_prefix settings.
+
+        Returns:
+            dict[str, str] | _Environ[str]: dict with environment variables to use in
+            rules
+        """
+
+        if self.only_prefixed_variables:
+            # Filter variables that start with any of the prefixes
+            return {
+                key: value
+                for key, value in environ.items()
+                if any(key.startswith(prefix) for prefix in self.variables_prefix)
+            }
+
+        return environ
 
     @property
     def _context_environment(self) -> dict:

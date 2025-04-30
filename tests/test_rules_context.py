@@ -48,6 +48,7 @@ class TestQdtRulesContext(unittest.TestCase):
 
         self.assertIsInstance(context_data, dict)
         self.assertIn("date", context_data)
+        self.assertIn("env", context_data)
         self.assertIn("environment", context_data)
         self.assertIn("user", context_data)
 
