@@ -430,6 +430,20 @@ class RemoteProfilesHandlerBase:
             raise_error=False,
             force_type="git_local",
         ):
+            # check if the active branch is the one to use
+            # if not, remove the local folder and clone again
+            local_branch = porcelain.active_branch(
+                repo=Repo(root=f"{to_local_destination_path.resolve()}")
+            ).decode()
+            if local_branch != self.DESTINATION_BRANCH_TO_USE:
+                logger.debug(
+                    f"Local active branch ({local_branch}) "
+                    f"does not match the one to use ({self.DESTINATION_BRANCH_TO_USE})."
+                )
+                rmtree(path=to_local_destination_path, ignore_errors=True)
+                return self.clone_or_pull(
+                    to_local_destination_path=to_local_destination_path
+                )
             # FETCH
             logger.debug("Start fetching operations...")
             try:
