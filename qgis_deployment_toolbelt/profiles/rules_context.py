@@ -47,18 +47,22 @@ class QdtRulesContext:
     def __init__(
         self,
         only_prefixed_variables: bool = True,
-        variables_prefix: list[str] = ["QDT_", "QGIS_"],
+        variables_prefix: list[str] | None = None,
     ) -> None:
         """Initialize a QDT rules context object.
 
         Args:
             only_prefixed_variables (bool, optional): Option to only list prefixed
             variables. Defaults to True.
-            variables_prefix (list[str], optional): List of allowed prefixes.
-            Defaults to ["QDT_", "QGIS_"].
+            variables_prefix (list[str] | None, optional): List of allowed prefixes.
+            Defaults to None.
         """
         self.only_prefixed_variables = only_prefixed_variables
-        self.variables_prefix = variables_prefix
+
+        if variables_prefix is None:
+            self.variables_prefix = ["QDT_", "QGIS_"]
+        else:
+            self.variables_prefix = variables_prefix
 
     @property
     def _context_date(self) -> dict:
