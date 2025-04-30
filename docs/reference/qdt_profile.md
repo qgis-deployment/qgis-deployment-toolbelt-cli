@@ -54,12 +54,12 @@ You can also deploy profiles based on environment variables. In the following ex
   "version": "1.7.0",
   "rules": [
     {
-      "name": "IS_GIS_ADMIN exists",
-      "description": "Deploy only if $env:IS_GIS_ADMIN exists",
+      "name": "QDT_IS_GIS_ADMIN exists",
+      "description": "Deploy only if $env:QDT_IS_GIS_ADMIN exists",
       "conditions": {
         "all": [
           {
-            "path": "$.env.IS_GIS_ADMIN",
+            "path": "$.env.QDT_IS_GIS_ADMIN",
             "operator": "not_equal",
             "value": ""
           }
