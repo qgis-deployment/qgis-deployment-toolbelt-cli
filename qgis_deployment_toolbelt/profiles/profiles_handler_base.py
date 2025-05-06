@@ -179,7 +179,7 @@ class RemoteProfilesHandlerBase:
             local_path: Path = self.SOURCE_REPOSITORY_PATH_OR_URL
 
         try:
-            Repo(root=f"{local_path.resolve()}")
+            porcelain.open_repo_closing(f"{local_path.resolve()}")
             return True
         except NotGitRepository as err:
             if not raise_error:
@@ -253,7 +253,7 @@ class RemoteProfilesHandlerBase:
         )
 
         return porcelain.active_branch(
-            repo=Repo(root=f"{local_git_repository_path.resolve()}")
+            repo=f"{local_git_repository_path.resolve()}"
         ).decode()
 
     def is_branch_existing_in_repository(
@@ -506,8 +506,8 @@ class RemoteProfilesHandlerBase:
         if self.SOURCE_REPOSITORY_TYPE in ("git_local", "local"):
             with porcelain.open_repo_closing(
                 path_or_repo=self.SOURCE_REPOSITORY_PATH_OR_URL.as_posix()
-            ) as repo_obj:
-                repo_obj.clone(
+            ) as src_repo_obj:
+                repo_obj = src_repo_obj.clone(
                     target_path=f"{local_path.resolve()}",
                     branch=branch,
                     mkdir=False,
@@ -529,6 +529,7 @@ class RemoteProfilesHandlerBase:
             f"Latest commit cloned: {gobj.sha().hexdigest()} by {gobj.author}"
             f" at {gobj.commit_time}."
         )
+        repo_obj.close()
         return repo_obj
 
     @proxies.os_env_proxy
