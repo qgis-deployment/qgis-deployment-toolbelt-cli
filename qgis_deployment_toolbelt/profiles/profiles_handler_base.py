@@ -374,7 +374,7 @@ class RemoteProfilesHandlerBase:
         if isinstance(local_git_repository, Repo):
             self.DESTINATION_BRANCH_TO_USE = porcelain.active_branch(
                 local_git_repository
-            )
+            ).decode()
 
         return local_git_repository
 
