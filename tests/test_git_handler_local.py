@@ -46,6 +46,10 @@ class TestGitHandlerLocal(unittest.TestCase):
         cls.source_local_repository_obj = GitPythonRepo.clone_from(
             url=cls.remote_repo_url, to_path=cls.source_git_path_source
         )
+        cls.source_local_repository_obj.remotes.origin.fetch()
+        cls.source_local_repository_obj.git.branch(
+            "another_branch", "origin/another_branch"
+        )
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -169,3 +173,33 @@ class TestGitHandlerLocal(unittest.TestCase):
             target_repo = local_git_handler.download(
                 destination_local_path=repo_in_temporary_folder
             )
+
+    def test_change_branch(self):
+        """Test clone with specified branch."""
+        local_git_handler = LocalGitHandler(
+            source_repository_path_or_uri=self.source_git_path_source,
+            branch_to_use="main",
+        )
+
+        self.assertEqual(local_git_handler.SOURCE_REPOSITORY_TYPE, "git_local")
+
+        with tempfile.TemporaryDirectory(
+            prefix="QDT_test_local_git_",
+            ignore_cleanup_errors=True,
+            suffix="_change_branch",
+        ) as tmpdirname:
+            repo_in_temporary_folder = Path(tmpdirname)
+
+            target_repo = local_git_handler.download(
+                destination_local_path=repo_in_temporary_folder
+            )
+            self.assertIsInstance(target_repo, Repo)
+
+            local_git_handler = LocalGitHandler(
+                source_repository_path_or_uri=self.source_git_path_source,
+                branch_to_use="another_branch",
+            )
+            target_repo = local_git_handler.download(
+                destination_local_path=repo_in_temporary_folder
+            )
+            self.assertIsInstance(target_repo, Repo)
