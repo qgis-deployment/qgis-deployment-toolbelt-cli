@@ -31,7 +31,7 @@ If the CI/CD fails for any reason, here comes the manual procedure:
 1. Install required packages:
 
     ```sh
-    python -m pip install -U build twine wheel
+    python -m pip install -U build setuptools-scm twine wheel
     ```
 
 1. Install package in editable mode:

@@ -2,9 +2,6 @@
     // Editor
     "editor.bracketPairColorization.enabled": true,
     "editor.guides.bracketPairs": "active",
-    "files.associations": {
-        "./requirements/*.txt": "pip-requirements"
-    },
     // JSON
     "[json]": {
         "editor.defaultFormatter": "vscode.json-language-features",
@@ -45,6 +42,10 @@
         ],
         "editor.wordWrapColumn": 88,
     },
+    // TOML
+    "[toml]": {
+        "editor.formatOnSave": true,
+    },
     // YAML
     "[yaml]": {
         "editor.autoIndent": "keep",
@@ -63,7 +64,7 @@
     "autoDocstring.docstringFormat": "google",
     "autoDocstring.generateDocstringOnEnter": false,
     "flake8.args": [
-        "--config=setup.cfg",
+        "--config=pyproject.toml",
         "--verbose"
     ],
     "yaml.schemas": {

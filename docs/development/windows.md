@@ -3,6 +3,7 @@
 Tested on:
 
 - Windows 10 Professional - build 19041 (= version 2004)
+- Windows 11 Professional
 
 ## Requirements
 
@@ -34,7 +35,7 @@ git clone git@github.com:qgis-deployment/qgis-deployment-toolbelt-cli.git
 
 ```powershell
 # create a virtual env
-py -3.10 -m venv .venv
+py -3 -m venv .venv
 
 # enable virtual env
 .\.venv\Scripts\activate
@@ -43,7 +44,7 @@ py -3.10 -m venv .venv
 python -m pip install -U pip setuptools wheel
 
 # install dependencies
-python -m pip install -U -r requirements/development.txt
+python -m pip install -U -e .[dev]
 ```
 
 ## Install git hooks
@@ -52,13 +53,7 @@ python -m pip install -U -r requirements/development.txt
 pre-commit install
 ```
 
-## Install project
-
-```sh
-python -m pip install -e .
-```
-
-Try it with:
+## Try it
 
 ```sh
 qgis-deployment-toolbelt --help

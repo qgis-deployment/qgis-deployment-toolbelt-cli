@@ -32,7 +32,7 @@ source .venv/bin/activate
 
 ```sh
 python -m pip install -U pip setuptools wheel
-python -m pip install -U -r requirements/development.txt
+python -m pip install -U -e .[dev]
 ```
 
 ## Install git hooks
@@ -41,13 +41,7 @@ python -m pip install -U -r requirements/development.txt
 pre-commit install
 ```
 
-## Install project
-
-```sh
-python -m pip install -e .
-```
-
-Try it with:
+## Try it
 
 ```sh
 qgis-deployment-toolbelt --help

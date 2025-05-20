@@ -1,4 +1,4 @@
-FROM python:3.11-slim
+FROM python:3.13-slim
 
 # Write .pyc files only once. See: https://stackoverflow.com/a/60797635/2556577
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -9,16 +9,11 @@ ENV PYTHONOPTIMIZE 2
 
 WORKDIR /user/app
 
-COPY requirements.txt .
-COPY requirements/base.txt ./requirements/
-
-RUN python -m pip install --no-cache-dir -U pip && \
-    python -m pip install --no-cache-dir -U setuptools wheel
+RUN python -m pip install --no-cache-dir -U pip  \
+    && python -m pip install --no-cache-dir -U setuptools wheel
 
 COPY . .
 
-RUN python -m pip install -U --no-cache-dir -r requirements.txt
-
-RUN python -m pip install -U -e .
+RUN python -m pip install -U --no-cache-dir -e .
 
 CMD ["bash"]
