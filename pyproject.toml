@@ -1,17 +1,14 @@
 [build-system]
-requires = ["setuptools >= 64", "setuptools-scm>8"]
+requires = ["setuptools>=77", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "qgis-deployment-toolbelt"
-description = """QGIS deployment toolbelt is a CLI (Command Line Interface)
-    to perform redundant operations after a QGIS deployment,
-    managing QGIS profiles, plugins, environment variables,
-    start menu / desktop shortcuts and many things to rationalize
-    your QGIS installations."""
+description = "QGIS deployment toolbelt is a CLI (Command Line Interface) to perform redundant operations after a QGIS deployment, managing QGIS profiles, plugins, environment variables, start menu / desktop shortcuts and many things to rationalize your QGIS installations."
 dynamic = ["version"]
 readme = "README.md"
-license = { text = "Apache-2.0" }
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 requires-python = ">=3.10,<4"
 authors = [
     { name = "Julien Moura (Oslandia)", email = "qgis+qdt@oslandia.com" },
