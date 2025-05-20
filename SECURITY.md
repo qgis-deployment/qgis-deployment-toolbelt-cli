@@ -35,7 +35,7 @@ Some checks can be executed on the developer side.
 ### Install dependencies related to security
 
 ```sh
-python -m pip install -U -r requirements/security.txt
+python -m pip install -U -e .[security]
 ```
 
 ### Run Bandit check
@@ -65,13 +65,13 @@ safety auth
 Then:
 
 ```sh
-safety scan --full-report --output screen -r requirements/base.txt
+safety scan --full-report --output screen
 ```
 
 It's also possible to get results as HTML:
 
 ```sh
-safety scan --full-report --output html -r requirements/base.txt > safety_report.html
+safety scan --full-report --output html > safety_report.html
 ```
 
 Then open the `safety_report.html` file.

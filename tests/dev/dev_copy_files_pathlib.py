@@ -8,12 +8,12 @@ import shutil
 from pathlib import Path
 from shutil import copy, copy2, copyfile, copytree
 
-t = Path("requirements.txt")
+t = Path("pyproject.toml")
 # move a file
-# t.rename("tests/requirements.txt")
+# t.rename("tests/pyproject.toml")
 
 # move and override
-# t.replace("tests/requirements.txt")
+# t.replace("tests/pyproject.toml")
 
 # copy using globbing
 src = Path("tests")

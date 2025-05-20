@@ -8,9 +8,12 @@ The output binary and all embedded dependencies is located into a subfolder name
 
 ### Windows
 
-> Comply with [Windows development requirements](../development/windows.md) before to run.
+> Comply with [Windows development requirements](../development/windows.md) before to run following commands in your virtual environment:
 
 ```powershell
+# Install packaging dependencies
+python -m pip install -U -e .[packaging]
+
 # Generates MS Version Info
 python .\builder\version_info_templater.py
 
@@ -20,13 +23,16 @@ python -O .\builder\pyinstaller_build_windows.py
 
 ![QGIS Deployment Toolbelt - Executable properties](../static/executable_windows_properties_details.png)
 
-To run it, double-click on the executable file (*.exe) loated into `dist` folder.
+To run it, double-click on the executable file (*.exe) located into `dist` folder or run it from your PowerShell terminal.
 
 ### Ubuntu
 
-> Comply with [Ubuntu development requirements](../development/ubuntu.md) before to run.
+> Comply with [Ubuntu development requirements](../development/ubuntu.md) before to run following commands in your virtual environment:
 
 ```sh
+# Install packaging dependencies
+python -m pip install -U -e .[packaging]
+
 # Generates binary executable
 python -O ./builder/pyinstaller_build_ubuntu.py
 # make it runnable

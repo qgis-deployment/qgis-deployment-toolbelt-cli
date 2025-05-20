@@ -1,1 +1,0 @@
-recursive-include qgis_deployment_toolbelt/ *.template

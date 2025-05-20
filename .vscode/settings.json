@@ -2,9 +2,6 @@
     // Editor
     "editor.bracketPairColorization.enabled": true,
     "editor.guides.bracketPairs": "active",
-    "files.associations": {
-        "./requirements/*.txt": "pip-requirements"
-    },
     // JSON
     "[json]": {
         "editor.defaultFormatter": "vscode.json-language-features",
@@ -67,7 +64,7 @@
     "autoDocstring.docstringFormat": "google",
     "autoDocstring.generateDocstringOnEnter": false,
     "flake8.args": [
-        "--config=setup.cfg",
+        "--config=pyproject.toml",
         "--verbose"
     ],
     "yaml.schemas": {

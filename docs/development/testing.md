@@ -18,7 +18,7 @@ To run the tests, you need to install development requirements ([Ubuntu](./ubunt
 Complete it by installing tests requirements:
 
 ```sh
-python -m pip install -U -r requirements/testing.txt
+python -m pip install -U -e .[test]
 ```
 
 ## Run unit tests
