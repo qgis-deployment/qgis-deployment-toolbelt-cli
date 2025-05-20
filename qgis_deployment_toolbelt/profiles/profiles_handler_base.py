@@ -432,7 +432,7 @@ class RemoteProfilesHandlerBase:
             # check if the active branch is the one to use
             # if not, remove the local folder and clone again
             local_branch = porcelain.active_branch(
-                repo=Repo(root=f"{to_local_destination_path.resolve()}")
+                repo=f"{to_local_destination_path.resolve()}"
             ).decode()
             if local_branch != self.DESTINATION_BRANCH_TO_USE:
                 logger.debug(
