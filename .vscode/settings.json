@@ -84,5 +84,9 @@
     "markdown-mermaid.languages": [
         "mermaid",
         "{mermaid}"
-    ]
+    ],
+    "sonarlint.connectedMode.project": {
+        "connectionId": "oslandia",
+        "projectKey": "Guts_qgis-deployment-cli"
+    }
 }
