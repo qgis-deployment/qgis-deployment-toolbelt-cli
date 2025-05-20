@@ -16,6 +16,18 @@ Unreleased
 
 -->
 
+## 0.38.0 - 2025-05-19
+
+### Features and enhancements 🎉
+
+* Allow usage of environment variables in rules path by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/608>
+* Store decoded branch name instead of bytes by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/664>
+* Packaging: switch to pyproject.toml by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/556>
+
+### Bugs fixes 🐛
+
+* improve(repository): fix some files leaking by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/665>
+
 ## 0.37.1 - 2025-04-29
 
 ### Bugs fixes 🐛
