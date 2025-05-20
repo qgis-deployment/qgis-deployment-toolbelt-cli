@@ -92,6 +92,8 @@ test = [
 
 [project.scripts]
 qdt = "qgis_deployment_toolbelt.cli:main"
+qdeploy-toolbelt = "qgis_deployment_toolbelt.cli:main"
+qgis-deployment-toolbelt = "qgis_deployment_toolbelt.cli:main"
 
 [project.urls]
 Changelog = "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/CHANGELOG.md"
