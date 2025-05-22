@@ -1,4 +1,4 @@
-# Shortcuts manager
+# Default profile setter
 
 Use this job to set the default profile in profiles.ini file.
 
