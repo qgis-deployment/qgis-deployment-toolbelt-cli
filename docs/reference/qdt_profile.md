@@ -70,6 +70,23 @@ You can also deploy profiles based on environment variables. In the following ex
 }
 ```
 
+By default, only prefixed variables can be used in rules. Default prefixes are `QDT_` and `QGIS_`. You can use your own prefixes in scenario settings:
+
+```json
+[...]
+
+settings:
+  RULES_VARIABLES_PREFIX: "QDT_,QGIS_,MYPREFIX_,MYOTHERPREFIX_"
+
+[...]
+```
+
+You can by-pass prefix check by setting `RULES_ONLY_PREFIXED_VARIABLES` to `false` in scenario settings.
+
+:::{warning}
+Be careful if you allow all variables, as it could cause security issues.
+:::
+
 ### Conditions and rules context
 
 Rules is a set of conditions that use logical operators to compare values with context (a set of facts) which is exposed as a JSON object. Here comes the context for a Linux environment:
