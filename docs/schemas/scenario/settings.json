@@ -88,15 +88,13 @@
       "type": "boolean"
     },
     "RULES_VARIABLES_PREFIX": {
-      "default": [
-        "QDT_,QGIS_"
+      "default": "QDT_,QGIS_",
+      "description": "List of prefixes of environment variables considered in rules. Only relevant if RULES_ONLY_PREFIXED_VARIABLES is set to `true`. The list is comma-separated. For example: `QDT_,QGIS_,MYPREFIX_`. The default value is `QDT_,QGIS_`.",
+      "examples": [
+        "QGIS_,QDT_,MYPREFIX_,MYOTHERPREFIX_"
       ],
-      "description": "List of prefixes of environment variables considered in rules. Only relevant if RULES_ONLY_PREFIXED_VARIABLES is set to `true`.",
       "title": "Variables prefixes",
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
+      "type": "string"
     },
     "SCENARIO_VALIDATION": {
       "default": false,
