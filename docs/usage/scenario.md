@@ -23,7 +23,7 @@ A step consists of 3 elements:
 
 - `name`: the name of the step
 - `uses` : the job identifier to use
-- with` : the parameters to pass to the Job
+- `with` : the parameters to pass to the Job
 
 ```{button-link} ../jobs/index.html
 :color: primary
