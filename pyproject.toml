@@ -161,9 +161,11 @@ norecursedirs = ".* build dev development dist docs CVS fixtures _darcs {arch} *
 python_files = "test_*.py"
 testpaths = ["tests"]
 
+[tool.setuptools_scm]
+write_to = "qgis_deployment_toolbelt/_version.py"
 
 [tool.setuptools.dynamic]
-version = { attr = "qgis_deployment_toolbelt.__about__.__version__" }
+version = { attr = "qgis_deployment_toolbelt._version.version" }
 
 [tool.setuptools.package-data]
 qgis_deployment_toolbelt = ["shortcuts/*.template"]

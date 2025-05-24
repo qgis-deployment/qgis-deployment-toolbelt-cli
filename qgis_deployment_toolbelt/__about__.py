@@ -40,10 +40,14 @@ __uri_repository__ = "https://github.com/qgis-deployment/qgis-deployment-toolbel
 __uri_tracker__ = f"{__uri_repository__}issues/"
 __uri__ = __uri_repository__
 
-__version__ = "0.38.0"
-__version_info__ = tuple(
-    [
-        int(num) if num.isdigit() else num
-        for num in __version__.replace("-", ".", 1).split(".")
-    ]
-)
+try:
+    from ._version import version as __version__
+except ImportError:
+    try:
+        # Fallback for development versions or when package is not installed
+        from importlib.metadata import version
+
+        __version__ = version("qgis-deployment-toolbelt")
+    except ImportError:
+        # Final fallback
+        __version__ = "0.0.0+unknown"
