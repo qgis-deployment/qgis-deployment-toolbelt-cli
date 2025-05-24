@@ -19,6 +19,7 @@ from enum import Enum
 from os import sep  # required since pathlib strips trailing whitespace
 from pathlib import Path
 from sys import platform as opersys
+from typing import Literal
 
 
 # Imports depending on operating system
@@ -39,11 +40,19 @@ logger = logging.getLogger(__name__)
 
 if opersys == "win32":
     """windows"""
-    system_hkey = (
+    env_system_hkey = (
         winreg.HKEY_LOCAL_MACHINE,
         r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",
     )
-    user_hkey = (winreg.HKEY_CURRENT_USER, r"Environment")
+    env_user_hkey = (winreg.HKEY_CURRENT_USER, r"Environment")
+    qgis_command_system_hkey = (
+        winreg.HKEY_LOCAL_MACHINE,
+        r"QGIS Project\Shell\open\command",
+    )
+    qgis_command_user_hkey = (
+        winreg.HKEY_CURRENT_USER,
+        r"Software\Classes\QGIS Project\Shell\open\command",
+    )
 
 
 # #############################################################################
@@ -115,9 +124,9 @@ def delete_environment_variable(envvar_name: str, scope: str = "user") -> bool:
     """
     # user or system
     if scope == "user":
-        hkey = user_hkey
+        hkey = env_user_hkey
     else:
-        hkey = system_hkey
+        hkey = env_system_hkey
 
     # get it to check if variable exits
     try:
@@ -150,9 +159,9 @@ def get_environment_variable(envvar_name: str, scope: str = "user") -> str | Non
     """
     # user or system
     if scope == "user":
-        hkey = user_hkey
+        hkey = env_user_hkey
     else:
-        hkey = system_hkey
+        hkey = env_system_hkey
 
     # try to get the value
     try:
@@ -280,9 +289,9 @@ def set_environment_variable(
     """
     # user or system
     if scope == "user":
-        hkey = user_hkey
+        hkey = env_user_hkey
     else:
-        hkey = system_hkey
+        hkey = env_system_hkey
 
     # try to set the value
     try:
@@ -295,3 +304,87 @@ def set_environment_variable(
             f"scope '{scope}' failed. Trace: {err}"
         )
         return False
+
+
+def read_registry_value(
+    key: tuple, value_name: str, access_mode: Literal["read", "write"] = "read"
+) -> str | None:
+    r"""Read a value from the Windows registry.
+    Args:
+        key (tuple): registry key to read from, e.g. (winreg.HKEY_CURRENT_USER, r"Software\Classes\QGIS Project\Shell\open\command")
+        value_name (str): name of the value to read
+        access (str, optional): access mode for the registry key, defaults to read
+    Returns:
+        str | None: the value as a string if found, None if not found or an error occurs
+    """
+    if access_mode == "read":
+        access = winreg.KEY_READ
+    elif access_mode == "write":
+        access = winreg.KEY_WRITE
+
+    try:
+        with winreg.OpenKey(*key, access=access) as reg_key:
+            value, _ = winreg.QueryValueEx(reg_key, value_name)
+        return value
+    except FileNotFoundError:
+        logger.error(f"Registry key {key} or value {value_name} not found.")
+        return None
+    except OSError as err:
+        logger.error(f"Error reading registry key {key}: {err}")
+        return None
+
+
+def set_qgis_command(
+    qgis_cmd: str, scope: str = "user", force_key_creation: bool = False
+) -> bool:
+    """Set QGIS command in Windows registry.
+
+    Args:
+        qgis_path (str): path to QGIS installation folder
+        scope (str, optional): environment variable scope. Must be "user" or "system",
+            defaults to "user". Defaults to "user".
+
+    Returns:
+        bool: True is the variable has been successfully set
+    """
+    # user or system
+    if scope == "user":
+        hkey = qgis_command_user_hkey
+    else:
+        hkey = qgis_command_system_hkey
+
+    if force_key_creation:
+        # ensure the key exists
+        try:
+            with winreg.CreateKeyEx(*hkey, access=winreg.KEY_WRITE) as key:
+                pass  # just create the key if it does not exist
+        except OSError as err:
+            logger.error(
+                f"Create QGIS command registry key for scope '{scope}' failed. Trace: {err}"
+            )
+            return False
+
+    # try to set the value
+    try:
+        with winreg.OpenKey(*hkey, access=winreg.KEY_WRITE) as key:
+            winreg.SetValueEx(key, "", 0, winreg.REG_SZ, qgis_cmd)
+        return True
+    except FileNotFoundError:
+        logger.error(f"Registry key {hkey} not found. Is QGIS installed?")
+        return False
+    except OSError as err:
+        logger.error(
+            f"Set QGIS command '{qgis_cmd}' to scope '{scope}' failed. Trace: {err}"
+        )
+        return False
+
+
+# #############################################################################
+# ##### Stand alone program ########
+# ##################################
+
+if __name__ == "__main__":
+    """Standalone execution."""
+    # pass
+    t = Path("C:/Users/risor/Documents/GitHub/Geotribu/qtribu/qtribu/resources/images")
+    print(normalize_path(t))

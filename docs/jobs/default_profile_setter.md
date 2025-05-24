@@ -16,6 +16,18 @@ Sample job configuration in your scenario file:
       force_profile_selection_policy: 1
 ```
 
+On Windows, if you want to ensure that double-clicking on QGIS Project files will launch QGIS with the chosen default profile and disable version checking:
+
+```yaml
+- name: Set default profile to conf_qgis_fr
+    uses: default-profile-setter
+    with:
+      profile: conf_qgis_fr
+      force_profile_selection_policy: true
+      force_profile_file_association: true
+      profile_file_association_arguments: "--noversioncheck"
+```
+
 ----
 
 ## Options
@@ -38,6 +50,22 @@ Force the key `selectionPolicy` to the desired value in `profiles.ini`:
 * `2`: Choose at startup. In our context, the `profile` value will never be used.
 
 See [QGIS user profiles documentation](https://docs.qgis.org/latest/en/docs/user_manual/introduction/qgis_configuration.html#setting-user-profile) for further details.
+
+### force_profile_file_association
+
+:::{note}
+Windows-only feature
+:::
+
+Modify the Windows registry to ensure that QGIS Project files always open with the default profile when launched.
+
+### profile_file_association_arguments
+
+:::{note}
+Windows-only feature
+:::
+
+Arguments to pass to QGIS executable.
 
 ----
 
