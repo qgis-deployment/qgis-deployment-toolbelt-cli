@@ -15,10 +15,12 @@ See:
 
 # Standard library
 import argparse
-import re
 import sys
 from os import W_OK, access, path
 from pathlib import Path
+
+# 3rd party
+from packaging.version import parse as parse_version
 
 sys.path.insert(0, path.abspath(r"."))
 
@@ -29,9 +31,31 @@ from qgis_deployment_toolbelt import __about__
 # ########### MAIN #################
 # ##################################
 
-# Define a regular expression pattern to match the version string
-pattern = re.compile(r"(\d+)\.(\d+)\.(\d+)")
-semver = pattern.match(__about__.__version__).groups()
+# Parse the version using packaging.version which handles setuptools_scm formats
+# This supports formats like:
+# - Standard releases: "1.2.3"
+# - Development versions: "1.2.3.dev4+g1234567"
+# - Pre-releases: "1.2.3a1", "1.2.3b2", "1.2.3rc1"
+try:
+    parsed_version = parse_version(__about__.__version__)
+    # Extract major, minor, patch from the parsed version
+    # For development versions like "0.1.dev1+ge6f014e", this will give us (0, 1, 0)
+    if hasattr(parsed_version, "release") and len(parsed_version.release) >= 3:
+        semver = parsed_version.release[:3]  # (major, minor, patch)
+    elif hasattr(parsed_version, "release") and len(parsed_version.release) == 2:
+        # Handle case where only major.minor is provided
+        semver = (*parsed_version.release, 0)  # (major, minor, 0)
+    elif hasattr(parsed_version, "release") and len(parsed_version.release) == 1:
+        # Handle case where only major is provided
+        semver = (parsed_version.release[0], 0, 0)  # (major, 0, 0)
+    else:
+        # Fallback for unexpected formats
+        semver = (0, 1, 0)
+except Exception as e:
+    raise ValueError(
+        f"Invalid version format: {__about__.__version__}. "
+        f"Error parsing version: {e}"
+    )
 
 
 REPLACEMENT_VALUES = {
