@@ -308,19 +308,18 @@ class RemoteProfilesHandlerBase:
     def list_remote_branches(
         self, source_repository_path_or_url: Path | str | None = None
     ) -> tuple[str]:
-        """Retrieve git active branch from a local repository. Mainly a checker and a
-            wrapper around dulwich logic.
+        """List all branches in a remote or local git repository.
 
         Args:
             source_repository_path_or_url (Path | str, optional): URL or path pointing
                 to a git repository.
+                If None, uses the object's SOURCE_REPOSITORY_PATH_OR_URL.
 
         Raises:
-            NotGitRepository: if the path is not a valid Git Repository
+            NotGitRepository: if the path or URL is not a valid Git repository.
 
         Returns:
-            tuple[str]: tuple of branch complete names \
-                ('refs/heads/profile-for-qgis-3-34', 'refs/heads/main')
+            tuple[str]: Tuple of branch reference names (e.g., 'refs/heads/main').
         """
         # if no local git repository passed, try to use URL defined at object level
         if source_repository_path_or_url is None and isinstance(
@@ -430,6 +429,20 @@ class RemoteProfilesHandlerBase:
             raise_error=False,
             force_type="git_local",
         ):
+            # check if the active branch is the one to use
+            # if not, remove the local folder and clone again
+            local_branch = porcelain.active_branch(
+                repo=f"{to_local_destination_path.resolve()}"
+            ).decode()
+            if local_branch != self.DESTINATION_BRANCH_TO_USE:
+                logger.debug(
+                    f"Local active branch ({local_branch}) "
+                    f"does not match the one to use ({self.DESTINATION_BRANCH_TO_USE})."
+                )
+                rmtree(path=to_local_destination_path, ignore_errors=True)
+                return self.clone_or_pull(
+                    to_local_destination_path=to_local_destination_path
+                )
             # FETCH
             logger.debug("Start fetching operations...")
             try:
