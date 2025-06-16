@@ -30,13 +30,14 @@ VSVersionInfo(
       StringTable(
         u'040904b0',
         [StringStruct(u'CompanyName', u'[AUTHOR]'),
-        StringStruct(u'FileDescription', u'[DESCRIPTION]'),
+        StringStruct(u'FileDescription', u'[TITLE]'),
         StringStruct(u'FileVersion', u'[VERSION_SEMVER]'),
         StringStruct(u'InternalName', u'[EXECUTABLE_NAME]'),
         StringStruct(u'LegalCopyright', u'[COPYRIGHT]'),
         StringStruct(u'OriginalFilename', u'[EXECUTABLE_NAME]'),
         StringStruct(u'ProductName', u'[TITLE]'),
         StringStruct(u'ProductVersion', u'[VERSION_SEMVER]'),
+        StringStruct(u'Comments', u'[DESCRIPTION]'),
         StringStruct(u'SquirrelAwareVersion', u'1')])
       ]),
     VarFileInfo([VarStruct(u'Translation', [1033, 1200])])
