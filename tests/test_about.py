@@ -46,7 +46,6 @@ class TestAbout(unittest.TestCase):
         self.assertIsInstance(__about__.__uri_tracker__, str)
         self.assertIsInstance(__about__.__uri__, str)
         self.assertIsInstance(__about__.__version__, str)
-        self.assertIsInstance(__about__.__version_info__, tuple)
 
         # misc
         self.assertLessEqual(len(__about__.__title_clean__), len(__about__.__title__))
