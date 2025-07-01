@@ -35,7 +35,7 @@ classifiers = [
 ]
 dependencies = [
     "distro==1.9.* ; sys_platform == 'linux'",
-    "dulwich>=0.22.5,<0.22.9",
+    "dulwich>=0.22.5,<0.23.2",
     "giturlparse>=0.12,<0.13",
     "imagesize>=1.4,<1.5",
     "packaging>=22,<26",
