@@ -40,7 +40,7 @@ dependencies = [
     "imagesize>=1.4,<1.5",
     "packaging>=22,<26",
     "pypac>=0.16.3,<1",
-    "python-rule-engine>=0.5,<0.6",
+    "python-rule-engine>=0.5,<1.1",
     "python-win-ad>=0.6.2,<1 ; sys_platform == 'win32'",
     "pywin32==311 ; sys_platform == 'win32'",
     "pyyaml>=5.4,<7",
