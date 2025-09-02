@@ -28,7 +28,7 @@ repos:
           - --markdown-linebreak-ext=md
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.19.1
+    rev: v3.20.0
     hooks:
       - id: pyupgrade
         args:
@@ -42,7 +42,7 @@ repos:
           - --target-version=py310
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.11.4"
+    rev: "v0.12.2"
     hooks:
       - id: ruff
         args:
@@ -58,7 +58,7 @@ repos:
           - --filter-files
 
   - repo: https://github.com/pycqa/flake8
-    rev: 7.2.0
+    rev: 7.3.0
     hooks:
       - id: flake8
         language: python
@@ -67,7 +67,7 @@ repos:
           - --select=E9,F63,F7,F82
 
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.8.3
+    rev: 1.8.6
     hooks:
       - id: bandit
         args:
