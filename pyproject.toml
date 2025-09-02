@@ -42,7 +42,7 @@ dependencies = [
     "pypac>=0.16.3,<1",
     "python-rule-engine>=0.5,<0.6",
     "python-win-ad>=0.6.2,<1 ; sys_platform == 'win32'",
-    "pywin32==310 ; sys_platform == 'win32'",
+    "pywin32==311 ; sys_platform == 'win32'",
     "pyyaml>=5.4,<7",
     "requests>=2.32.3,<3",
     "truststore>=0.10.1,<1",
