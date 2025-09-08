@@ -11,6 +11,53 @@
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/qgis-deployment-toolbelt)](https://pypi.org/project/qgis-deployment-toolbelt/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/qgis-deployment-toolbelt)](https://pypi.org/project/qgis-deployment-toolbelt/)
 
+<!-- markdownlint-disable MD034 -->
+
+::::{grid} 3
+:gutter: 2
+
+:::{grid-item}
+
+```{button-link} https://matrix.to/#/#qdt:matrix.org/
+:color: primary
+:shadow:
+:expand:
+:tooltip: Matrix channel for QDT
+
+{fa}`comments` Matrix channel
+```
+
+:::
+
+:::{grid-item}
+
+```{button-link} https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/discussions/categories/q-a
+:color: success
+:expand:
+:shadow:
+:tooltip: Github discussions page
+
+{fab}`github` Discussions on GitHub
+```
+
+:::
+
+:::{grid-item}
+
+```{button-link} mailto:qgis+qdt@oslandia.com
+:color: secondary
+:expand:
+:shadow:
+:tooltip: mailto Oslandia about QDT
+{material-regular}`mail;1.5em` Contact us by email
+```
+
+:::{grid-item}
+:::
+
+::::
+<!-- markdownlint-enable MD034 -->
+
 ----
 
 ![QGIS Deployment Toolbelt CLI](./static/qgis-deployment-toolbelt_cli_help.png)

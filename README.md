@@ -31,6 +31,12 @@ It helps **standardize** user environments, **simplify** updates, and **integrat
 - Save hours of manual QGIS configuration and profile management
 - Reduce configuration errors and user friction
 - Scale QGIS deployments in professional environments easily
+- Community driven development and developed by experienced QGIS teams (especially [Oslandia](https://oslandia.com/))
+
+Come, talk and ask, we're a friendly (small) group of persons behind:
+
+- GitHub [Issues](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/issues) and [Discussions](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/discussions)
+- Matrix channel: <https://matrix.to/#/#qdt:matrix.org>
 
 ## ✨ Features
 
