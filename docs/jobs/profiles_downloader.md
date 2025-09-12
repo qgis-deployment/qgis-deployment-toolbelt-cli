@@ -22,7 +22,7 @@ Sample job configurations.
 :::{note}
 If you use the HTTP procotol, a `qdt-files.json` must be downloadable at the URL source. Typically: `https://organization.intra/qgis/qdt/qdt-files.json`.
 
-See this guide on [how to generate the qdt-files.json](../usage/profile.md#generate-the-qdt-filesjson-index-file).
+See this guide on [how to generate the qdt-files.json](../guides/howto_publish_http.md#generate-the-qdt-filesjson-index-file).
 :::
 
 ### Public **remote** git repository
