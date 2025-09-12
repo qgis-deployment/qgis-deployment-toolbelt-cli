@@ -88,6 +88,14 @@ class JobOptionBadValueType(TypeError):
         super().__init__(self.message)
 
 
+class ScenarioInvalid(ValueError):
+    """When a scenario is invalid."""
+
+    def __init__(self, scenario_filepath: Path) -> None:
+        self.message = f"Scenario {scenario_filepath.resolve()} is invalid"
+        super().__init__(self.message)
+
+
 class SplashScreenBadDimensions(Exception):
     """When splash screen image does not comply with recomended dimensions."""
 
