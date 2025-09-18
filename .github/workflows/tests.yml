@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "**/*.py"
+      - qgis_deployment_toolbelt/shortcuts/shortcut_freedesktop.template
       - ".github/workflows/tests.yml"
       - "tests/fixtures/**"
       - pyproject.toml
@@ -15,6 +16,7 @@ on:
       - main
     paths:
       - "**/*.py"
+      - qgis_deployment_toolbelt/shortcuts/shortcut_freedesktop.template
       - ".github/workflows/tests.yml"
       - "tests/fixtures/**"
       - pyproject.toml
