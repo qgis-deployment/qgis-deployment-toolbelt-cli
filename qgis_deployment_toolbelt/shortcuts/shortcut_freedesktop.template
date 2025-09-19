@@ -1,5 +1,5 @@
 [Desktop Entry]
-Actions=ProfileFolder;
+Actions=ProfileFolder;RemoveProfile;
 Categories=Qt;Education;Science;Geography;
 Comment=$description
 Encoding=UTF-8
@@ -17,5 +17,11 @@ Version=1.5
 X-MultipleArgs=false
 
 [Desktop Action ProfileFolder]
-Name=Ouvre le dossier du profil $profile_name
+Name=Open $profile_name folder
 Exec=open $profile_folder
+Icon=folder
+
+[Desktop Action RemoveProfile]
+Name=Remove profile $profile_name from QGIS
+Exec=bash -c "zenity --question --title='Confirm profile removal' --text='Remove QGIS profile $profile_name?' && gio -r $profile_folder"
+Icon=edit-delete-symbolic
