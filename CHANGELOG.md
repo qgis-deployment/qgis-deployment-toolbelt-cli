@@ -16,6 +16,39 @@ Unreleased
 
 -->
 
+## 0.38.1 - 2025-09-19
+
+### Bugs fixes 🐛
+
+* Fix default profile setter page title in doc by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/668>
+* fix(docs): fix schema and add documentation for rules prefixes in scenario settings by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/669>
+* Packaging: use title as file description and description as comments for Windows Task Manager display name by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/670>
+
+### Features and enhancements 🎉
+
+* improve(shortcut): add StartupWMClass=QGIS3 to improve GNOME dock integration by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/687>
+* improve(shortcut): add StartupNotify=true to improve GNOME integration by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/689>
+
+### Tooling 🔧
+
+* fix(tooling): pytest config was conflicting in VS Code by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/686>
+* build(deps): bump codecov/codecov-action from 5.4.2 to 5.4.3 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/673>
+* [pre-commit.ci] pre-commit autoupdate by @pre-commit-ci[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/679>
+* build(deps): bump pywin32 from 310 to 311 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/683>
+* build(deps): update pyinstaller requirement from ==6.13.* to >=6.13,<6.16 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/682>
+* build(deps): update pillow requirement from <11.3,>=10.4.0 to >=10.4.0,<11.4 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/676>
+* build(deps): update python-rule-engine requirement from <0.6,>=0.5 to >=1.0,<1.1 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/675>
+* build(deps): update dulwich requirement from <0.22.9,>=0.22.5 to >=0.22.5,<0.24.2 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/680>
+
+### Documentation 📖
+
+* Update logos by @sylvainbeo in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/684>
+* update(docs): publicize Matrix channel by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/685>
+
+### New Contributors
+
+* @sylvainbeo made their first contribution in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/684>
+
 ## 0.38.0 - 2025-05-19
 
 ### Features and enhancements 🎉
