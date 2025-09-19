@@ -15,7 +15,7 @@ import argparse
 import logging
 import sys
 from collections.abc import Iterable
-from os import getenv
+from os import environ, getenv
 from pathlib import Path
 from sys import platform as opersys
 from urllib.parse import urlsplit, urlunsplit
@@ -46,6 +46,9 @@ from qgis_deployment_toolbelt.utils.str2bool import str2bool
 # ##################################
 
 logger = logging.getLogger(__name__)
+
+if sys.platform == "win32":
+    environ["PYTHONIOENCODING"] = "utf-8"
 
 # #############################################################################
 # ####### Functions ###############
