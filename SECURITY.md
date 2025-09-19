@@ -6,6 +6,7 @@ Because QDT is meant to be carried out on large-scale IT infrastructures, securi
 
 - [GitGuardian](https://www.gitguardian.com/): detects secrets in the source code to help developers and security teams secure the modern development process.
 - [Github Code QL](https://codeql.github.com/): GitHub integrated tool to discover vulnerabilities across a codebase
+- [GitHub Immutable Releases](https://docs.github.com/code-security/supply-chain-security/understanding-your-software-supply-chain/immutable-releases)
 - [Dependabot Alerts](https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-supply-chain-security#what-is-dependabot): GitHub integrated tool that keeps dependencies up to date by informing of any security vulnerabilities in project's dependencies, and automatically opens pull requests to upgrade dependencies to the next available secure version when a Dependabot alert is triggered, or to the latest version when a release is published.
 - [GitHub secret scanning](https://docs.github.com/code-security/secret-scanning/secret-scanning-patterns#supported-secrets): integrated Github secrets scanning to receive alerts for detected secrets, keys, or other tokens.
 - [Bandit](https://bandit.readthedocs.io): Bandit is a tool designed to find common security issues in Python code. Aslo executed for every commit as git hook.

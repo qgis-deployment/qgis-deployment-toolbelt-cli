@@ -217,13 +217,20 @@ jobs:
           name: windows_executable
           path: builds/windows/
 
-      - name: Release
+      - name: Upload draft Artifacts
         uses: softprops/action-gh-release@v2
         with:
-          discussion_category_name: announcements
+          draft: true
           fail_on_unmatched_files: true
           files: builds/*/dist/*
           generate_release_notes: true
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: false
+          discussion_category_name: announcements
+
 
   release-pypi:
     name: "🐍 Release on PyPI"
