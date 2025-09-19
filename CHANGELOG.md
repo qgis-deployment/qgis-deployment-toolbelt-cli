@@ -16,7 +16,15 @@ Unreleased
 
 -->
 
+## 0.38.2 - 2025-09-19
+
+### Tooling 🔧
+
+* update(ci): split release creation in two steps to comply with Immutable Releases by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/692>
+
 ## 0.38.1 - 2025-09-19
+
+> Publishing built packages for this version failed because of incompatibility with [GitHub Immutable Releases](https://docs.github.com/code-security/supply-chain-security/understanding-your-software-supply-chain/immutable-releases). See [0.38.2](#0382---2025-09-19).
 
 ### Bugs fixes 🐛
 
