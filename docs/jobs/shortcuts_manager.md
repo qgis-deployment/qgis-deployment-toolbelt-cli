@@ -53,7 +53,7 @@ See below for the suboptions.
 
 #### additional_arguments
 
-Arguments to pass to QGIS executable. To know what it's possible run `qgis --help` in a terminal
+Arguments to pass to QGIS executable. To know what it's possible run `qgis --help` in a terminal.
 
 #### desktop
 
