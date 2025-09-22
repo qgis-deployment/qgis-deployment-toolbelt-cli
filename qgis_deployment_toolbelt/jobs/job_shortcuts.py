@@ -1,7 +1,6 @@
 #! python3  # noqa: E265
 
-"""
-Manage application shortcuts on end-user machine.
+"""Manage application shortcuts on end-user machine.
 
 Author: Julien Moura (https://github.com/guts)
 """
@@ -35,9 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 class JobShortcutsManager(GenericJob):
-    """
-    Job to create or remove shortcuts on end-user machine.
-    """
+    """Job to create or remove shortcuts on end-user machine."""
 
     ID: str = "shortcuts-manager"
     OPTIONS_SCHEMA: dict = {
@@ -56,7 +53,7 @@ class JobShortcutsManager(GenericJob):
             "condition": None,
             "sub_options": {
                 "additional_arguments": {
-                    "type": str,
+                    "type": list[str] | str,
                     "required": False,
                     "default": None,
                     "possible_values": None,
@@ -219,13 +216,16 @@ class JobShortcutsManager(GenericJob):
         return profile_icon_installed
 
     def get_arguments_ready(
-        self, profile: str, in_arguments: str | None = None
+        self, profile: str, in_arguments: list[str] | str | None = None
     ) -> list[str]:
         """Prepare arguments for the executable shortcut.
 
         Args:
             profile (str): profile's name
-            in_arguments (str, optional): argument as defined in the scenario file. Defaults to None.
+            in_arguments (list[str] | str | None, optional): argument as defined in the scenario file. Defaults to None.
+
+        Raises:
+            TypeError: if arguments are not str or list of str
 
         Returns:
             list[str]: tuple of strings separated by spaces
@@ -235,7 +235,23 @@ class JobShortcutsManager(GenericJob):
 
         # add additional arguments
         if in_arguments:
-            arguments.extend(in_arguments.split(" "))
+            if isinstance(in_arguments, str):
+                logger.warning(
+                    "Additional arguments should be a list of strings, not a single string. "
+                    "We will try to split it by spaces."
+                )
+                in_arguments = in_arguments.split(" ")
+            elif isinstance(in_arguments, list):
+                in_arguments = [
+                    str(arg)
+                    for arg in in_arguments
+                    if isinstance(arg, (str, int, float))
+                ]
+            elif not isinstance(in_arguments, (list, str)):
+                raise TypeError(
+                    f"Additional arguments should be a string or a list of strings, not {type(in_arguments)}"
+                )
+            arguments.extend(in_arguments)
 
         return arguments
 

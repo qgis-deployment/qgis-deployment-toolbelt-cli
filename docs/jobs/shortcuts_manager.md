@@ -16,13 +16,17 @@ Sample job configuration in your scenario file:
     include:
       - profile: conf_qgis_fr
         label: "QGIS - Conf QGIS FR"
-        additional_arguments: "--noversioncheck"
+        additional_arguments:
+          - --lang fr
+          - --noversioncheck
         desktop: false
         start_menu: true
         icon: "qgis_icon.ico"
       - profile: Oslandia
         label: "QGIS - Profil Oslandia"
-        additional_arguments: "--noversioncheck"
+        additional_arguments:
+          - --code ~/.local/share/QGIS/QGIS3/script/qgis-constrained-settings.py
+          - --noversioncheck
         desktop: true
         start_menu: true
         icon: "qgis_icon_oslandia.ico"
@@ -49,7 +53,7 @@ See below for the suboptions.
 
 #### additional_arguments
 
-Arguments to pass to QGIS executable.
+Arguments to pass to QGIS executable. To know what it's possible run `qgis --help` in a terminal
 
 #### desktop
 
