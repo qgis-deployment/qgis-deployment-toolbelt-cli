@@ -196,6 +196,7 @@ guides/howto_behind_proxy
 guides/howto_use_custom_ssl_certs
 guides/howto_qgis_get_plugin_id
 guides/howto_schedule_deployment
+guides/howto_linux_sign_executable
 guides/howto_windows_sign_executable
 guides/*
 ```

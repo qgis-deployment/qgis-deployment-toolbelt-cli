@@ -3,7 +3,8 @@
     "editor.bracketPairColorization.enabled": true,
     "editor.guides.bracketPairs": "active",
     "files.associations": {
-        "**/shortcuts/*.template": "ini"
+        "**/shortcuts/*.template": "ini",
+        "**/builder/*.cnf": "ini"
     },
     // JSON
     "[json]": {
