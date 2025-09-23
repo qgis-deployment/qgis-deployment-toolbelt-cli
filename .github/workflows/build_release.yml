@@ -169,6 +169,10 @@ jobs:
       - name: Generates MS Executable
         run: python -O .\builder\pyinstaller_build_windows.py
 
+      - name: Find executable filename
+        id: find_exe
+        run: echo "exe_path=$(ls dist/*.exe | head -n 1)" >> $GITHUB_ENV
+
       - name: Decode Code Signing Certificate
         env:
           WINDOWS_CERTIFICATE_PFX_B64: ${{ secrets.WINDOWS_CERTIFICATE_PFX }}
@@ -176,6 +180,14 @@ jobs:
         run: |
           echo -n "$WINDOWS_CERTIFICATE_PFX_B64" > builder/code_signing_certificate.pfx.b64
           certutil -decode builder/code_signing_certificate.pfx.b64 builder/code_signing_certificate.pfx
+
+      - name: Sign executable with certificate
+        run: |
+          "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64\\signtool.exe" sign /f cert/signing.pfx /p "$WINDOWS_CERTIFICATE_PFX_PASSWORD" /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "$exe_path"
+        shell: bash
+        env:
+          exe_path: ${{ env.exe_path }}
+          WINDOWS_CERTIFICATE_PFX_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PFX }}
 
       - name: Save it as artifact
         uses: actions/upload-artifact@v4
