@@ -24,7 +24,10 @@
                     "additional_arguments": {
                         "description": "Arguments to pass to QGIS executable.",
                         "example": "--noversioncheck",
-                        "type": "string"
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
                     },
                     "desktop": {
                         "default": false,

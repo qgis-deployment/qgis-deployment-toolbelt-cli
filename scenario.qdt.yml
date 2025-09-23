@@ -22,6 +22,7 @@ steps:
     with:
       version_priority:
         - "3.40"
+        - "3.44"
         - "3.34.9"
         - "3.28"
         - "3.38"
@@ -62,10 +63,14 @@ steps:
       include:
         - profile: qdt_demo
           label: "QDT - Demo profile"
+          additional_arguments:
+            - --noversioncheck
           desktop: true
           start_menu: true
         - profile: QDT Viewer Mode
           label: "QDT - Viewer profile"
+          additional_arguments:
+            - --noversioncheck
           desktop: true
           start_menu: true
 
