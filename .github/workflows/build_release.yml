@@ -183,7 +183,7 @@ jobs:
 
       - name: Sign executable with certificate
         run: |
-          "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64\\signtool.exe" sign /f cert/signing.pfx /p "$WINDOWS_CERTIFICATE_PFX_PASSWORD" /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "$exe_path"
+          "C:\\Program Files (x86)\\Microsoft SDKs\\ClickOnce\\SignTool\\signtool.exe" sign /f builder/code_signing_certificate.pfx /p "$WINDOWS_CERTIFICATE_PFX_PASSWORD" /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "$exe_path"
         shell: bash
         env:
           exe_path: ${{ env.exe_path }}
