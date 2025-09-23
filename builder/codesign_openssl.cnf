@@ -1,0 +1,22 @@
+[codesign_ext]
+keyUsage = critical, digitalSignature, nonRepudiation
+extendedKeyUsage = critical, codeSigning
+
+[req]
+default_bits       = 2048
+prompt             = no
+default_md         = sha256
+distinguished_name = req_distinguished_name
+req_extensions     = req_ext
+
+[req_distinguished_name]
+countryName = FR
+stateOrProvinceName = Île-de-France
+localityName = Paris
+0.organizationName = Oslandia
+commonName = oslandia.com
+emailAddress = qgis+qdt@oslandia.com
+
+[req_ext]
+keyUsage = digitalSignature, nonRepudiation
+extendedKeyUsage = codeSigning

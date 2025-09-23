@@ -238,6 +238,7 @@ development/windows
 development/documentation
 development/testing
 development/packaging
+development/signing
 development/releasing
 development/history
 ```
