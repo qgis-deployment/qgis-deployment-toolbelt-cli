@@ -170,9 +170,11 @@ jobs:
         run: python -O .\builder\pyinstaller_build_windows.py
 
       - name: Decode Code Signing Certificate
+        env:
+          WINDOWS_CERTIFICATE_PFX_B64: ${{ secrets.WINDOWS_CERTIFICATE_PFX }}
         run: |
           mkdir cert
-          echo ${{ secrets.WINDOWS_CERTIFICATE }} > builder/code_signing_certificate.pfx.b64
+          echo $WINDOWS_CERTIFICATE_PFX_B64 > builder/code_signing_certificate.pfx.b64
           certutil -decode builder/code_signing_certificate.pfx.b64 builder/code_signing_certificate.pfx
 
       - name: Save it as artifact
