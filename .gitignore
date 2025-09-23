@@ -146,3 +146,4 @@ docs/reference/rules_context.json
 safety_report.html
 builder/*.key
 builder/*.pfx
+builder/*.pfx.b64

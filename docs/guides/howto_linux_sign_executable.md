@@ -9,6 +9,7 @@ Here is just a quick view. Read [the official documentation](https://docs.openss
 ### System requirements
 
 - openssl >= 3.0
+- [GitHub CLI](https://cli.github.com/)
 
 ### Step-by-step
 
@@ -38,10 +39,24 @@ Here is just a quick view. Read [the official documentation](https://docs.openss
 
     You will be prompted to set a password. If you're part of Oslandia, search for `qdt_signing_pfx` in the internal passwords manager.
 
-At the end, 5 files have been generated (in order of appearance):
+At this moment, 5 files have been generated (in order of appearance):
 
 - `builder/codesign_openssl.cnf`: the config file
 - `builder/code_signing_certificate_priv.key`: the private key - **THIS FILE SHOULD NEVER BE TRACKED WITH A PUBLIC GIT REPOSITORY**
 - `builder/code_signing_certificate.crt`: the self-signed certificate
 - `builder/code_signing_certificate_request.csr`: the certificate signing request
 - `builder/code_signing_certificate.pfx`: the combined certificate and private key with password used to sign the Windows binary **THIS FILE SHOULD NEVER BE TRACKED WITH A PUBLIC GIT REPOSITORY**
+
+### Use the certificate in CI
+
+1. Encode the PFX file as base64 for safe storage in environment variables:
+
+    ```sh
+    base64 -w 0 builder/code_signing_certificate.pfx > builder/code_signing_certificate.pfx.b64
+    ```
+
+1. Upload it as Github Action secret:
+
+    ```sh
+    gh secret set WINDOWS_CERTIFICATE_PFX < builder/code_signing_certificate.pfx.b64
+    ```
