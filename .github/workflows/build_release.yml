@@ -193,13 +193,22 @@ jobs:
           echo "Certificate Basic Information:"
           openssl x509 -in cert.pem -noout -text | grep -A 10 "X509v3 Extended Key Usage"
 
-      - name: Sign executable with certificate
+      - name: Sign Executable
+        shell: pwsh
         env:
           exe_path: ${{ env.exe_path }}
-          WINDOWS_CERTIFICATE_PFX_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PFX }}
-        shell: bash
+          WINDOWS_CERTIFICATE_PFX_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PFX_PASSWORD }}
         run: |
-          "C:\\Program Files (x86)\\Microsoft SDKs\\ClickOnce\\SignTool\\signtool.exe" sign /f builder/code_signing_certificate.pfx /p "$WINDOWS_CERTIFICATE_PFX_PASSWORD" /n "oslandia.com" /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "$exe_path"
+          & "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe" sign /f builder/code_signing_certificate.pfx /p $env:WINDOWS_CERTIFICATE_PFX_PASSWORD /n "oslandia.com" /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 $env:exe_path
+
+
+      # - name: Sign executable with certificate
+      #   env:
+      #     exe_path: ${{ env.exe_path }}
+      #     WINDOWS_CERTIFICATE_PFX_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PFX }}
+      #   shell: bash
+      #   run: |
+      #     "C:\\Program Files (x86)\\Microsoft SDKs\\ClickOnce\\SignTool\\signtool.exe" sign /f builder/code_signing_certificate.pfx /p "$WINDOWS_CERTIFICATE_PFX_PASSWORD" /n "oslandia.com" /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "$exe_path"
 
       - name: Save it as artifact
         uses: actions/upload-artifact@v4
