@@ -171,6 +171,7 @@ jobs:
 
       - name: Find executable filename
         id: find_exe
+        shell: bash
         run: echo "exe_path=$(ls dist/*.exe | head -n 1)" >> $GITHUB_ENV
 
       - name: Decode Code Signing Certificate
@@ -182,12 +183,12 @@ jobs:
           certutil -decode builder/code_signing_certificate.pfx.b64 builder/code_signing_certificate.pfx
 
       - name: Sign executable with certificate
-        run: |
-          "C:\\Program Files (x86)\\Microsoft SDKs\\ClickOnce\\SignTool\\signtool.exe" sign /f builder/code_signing_certificate.pfx /p "$WINDOWS_CERTIFICATE_PFX_PASSWORD" /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "$exe_path"
-        shell: bash
         env:
           exe_path: ${{ env.exe_path }}
           WINDOWS_CERTIFICATE_PFX_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PFX }}
+        shell: bash
+        run: |
+          "C:\\Program Files (x86)\\Microsoft SDKs\\ClickOnce\\SignTool\\signtool.exe" sign /f builder/code_signing_certificate.pfx /p "$WINDOWS_CERTIFICATE_PFX_PASSWORD" /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 "$exe_path"
 
       - name: Save it as artifact
         uses: actions/upload-artifact@v4
