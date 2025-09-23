@@ -172,9 +172,9 @@ jobs:
       - name: Decode Code Signing Certificate
         env:
           WINDOWS_CERTIFICATE_PFX_B64: ${{ secrets.WINDOWS_CERTIFICATE_PFX }}
+        shell: bash
         run: |
-          mkdir cert
-          echo $WINDOWS_CERTIFICATE_PFX_B64 > builder/code_signing_certificate.pfx.b64
+          echo -n "$WINDOWS_CERTIFICATE_PFX_B64" > builder/code_signing_certificate.pfx.b64
           certutil -decode builder/code_signing_certificate.pfx.b64 builder/code_signing_certificate.pfx
 
       - name: Save it as artifact
