@@ -121,3 +121,14 @@ class TestGitHandlerRemote(unittest.TestCase):
 
             # check pull is working
             git_handler.clone_or_pull(to_local_destination_path=local_dest)
+
+    def test_list_remote_branches(self):
+        """Test listing remote branches."""
+        self.good_git_url = "https://gitlab.com/Oslandia/qgis/profils_qgis_fr.git"
+        git_handler = RemoteGitHandler(source_repository_url=self.good_git_url)
+
+        branches = git_handler.list_remote_branches()
+        self.assertIsInstance(branches, tuple)
+        self.assertGreaterEqual(len(branches), 1)
+        self.assertIsInstance(branches[0], str)
+        self.assertIn("refs/heads/main", branches)
