@@ -21,6 +21,7 @@ from typing import Literal
 
 # 3rd party
 from dulwich import porcelain
+from dulwich.client import LsRemoteResult
 from dulwich.errors import GitProtocolError, NotGitRepository
 from dulwich.repo import Repo
 from giturlparse import GitUrlParsed
@@ -338,13 +339,24 @@ class RemoteProfilesHandlerBase:
                 f"{source_repository_path_or_url} is not a valid repository."
             )
 
-        ls_remote_refs: dict = porcelain.ls_remote(
+        ls_remote_refs: LsRemoteResult | dict = porcelain.ls_remote(
             remote=f"{source_repository_path_or_url}"
         )
-        if isinstance(ls_remote_refs, dict):
-            source_repository_branches: list[str] = [
+
+        source_repository_branches = []
+
+        if isinstance(ls_remote_refs, LsRemoteResult) and len(ls_remote_refs.refs) > 0:
+            source_repository_branches = [
+                ref.decode()
+                for ref in ls_remote_refs.refs
+                if ref.startswith(b"refs/heads/")
+            ]
+        elif isinstance(ls_remote_refs, dict) and len(ls_remote_refs) > 0:
+            source_repository_branches = [
                 ref.decode() for ref in ls_remote_refs if ref.startswith(b"refs/heads/")
             ]
+
+        if source_repository_branches:
             logger.debug(
                 f"{len(source_repository_branches)} branche(s) found in repository "
                 f"{source_repository_path_or_url}: "
@@ -352,6 +364,9 @@ class RemoteProfilesHandlerBase:
             )
             return tuple(source_repository_branches)
         else:
+            logger.debug(
+                f"No branch found in repository {source_repository_path_or_url}"
+            )
             return ("",)
 
     @proxies.os_env_proxy
