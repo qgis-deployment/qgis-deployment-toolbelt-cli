@@ -53,7 +53,7 @@ if ($storeScope -eq "LocalMachine") {
 Invoke-WebRequest -Uri $certUrl -OutFile $localCertPath
 Write-Host "Certificate downloaded to $localCertPath"
 
-# load the certificate in
+# Load the certificate
 $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($localCertPath)
 
 # Add metadata to improve integration with Windows certificate manager
