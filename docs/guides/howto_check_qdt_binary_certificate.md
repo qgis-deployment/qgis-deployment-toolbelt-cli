@@ -97,7 +97,7 @@ A security warning may appear for self-signed certificates; confirm by clicking 
 
 ### Check it in certificate management console
 
-1. In your start menu, search for "certificat" and click on "Manage user certificates" to open the certmgr
+1. In your start menu, search for "certificat" and click on "Manage user certificates" to open the Certificate Manager (certmgr).
 1. Expand `Certificates`, then expand the folder corresponding to the store you imported into (e.g., `Trusted Publishers` > `Certificates`).
 
 ![Windows - Certificate manager](../static/windows_certificate_manager_view.png)
