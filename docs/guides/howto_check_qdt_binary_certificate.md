@@ -69,7 +69,7 @@ TimeStamperCertificate : [Subject]
 Status                 : UnknownError
 StatusMessage          : Une chaîne de certificats a été traitée mais s’est terminée par un certificat racine qui n’est pas approuvé
                          par le fournisseur d’approbation
-Path                   : C:\Users\username\Downloads\dist\Windows_QGISDeploymentToolbelt_0-38-2.exe
+Path                   : C:\Users\username\Downloads\dist\Windows_QGISDeploymentToolbelt_0-39-0.exe
 SignatureType          : Authenticode
 IsOSBinary             : False
 ```
