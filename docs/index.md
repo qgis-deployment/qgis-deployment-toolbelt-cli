@@ -155,7 +155,7 @@ pipx run qgis-deployment-toolbelt -s https://github.com/qgis-deployment/qgis-dep
 1. Make sure it's runnable:
 
     ```sh
-    chmod u+x ./qdt.bin`
+    chmod u+x ./qdt.bin
     ```
 
 1. Run a scenario. For example the one which is shipped as demonstration in QDT project:
