@@ -1,10 +1,12 @@
 # How to sign the executable on Windows
 
-## Self-signed certificate
+:::{attention}
+Starting with the 0.39.0 version, the released binary for Windows is signed with a self-signed certificate linked to [Oslandia](https://oslandia.com/) as subject. See [how it's done behind the scenes](../development/signing_binary.md).
 
-:::{note}
-Here is just a quick view. Read [the official documentation](https://docs.microsoft.com/en-us/windows/msix/package/create-certificate-package-signing).
+This page is preserved to allow users of older versions to apply their own certificate.
 :::
+
+## Self-signed certificate
 
 Requirements:
 
@@ -64,3 +66,7 @@ Requirements:
 Opening the properties of the executable, the related tab should look like this:
 
 ![QGIS Deployment Toolbelt - Properties security](../static/executable_windows_properties_signed.png)
+
+## Resources
+
+- [Microsoft official documentation](https://docs.microsoft.com/en-us/windows/msix/package/create-certificate-package-signing)

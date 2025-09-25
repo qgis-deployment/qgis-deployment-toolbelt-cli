@@ -155,7 +155,7 @@ pipx run qgis-deployment-toolbelt -s https://github.com/qgis-deployment/qgis-dep
 1. Make sure it's runnable:
 
     ```sh
-    chmod u+x ./qdt.bin`
+    chmod u+x ./qdt.bin
     ```
 
 1. Run a scenario. For example the one which is shipped as demonstration in QDT project:
@@ -191,13 +191,16 @@ glob:
 maxdepth: 1
 ---
 guides/howto_download_latest_qdt_exe.md
+guides/howto_check_qdt_binary_certificate
 guides/howto_validate_profiles_scenarios
 guides/howto_behind_proxy
 guides/howto_use_custom_ssl_certs
+guides/howto_manage_private_git
+guides/howto_publish_http
 guides/howto_qgis_get_plugin_id
 guides/howto_schedule_deployment
-guides/howto_windows_sign_executable
 guides/*
+guides/howto_windows_sign_executable
 ```
 
 ```{toctree}
