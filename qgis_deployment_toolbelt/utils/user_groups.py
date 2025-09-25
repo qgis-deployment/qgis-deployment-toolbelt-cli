@@ -192,7 +192,7 @@ def _is_computer_in_domain_powershell() -> bool:
     """
     powershell_path = shutil.which("powershell.exe")
     if not powershell_path:
-        raise FileNotFoundError("powershell.exe n’a pas été trouvé dans le PATH.")
+        raise FileNotFoundError("powershell.exe not found in PATH.")
 
     # use PowerShell to retrieve domain information
     domain = subprocess.run(  # noqa: S603
