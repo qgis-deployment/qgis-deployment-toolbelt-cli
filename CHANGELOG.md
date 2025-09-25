@@ -16,6 +16,27 @@ Unreleased
 
 -->
 
+## 0.39.0 - 2025-09-25
+
+### Bugs fixes 🐛
+
+* Fix: RemoteProfilesHandlerBase.list_remote_branches for newer versions of dulwich.porcelain by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/701>
+
+### Features and enhancements 🎉
+
+* improve(shortcuts): support YAML compliant list of str for `additional_arguments` by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/695>
+* add(packaging): sign Windows binary in CI by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/698>
+
+### Tooling 🔧
+
+* update(ci): do not run certains jobs in forks by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/702>
+
+### Documentation 📖
+
+* add(project): code of conduct by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/697>
+* update(docs): add explicit license mention and organizations table by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/696>
+* Docs: add how to check signed binary on Windows by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/699>
+
 ## 0.38.2 - 2025-09-19
 
 ### Tooling 🔧
