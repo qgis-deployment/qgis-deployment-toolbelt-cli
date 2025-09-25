@@ -19,10 +19,12 @@ from pathlib import Path
 import distro
 import PyInstaller.__main__
 
+
 # package
-sys.path.insert(0, str(Path(".").resolve()))
+sys.path.insert(0, str(Path().resolve()))
 from builder import tldextract_update
 from qgis_deployment_toolbelt import __about__  # noqa: E402
+
 
 # #############################################################################
 # ########### MAIN #################

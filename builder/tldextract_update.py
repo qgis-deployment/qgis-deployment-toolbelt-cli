@@ -18,6 +18,7 @@ from pathlib import Path
 # 3rd party
 from tldextract import TLDExtract
 
+
 # #############################################################################
 # ########### MAIN #################
 # ##################################
@@ -39,9 +40,7 @@ def run():
     script_path = Path(__file__).parent
 
     # cli parser arguments
-    parser = argparse.ArgumentParser(
-        epilog=("tdlextract cache are created in output folder")
-    )
+    parser = argparse.ArgumentParser(epilog=("tdlextract cache are created in output folder"))
     parser.add_argument(
         "-o",
         "--output",
@@ -71,7 +70,7 @@ def run():
         # log user
         print(f"tldextract cache written to: {output_dir.resolve()}")
     except KeyboardInterrupt:
-        raise SystemExit("Aborted by user request.")
+        raise SystemExit("Aborted by user request.") from None
 
 
 # Stand alone execution

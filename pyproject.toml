@@ -166,6 +166,7 @@ convention = "google"
 [tool.ruff.lint.per-file-ignores]
 # Ignore `E402` (import violations) in all `__init__.py` files
 "__init__.py" = ["E402"]
+"builder/*.py" = ["T201"] # Ignore T20 (print) in packaging scripts
 "docs/conf.py" = [
     "A001",
     "ANN001",
