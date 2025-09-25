@@ -5,7 +5,6 @@
     1. In `Choose a tag`, enter the new tag (obviously complying with [SemVer](https://semver.org/))
     1. Click on `Generate release notes`
     1. Copy/paste the generated text from `## What's changed` until the line before `**Full changelog**:...` in the CHANGELOG.md replacing `What's changed` with the tag and the publication date
-1. Change the version number in `__about__.py`
 1. Commit changes with a message like `release: bump version to X.x.x` to the main branch
 1. Apply a git tag with the relevant version: `git tag -a 0.3.0 {git commit hash} -m "New awesome feature"`
 1. Push commit and tag to main branch: `git push --tags`

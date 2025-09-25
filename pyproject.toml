@@ -100,7 +100,7 @@ Issues = "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/issues
 releasenotes = "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/releases/latest"
 Source = "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli.git"
 
-
+# -- TOOLING CONFIGURATION --
 [tool.coverage.report]
 exclude_lines = [
     "if self.debug:",
@@ -161,10 +161,7 @@ norecursedirs = ".* build dev development dist docs CVS fixtures _darcs {arch} *
 python_files = "test_*.py"
 testpaths = ["tests"]
 
-
-[tool.setuptools.dynamic]
-version = { attr = "qgis_deployment_toolbelt.__about__.__version__" }
-
+# Setuptools configuration
 [tool.setuptools.package-data]
 qgis_deployment_toolbelt = ["shortcuts/*.template"]
 
@@ -172,3 +169,7 @@ qgis_deployment_toolbelt = ["shortcuts/*.template"]
 include = ["qgis_deployment_toolbelt"]
 namespaces = false
 where = ["."]
+
+[tool.setuptools_scm]
+write_to = "qgis_deployment_toolbelt/_version.py"
+fallback_version = "0.40.0-dev"
