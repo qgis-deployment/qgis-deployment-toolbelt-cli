@@ -38,15 +38,9 @@ class TestJobDefaultProfileSetter(unittest.TestCase):
         cls.default_profile_setter_job = JobDefaultProfileSetter(
             options={"profile": "qdt_test_profile_minimal"}
         )
-        cls.default_profile_setter_job.qgis_profiles_path = (
-            Path(tempfile.mkdtemp()) / "profiles"
-        )
-        cls.default_profile_setter_job.qgis_profiles_path.mkdir(
-            parents=True, exist_ok=True
-        )
-        cls.profiles_ini = (
-            cls.default_profile_setter_job.qgis_profiles_path / "profiles.ini"
-        )
+        cls.default_profile_setter_job.qgis_profiles_path = Path(tempfile.mkdtemp()) / "profiles"
+        cls.default_profile_setter_job.qgis_profiles_path.mkdir(parents=True, exist_ok=True)
+        cls.profiles_ini = cls.default_profile_setter_job.qgis_profiles_path / "profiles.ini"
 
         # simulate a QGIS profiles folder structure in the temp folder
         fixtures_profiles_folder = Path("tests/fixtures/profiles")
@@ -89,9 +83,7 @@ class TestJobDefaultProfileSetter(unittest.TestCase):
         self.default_profile_setter_job.run()
         self.assertTrue(self.profiles_ini.exists())
         content = self.profiles_ini.read_text()
-        expected_content = (
-            "[core]\ndefaultProfile=qdt_test_profile_minimal\nselectionPolicy=1"
-        )
+        expected_content = "[core]\ndefaultProfile=qdt_test_profile_minimal\nselectionPolicy=1"
         self.assertEqual(content, expected_content)
 
         self.profiles_ini.write_text("[core]\ndefaultProfile=existing_profile")
@@ -99,19 +91,13 @@ class TestJobDefaultProfileSetter(unittest.TestCase):
         self.assertTrue(self.profiles_ini.exists())
 
         content = self.profiles_ini.read_text()
-        expected_content = (
-            "[core]\ndefaultProfile=qdt_test_profile_minimal\nselectionPolicy=1\n\n"
-        )
+        expected_content = "[core]\ndefaultProfile=qdt_test_profile_minimal\nselectionPolicy=1\n\n"
         self.assertEqual(content, expected_content)
 
-        self.profiles_ini.write_text(
-            "[core]\ndefaultProfile=existing_profile\nselectionPolicy=2"
-        )
+        self.profiles_ini.write_text("[core]\ndefaultProfile=existing_profile\nselectionPolicy=2")
         self.default_profile_setter_job.run()
         self.assertTrue(self.profiles_ini.exists())
 
         content = self.profiles_ini.read_text()
-        expected_content = (
-            "[core]\ndefaultProfile=qdt_test_profile_minimal\nselectionPolicy=1\n\n"
-        )
+        expected_content = "[core]\ndefaultProfile=qdt_test_profile_minimal\nselectionPolicy=1\n\n"
         self.assertEqual(content, expected_content)
