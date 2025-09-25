@@ -28,6 +28,7 @@ from sys import platform as opersys
 # package
 from qgis_deployment_toolbelt.utils.check_path import check_path
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -65,7 +66,7 @@ def get_qdt_logs_folder() -> Path:
     qdt_logs_folder = get_qdt_working_directory().joinpath("logs")
 
     if isinstance(getenv("QDT_LOGS_DIR"), str):
-        qdt_logs_folder_env = Path(expandvars(expanduser(getenv("QDT_LOGS_DIR"))))
+        qdt_logs_folder_env = Path(expandvars(expanduser(getenv("QDT_LOGS_DIR"))))  # noqa: PTH111
         logger.debug(
             f"Logs folder set from QDT_LOGS_DIR environment variable: {qdt_logs_folder_env}"
         )
@@ -104,16 +105,14 @@ def get_qdt_working_directory(
         Path: path to the QDT working directory
     """
     if specific_value:
-        logger.debug(
-            f"QDT working folder - Using the specified value: {specific_value}"
-        )
-        return Path(expandvars(expanduser(specific_value)))
+        logger.debug(f"QDT working folder - Using the specified value: {specific_value}")
+        return Path(expandvars(expanduser(specific_value)))  # noqa: PTH111
     elif qdt_local_working_folder := getenv("QDT_LOCAL_WORK_DIR"):
         logger.debug(
             "QDT working folder - Using value specified as environment variable: "
             f"{qdt_local_working_folder}"
         )
-        return Path(expandvars(expanduser(qdt_local_working_folder)))
+        return Path(expandvars(expanduser(qdt_local_working_folder)))  # noqa: PTH111
     else:
         if identifier is not None:
             logger.debug(
@@ -122,7 +121,7 @@ def get_qdt_working_directory(
             )
             return Path(
                 expandvars(
-                    expanduser(
+                    expanduser(  # noqa: PTH111
                         getenv(
                             "QDT_LOCAL_WORK_DIR",
                             DEFAULT_QDT_WORKING_FOLDER.joinpath(identifier),
@@ -131,13 +130,9 @@ def get_qdt_working_directory(
                 )
             )
         else:
-            logger.debug(
-                f"QDT working folder - Using default path: {DEFAULT_QDT_WORKING_FOLDER}"
-            )
+            logger.debug(f"QDT working folder - Using default path: {DEFAULT_QDT_WORKING_FOLDER}")
             return Path(
-                expandvars(
-                    expanduser(getenv("QDT_LOCAL_WORK_DIR", DEFAULT_QDT_WORKING_FOLDER))
-                )
+                expandvars(expanduser(getenv("QDT_LOCAL_WORK_DIR", DEFAULT_QDT_WORKING_FOLDER)))  # noqa: PTH111
             )
 
 
@@ -172,19 +167,16 @@ class OSConfiguration:
                 try:
                     qdt_qgis_exe_path = ast.literal_eval(envvar)
                     if isinstance(qdt_qgis_exe_path, dict):
-                        logger.debug(
-                            f"'QDT_QGIS_EXE_PATH' is a valid dictionary: {envvar}"
-                        )
+                        logger.debug(f"'QDT_QGIS_EXE_PATH' is a valid dictionary: {envvar}")
                         for k, v in qdt_qgis_exe_path.items():
                             if k in self.names_alter + [self.name_python]:
                                 logger.debug(
                                     f"QGIS path found in 'QDT_QGIS_EXE_PATH' dictionary: {v}"
                                 )
-                                return Path(expandvars(expanduser(v)))
+                                return Path(expandvars(expanduser(v)))  # noqa: PTH111
                 except Exception as err:
                     logger.error(
-                        f"Failed to interpret 'QDT_QGIS_EXE_PATH' value: {envvar}."
-                        f"Trace: {err}"
+                        f"Failed to interpret 'QDT_QGIS_EXE_PATH' value: {envvar}.Trace: {err}"
                     )
             elif check_path(
                 input_path=envvar,
@@ -192,26 +184,22 @@ class OSConfiguration:
                 must_be_readable=False,
                 raise_error=False,
             ):
-                logger.debug(
-                    f"'QDT_QGIS_EXE_PATH' is a simple string and a valid path: {envvar}"
-                )
-                return Path(expandvars(expanduser(envvar)))
+                logger.debug(f"'QDT_QGIS_EXE_PATH' is a simple string and a valid path: {envvar}")
+                return Path(expandvars(expanduser(envvar)))  # noqa: PTH111
 
             # fallback
             logger.warning(
                 f"Unrecognised value format for 'QDT_QGIS_EXE_PATH': {envvar}. "
                 "Fallback to default path: "
-                f"{Path(expandvars(expanduser(self.qgis_bin_exe_path)))}"
+                f"{Path(expandvars(expanduser(self.qgis_bin_exe_path)))}"  # noqa: PTH111
             )
-            return Path(expandvars(expanduser(self.qgis_bin_exe_path)))
+            return Path(expandvars(expanduser(self.qgis_bin_exe_path)))  # noqa: PTH111
         elif which_qgis_path := which("qgis"):
             logger.debug(f"QGIS path found using which: {which_qgis_path}")
             return Path(which_qgis_path)
         else:
-            logger.debug(
-                f"QGIS path not found, using default value: {self.qgis_bin_exe_path}"
-            )
-            return Path(expandvars(expanduser(self.qgis_bin_exe_path)))
+            logger.debug(f"QGIS path not found, using default value: {self.qgis_bin_exe_path}")
+            return Path(expandvars(expanduser(self.qgis_bin_exe_path)))  # noqa: PTH111
 
     def valid_shortcut_name(self, shortcut_name: str) -> bool:
         """Check if a given string is a valid shortcut name for the current operating
@@ -227,9 +215,7 @@ class OSConfiguration:
             return True
         for char in self.shortcut_forbidden_chars:
             if char in shortcut_name:
-                logger.error(
-                    f"Shortcut name '{shortcut_name}' contains forbidden char '{char}'"
-                )
+                logger.error(f"Shortcut name '{shortcut_name}' contains forbidden char '{char}'")
                 return False
         return True
 
@@ -252,9 +238,7 @@ class OSConfiguration:
         # if not specified, fallback to current operating system
         if operating_system_codename is None:
             operating_system_codename = opersys
-            logger.debug(
-                f"Getting configuration for current operating system: {opersys}"
-            )
+            logger.debug(f"Getting configuration for current operating system: {opersys}")
 
         # returning configuration for operating system
         if operating_system_codename == "darwin":
@@ -265,8 +249,7 @@ class OSConfiguration:
                 qgis_profiles_path=Path(
                     getenv(
                         "QGIS_CUSTOM_CONFIG_PATH",
-                        Path.home()
-                        / "Library/Application Support/QGIS/QGIS3/profiles/",
+                        Path.home() / "Library/Application Support/QGIS/QGIS3/profiles/",
                     )
                 ),
                 shortcut_extension="app",
@@ -292,9 +275,7 @@ class OSConfiguration:
                 name_python="win32",
                 names_alter=["win", "windows"],
                 qgis_bin_exe_path=Path(
-                    expandvars(
-                        expanduser("%PROGRAMFILES%/QGIS 3.34.4/bin/qgis-ltr-bin.exe")
-                    )
+                    expandvars("%PROGRAMFILES%/QGIS 3.40.11/bin/qgis-ltr-bin.exe")
                 ),
                 qgis_profiles_path=Path(
                     getenv(

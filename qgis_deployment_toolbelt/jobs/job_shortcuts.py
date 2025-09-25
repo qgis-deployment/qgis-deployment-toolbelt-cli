@@ -20,6 +20,7 @@ from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 from qgis_deployment_toolbelt.shortcuts.shortcuts_handler import ApplicationShortcut
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -177,8 +178,7 @@ class JobShortcutsManager(GenericJob):
             profile_icon_installed = profile.path_in_qgis.joinpath(profile.icon)
             if profile_icon_installed.is_file():
                 logger.debug(
-                    f"Icon set in profile.json exists so it will be used: "
-                    f"{profile_icon_installed}"
+                    f"Icon set in profile.json exists so it will be used: {profile_icon_installed}"
                 )
                 return profile_icon_installed.resolve()
 
@@ -189,9 +189,7 @@ class JobShortcutsManager(GenericJob):
 
         # 2. check if icon specified in scenario exists in profile folder
         try:
-            li_icons_sub_profile_folder = list(
-                profile.path_in_qgis.rglob(f"{icon_filename}")
-            )
+            li_icons_sub_profile_folder = list(profile.path_in_qgis.rglob(f"{icon_filename}"))
             if len(li_icons_sub_profile_folder):
                 logger.debug(
                     "Icon found under the installed profile folder: "
@@ -203,11 +201,10 @@ class JobShortcutsManager(GenericJob):
 
         # 3. check if icon specified in scenario exists under QDT
         try:
-            li_icons_sub_qdt_folder = list(Path(".").glob(f"{icon_filename}"))
+            li_icons_sub_qdt_folder = list(Path().glob(f"{icon_filename}"))
             if len(li_icons_sub_qdt_folder):
                 logger.debug(
-                    "Icon found under the QDT folder: "
-                    f"{li_icons_sub_qdt_folder[0].resolve()}"
+                    f"Icon found under the QDT folder: {li_icons_sub_qdt_folder[0].resolve()}"
                 )
                 return li_icons_sub_qdt_folder[0].resolve()
         except OSError as err:
@@ -243,9 +240,7 @@ class JobShortcutsManager(GenericJob):
                 in_arguments = in_arguments.split(" ")
             elif isinstance(in_arguments, list):
                 in_arguments = [
-                    str(arg)
-                    for arg in in_arguments
-                    if isinstance(arg, (str, int, float))
+                    str(arg) for arg in in_arguments if isinstance(arg, (str, int, float))
                 ]
             elif not isinstance(in_arguments, (list, str)):
                 raise TypeError(

@@ -16,6 +16,7 @@ from os import R_OK, W_OK, access
 from os.path import expanduser, expandvars
 from pathlib import Path
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -48,9 +49,7 @@ def check_folder_is_empty(input_var: Path, raise_error: bool = True) -> bool:
     ) and not any(input_var.iterdir())
 
 
-def check_var_can_be_path(
-    input_var: str, attempt: int = 1, raise_error: bool = True
-) -> bool:
+def check_var_can_be_path(input_var: str, attempt: int = 1, raise_error: bool = True) -> bool:
     """Check is the path can be converted as pathlib.Path.
 
     Args:
@@ -75,7 +74,7 @@ def check_var_can_be_path(
 
     try:
         if attempt == 2:
-            input_var = Path(expandvars(expanduser(input_var)))
+            input_var = Path(expandvars(expanduser(input_var)))  # noqa: PTH111
         else:
             input_var = Path(input_var)
         return True
@@ -84,21 +83,17 @@ def check_var_can_be_path(
         if attempt != 2:
             error_message += " Attempt 1/2. Try again with user and vars expansion."
             logger.info(error_message)
-            return check_var_can_be_path(
-                input_var=input_var, attempt=2, raise_error=raise_error
-            )
+            return check_var_can_be_path(input_var=input_var, attempt=2, raise_error=raise_error)
 
         error_message += " Attempt 2/2. Game over."
         if raise_error:
-            raise TypeError(error_message)
+            raise TypeError(error_message) from exc
         else:
             logger.error(error_message)
             return False
 
 
-def check_path_exists(
-    input_path: str | Path, attempt: int = 1, raise_error: bool = True
-) -> bool:
+def check_path_exists(input_path: str | Path, attempt: int = 1, raise_error: bool = True) -> bool:
     """Check if the input path (file or folder) exists.
 
     Args:
@@ -113,18 +108,14 @@ def check_path_exists(
         bool: True if the path exists.
     """
     if not isinstance(input_path, Path):
-        if (
-            not check_var_can_be_path(input_path, raise_error=raise_error)
-            and not raise_error
-        ):
+        if not check_var_can_be_path(input_path, raise_error=raise_error) and not raise_error:
             return False
         # if previous check passed, let's convert it safely
         input_path = Path(input_path)
 
     # if second attempt, try to expand user and vars
-
     if attempt == 2:
-        input_path = Path(expandvars(expanduser(input_path)))
+        input_path = Path(expandvars(expanduser(input_path)))  # noqa: PTH111
     else:
         input_path = Path(input_path)
 
@@ -133,9 +124,7 @@ def check_path_exists(
         if attempt != 2:
             error_message += " Attempt 1/2. Try again with user and vars expansion."
             logger.info(error_message)
-            return check_path_exists(
-                input_path=input_path, attempt=2, raise_error=raise_error
-            )
+            return check_path_exists(input_path=input_path, attempt=2, raise_error=raise_error)
 
         error_message += " Attempt 2/2. Game over."
 
@@ -163,10 +152,7 @@ def check_path_is_readable(input_path: Path, raise_error: bool = True) -> bool:
     """
     # firstly check the path is valid and exists
     if not isinstance(input_path, Path):
-        if (
-            not check_path_exists(input_path, raise_error=raise_error)
-            and not raise_error
-        ):
+        if not check_path_exists(input_path, raise_error=raise_error) and not raise_error:
             return False
         # if previous check passed, let's convert it safely
         input_path = Path(input_path)
@@ -197,10 +183,7 @@ def check_path_is_writable(input_path: Path, raise_error: bool = True) -> bool:
     """
     # firstly check the path is valid and exists
     if not isinstance(input_path, Path):
-        if (
-            not check_path_exists(input_path, raise_error=raise_error)
-            and not raise_error
-        ):
+        if not check_path_exists(input_path, raise_error=raise_error) and not raise_error:
             return False
         # if previous check passed, let's convert it safely
         input_path = Path(input_path)
@@ -248,9 +231,7 @@ def check_path(
     """
     # check arguments
     if all([must_be_a_file, must_be_a_folder]):
-        raise ValueError(
-            "These options are mutually exclusive: must_be_a_file, must_be_a_folder"
-        )
+        raise ValueError("These options are mutually exclusive: must_be_a_file, must_be_a_folder")
 
     # check input path if usable with pathlib.Path
     if not isinstance(input_path, Path):
@@ -283,16 +264,12 @@ def check_path(
 
     # check chmod
     if must_be_readable:
-        check_readable = check_path_is_readable(
-            input_path=input_path, raise_error=raise_error
-        )
+        check_readable = check_path_is_readable(input_path=input_path, raise_error=raise_error)
         if not check_readable and not raise_error:
             return False
 
     if must_be_writable:
-        check_writable = check_path_is_writable(
-            input_path=input_path, raise_error=raise_error
-        )
+        check_writable = check_path_is_writable(input_path=input_path, raise_error=raise_error)
         if not check_writable and not raise_error:
             return False
 

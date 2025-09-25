@@ -21,11 +21,10 @@ from typing import Literal
 
 # package
 from qgis_deployment_toolbelt.utils.check_path import check_path
-from qgis_deployment_toolbelt.utils.ini_interpolation import (
-    EnvironmentVariablesInterpolation,
-)
+from qgis_deployment_toolbelt.utils.ini_interpolation import EnvironmentVariablesInterpolation
 from qgis_deployment_toolbelt.utils.ini_parser_with_path import CustomConfigParser
 from qgis_deployment_toolbelt.utils.win32utils import normalize_path
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -80,9 +79,7 @@ class QgisIniHelper:
             self.ini_type = ini_type
             if self.ini_type == "profile_qgis3":
                 self.profile_config_path = ini_filepath
-                self.profile_customization_path = ini_filepath.with_name(
-                    "QGISCUSTOMIZATION3.ini"
-                )
+                self.profile_customization_path = ini_filepath.with_name("QGISCUSTOMIZATION3.ini")
             elif self.ini_type == "profile_qgis3customization":
                 self.profile_config_path = ini_filepath.with_name("QGIS3.ini")
                 self.profile_customization_path = ini_filepath
@@ -92,9 +89,7 @@ class QgisIniHelper:
         elif ini_filepath.stem == "QGIS3":
             self.ini_type = "profile_qgis3"
             self.profile_config_path = ini_filepath
-            self.profile_customization_path = ini_filepath.with_name(
-                "QGISCUSTOMIZATION3.ini"
-            )
+            self.profile_customization_path = ini_filepath.with_name("QGISCUSTOMIZATION3.ini")
         elif ini_filepath.stem == "QGISCUSTOMIZATION3":
             self.ini_type = "profile_qgis3customization"
             self.profile_config_path = ini_filepath.with_name("QGIS3.ini")
@@ -119,9 +114,7 @@ class QgisIniHelper:
 
         # store options
         self.strict_mode = strict
-        self.enable_environment_variables_interpolation = (
-            enable_environment_variables_interpolation
-        )
+        self.enable_environment_variables_interpolation = enable_environment_variables_interpolation
 
     def cfg_parser(self) -> CustomConfigParser:
         """Return config parser with options for QGIS ini files.
@@ -163,16 +156,13 @@ class QgisIniHelper:
 
         if self.ini_type not in ("profile_qgis3", "profile_qgis3customization"):
             logger.debug(
-                f"Invalid ini type: {self.ini_type}. Must a QGIS3.ini or a "
-                "QGIS3CUSTOMIZATION.ini"
+                f"Invalid ini type: {self.ini_type}. Must a QGIS3.ini or a QGIS3CUSTOMIZATION.ini"
             )
             return None
 
         if isinstance(ini_file, CustomConfigParser):
             if ini_file.has_option(section="UI", option="Customization\\enabled"):
-                return ini_file.getboolean(
-                    section="UI", option="Customization\\enabled"
-                )
+                return ini_file.getboolean(section="UI", option="Customization\\enabled")
             else:
                 return False
         elif isinstance(ini_file, Path):
@@ -217,13 +207,6 @@ class QgisIniHelper:
             )
             return self.is_splash_screen_set(ini_file=self.profile_customization_path)
 
-        # if self.ini_type not in ("profile_qgis3", "profile_qgis3customization"):
-        #     logger.debug(
-        #         f"Invalid ini type: {self.ini_type}. Must a QGIS3.ini or a "
-        #         "QGIS3CUSTOMIZATION.ini"
-        #     )
-        #     return None
-
         if isinstance(ini_file, CustomConfigParser):
             if ini_file.has_option(section="Customization", option="splashpath"):
                 splash_path = ini_file.get(section="Customization", option="splashpath")
@@ -240,8 +223,7 @@ class QgisIniHelper:
                     return True
             else:
                 logger.debug(
-                    f"{ini_file.get_initial_file_path().resolve()} has no "
-                    "splash path set."
+                    f"{ini_file.get_initial_file_path().resolve()} has no splash path set."
                 )
                 return False
         elif isinstance(ini_file, Path) and check_path(
@@ -301,9 +283,7 @@ class QgisIniHelper:
             actual_state = ini_qgis3.getboolean(section=section, option=option)
             # when actual UI customization is enabled
             if actual_state and switch:
-                logger.debug(
-                    f"UI Customization is already ENABLED in {self.profile_config_path}"
-                )
+                logger.debug(f"UI Customization is already ENABLED in {self.profile_config_path}")
                 return True
             elif actual_state and not switch:
                 ini_qgis3.set(
@@ -334,9 +314,7 @@ class QgisIniHelper:
                 )
                 return True
             elif not actual_state and not switch:
-                logger.debug(
-                    f"UI Customization is already DISABLED in {self.profile_config_path}"
-                )
+                logger.debug(f"UI Customization is already DISABLED in {self.profile_config_path}")
                 return True
         elif ini_qgis3.has_section(section=section) and switch:
             # section exist but not the option, so let's add it as required
@@ -400,20 +378,15 @@ class QgisIniHelper:
                 "Using customization file defined at object level: "
                 f"{self.profile_customization_path.resolve()}"
             )
-            return self.set_splash_screen(
-                ini_file=self.profile_customization_path, switch=switch
-            )
+            return self.set_splash_screen(ini_file=self.profile_customization_path, switch=switch)
         elif ini_file is None and self.profile_customization_path is None:
             raise ValueError(
-                "Both passed ini file and the object's defined are not "
-                "defined. Can't process."
+                "Both passed ini file and the object's defined are not defined. Can't process."
             )
 
         # SWITCH=False and NOT DEFINED --> EXIT
         if not switch and not self.is_splash_screen_set(ini_file=ini_file):
-            logger.debug(
-                f"As required ({switch=}, splash screen is not set in {ini_file}"
-            )
+            logger.debug(f"As required ({switch=}, splash screen is not set in {ini_file}")
             return False
 
         # SWITCH=TRUE --> ENABLE
@@ -422,9 +395,7 @@ class QgisIniHelper:
             nrm_splash_screen_folder = normalize_path(
                 splash_screen_filepath.parent, add_trailing_slash_if_dir=True
             )
-            logger.debug(
-                f"Splash screen path has been normalized: {nrm_splash_screen_folder}"
-            )
+            logger.debug(f"Splash screen path has been normalized: {nrm_splash_screen_folder}")
         elif switch and splash_screen_filepath is None:
             logger.warning(f"{switch=} but splash screen filepath not defined")
         else:
@@ -473,9 +444,7 @@ class QgisIniHelper:
 
             if not switch:
                 ini_file.remove_option(section=section, option=option)
-                with qgiscustomization3ini_filepath.open(
-                    "w", encoding="UTF8"
-                ) as configfile:
+                with qgiscustomization3ini_filepath.open("w", encoding="UTF8") as configfile:
                     ini_file.write(configfile, space_around_delimiters=False)
                 logger.debug(
                     f"Splash screen {splash_screen_filepath} has been "
@@ -494,9 +463,7 @@ class QgisIniHelper:
                     option=option,
                     value=nrm_splash_screen_folder,
                 )
-                with qgiscustomization3ini_filepath.open(
-                    "w", encoding="UTF8"
-                ) as configfile:
+                with qgiscustomization3ini_filepath.open("w", encoding="UTF8") as configfile:
                     ini_file.write(configfile, space_around_delimiters=False)
                 logger.debug(
                     f"Splash screen {splash_screen_filepath} has been "
@@ -513,9 +480,7 @@ class QgisIniHelper:
                 option=option,
                 value=nrm_splash_screen_folder,
             )
-            with qgiscustomization3ini_filepath.open(
-                "w", encoding="UTF8"
-            ) as configfile:
+            with qgiscustomization3ini_filepath.open("w", encoding="UTF8") as configfile:
                 ini_file.write(configfile, space_around_delimiters=False)
             logger.debug(
                 f"'{option}' option was missing in {section}, it's just been added and "
@@ -530,9 +495,7 @@ class QgisIniHelper:
                 option=option,
                 value=nrm_splash_screen_folder,
             )
-            with qgiscustomization3ini_filepath.open(
-                "w", encoding="UTF8"
-            ) as configfile:
+            with qgiscustomization3ini_filepath.open("w", encoding="UTF8") as configfile:
                 ini_file.write(configfile, space_around_delimiters=False)
             logger.debug(
                 f"'{option}' option was missing in {section}, it's just been added and "
@@ -609,9 +572,7 @@ class QgisIniHelper:
             dst (QgisIniHelper): destination ini file
         """
         if not self.ini_filepath or not self.ini_filepath.exists():
-            logger.warning(
-                f"File {self.ini_filepath} doesn't exists. Can't merge to {dst}"
-            )
+            logger.warning(f"File {self.ini_filepath} doesn't exists. Can't merge to {dst}")
             return
 
         # Read source INI content

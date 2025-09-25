@@ -6,7 +6,6 @@ See also: https://github.com/newville/pyshortcuts/
 Author: Julien Moura (https://github.com/guts)
 """
 
-
 # #############################################################################
 # ########## Libraries #############
 # ##################################
@@ -20,6 +19,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from string import Template
 from sys import platform as opersys
+
 
 # Imports depending on operating system
 if opersys == "win32":
@@ -38,6 +38,7 @@ from qgis_deployment_toolbelt.constants import (
 )
 from qgis_deployment_toolbelt.utils.check_path import check_path
 from qgis_deployment_toolbelt.utils.slugger import sluggy
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -103,9 +104,7 @@ class ApplicationShortcut:
                         f"but {self.exec_path.with_name('qgis-ltr-bin.exe')} does, so "
                         "this one will be used instead. Check and fix your scenario."
                     )
-                    self.exec_path = self.exec_path.with_name(
-                        QGIS_LTR_BIN_WINDOWS_FILENAME
-                    )
+                    self.exec_path = self.exec_path.with_name(QGIS_LTR_BIN_WINDOWS_FILENAME)
                 elif (
                     self.exec_path.name.endswith(QGIS_LTR_BIN_WINDOWS_FILENAME)
                     and self.exec_path.with_name(QGIS_BIN_WINDOWS_FILENAME).exists()
@@ -122,9 +121,7 @@ class ApplicationShortcut:
                         "Shortcuts might not work. Check and fix your scenario."
                     )
         else:
-            raise TypeError(
-                f"exec_path must be a string or pathlib.Path, not {type(exec_path)}"
-            )
+            raise TypeError(f"exec_path must be a string or pathlib.Path, not {type(exec_path)}")
 
         # optional
         if isinstance(exec_arguments, (tuple, list, type(None))):
@@ -136,9 +133,7 @@ class ApplicationShortcut:
         if isinstance(description, (str, type(None))):
             self.description = description
         else:
-            raise TypeError(
-                f"If defined, description must be a string, not {type(description)}"
-            )
+            raise TypeError(f"If defined, description must be a string, not {type(description)}")
         if isinstance(icon_path, (str, Path, type(None))):
             self.icon_path = self.check_icon_path(icon_path)
         else:
@@ -178,9 +173,7 @@ class ApplicationShortcut:
         if isinstance(start_menu, bool):
             self.start_menu = start_menu
         else:
-            raise TypeError(
-                f"'start_menu' option must be a boolean, not {type(start_menu)}"
-            )
+            raise TypeError(f"'start_menu' option must be a boolean, not {type(start_menu)}")
 
         if not desktop and not start_menu:
             logger.debug(
@@ -222,8 +215,7 @@ class ApplicationShortcut:
         """
         if icon_path is None:
             logger.debug(
-                f"Shortcut '{self.name}' has no icon specified. Fallback to default "
-                "QGIS icon."
+                f"Shortcut '{self.name}' has no icon specified. Fallback to default QGIS icon."
             )
             return self.os_config.shortcut_icon_default_path
 
@@ -290,9 +282,7 @@ class ApplicationShortcut:
 
                 desktop_paths = re.findall('XDG_DESKTOP_DIR="([^"]*)', data)
                 if len(desktop_paths):
-                    return Path(
-                        re.sub(r"\$HOME", os.path.expanduser("~"), desktop_paths[0])
-                    )
+                    return Path(re.sub(r"\$HOME", str(Path("~").expanduser()), desktop_paths[0]))
 
             return default_value
         else:
@@ -324,12 +314,12 @@ class ApplicationShortcut:
                 logger.debug("Home directory can’t be resolved with pathlib: %s", err)
             # try another way
             if home is None:
-                home = os.path.expanduser("~")
+                home = Path("~").expanduser()
             if home is None:
-                home = os.path.normpath(os.environ.get("HOME", os.path.abspath(".")))
+                home = os.path.normpath(os.environ.get("HOME", str(Path().resolve())))
             return Path(home)
         elif opersys == "darwin":
-            return Path(os.path.expanduser("~"))
+            return Path("~").expanduser()
         else:
             logger.error(f"Unrecognized operating system: {opersys}.")
             return None
@@ -369,9 +359,7 @@ class ApplicationShortcut:
             template_shortcut = Path(getattr(sys, "_MEIPASS", sys.executable)).joinpath(
                 "shortcuts/shortcut_freedesktop.template"
             )
-            logger.debug(
-                f"Using shortcut template in packaged mode: {template_shortcut}"
-            )
+            logger.debug(f"Using shortcut template in packaged mode: {template_shortcut}")
 
         if not check_path(
             input_path=template_shortcut,
@@ -421,8 +409,7 @@ class ApplicationShortcut:
             )
             shortcut_desktop_path.write_text(shortcut_text, encoding="UTF-8")
             shortcut_desktop_path.chmod(
-                shortcut_desktop_path.stat().st_mode
-                | (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH),
+                shortcut_desktop_path.stat().st_mode | (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH),
                 follow_symlinks=True,
             )
         else:
@@ -454,7 +441,7 @@ class ApplicationShortcut:
             tuple[Path | None, Path | None]: desktop and startmenu path
         """
         # variable
-        _WSHELL = win32com.client.Dispatch("Wscript.Shell", pythoncom.CoInitialize())
+        _WSHELL = win32com.client.Dispatch("Wscript.Shell", pythoncom.CoInitialize())  # noqa: N806
 
         # desktop shortcut
         if self.desktop:
@@ -479,9 +466,7 @@ class ApplicationShortcut:
                 elif isinstance(self.icon_path, str):
                     wscript.IconLocation = self.icon_path
                 else:
-                    logger.warning(
-                        f"Bad icon path type: {type(self.icon_path)} != (Path, str)."
-                    )
+                    logger.warning(f"Bad icon path type: {type(self.icon_path)} != (Path, str).")
             wscript.save()
         else:
             shortcut_desktop_path = None

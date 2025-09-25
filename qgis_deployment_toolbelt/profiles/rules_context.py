@@ -19,16 +19,15 @@ from datetime import date
 from getpass import getuser
 from os import _Environ, environ
 from sys import platform as opersys
+from typing import Any
 
 # package
-from qgis_deployment_toolbelt.utils.user_groups import (
-    get_user_domain_groups,
-    get_user_local_groups,
-)
+from qgis_deployment_toolbelt.utils.user_groups import get_user_domain_groups, get_user_local_groups
 from qgis_deployment_toolbelt.utils.win32utils import (
     ExtendedNameFormat,
     get_current_user_extended_data,
 )
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -113,13 +112,9 @@ class QdtRulesContext:
         """
         try:
             linux_distribution_name = f"{platform.freedesktop_os_release().get('NAME')}"
-            linux_distribution_version = (
-                f"{platform.freedesktop_os_release().get('VERSION_ID')}"
-            )
+            linux_distribution_version = f"{platform.freedesktop_os_release().get('VERSION_ID')}"
         except OSError as err:
-            logger.debug(
-                f"Unable to determine current Linux distribution. Trace: {err}."
-            )
+            logger.debug(f"Unable to determine current Linux distribution. Trace: {err}.")
             linux_distribution_name = None
             linux_distribution_version = None
 
@@ -172,13 +167,13 @@ class QdtRulesContext:
         """
         result = {}
         for attr in dir(self):
-            if isinstance(
-                getattr(self.__class__, attr, None), property
-            ) and attr.startswith("_context_"):
+            if isinstance(getattr(self.__class__, attr, None), property) and attr.startswith(
+                "_context_"
+            ):
                 result[attr.removeprefix("_context_")] = getattr(self, attr)
         return result
 
-    def to_json(self, **kwargs) -> str:
+    def to_json(self, **kwargs: Any) -> str:
         """Supersedes json.dumps using the dictionary returned by to_dict().
         kwargs are passed to json.dumps.
 

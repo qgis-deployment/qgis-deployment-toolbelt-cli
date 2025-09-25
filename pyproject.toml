@@ -142,6 +142,8 @@ select = [
 
 ignore = [
     "ANN201", # Missing return type annotation for public function
+    "ANN204", #  Missing return type annotation for special method `__init__`
+    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed in `**kwargs`
     "E501",   # line too long (handled by black)
     # "E203", # whitespace before ':'
     # "E226", # missing whitespace around arithmetic operator

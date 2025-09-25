@@ -32,6 +32,7 @@ from qgis_deployment_toolbelt.commands.deployment import parser_main_deployment
 from qgis_deployment_toolbelt.commands.upgrade import parser_upgrade
 from qgis_deployment_toolbelt.utils.journalizer import configure_logger
 
+
 # ############################################################################
 # ########## FUNCTIONS ###########
 # ################################
@@ -200,9 +201,7 @@ def main(in_args: list[str] | None = None):
 
     # log configuration
     if args.opt_logfile_disabled:
-        configure_logger(
-            verbosity=args.verbosity, logfile=f"{__title_clean__}_{__version__}.log"
-        )
+        configure_logger(verbosity=args.verbosity, logfile=f"{__title_clean__}_{__version__}.log")
     else:
         configure_logger(verbosity=args.verbosity)
 

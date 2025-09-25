@@ -21,6 +21,7 @@ from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -99,9 +100,7 @@ class JobPluginsSynchronizer(GenericJob):
         profile_plugins_to_upgrade = []
 
         # get profiles, downloaded or installed
-        qdt_profiles = self.filter_profiles_folder(
-            start_parent_folder=self.profiles_path
-        )
+        qdt_profiles = self.filter_profiles_folder(start_parent_folder=self.profiles_path)
 
         if qdt_profiles is None:
             logger.error(
@@ -186,10 +185,7 @@ class JobPluginsSynchronizer(GenericJob):
                 profile_plugins_to_upgrade,
             )
         ):
-            logger.info(
-                "Every plugins are up to date in the "
-                f"{len(qdt_profiles)} profiles parsed."
-            )
+            logger.info(f"Every plugins are up to date in the {len(qdt_profiles)} profiles parsed.")
         else:
             self.install_plugin_into_profile(profile_plugins_to_create)
             self.install_plugin_into_profile(profile_plugins_to_upgrade)

@@ -19,6 +19,7 @@ from pathlib import Path
 # 3rd party
 import imagesize
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -32,7 +33,7 @@ logger = logging.getLogger(__name__)
 # ##################################
 
 
-def get_image_size(image_filepath: Path) -> tuple[int, int]:
+def get_image_size(image_filepath: Path) -> tuple[int, int] | None:
     """Get image dimensions as a tuple (width,height). Return None in case of error.
 
     :param Path image_filepath: path to the image
@@ -51,16 +52,16 @@ def get_image_size(image_filepath: Path) -> tuple[int, int]:
     try:
         return imagesize.get(image_filepath)
     except ValueError as exc:
-        logging.error(f"Invalid image: {image_filepath.resolve()}. Trace: {exc}")
+        logger.error(f"Invalid image: {image_filepath.resolve()}. Trace: {exc}")
     except Exception as exc:
-        logging.error(
+        logger.error(
             f"Something went wrong reading the image: {image_filepath.resolve()}. Trace: {exc}"
         )
 
     return None
 
 
-def get_svg_size(image_filepath: Path) -> tuple[int, int]:
+def get_svg_size(image_filepath: Path) -> tuple[int, int] | None:
     """Extract SVG width and height from a SVG file and convert them into integers. \
     Relevant and working only if the file root has width and height attributes.
 
@@ -69,7 +70,7 @@ def get_svg_size(image_filepath: Path) -> tuple[int, int]:
     :return Tuple[int, int]: tuple of dimensions as integers (width,height)
     """
     try:
-        tree = ET.parse(image_filepath)
+        tree = ET.parse(image_filepath)  # noqa: S314
         root = tree.getroot()
     except Exception as err:
         logger.error(f"Unable to open SVG file as XML: {image_filepath}. Trace: {err}")
@@ -92,7 +93,7 @@ def check_image_dimensions(
     min_height: int = 250,
     max_height: int = 350,
     allowed_images_extensions: tuple = (".jpg", ".jpeg", ".png", ".svg"),
-) -> bool:
+) -> bool | None:
     """Check input image dimensions against passed limits.
 
     :param Path image_filepath: path to the image to check
@@ -120,25 +121,5 @@ def check_image_dimensions(
         return None
 
     return all(
-        dim <= limit for dim, limit in zip(image_dimensions, (max_width, max_height))
+        dim <= limit for dim, limit in zip(image_dimensions, (max_width, max_height), strict=False)
     )
-
-
-# #############################################################################
-# ##### Stand alone program ########
-# ##################################
-
-if __name__ == "__main__":
-    """Standalone execution."""
-    svg_path = Path(
-        "tests/fixtures/miscellaneous/sample_with_dimensions_attributes.svg"
-    )
-    assert svg_path.is_file()
-    print(get_svg_size(image_filepath=svg_path))
-    print(get_image_size(image_filepath=svg_path))
-
-    svg_path = Path(
-        "tests/fixtures/miscellaneous/sample_without_dimensions_attributes.svg"
-    )
-    assert svg_path.is_file()
-    print(get_svg_size(image_filepath=svg_path))

@@ -15,6 +15,7 @@ import logging
 import re
 import unicodedata
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -50,11 +51,7 @@ def sluggy(text_to_slugify: str, replacer: str = "-") -> str:
     Returns:
         str: input character string stringified
     """
-    slug = (
-        unicodedata.normalize("NFKD", text_to_slugify)
-        .encode("ascii", "ignore")
-        .decode("ascii")
-    )
+    slug = unicodedata.normalize("NFKD", text_to_slugify).encode("ascii", "ignore").decode("ascii")
     slug = _regex_slugify_strip.sub("", slug).strip().lower()
     slug = _regex_slugify_hyphenate.sub(replacer, slug)
 

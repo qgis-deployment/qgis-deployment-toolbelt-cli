@@ -12,7 +12,6 @@ Inspired from py-setenv: <https://github.com/beliaev-maksim/py_setenv> (MIT)
 # ########## Libraries #############
 # ##################################
 
-
 # Standard library
 import ctypes
 import logging
@@ -20,6 +19,7 @@ from enum import Enum
 from os import sep  # required since pathlib strips trailing whitespace
 from pathlib import Path
 from sys import platform as opersys
+
 
 # Imports depending on operating system
 if opersys == "win32":
@@ -131,9 +131,7 @@ def delete_environment_variable(envvar_name: str, scope: str = "user") -> bool:
             winreg.DeleteValue(key, envvar_name)
             return True
     except OSError as err:
-        logger.error(
-            f"Delete variable '{envvar_name}' from scope '{scope}' failed. Trace: {err}"
-        )
+        logger.error(f"Delete variable '{envvar_name}' from scope '{scope}' failed. Trace: {err}")
         return False
 
 
@@ -160,9 +158,7 @@ def get_environment_variable(envvar_name: str, scope: str = "user") -> str | Non
             value, _ = winreg.QueryValueEx(key, envvar_name)
         return value
     except OSError:
-        logger.error(
-            f"Environment variable {envvar_name} not found in registry (scope: {scope}"
-        )
+        logger.error(f"Environment variable {envvar_name} not found in registry (scope: {scope}")
         return None
 
 
@@ -187,10 +183,7 @@ def get_current_user_extended_data(extended_name_format: ExtendedNameFormat) -> 
                 get_current_user_extended_data,
             )
 
-            user_data = {
-                k.name: get_current_user_extended_data(k)
-                for k in ExtendedNameFormat
-            }
+            user_data = {k.name: get_current_user_extended_data(k) for k in ExtendedNameFormat}
 
             print(user_data)
 
@@ -198,15 +191,15 @@ def get_current_user_extended_data(extended_name_format: ExtendedNameFormat) -> 
     format_index = extended_name_format.value
 
     # use system DLL to call API
-    GetUserNameEx = ctypes.windll.secur32.GetUserNameExW
+    GetUserNameEx = ctypes.windll.secur32.GetUserNameExW  # noqa: N806
 
     size = ctypes.pointer(ctypes.c_ulong(0))
     GetUserNameEx(format_index, None, size)
 
-    nameBuffer = ctypes.create_unicode_buffer(size.contents.value)
-    GetUserNameEx(format_index, nameBuffer, size)
+    name_buffer = ctypes.create_unicode_buffer(size.contents.value)
+    GetUserNameEx(format_index, name_buffer, size)
 
-    return nameBuffer.value
+    return name_buffer.value
 
 
 def normalize_path(input_path: Path, add_trailing_slash_if_dir: bool = True) -> str:
@@ -244,9 +237,9 @@ def refresh_environment() -> bool:
         bool: True if the environment has been refreshed
     """
     # broadcast settings change
-    HWND_BROADCAST: int = 0xFFFF
-    WM_SETTINGCHANGE: int = 0x001A
-    SMTO_ABORTIFHUNG: int = 0x0002
+    HWND_BROADCAST: int = 0xFFFF  # noqa: N806
+    WM_SETTINGCHANGE: int = 0x001A  # noqa: N806
+    SMTO_ABORTIFHUNG: int = 0x0002  # noqa: N806
     send_parameter = "Environment"
 
     res1 = res2 = None
@@ -257,17 +250,13 @@ def refresh_environment() -> bool:
     except NameError:
         logger.critical(" name 'win32gui' is not defined")
     if not res1:
-        logger.warning(
-            f"Refresh environment failed: {bool(res1)}, {res2}, from SendMessageTimeout"
-        )
+        logger.warning(f"Refresh environment failed: {bool(res1)}, {res2}, from SendMessageTimeout")
         return False
     else:
         return True
 
 
-def set_environment_variable(
-    envvar_name: str, envvar_value: str, scope: str = "user"
-) -> bool:
+def set_environment_variable(envvar_name: str, envvar_value: str, scope: str = "user") -> bool:
     """Creates/replaces environment variable.
 
     Args:
@@ -296,14 +285,3 @@ def set_environment_variable(
             f"scope '{scope}' failed. Trace: {err}"
         )
         return False
-
-
-# #############################################################################
-# ##### Stand alone program ########
-# ##################################
-
-if __name__ == "__main__":
-    """Standalone execution."""
-    # pass
-    t = Path("C:/Users/risor/Documents/GitHub/Geotribu/qtribu/qtribu/resources/images")
-    print(normalize_path(t))

@@ -13,8 +13,10 @@ Author: Julien Moura (github.com/guts)
 # Standard library
 import logging
 import os
+from collections.abc import Callable
 from functools import lru_cache
 from os import environ
+from pathlib import Path
 from urllib.request import getproxies
 
 # 3rd party
@@ -23,6 +25,7 @@ from pypac.parser import PACFile
 
 # package
 from qgis_deployment_toolbelt.utils.url_helpers import check_str_is_url
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -68,7 +71,7 @@ def get_proxy_settings(url: str | None = None) -> dict:
             )
     elif pac := get_pac():
         proxy_settings = get_proxy_settings_from_pac_file(url=url, pac=pac)
-        logger.info("Proxies settings from system PAC file: " f"{proxy_settings}")
+        logger.info(f"Proxies settings from system PAC file: {proxy_settings}")
     elif getproxies():
         proxy_settings = getproxies()
         logger.debug(f"Proxies settings found in the OS: {proxy_settings}")
@@ -99,9 +102,7 @@ def get_proxy_settings(url: str | None = None) -> dict:
                 f"{proxy_settings}"
             )
     else:
-        logger.debug(
-            "No proxy settings found in environment vars nor OS settings nor PAC File."
-        )
+        logger.debug("No proxy settings found in environment vars nor OS settings nor PAC File.")
 
     # check scheme and URL validity
     if isinstance(proxy_settings, dict):
@@ -134,13 +135,11 @@ def load_pac_file_from_environment_variable(qdt_pac_file: str) -> PACFile | None
             ],
         )
     else:
-        with open(qdt_pac_file, encoding="UTF-8") as f:
+        with Path(qdt_pac_file).open(encoding="UTF-8") as f:
             return PACFile(f.read())
 
 
-def get_proxy_settings_from_pac_file(
-    pac: PACFile, url: str | None = None
-) -> dict[str, str]:
+def get_proxy_settings_from_pac_file(pac: PACFile, url: str | None = None) -> dict[str, str]:
     """Define proxy settings from pac file
 
     Args:
@@ -160,8 +159,8 @@ def get_proxy_settings_from_pac_file(
     return proxy_settings
 
 
-def os_env_proxy(func):
-    def wrapper(*args, **kwargs):
+def os_env_proxy(func: Callable) -> Callable:
+    def wrapper(*args: object, **kwargs: object) -> object:
         """Decorator wrapper to define environment variable for proxy use.
 
         If a proxy settings is available for https or http we:
@@ -172,7 +171,7 @@ def os_env_proxy(func):
 
 
         Returns:
-            _type_: function result
+            function result
         """
         # Get proxy settings
         proxy_settings = get_proxy_settings()

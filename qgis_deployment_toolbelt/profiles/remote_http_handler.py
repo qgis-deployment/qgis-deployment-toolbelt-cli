@@ -11,7 +11,6 @@ Author: Julien Moura (https://github.com/guts).
 # ########## Libraries #############
 # ##################################
 
-
 # Standard library
 import logging
 from concurrent.futures import ThreadPoolExecutor
@@ -24,14 +23,13 @@ import requests
 
 # project
 from qgis_deployment_toolbelt.__about__ import __title_clean__, __version__
-from qgis_deployment_toolbelt.profiles.profiles_handler_base import (
-    RemoteProfilesHandlerBase,
-)
+from qgis_deployment_toolbelt.profiles.profiles_handler_base import RemoteProfilesHandlerBase
 from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
 from qgis_deployment_toolbelt.utils.formatters import url_ensure_trailing_slash
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
 from qgis_deployment_toolbelt.utils.tree_files_reader import tree_to_download_list
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -95,6 +93,7 @@ class HttpHandler(RemoteProfilesHandlerBase):
                 proxies=get_proxy_settings(
                     url=f"{self.SOURCE_REPOSITORY_PATH_OR_URL}qdt-files.json"
                 ),
+                timeout=(30, 60),
             )
             req.raise_for_status()
             qdt_tree = req.json()
@@ -111,8 +110,7 @@ class HttpHandler(RemoteProfilesHandlerBase):
         # make sure destination path exists
         if not destination_local_path.exists():
             logger.debug(
-                f"Destination folder ({destination_local_path}) does not exist. "
-                "Let's create it!"
+                f"Destination folder ({destination_local_path}) does not exist. Let's create it!"
             )
             destination_local_path.mkdir(parents=True)
 
@@ -126,9 +124,7 @@ class HttpHandler(RemoteProfilesHandlerBase):
         if not len(success):
             logger.error("No files downloaded! Please check the above log messages.")
         if len(fails):
-            logger.warning(
-                f"{len(fails)} download failed. Check the above log messages."
-            )
+            logger.warning(f"{len(fails)} download failed. Check the above log messages.")
 
     def download_files_to_local(
         self, li_files_to_download: list[str], target_folder: Path

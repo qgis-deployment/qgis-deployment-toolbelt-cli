@@ -17,6 +17,7 @@ import sys
 # project
 from qgis_deployment_toolbelt.utils.journalizer import get_logger_filepath
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -40,7 +41,7 @@ def exit_cli_error(message: str | Exception, abort: bool = True):
         SystemExit: when abort is True
     """
     # log
-    logger.error(message, exc_info=True)
+    logger.error(message)
     logger.error(f"Please, read the full detailed log: {get_logger_filepath()}")
 
     # handle cases when the full exception is passed

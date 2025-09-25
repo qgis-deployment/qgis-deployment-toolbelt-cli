@@ -2,21 +2,18 @@
 
 """Custom exceptions."""
 
-from collections.abc import Iterable
-
 # standard library
+from collections.abc import Iterable
 from pathlib import Path
 
 # package
 from qgis_deployment_toolbelt.utils.check_image_size import get_image_size
 
 
-class JobOptionBadName(KeyError):
+class JobOptionBadNameError(KeyError):
     """When a job reveives an option which is not part of accepted ones."""
 
-    def __init__(
-        self, job_id: str, bad_option_name: str, expected_options_names: Iterable[str]
-    ):
+    def __init__(self, job_id: str, bad_option_name: str, expected_options_names: Iterable[str]):
         """Initialization method.
 
         Args:
@@ -32,7 +29,7 @@ class JobOptionBadName(KeyError):
         super().__init__(self.message)
 
 
-class JobOptionBadValue(ValueError):
+class JobOptionBadValueError(ValueError):
     """When a job's option reveives a value which does not complies with condition."""
 
     def __init__(
@@ -61,7 +58,7 @@ class JobOptionBadValue(ValueError):
         super().__init__(self.message)
 
 
-class JobOptionBadValueType(TypeError):
+class JobOptionBadValueTypeError(TypeError):
     """When a job reveives an option which is not of the expected type."""
 
     def __init__(
@@ -88,7 +85,7 @@ class JobOptionBadValueType(TypeError):
         super().__init__(self.message)
 
 
-class SplashScreenBadDimensions(Exception):
+class SplashScreenBadDimensionsError(Exception):
     """When splash screen image does not comply with recomended dimensions."""
 
     def __init__(self, image_filepath: Path, profile_name: str | None = None):
@@ -107,7 +104,7 @@ class SplashScreenBadDimensions(Exception):
         super().__init__(self.message)
 
 
-class QgisInstallNotFound(Exception):
+class QgisInstallNotFoundError(Exception):
     """When no QGIS installation are found."""
 
     def __init__(self):

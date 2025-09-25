@@ -16,11 +16,12 @@ import logging
 from pathlib import Path
 
 # package
-from qgis_deployment_toolbelt.exceptions import SplashScreenBadDimensions
+from qgis_deployment_toolbelt.exceptions import SplashScreenBadDimensionsError
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 from qgis_deployment_toolbelt.profiles.qgis_ini_handler import QgisIniHelper
 from qgis_deployment_toolbelt.utils.check_image_size import check_image_dimensions
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -109,10 +110,7 @@ class JobSplashScreenManager(GenericJob):
                         and profile_installed.splash.is_file()
                     ):
                         # make sure that the filename complies with what QGIS expects
-                        if (
-                            profile_installed.splash.name
-                            != installed_splash_screen_filepath.name
-                        ):
+                        if profile_installed.splash.name != installed_splash_screen_filepath.name:
                             splash_filepath = profile_installed.splash.with_name(
                                 self.SPLASH_FILENAME
                             )
@@ -130,9 +128,7 @@ class JobSplashScreenManager(GenericJob):
                             )
 
                 else:
-                    logger.info(
-                        f"No profile.json found for profile '{profile_downloaded.folder}'"
-                    )
+                    logger.info(f"No profile.json found for profile '{profile_downloaded.folder}'")
 
                 # now, splash screen image should be at {profile_dir}/images/splash.png
                 if not installed_splash_screen_filepath.is_file():
@@ -156,7 +152,7 @@ class JobSplashScreenManager(GenericJob):
                     allowed_images_extensions=(".png",),
                 )
                 if not is_img_compliant:
-                    err = SplashScreenBadDimensions(
+                    err = SplashScreenBadDimensionsError(
                         image_filepath=installed_splash_screen_filepath,
                         profile_name=profile_installed.name,
                     )

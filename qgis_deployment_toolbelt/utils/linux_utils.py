@@ -21,6 +21,7 @@ from typing import Literal
 # project
 from qgis_deployment_toolbelt.utils.check_path import check_path
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -56,14 +57,10 @@ def bash_user_which_file_to_store() -> Path:
     """
     # check if one of the bash file exists and using it. Order matters.
     if bash_user_dot_bash_profile.is_file():
-        logger.debug(
-            f"Using {bash_user_dot_bash_profile} to store environment variables."
-        )
+        logger.debug(f"Using {bash_user_dot_bash_profile} to store environment variables.")
         return bash_user_dot_bash_profile
     elif bash_user_dot_bash_login.is_file():
-        logger.debug(
-            f"Using {bash_user_dot_bash_login} to store environment variables."
-        )
+        logger.debug(f"Using {bash_user_dot_bash_login} to store environment variables.")
         return bash_user_dot_bash_login
     elif bash_user_dot_profile.is_file():
         logger.debug(f"Using {bash_user_dot_profile} to store environment variables.")
@@ -275,23 +272,14 @@ def delete_environment_variable(
     pos = []
     if line_found:
         pos.append(line_begin_line)
-        logger.debug(
-            f"Environment variable and key {envvar_name} was found. "
-            "It will be removed"
-        )
+        logger.debug(f"Environment variable and key {envvar_name} was found. It will be removed")
     if block_start_found:
         pos.append(block_start_line)
-        logger.debug(
-            f"QDT block start was found for '{envvar_name}'. "
-            "Block start will be removed."
-        )
+        logger.debug(f"QDT block start was found for '{envvar_name}'. Block start will be removed.")
     if block_end_found:
         pos.append(block_end_line)
-        logger.info(
-            f"QDT block end was found for: '{envvar_name}'. "
-            "Block end will be removed."
-        )
-    # memo: pos = [block_start_line, line_begin_line, block_end_line]
+        logger.info(f"QDT block end was found for: '{envvar_name}'. Block end will be removed.")
+
     new_lines = [lines[i] for i, e in enumerate(lines) if i not in pos]
     with profile_file.open(mode="w", encoding="UTF-8") as file:
         file.writelines(new_lines)
@@ -343,8 +331,7 @@ def get_profile_file(scope: Literal["system", "user"]) -> Path | None:
             return bash_system_dot_bash_profile
         except PermissionError as err:
             logger.error(
-                f"{bash_system_dot_bash_profile} is not accessible to the user. "
-                f"Trace: {err}"
+                f"{bash_system_dot_bash_profile} is not accessible to the user. Trace: {err}"
             )
             return
 
@@ -353,18 +340,3 @@ def get_profile_file(scope: Literal["system", "user"]) -> Path | None:
     else:
         logger.error(f"Scope {scope} not handled. Fallback to 'user'.")
         return get_profile_file(scope="user")
-
-
-# #############################################################################
-# ##### Stand alone program ########
-# ##################################
-
-if __name__ == "__main__":
-    """Standalone execution."""
-
-    print("User profile file :", get_profile_file("user"))
-    print("System profile file :", get_profile_file("system"))
-
-    set_environment_variable("TEST_PERSISTENT_ENVIRONMENT_VARIABLE", False)
-    # update_environment_variable("TEST_PERSISTENT_ENVIRONMENT_VARIABLE", False)
-    # delete_environment_variable("TEST_PERSISTENT_ENVIRONMENT_VARIABLE")

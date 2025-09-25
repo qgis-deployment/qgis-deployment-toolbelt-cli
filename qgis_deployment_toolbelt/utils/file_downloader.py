@@ -15,9 +15,8 @@ from urllib.parse import parse_qs, unquote, urlparse
 
 # 3rd party
 import truststore
-from requests import Response, Session
+from requests import Response, Session, exceptions as requests_exceptions
 from requests.adapters import HTTPAdapter
-from requests.exceptions import ConnectionError, HTTPError
 from requests.utils import requote_uri
 from urllib3.exceptions import InsecureRequestWarning
 
@@ -26,6 +25,7 @@ from qgis_deployment_toolbelt.__about__ import __title_clean__, __version__
 from qgis_deployment_toolbelt.utils.formatters import convert_octets
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
+
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -56,9 +56,7 @@ class TruststoreAdapter(HTTPAdapter):
     Documentation: <https://requests.readthedocs.io/en/latest/user/advanced/#transport-adapters>
     """
 
-    def init_poolmanager(
-        self, connections: int, maxsize: int, block: bool = False
-    ) -> None:
+    def init_poolmanager(self, connections: int, maxsize: int, block: bool = False) -> None:
         """Initializes a urllib3 PoolManager.
 
         Args:
@@ -120,16 +118,12 @@ def download_remote_file_to_local(
     try:
         with Session() as dl_session:
             dl_session.headers.update(headers)
-            dl_session.proxies.update(
-                get_proxy_settings(url=requote_uri(remote_url_to_download))
-            )
+            dl_session.proxies.update(get_proxy_settings(url=requote_uri(remote_url_to_download)))
             dl_session.verify = str2bool(getenv("QDT_SSL_VERIFY", True))
 
             # handle local system certificates store
             if str2bool(getenv("QDT_SSL_USE_SYSTEM_STORES", False)):
-                logger.debug(
-                    "Option to use native system certificates stores is enabled."
-                )
+                logger.debug("Option to use native system certificates stores is enabled.")
                 dl_session.mount("https://", TruststoreAdapter())
 
             # Clean url
@@ -137,11 +131,7 @@ def download_remote_file_to_local(
             # Reconstruct base URL
             base_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}"
             # Get existing params if any exist
-            params = (
-                parse_qs(parsed_url.query, keep_blank_values=True)
-                if parsed_url.query
-                else {}
-            )
+            params = parse_qs(parsed_url.query, keep_blank_values=True) if parsed_url.query else {}
             with dl_session.get(
                 url=base_url,
                 params=params,
@@ -162,7 +152,7 @@ def download_remote_file_to_local(
                 f"Downloading {remote_url_to_download} to {local_file_path} "
                 f"({convert_octets(local_file_path.stat().st_size)}) succeeded."
             )
-    except HTTPError as error:
+    except requests_exceptions.HTTPError as error:
         logger.error(
             f"Downloading {remote_url_to_download} to {local_file_path} failed. "
             f"Cause: HTTPError. Trace: {error}."
@@ -173,12 +163,10 @@ def download_remote_file_to_local(
                 "headers": req.headers,
                 "body": req.content,
             }
-            logger.error(
-                f"Addtional details grabbed from HTTP response: {http_error_details}"
-            )
+            logger.error(f"Addtional details grabbed from HTTP response: {http_error_details}")
 
         raise error
-    except ConnectionError as error:
+    except requests_exceptions.ConnectionError as error:
         logger.error(
             f"Downloading {remote_url_to_download} to {local_file_path} failed. "
             f"Cause: ConnectionError. Trace: {error}"

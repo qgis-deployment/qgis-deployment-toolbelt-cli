@@ -8,6 +8,7 @@ See: https://packaging.python.org/guides/single-sourcing-package-version/
 from datetime import date
 from importlib import metadata
 
+
 # import metadata from installed package, if possible
 _pkg_metadata = metadata.metadata("qgis-deployment-toolbelt") or {}
 
@@ -22,9 +23,7 @@ __author__: str = _pkg_metadata.get(
     "Julien Moura (Oslandia), Jean-Marie Kerloch (Oslandia), Nicolas Godet (ISL)",
 )
 __copyright__: str = f"2021 - {date.today().year}, {__author__}"
-__executable_name__ = __package_name__ = _pkg_metadata.get(
-    "Name", "qgis-deployment-toolbelt"
-)
+__executable_name__ = __package_name__ = _pkg_metadata.get("Name", "qgis-deployment-toolbelt")
 __license__: str = _pkg_metadata.get("License-Expression", "Apache-2.0")
 __summary__ = (
     "QGIS deployment toolbelt is a CLI (Command Line Interface) "
@@ -38,10 +37,7 @@ __uri_homepage__ = "https://qgis-deployment.github.io/qgis-deployment-toolbelt-c
 __uri_repository__ = "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/"
 __uri__ = __uri_repository__
 __version_info__ = tuple(
-    [
-        int(num) if num.isdigit() else num
-        for num in __version__.replace("-", ".", 1).split(".")
-    ]
+    [int(num) if num.isdigit() else num for num in __version__.replace("-", ".", 1).split(".")]
 )
 
 

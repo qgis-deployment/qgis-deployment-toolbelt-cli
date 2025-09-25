@@ -14,6 +14,7 @@ Author: Julien Moura (https://github.com/guts)
 import logging
 from urllib.parse import urlparse
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -68,11 +69,10 @@ def check_str_is_url(
             return False
     except ValueError as err:
         error_message = (
-            f"{input_str} is not a valid URL. An error occurred during "
-            f"check. Trace : {err}"
+            f"{input_str} is not a valid URL. An error occurred during check. Trace : {err}"
         )
         if raise_error:
-            raise TypeError(error_message)
+            raise TypeError(error_message) from err
         logger.warning(error_message)
         return False
 

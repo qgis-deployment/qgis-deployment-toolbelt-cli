@@ -21,18 +21,16 @@ from pathlib import Path
 from python_rule_engine import RuleEngine
 
 # package
-from qgis_deployment_toolbelt.constants import (
-    OSConfiguration,
-    get_qdt_working_directory,
-)
+from qgis_deployment_toolbelt.constants import OSConfiguration, get_qdt_working_directory
 from qgis_deployment_toolbelt.exceptions import (
-    JobOptionBadName,
-    JobOptionBadValue,
-    JobOptionBadValueType,
+    JobOptionBadNameError,
+    JobOptionBadValueError,
+    JobOptionBadValueTypeError,
 )
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 from qgis_deployment_toolbelt.profiles.rules_context import QdtRulesContext
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -58,9 +56,7 @@ class GenericJob:
         self.os_config = OSConfiguration.from_opersys()
 
         # QDT rules context
-        only_prefixed_variables = str2bool(
-            getenv("QDT_RULES_ONLY_PREFIXED_VARIABLES", "true")
-        )
+        only_prefixed_variables = str2bool(getenv("QDT_RULES_ONLY_PREFIXED_VARIABLES", "true"))
         variables_prefix = getenv("QDT_RULES_VARIABLES_PREFIX", "QDT_,QGIS_").split(",")
         self.qdt_rules_context = QdtRulesContext(
             only_prefixed_variables=only_prefixed_variables,
@@ -102,9 +98,7 @@ class GenericJob:
             tuple[QdtProfile] | None: tuple of profiles objects or None if no profile
                 folder listed
         """
-        return self.filter_profiles_folder(
-            start_parent_folder=self.qdt_downloaded_repositories
-        )
+        return self.filter_profiles_folder(start_parent_folder=self.qdt_downloaded_repositories)
 
     def list_installed_profiles(self) -> tuple[QdtProfile] | None:
         """List installed QGIS profiles, i.e. a profile's folder located into the QGIS
@@ -118,9 +112,7 @@ class GenericJob:
         """
         return self.filter_profiles_folder(start_parent_folder=self.qgis_profiles_path)
 
-    def filter_profiles_folder(
-        self, start_parent_folder: Path
-    ) -> tuple[QdtProfile, ...] | None:
+    def filter_profiles_folder(self, start_parent_folder: Path) -> tuple[QdtProfile, ...] | None:
         """Parse a folder structure to filter on QGIS profiles folders.
 
         Returns:
@@ -137,9 +129,7 @@ class GenericJob:
             logger.error(f"No QGIS profile found in {start_parent_folder}.")
             return
 
-        logger.debug(
-            f"{len(li_qgis_qdt_profiles)} profiles found within {start_parent_folder}"
-        )
+        logger.debug(f"{len(li_qgis_qdt_profiles)} profiles found within {start_parent_folder}")
 
         # filter out profiles that do not match the rules
         profiles_matched, profiles_unmatched = self.filter_profiles_on_rules(
@@ -186,13 +176,10 @@ class GenericJob:
             return None
 
         qdt_profile = matching_qdt_profile[0]
-        logger.info(
-            f"Downloaded profile matched: {qdt_profile.name} from "
-            f"{qdt_profile.folder}"
-        )
+        logger.info(f"Downloaded profile matched: {qdt_profile.name} from {qdt_profile.folder}")
         return qdt_profile
 
-    @lru_cache(maxsize=1024)
+    @lru_cache(maxsize=1024)  # noqa: B019
     def filter_profiles_on_rules(
         self, tup_qdt_profiles: tuple[QdtProfile]
     ) -> tuple[list[QdtProfile], list[QdtProfile]]:
@@ -223,8 +210,7 @@ class GenericJob:
                 results = engine.evaluate(obj=self.qdt_rules_context.to_dict())
                 if len(results) == len(profile.rules):
                     logger.debug(
-                        f"Profile '{profile.name}' matches {len(profile.rules)} "
-                        "deployment rule(s)."
+                        f"Profile '{profile.name}' matches {len(profile.rules)} deployment rule(s)."
                     )
                     li_profiles_matched.append(profile)
                 else:
@@ -237,8 +223,7 @@ class GenericJob:
 
             except Exception as err:
                 logger.error(
-                    f"Error occurred parsing rules of profile '{profile.name}'. "
-                    f"Trace: {err}"
+                    f"Error occurred parsing rules of profile '{profile.name}'. Trace: {err}"
                 )
 
         return li_profiles_matched, li_profiles_unmatched
@@ -261,7 +246,7 @@ class GenericJob:
 
         for option in options:
             if option not in self.OPTIONS_SCHEMA:
-                raise JobOptionBadName(
+                raise JobOptionBadNameError(
                     job_id=self.ID,
                     bad_option_name=option,
                     expected_options_names=self.OPTIONS_SCHEMA.keys(),
@@ -271,7 +256,7 @@ class GenericJob:
             option_def: dict = self.OPTIONS_SCHEMA.get(option)
             # check value type
             if not isinstance(option_in, option_def.get("type")):
-                raise JobOptionBadValueType(
+                raise JobOptionBadValueTypeError(
                     job_id=self.ID,
                     bad_option_name=option,
                     bad_option_value=option_in,
@@ -281,17 +266,17 @@ class GenericJob:
             if option_def.get("condition") == "startswith" and not option_in.startswith(
                 option_def.get("possible_values")
             ):
-                raise JobOptionBadValue(
+                raise JobOptionBadValueError(
                     job_id=self.ID,
                     bad_option_name=option,
                     bad_option_value=option_in,
                     condition="startswith",
                     accepted_values=option_def.get("possible_values"),
                 )
-            elif option_def.get(
-                "condition"
-            ) == "in" and option_in not in option_def.get("possible_values"):
-                raise JobOptionBadValue(
+            elif option_def.get("condition") == "in" and option_in not in option_def.get(
+                "possible_values"
+            ):
+                raise JobOptionBadValueError(
                     job_id=self.ID,
                     bad_option_name=option,
                     bad_option_value=option_in,

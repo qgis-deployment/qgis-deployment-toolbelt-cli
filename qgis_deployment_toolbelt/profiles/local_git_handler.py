@@ -23,6 +23,7 @@ from qgis_deployment_toolbelt.profiles.profiles_handler_base import (
 )
 from qgis_deployment_toolbelt.utils.check_path import check_path, check_var_can_be_path
 
+
 # 3rd party
 
 
@@ -54,9 +55,7 @@ class LocalGitHandler(RemoteProfilesHandlerBase):
         Raises:
             NotGitRepository: if uri_or_path doesn't point to a valid Git repository
         """
-        super().__init__(
-            source_repository_type=source_repository_type, branch_to_use=branch_to_use
-        )
+        super().__init__(source_repository_type=source_repository_type, branch_to_use=branch_to_use)
 
         # clean up
         if isinstance(
@@ -77,9 +76,7 @@ class LocalGitHandler(RemoteProfilesHandlerBase):
         if isinstance(source_repository_path_or_uri, str) and check_var_can_be_path(
             input_var=source_repository_path_or_uri
         ):
-            source_repository_path_or_uri = Path(
-                source_repository_path_or_uri
-            ).resolve()
+            source_repository_path_or_uri = Path(source_repository_path_or_uri).resolve()
 
         if isinstance(source_repository_path_or_uri, Path) and check_path(
             input_path=source_repository_path_or_uri,
@@ -95,9 +92,7 @@ class LocalGitHandler(RemoteProfilesHandlerBase):
         # validation
         self.is_valid_git_repository()
 
-        self.SOURCE_REPOSITORY_ACTIVE_BRANCH = (
-            self.get_active_branch_from_local_repository()
-        )
+        self.SOURCE_REPOSITORY_ACTIVE_BRANCH = self.get_active_branch_from_local_repository()
 
         # check if passed branch exist
         if branch_to_use is None:

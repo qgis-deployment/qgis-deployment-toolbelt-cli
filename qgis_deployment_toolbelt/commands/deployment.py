@@ -31,6 +31,7 @@ from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_
 from qgis_deployment_toolbelt.utils.slugger import sluggy
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -122,12 +123,8 @@ def run(args: argparse.Namespace):
     logger.debug(f"Running {args.command} with {args}")
 
     # check if scenario file is local or remote
-    if isinstance(args.scenario_filepath, str) and args.scenario_filepath.startswith(
-        ("http",)
-    ):
-        args.scenario_filepath = get_remote_scenario_from_url(
-            remote_url=args.scenario_filepath
-        )
+    if isinstance(args.scenario_filepath, str) and args.scenario_filepath.startswith(("http",)):
+        args.scenario_filepath = get_remote_scenario_from_url(remote_url=args.scenario_filepath)
 
     # checks
     check_path(
@@ -166,19 +163,13 @@ def run(args: argparse.Namespace):
 
     # Use metadata to inform which scenario is running
     if isinstance(scenario.metadata, dict):
-        logger.info(
-            "Running scenario: {title} ({id}). {description}".format(
-                **scenario.metadata
-            )
-        )
+        logger.info("Running scenario: {title} ({id}). {description}".format(**scenario.metadata))
 
     # Set environment vars for the scenario
     if isinstance(scenario.settings, dict):
         for envvar_name, envvar_value in scenario.settings.items():
             if envvar_value is not None:
-                logger.debug(
-                    f"Setting environment variable QDT_{envvar_name} = {envvar_value}."
-                )
+                logger.debug(f"Setting environment variable QDT_{envvar_name} = {envvar_value}.")
                 if isinstance(envvar_name, str) and envvar_name.startswith("QDT_"):
                     logger.warning(
                         "Do not prefix environment variable name with 'QDT_' in "
