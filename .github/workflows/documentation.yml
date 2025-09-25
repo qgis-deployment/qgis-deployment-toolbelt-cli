@@ -93,7 +93,12 @@ jobs:
   deploy-docs:
     needs: build-docs
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main') || (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success') }}
+    if: ${{
+      (github.event_name == 'push' &&
+      (startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main')
+      || (github.event_name == 'workflow_run' && github.event.workflow_run && github.event.workflow_run.conclusion == 'success'))
+      && github.event.repository.fork != true
+      }}
 
     steps:
       - name: Download artifact
