@@ -82,7 +82,9 @@ class JobPluginsDownloader(GenericJob):
             parent_folder=self.qdt_downloaded_repositories
         )
         if qdt_referenced_plugins is None or not len(qdt_referenced_plugins):
-            logger.info(f"No plugin found in profile.json files within {self.qdt_working_folder}")
+            logger.info(
+                f"No plugin found in profile.json files within {self.qdt_working_folder}"
+            )
             return
 
         # filter plugins to download, filtering out those which are not already present locally
@@ -144,7 +146,9 @@ class JobPluginsDownloader(GenericJob):
         copied_plugins: list[QgisPlugin] = []
         failed_plugins: list[QgisPlugin] = []
 
-        logger.debug(f"Copying {len(plugins_to_copy)} plugins into {destination_parent_folder}.")
+        logger.debug(
+            f"Copying {len(plugins_to_copy)} plugins into {destination_parent_folder}."
+        )
         for plugin in plugins_to_copy:
             # check if source plugin can be accessed
             try:
@@ -188,7 +192,9 @@ class JobPluginsDownloader(GenericJob):
 
                 copied_plugins.append(plugin)
             except Exception as err:
-                logger.error(f"Copy of plugin {plugin.name} from {plugin.url} failed. Trace: {err}")
+                logger.error(
+                    f"Copy of plugin {plugin.name} from {plugin.url} failed. Trace: {err}"
+                )
                 failed_plugins.append(plugin)
                 continue
 
@@ -216,7 +222,9 @@ class JobPluginsDownloader(GenericJob):
         failed_plugins: list[QgisPlugin] = []
 
         if threads < 2:
-            logger.debug(f"Downloading {len(plugins_to_download)} plugins in a single thread.")
+            logger.debug(
+                f"Downloading {len(plugins_to_download)} plugins in a single thread."
+            )
             for plugin in plugins_to_download:
                 # local path
                 plugin_download_path = Path(
@@ -235,11 +243,15 @@ class JobPluginsDownloader(GenericJob):
                     )
                     downloaded_plugins.append(plugin)
                 except Exception as err:
-                    logger.error(f"Download of plugin {plugin.name} failed. Trace: {err}")
+                    logger.error(
+                        f"Download of plugin {plugin.name} failed. Trace: {err}"
+                    )
                     failed_plugins.append(plugin)
                     continue
         else:
-            logger.debug(f"Downloading {len(plugins_to_download)} plugins in {threads} threads.")
+            logger.debug(
+                f"Downloading {len(plugins_to_download)} plugins in {threads} threads."
+            )
             with ThreadPoolExecutor(
                 max_workers=threads, thread_name_prefix=f"{__title_clean__}"
             ) as executor:
@@ -299,7 +311,9 @@ class JobPluginsDownloader(GenericJob):
         )
         return sorted(all_profiles, key=lambda x: x.id_with_version)
 
-    def filter_list_downloadable_plugins(self, input_list: list[QgisPlugin]) -> list[QgisPlugin]:
+    def filter_list_downloadable_plugins(
+        self, input_list: list[QgisPlugin]
+    ) -> list[QgisPlugin]:
         """Filter input list of plugins keeping only those are remotly stored and which
             are not present within the local QDT plugins folder.
 
@@ -314,11 +328,15 @@ class JobPluginsDownloader(GenericJob):
         for plugin in input_list:
             # keep only if remote
             if plugin.location != "remote":
-                logger.debug(f"Ignoring plugin '{plugin.name}' because it's not stored remotly.")
+                logger.debug(
+                    f"Ignoring plugin '{plugin.name}' because it's not stored remotly."
+                )
                 continue
 
             # build destination path
-            plugin_download_path = Path(self.qdt_plugins_folder, f"{plugin.id_with_version}.zip")
+            plugin_download_path = Path(
+                self.qdt_plugins_folder, f"{plugin.id_with_version}.zip"
+            )
 
             # check if file already exists
             if plugin_download_path.is_file():
@@ -331,7 +349,9 @@ class JobPluginsDownloader(GenericJob):
 
         return plugins_to_download
 
-    def filter_list_copiable_plugins(self, input_list: list[QgisPlugin]) -> list[QgisPlugin]:
+    def filter_list_copiable_plugins(
+        self, input_list: list[QgisPlugin]
+    ) -> list[QgisPlugin]:
         """Filter input list of plugins keeping only those which are stored locally and
             which are not present within the local QDT plugins folder.
 
@@ -346,11 +366,15 @@ class JobPluginsDownloader(GenericJob):
         for plugin in input_list:
             # keep only if remote
             if plugin.location != "local":
-                logger.debug(f"Ignoring plugin '{plugin.name}' because it's not stored locally.")
+                logger.debug(
+                    f"Ignoring plugin '{plugin.name}' because it's not stored locally."
+                )
                 continue
 
             # build destination path
-            plugin_destination_path = Path(self.qdt_plugins_folder, f"{plugin.id_with_version}.zip")
+            plugin_destination_path = Path(
+                self.qdt_plugins_folder, f"{plugin.id_with_version}.zip"
+            )
 
             # check if file already exists
             if plugin_destination_path.is_file():

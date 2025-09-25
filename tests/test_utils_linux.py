@@ -58,7 +58,9 @@ class TestUtilsLinux(unittest.TestCase):
 
             # create fake bash_profile
             tmp_fake_dot_bash_profile.touch()
-            linux_utils.bash_user_dot_bash_profile = Path(tmp_dir_name).joinpath(".bash_profile")
+            linux_utils.bash_user_dot_bash_profile = Path(tmp_dir_name).joinpath(
+                ".bash_profile"
+            )
             self.assertEqual(
                 linux_utils.bash_user_which_file_to_store(),
                 tmp_fake_dot_bash_profile,

@@ -19,7 +19,10 @@ from sys import platform as opersys
 
 # package
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
-from qgis_deployment_toolbelt.utils.check_path import check_path_exists, check_var_can_be_path
+from qgis_deployment_toolbelt.utils.check_path import (
+    check_path_exists,
+    check_var_can_be_path,
+)
 from qgis_deployment_toolbelt.utils.url_helpers import check_str_is_url
 
 
@@ -127,7 +130,9 @@ class JobEnvironmentVariables(GenericJob):
                     # Add to local environnement to be used in other QDT jobs
                     os.environ[envvar_name] = envvar_value
                 except NameError:
-                    logger.debug(f"Variable name '{env_var.get('name')}' is not defined")
+                    logger.debug(
+                        f"Variable name '{env_var.get('name')}' is not defined"
+                    )
             elif env_var.get("action") == "remove":
                 try:
                     envvar_name = env_var.get("name", None)
@@ -139,7 +144,9 @@ class JobEnvironmentVariables(GenericJob):
                     if envvar_name in os.environ:
                         del os.environ[envvar_name]
                 except NameError:
-                    logger.debug(f"Variable name '{env_var.get('name')}' is not defined")
+                    logger.debug(
+                        f"Variable name '{env_var.get('name')}' is not defined"
+                    )
 
         # refresh environment to update variables
         refresh_environment()
@@ -164,9 +171,13 @@ class JobEnvironmentVariables(GenericJob):
 
         if value_type == "url":
             if check_str_is_url(input_str=value, raise_error=False):
-                logger.info(f"{value} is a valid URL. Using it as environment variable value.")
+                logger.info(
+                    f"{value} is a valid URL. Using it as environment variable value."
+                )
             else:
-                logger.warning(f"{value} seems to be an invalid URL. It will be applied anyway.")
+                logger.warning(
+                    f"{value} seems to be an invalid URL. It will be applied anyway."
+                )
 
             return value.strip()
         elif value_type in ("bool", "str"):
@@ -176,9 +187,13 @@ class JobEnvironmentVariables(GenericJob):
             if check_var_can_be_path(input_var=value, raise_error=False):
                 value_as_path = Path(expanduser(expandvars(value)))  # noqa: PTH111
                 if not check_path_exists(input_path=value_as_path, raise_error=False):
-                    logger.warning(f"{value} seems to be a valid path but does not exist (yet).")
+                    logger.warning(
+                        f"{value} seems to be a valid path but does not exist (yet)."
+                    )
                 return str(Path(value_as_path).resolve())
             else:
-                logger.debug(f"Value {value} is not a valid path. The raw string will be used.")
+                logger.debug(
+                    f"Value {value} is not a valid path. The raw string will be used."
+                )
 
         return str(value).strip()

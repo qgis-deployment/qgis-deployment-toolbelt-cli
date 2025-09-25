@@ -106,7 +106,9 @@ html_theme_options = {
 
 html_extra_path = ["robots.txt"]
 html_static_path = ["static/extra"]
-html_css_files = ["https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"]
+html_css_files = [
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -177,7 +179,9 @@ myst_substitutions = {
 
 
 # OpenGraph
-ogp_default_image = f"{__about__.__uri_homepage__}/_images/qgis-deployment-toolbelt_cli_help.png"
+ogp_default_image = (
+    f"{__about__.__uri_homepage__}/_images/qgis-deployment-toolbelt_cli_help.png"
+)
 ogp_site_name = f"{project} - Documentation"
 ogp_site_url = __about__.__uri_homepage__
 ogp_custom_meta_tags = [
@@ -210,11 +214,15 @@ def populate_download_page(_):
     logger.warning("=== START POPULATING DOWNLOAD SECTION ===")
     try:
         latest_release = get_latest_release(
-            replace_domain(url=__about__.__uri_repository__, new_domain="api.github.com/repos")
+            replace_domain(
+                url=__about__.__uri_repository__, new_domain="api.github.com/repos"
+            )
         )
 
         dl_link_linux, dl_link_macos, dl_link_windows = (
-            get_download_url_for_os(latest_release.get("assets"), override_opersys=os)[0]
+            get_download_url_for_os(latest_release.get("assets"), override_opersys=os)[
+                0
+            ]
             for os in ["linux", "darwin", "win32"]
         )
     except Exception as err:
@@ -246,7 +254,9 @@ def populate_download_page(_):
         "\n::::"
     )
 
-    Path("./docs/usage/download_section.md").write_text(data=out_download_section, encoding="UTF-8")
+    Path("./docs/usage/download_section.md").write_text(
+        data=out_download_section, encoding="UTF-8"
+    )
 
 
 # run api doc

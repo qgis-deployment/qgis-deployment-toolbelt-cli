@@ -27,7 +27,9 @@ from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 # ######## Globals #################
 # ##################################
 
-sample_scenario_good: Path = Path("tests/fixtures/scenarios/good_scenario_sample.qdt.yml")
+sample_scenario_good: Path = Path(
+    "tests/fixtures/scenarios/good_scenario_sample.qdt.yml"
+)
 sample_scenario_good_with_unexisting_jobs: Path = Path(
     "tests/fixtures/scenarios/good_scenario_with_unexisting_jobs.qdt.yml"
 )
@@ -35,8 +37,12 @@ sample_scenario_good_splash_removal: Path = Path(
     "tests/fixtures/scenarios/good_scenario_splash_screen_remove.qdt.yml"
 )
 
-sample_scenario_false: Path = Path("tests/fixtures/scenarios/false_scenario_sample.qdt.yml")
-sample_scenario_imaginary: Path = Path("tests/fixtures/scenarios/imaginary_scenario_sample.qdt.yml")
+sample_scenario_false: Path = Path(
+    "tests/fixtures/scenarios/false_scenario_sample.qdt.yml"
+)
+sample_scenario_imaginary: Path = Path(
+    "tests/fixtures/scenarios/imaginary_scenario_sample.qdt.yml"
+)
 
 good_scenarios = [
     ["deploy", f"--scenario={scenario_path.resolve()}"]
@@ -56,7 +62,10 @@ def test_cli_help(capsys, option):
 
     out, err = capsys.readouterr()
 
-    assert f"{__about__.__title__} {__about__.__version__} - {__about__.__summary__}" in out
+    assert (
+        f"{__about__.__title__} {__about__.__version__} - {__about__.__summary__}"
+        in out
+    )
     assert err == ""
 
 

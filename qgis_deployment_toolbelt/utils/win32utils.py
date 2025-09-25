@@ -131,7 +131,9 @@ def delete_environment_variable(envvar_name: str, scope: str = "user") -> bool:
             winreg.DeleteValue(key, envvar_name)
             return True
     except OSError as err:
-        logger.error(f"Delete variable '{envvar_name}' from scope '{scope}' failed. Trace: {err}")
+        logger.error(
+            f"Delete variable '{envvar_name}' from scope '{scope}' failed. Trace: {err}"
+        )
         return False
 
 
@@ -158,7 +160,9 @@ def get_environment_variable(envvar_name: str, scope: str = "user") -> str | Non
             value, _ = winreg.QueryValueEx(key, envvar_name)
         return value
     except OSError:
-        logger.error(f"Environment variable {envvar_name} not found in registry (scope: {scope}")
+        logger.error(
+            f"Environment variable {envvar_name} not found in registry (scope: {scope}"
+        )
         return None
 
 
@@ -183,7 +187,9 @@ def get_current_user_extended_data(extended_name_format: ExtendedNameFormat) -> 
                 get_current_user_extended_data,
             )
 
-            user_data = {k.name: get_current_user_extended_data(k) for k in ExtendedNameFormat}
+            user_data = {
+                k.name: get_current_user_extended_data(k) for k in ExtendedNameFormat
+            }
 
             print(user_data)
 
@@ -250,13 +256,17 @@ def refresh_environment() -> bool:
     except NameError:
         logger.critical(" name 'win32gui' is not defined")
     if not res1:
-        logger.warning(f"Refresh environment failed: {bool(res1)}, {res2}, from SendMessageTimeout")
+        logger.warning(
+            f"Refresh environment failed: {bool(res1)}, {res2}, from SendMessageTimeout"
+        )
         return False
     else:
         return True
 
 
-def set_environment_variable(envvar_name: str, envvar_value: str, scope: str = "user") -> bool:
+def set_environment_variable(
+    envvar_name: str, envvar_value: str, scope: str = "user"
+) -> bool:
     """Creates/replaces environment variable.
 
     Args:

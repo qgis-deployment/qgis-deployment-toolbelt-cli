@@ -32,7 +32,11 @@ from qgis_deployment_toolbelt.__about__ import (
     __uri_repository__,
     __version__ as actual_version,
 )
-from qgis_deployment_toolbelt.utils.bouncer import exit_cli_error, exit_cli_normal, exit_cli_success
+from qgis_deployment_toolbelt.utils.bouncer import (
+    exit_cli_error,
+    exit_cli_normal,
+    exit_cli_success,
+)
 from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
@@ -99,7 +103,9 @@ def get_latest_release(api_repo_url: str) -> dict | None:
         "User-Agent": f"{__title_clean__}/{actual_version}",
     }
     if getenv("GITHUB_TOKEN"):
-        logger.debug(f"Using authenticated request to GH API: {getenv('GITHUB_TOKEN')[:9]}****")
+        logger.debug(
+            f"Using authenticated request to GH API: {getenv('GITHUB_TOKEN')[:9]}****"
+        )
         headers["Authorization"] = f"Bearer {getenv('GITHUB_TOKEN')}"
 
     try:
@@ -211,7 +217,9 @@ def run(args: argparse.Namespace):
     latest_release: dict | None = get_latest_release(api_repo_url=api_url)
 
     if not isinstance(latest_release, dict):
-        exit_cli_error(f"Unable to retrieve latest release {type(latest_release)} from {api_url}.")
+        exit_cli_error(
+            f"Unable to retrieve latest release {type(latest_release)} from {api_url}."
+        )
 
     # compare it
     latest_version: str = latest_release.get("tag_name")
@@ -256,10 +264,14 @@ def run(args: argparse.Namespace):
         remote_content_type = "application/octet-stream"
 
     # destination local file
-    dest_filepath = Path(args.local_download_folder, Path(urlsplit(remote_url).path).name)
+    dest_filepath = Path(
+        args.local_download_folder, Path(urlsplit(remote_url).path).name
+    )
 
     # download it
-    logger.info(f"Downloading new version '{latest_version}' from {remote_url} to {dest_filepath}")
+    logger.info(
+        f"Downloading new version '{latest_version}' from {remote_url} to {dest_filepath}"
+    )
     try:
         download_remote_file_to_local(
             remote_url_to_download=remote_url,

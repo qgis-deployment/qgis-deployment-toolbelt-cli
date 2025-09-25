@@ -36,7 +36,9 @@ class TestUtilsNetworkProxies(unittest.TestCase):
         get_proxy_settings.cache_clear()
         environ["HTTP_PROXY"] = "http://proxy.example.com:3128"
         self.assertIsInstance(get_proxy_settings(), dict)
-        self.assertEqual(get_proxy_settings().get("http"), "http://proxy.example.com:3128")
+        self.assertEqual(
+            get_proxy_settings().get("http"), "http://proxy.example.com:3128"
+        )
         self.assertIsNone(get_proxy_settings().get("https"))
 
         environ.pop("HTTP_PROXY")  # clean up
@@ -45,7 +47,9 @@ class TestUtilsNetworkProxies(unittest.TestCase):
         get_proxy_settings.cache_clear()
         environ["HTTPS_PROXY"] = "https://proxy.example.com:3128"
         self.assertIsInstance(get_proxy_settings(), dict)
-        self.assertEqual(get_proxy_settings().get("https"), "https://proxy.example.com:3128")
+        self.assertEqual(
+            get_proxy_settings().get("https"), "https://proxy.example.com:3128"
+        )
         self.assertIsNone(get_proxy_settings().get("http"))
 
         environ.pop("HTTPS_PROXY")  # clean up
@@ -55,8 +59,12 @@ class TestUtilsNetworkProxies(unittest.TestCase):
         environ["HTTP_PROXY"] = "http://proxy.example.com:3128"
         environ["HTTPS_PROXY"] = "https://proxy.example.com:3128"
         self.assertIsInstance(get_proxy_settings(), dict)
-        self.assertEqual(get_proxy_settings().get("https"), "https://proxy.example.com:3128")
-        self.assertEqual(get_proxy_settings().get("http"), "http://proxy.example.com:3128")
+        self.assertEqual(
+            get_proxy_settings().get("https"), "https://proxy.example.com:3128"
+        )
+        self.assertEqual(
+            get_proxy_settings().get("http"), "http://proxy.example.com:3128"
+        )
 
         environ.pop("HTTP_PROXY")  # clean up
         environ.pop("HTTPS_PROXY")  # clean up

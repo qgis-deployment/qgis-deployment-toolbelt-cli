@@ -104,7 +104,9 @@ class ApplicationShortcut:
                         f"but {self.exec_path.with_name('qgis-ltr-bin.exe')} does, so "
                         "this one will be used instead. Check and fix your scenario."
                     )
-                    self.exec_path = self.exec_path.with_name(QGIS_LTR_BIN_WINDOWS_FILENAME)
+                    self.exec_path = self.exec_path.with_name(
+                        QGIS_LTR_BIN_WINDOWS_FILENAME
+                    )
                 elif (
                     self.exec_path.name.endswith(QGIS_LTR_BIN_WINDOWS_FILENAME)
                     and self.exec_path.with_name(QGIS_BIN_WINDOWS_FILENAME).exists()
@@ -121,7 +123,9 @@ class ApplicationShortcut:
                         "Shortcuts might not work. Check and fix your scenario."
                     )
         else:
-            raise TypeError(f"exec_path must be a string or pathlib.Path, not {type(exec_path)}")
+            raise TypeError(
+                f"exec_path must be a string or pathlib.Path, not {type(exec_path)}"
+            )
 
         # optional
         if isinstance(exec_arguments, (tuple, list, type(None))):
@@ -133,7 +137,9 @@ class ApplicationShortcut:
         if isinstance(description, (str, type(None))):
             self.description = description
         else:
-            raise TypeError(f"If defined, description must be a string, not {type(description)}")
+            raise TypeError(
+                f"If defined, description must be a string, not {type(description)}"
+            )
         if isinstance(icon_path, (str, Path, type(None))):
             self.icon_path = self.check_icon_path(icon_path)
         else:
@@ -173,7 +179,9 @@ class ApplicationShortcut:
         if isinstance(start_menu, bool):
             self.start_menu = start_menu
         else:
-            raise TypeError(f"'start_menu' option must be a boolean, not {type(start_menu)}")
+            raise TypeError(
+                f"'start_menu' option must be a boolean, not {type(start_menu)}"
+            )
 
         if not desktop and not start_menu:
             logger.debug(
@@ -282,7 +290,9 @@ class ApplicationShortcut:
 
                 desktop_paths = re.findall('XDG_DESKTOP_DIR="([^"]*)', data)
                 if len(desktop_paths):
-                    return Path(re.sub(r"\$HOME", str(Path("~").expanduser()), desktop_paths[0]))
+                    return Path(
+                        re.sub(r"\$HOME", str(Path("~").expanduser()), desktop_paths[0])
+                    )
 
             return default_value
         else:
@@ -359,7 +369,9 @@ class ApplicationShortcut:
             template_shortcut = Path(getattr(sys, "_MEIPASS", sys.executable)).joinpath(
                 "shortcuts/shortcut_freedesktop.template"
             )
-            logger.debug(f"Using shortcut template in packaged mode: {template_shortcut}")
+            logger.debug(
+                f"Using shortcut template in packaged mode: {template_shortcut}"
+            )
 
         if not check_path(
             input_path=template_shortcut,
@@ -409,7 +421,8 @@ class ApplicationShortcut:
             )
             shortcut_desktop_path.write_text(shortcut_text, encoding="UTF-8")
             shortcut_desktop_path.chmod(
-                shortcut_desktop_path.stat().st_mode | (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH),
+                shortcut_desktop_path.stat().st_mode
+                | (stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH),
                 follow_symlinks=True,
             )
         else:
@@ -466,7 +479,9 @@ class ApplicationShortcut:
                 elif isinstance(self.icon_path, str):
                     wscript.IconLocation = self.icon_path
                 else:
-                    logger.warning(f"Bad icon path type: {type(self.icon_path)} != (Path, str).")
+                    logger.warning(
+                        f"Bad icon path type: {type(self.icon_path)} != (Path, str)."
+                    )
             wscript.save()
         else:
             shortcut_desktop_path = None

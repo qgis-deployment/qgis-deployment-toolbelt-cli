@@ -26,7 +26,10 @@ from typing import Any, Literal
 from packaging.version import InvalidVersion, Version
 
 # Package
-from qgis_deployment_toolbelt.constants import OSConfiguration, get_qdt_working_directory
+from qgis_deployment_toolbelt.constants import (
+    OSConfiguration,
+    get_qdt_working_directory,
+)
 from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qgis_ini_handler import QgisIniHelper
 from qgis_deployment_toolbelt.utils.check_path import check_path
@@ -47,7 +50,7 @@ class QdtProfile:
     """Object definition for QGIS Profile handled by QDT."""
 
     # optional mapping on attributes names.
-    # {attribute_name_in_output_object: attribute_name_from_input_file}  # noqa: E800, ERA001
+    # {attribute_name_in_output_object: attribute_name_from_input_file}  # noqa: ERA001
     ATTR_MAP = {
         "qgis_maximum_version": "qgisMaximumVersion",
         "qgis_minimum_version": "qgisMinimumVersion",
@@ -133,7 +136,9 @@ class QdtProfile:
             self._version = version
 
     @classmethod
-    def from_json(cls, profile_json_path: Path, profile_folder: Path | None = None) -> QdtProfile:
+    def from_json(
+        cls, profile_json_path: Path, profile_folder: Path | None = None
+    ) -> QdtProfile:
         """Load profile from a profile.json file.
 
         Args:
@@ -470,7 +475,9 @@ class QdtProfile:
         with tempfile.TemporaryDirectory(
             prefix=f"QDT_merge_profile_{self.name}_", ignore_cleanup_errors=True
         ) as tmpdirname:
-            logger.info(f"Merge profile {self.name} with {tmpdirname} temporary directory")
+            logger.info(
+                f"Merge profile {self.name} with {tmpdirname} temporary directory"
+            )
             # Copy source QdtProfile folder
             copytree(
                 self.folder,
@@ -492,7 +499,10 @@ class QdtProfile:
                 self.get_qgis3ini_helper().merge_to(tmp_profile.get_qgis3ini_helper())
 
             # QGISCUSTOMIZATION3
-            if self.has_qgis3customization_ini_file() and dst.has_qgis3customization_ini_file():
+            if (
+                self.has_qgis3customization_ini_file()
+                and dst.has_qgis3customization_ini_file()
+            ):
                 # Copy current installed file
                 copy2(
                     dst.get_qgis3customizationini_helper().ini_filepath,

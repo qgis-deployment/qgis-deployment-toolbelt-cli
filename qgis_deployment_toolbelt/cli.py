@@ -201,7 +201,9 @@ def main(in_args: list[str] | None = None):
 
     # log configuration
     if args.opt_logfile_disabled:
-        configure_logger(verbosity=args.verbosity, logfile=f"{__title_clean__}_{__version__}.log")
+        configure_logger(
+            verbosity=args.verbosity, logfile=f"{__title_clean__}_{__version__}.log"
+        )
     else:
         configure_logger(verbosity=args.verbosity)
 

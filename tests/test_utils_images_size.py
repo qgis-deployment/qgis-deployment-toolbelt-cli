@@ -39,7 +39,9 @@ class TestUtilsImagesSizeChecker(unittest.TestCase):
     def setUpClass(cls) -> None:
         """Set up test."""
 
-        cls.img_tmp_folder = TemporaryDirectory(prefix=f"{__title_clean__}_{__version__}_")
+        cls.img_tmp_folder = TemporaryDirectory(
+            prefix=f"{__title_clean__}_{__version__}_"
+        )
 
         # create a temporary image
         cls.img_black_800x600 = Path(cls.img_tmp_folder.name, "img_black_800x600.jpg")

@@ -54,16 +54,18 @@ class RemoteProfilesHandlerBase:
 
     SOURCE_REPOSITORY_ACTIVE_BRANCH: str | None = None
     SOURCE_REPOSITORY_PATH_OR_URL: Path | str | None = None
-    SOURCE_REPOSITORY_TYPE: Literal["git_local", "git_remote", "http", "local", "remote"] | None = (
-        None
-    )
+    SOURCE_REPOSITORY_TYPE: (
+        Literal["git_local", "git_remote", "http", "local", "remote"] | None
+    ) = None
 
     DESTINATION_PATH: Path | None = None
     DESTINATION_BRANCH_TO_USE: str | None = None
 
     def __init__(
         self,
-        source_repository_type: Literal["git_local", "git_remote", "http", "local", "remote"],
+        source_repository_type: Literal[
+            "git_local", "git_remote", "http", "local", "remote"
+        ],
         branch_to_use: str | None = None,
     ) -> None:
         """Object instanciation.
@@ -114,7 +116,9 @@ class RemoteProfilesHandlerBase:
         if source_repository_path_or_url is None and isinstance(
             self.SOURCE_REPOSITORY_PATH_OR_URL, (Path, str)
         ):
-            source_repository_path_or_url: str | Path = self.SOURCE_REPOSITORY_PATH_OR_URL
+            source_repository_path_or_url: str | Path = (
+                self.SOURCE_REPOSITORY_PATH_OR_URL
+            )
             logger.info(
                 f"Using source repository set at object's level: {source_repository_path_or_url}"
             )
@@ -129,18 +133,24 @@ class RemoteProfilesHandlerBase:
         if repository_type in (
             "git_remote",
             "remote",
-        ) and not self._is_url_git_repository(remote_git_url=source_repository_path_or_url):
+        ) and not self._is_url_git_repository(
+            remote_git_url=source_repository_path_or_url
+        ):
             valid_source = False
         elif repository_type in (
             "git_local",
             "local",
-        ) and not self._is_local_path_git_repository(local_path=source_repository_path_or_url):
+        ) and not self._is_local_path_git_repository(
+            local_path=source_repository_path_or_url
+        ):
             valid_source = False
 
         # log and/or raise
         err_message = f"{source_repository_path_or_url} is not a valid repository."
         if not valid_source and raise_error:
-            raise NotGitRepository(f"{source_repository_path_or_url} is not a valid repository.")
+            raise NotGitRepository(
+                f"{source_repository_path_or_url} is not a valid repository."
+            )
         elif not valid_source:
             logger.debug(err_message)
         else:
@@ -198,7 +208,9 @@ class RemoteProfilesHandlerBase:
             bool: True if the URL is a valid git repository.
         """
         # if remote git URL not passed, try to use URL defined at object level
-        if remote_git_url is None and isinstance(self.SOURCE_REPOSITORY_PATH_OR_URL, str):
+        if remote_git_url is None and isinstance(
+            self.SOURCE_REPOSITORY_PATH_OR_URL, str
+        ):
             remote_git_url = self.SOURCE_REPOSITORY_PATH_OR_URL
 
         try:
@@ -207,7 +219,9 @@ class RemoteProfilesHandlerBase:
             if not raise_error:
                 logger.debug(f"{remote_git_url} is not a valid Git repository")
                 return False
-            logger.error(f"{remote_git_url} is not a valid Git repository. Trace: {err}")
+            logger.error(
+                f"{remote_git_url} is not a valid Git repository. Trace: {err}"
+            )
             return False
 
     @proxies.os_env_proxy
@@ -234,9 +248,13 @@ class RemoteProfilesHandlerBase:
         ):
             local_git_repository_path: Path = self.SOURCE_REPOSITORY_PATH_OR_URL
 
-        self.is_valid_git_repository(source_repository_path_or_url=local_git_repository_path)
+        self.is_valid_git_repository(
+            source_repository_path_or_url=local_git_repository_path
+        )
 
-        return porcelain.active_branch(repo=f"{local_git_repository_path.resolve()}").decode()
+        return porcelain.active_branch(
+            repo=f"{local_git_repository_path.resolve()}"
+        ).decode()
 
     def is_branch_existing_in_repository(
         self,
@@ -268,8 +286,12 @@ class RemoteProfilesHandlerBase:
             repository_path_or_url: Path | str = self.SOURCE_REPOSITORY_PATH_OR_URL
 
         # check if URL or path is pointing to a valid git repository
-        if not self.is_valid_git_repository(source_repository_path_or_url=repository_path_or_url):
-            raise NotGitRepository(f"{repository_path_or_url} is not a valid repository.")
+        if not self.is_valid_git_repository(
+            source_repository_path_or_url=repository_path_or_url
+        ):
+            raise NotGitRepository(
+                f"{repository_path_or_url} is not a valid repository."
+            )
 
         # clean branch name
         refs_heads_prefix = "refs/heads/"
@@ -304,13 +326,17 @@ class RemoteProfilesHandlerBase:
         if source_repository_path_or_url is None and isinstance(
             self.SOURCE_REPOSITORY_PATH_OR_URL, (Path, str)
         ):
-            source_repository_path_or_url: Path | str = self.SOURCE_REPOSITORY_PATH_OR_URL
+            source_repository_path_or_url: Path | str = (
+                self.SOURCE_REPOSITORY_PATH_OR_URL
+            )
 
         # check if URL or path is pointing to a valid git repository
         if not self.is_valid_git_repository(
             source_repository_path_or_url=source_repository_path_or_url
         ):
-            raise NotGitRepository(f"{source_repository_path_or_url} is not a valid repository.")
+            raise NotGitRepository(
+                f"{source_repository_path_or_url} is not a valid repository."
+            )
 
         ls_remote_refs: LsRemoteResult | dict = porcelain.ls_remote(
             remote=f"{source_repository_path_or_url}"
@@ -320,7 +346,9 @@ class RemoteProfilesHandlerBase:
 
         if isinstance(ls_remote_refs, LsRemoteResult) and len(ls_remote_refs.refs) > 0:
             source_repository_branches = [
-                ref.decode() for ref in ls_remote_refs.refs if ref.startswith(b"refs/heads/")
+                ref.decode()
+                for ref in ls_remote_refs.refs
+                if ref.startswith(b"refs/heads/")
             ]
         elif isinstance(ls_remote_refs, dict) and len(ls_remote_refs) > 0:
             source_repository_branches = [
@@ -335,7 +363,9 @@ class RemoteProfilesHandlerBase:
             )
             return tuple(source_repository_branches)
         else:
-            logger.debug(f"No branch found in repository {source_repository_path_or_url}")
+            logger.debug(
+                f"No branch found in repository {source_repository_path_or_url}"
+            )
             return ("",)
 
     @proxies.os_env_proxy
@@ -351,10 +381,14 @@ class RemoteProfilesHandlerBase:
         if isinstance(destination_local_path, Path):
             destination_local_path = destination_local_path.resolve()
 
-        local_git_repository = self.clone_or_pull(to_local_destination_path=destination_local_path)
+        local_git_repository = self.clone_or_pull(
+            to_local_destination_path=destination_local_path
+        )
 
         if isinstance(local_git_repository, Repo):
-            self.DESTINATION_BRANCH_TO_USE = porcelain.active_branch(local_git_repository).decode()
+            self.DESTINATION_BRANCH_TO_USE = porcelain.active_branch(
+                local_git_repository
+            ).decode()
 
         return local_git_repository
 
@@ -395,7 +429,9 @@ class RemoteProfilesHandlerBase:
                     f"Trace: {err}."
                 )
                 if attempt < 2:
-                    logger.error("Clone fail 1/2. Removing target folder and trying again...")
+                    logger.error(
+                        "Clone fail 1/2. Removing target folder and trying again..."
+                    )
                     rmtree(path=to_local_destination_path, ignore_errors=True)
                     return self.clone_or_pull(
                         to_local_destination_path=to_local_destination_path, attempt=2
@@ -419,7 +455,9 @@ class RemoteProfilesHandlerBase:
                     f"to {to_local_destination_path.resolve()}. Trace: {error}."
                 )
                 rmtree(path=to_local_destination_path, ignore_errors=True)
-                return self.clone_or_pull(to_local_destination_path=to_local_destination_path)
+                return self.clone_or_pull(
+                    to_local_destination_path=to_local_destination_path
+                )
             # PULL
             logger.debug("Start pulling operations...")
             try:
@@ -431,14 +469,18 @@ class RemoteProfilesHandlerBase:
                     "Trying to remove the local folder and cloning again..."
                 )
                 rmtree(path=to_local_destination_path, ignore_errors=True)
-                return self.clone_or_pull(to_local_destination_path=to_local_destination_path)
+                return self.clone_or_pull(
+                    to_local_destination_path=to_local_destination_path
+                )
         elif not to_local_destination_path.exists():
             logger.debug(
                 f"Local path does not exists: {to_local_destination_path.as_uri()}. "
                 "Creating it and trying again..."
             )
             to_local_destination_path.mkdir(parents=True, exist_ok=True)
-            return self.clone_or_pull(to_local_destination_path=to_local_destination_path)
+            return self.clone_or_pull(
+                to_local_destination_path=to_local_destination_path
+            )
         else:
             logger.critical(
                 f"Case not handle. Context: {to_local_destination_path} "
@@ -462,7 +504,9 @@ class RemoteProfilesHandlerBase:
             local_path.mkdir(parents=True, exist_ok=True)
 
         # make sure branch is bytes
-        if isinstance(self.DESTINATION_BRANCH_TO_USE, str) and len(self.DESTINATION_BRANCH_TO_USE):
+        if isinstance(self.DESTINATION_BRANCH_TO_USE, str) and len(
+            self.DESTINATION_BRANCH_TO_USE
+        ):
             branch = self.DESTINATION_BRANCH_TO_USE.encode()
         elif isinstance(self.DESTINATION_BRANCH_TO_USE, bytes):
             branch = self.DESTINATION_BRANCH_TO_USE
@@ -565,7 +609,9 @@ class RemoteProfilesHandlerBase:
             remote_location=source_repository,
             force=True,
         )
-        gobj = destination_local_repository.get_object(destination_local_repository.head())
+        gobj = destination_local_repository.get_object(
+            destination_local_repository.head()
+        )
         logger.debug(
             f"Repository {local_path.resolve()} has been pulled. "
             f"Local active branch: {porcelain.active_branch(destination_local_repository)}. "

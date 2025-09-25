@@ -13,7 +13,9 @@ from qgis_deployment_toolbelt.utils.check_image_size import get_image_size
 class JobOptionBadNameError(KeyError):
     """When a job reveives an option which is not part of accepted ones."""
 
-    def __init__(self, job_id: str, bad_option_name: str, expected_options_names: Iterable[str]):
+    def __init__(
+        self, job_id: str, bad_option_name: str, expected_options_names: Iterable[str]
+    ):
         """Initialization method.
 
         Args:

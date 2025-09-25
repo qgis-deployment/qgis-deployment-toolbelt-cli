@@ -121,5 +121,6 @@ def check_image_dimensions(
         return None
 
     return all(
-        dim <= limit for dim, limit in zip(image_dimensions, (max_width, max_height), strict=False)
+        dim <= limit
+        for dim, limit in zip(image_dimensions, (max_width, max_height), strict=False)
     )

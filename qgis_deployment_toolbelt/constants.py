@@ -105,7 +105,9 @@ def get_qdt_working_directory(
         Path: path to the QDT working directory
     """
     if specific_value:
-        logger.debug(f"QDT working folder - Using the specified value: {specific_value}")
+        logger.debug(
+            f"QDT working folder - Using the specified value: {specific_value}"
+        )
         return Path(expandvars(expanduser(specific_value)))  # noqa: PTH111
     elif qdt_local_working_folder := getenv("QDT_LOCAL_WORK_DIR"):
         logger.debug(
@@ -130,9 +132,13 @@ def get_qdt_working_directory(
                 )
             )
         else:
-            logger.debug(f"QDT working folder - Using default path: {DEFAULT_QDT_WORKING_FOLDER}")
+            logger.debug(
+                f"QDT working folder - Using default path: {DEFAULT_QDT_WORKING_FOLDER}"
+            )
             return Path(
-                expandvars(expanduser(getenv("QDT_LOCAL_WORK_DIR", DEFAULT_QDT_WORKING_FOLDER)))  # noqa: PTH111
+                expandvars(
+                    expanduser(getenv("QDT_LOCAL_WORK_DIR", DEFAULT_QDT_WORKING_FOLDER))
+                )  # noqa: PTH111
             )
 
 
@@ -167,7 +173,9 @@ class OSConfiguration:
                 try:
                     qdt_qgis_exe_path = ast.literal_eval(envvar)
                     if isinstance(qdt_qgis_exe_path, dict):
-                        logger.debug(f"'QDT_QGIS_EXE_PATH' is a valid dictionary: {envvar}")
+                        logger.debug(
+                            f"'QDT_QGIS_EXE_PATH' is a valid dictionary: {envvar}"
+                        )
                         for k, v in qdt_qgis_exe_path.items():
                             if k in self.names_alter + [self.name_python]:
                                 logger.debug(
@@ -184,7 +192,9 @@ class OSConfiguration:
                 must_be_readable=False,
                 raise_error=False,
             ):
-                logger.debug(f"'QDT_QGIS_EXE_PATH' is a simple string and a valid path: {envvar}")
+                logger.debug(
+                    f"'QDT_QGIS_EXE_PATH' is a simple string and a valid path: {envvar}"
+                )
                 return Path(expandvars(expanduser(envvar)))  # noqa: PTH111
 
             # fallback
@@ -198,7 +208,9 @@ class OSConfiguration:
             logger.debug(f"QGIS path found using which: {which_qgis_path}")
             return Path(which_qgis_path)
         else:
-            logger.debug(f"QGIS path not found, using default value: {self.qgis_bin_exe_path}")
+            logger.debug(
+                f"QGIS path not found, using default value: {self.qgis_bin_exe_path}"
+            )
             return Path(expandvars(expanduser(self.qgis_bin_exe_path)))  # noqa: PTH111
 
     def valid_shortcut_name(self, shortcut_name: str) -> bool:
@@ -215,7 +227,9 @@ class OSConfiguration:
             return True
         for char in self.shortcut_forbidden_chars:
             if char in shortcut_name:
-                logger.error(f"Shortcut name '{shortcut_name}' contains forbidden char '{char}'")
+                logger.error(
+                    f"Shortcut name '{shortcut_name}' contains forbidden char '{char}'"
+                )
                 return False
         return True
 
@@ -238,7 +252,9 @@ class OSConfiguration:
         # if not specified, fallback to current operating system
         if operating_system_codename is None:
             operating_system_codename = opersys
-            logger.debug(f"Getting configuration for current operating system: {opersys}")
+            logger.debug(
+                f"Getting configuration for current operating system: {opersys}"
+            )
 
         # returning configuration for operating system
         if operating_system_codename == "darwin":
@@ -249,7 +265,8 @@ class OSConfiguration:
                 qgis_profiles_path=Path(
                     getenv(
                         "QGIS_CUSTOM_CONFIG_PATH",
-                        Path.home() / "Library/Application Support/QGIS/QGIS3/profiles/",
+                        Path.home()
+                        / "Library/Application Support/QGIS/QGIS3/profiles/",
                     )
                 ),
                 shortcut_extension="app",

@@ -68,9 +68,7 @@ def check_str_is_url(
             logger.debug(error_message)
             return False
     except ValueError as err:
-        error_message = (
-            f"{input_str} is not a valid URL. An error occurred during check. Trace : {err}"
-        )
+        error_message = f"{input_str} is not a valid URL. An error occurred during check. Trace : {err}"
         if raise_error:
             raise TypeError(error_message) from err
         logger.warning(error_message)

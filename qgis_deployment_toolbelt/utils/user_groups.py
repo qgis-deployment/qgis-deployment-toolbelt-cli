@@ -81,10 +81,16 @@ def get_user_name_or_guid() -> str:
     """
     if opersys.lower() in ("win32", "windows"):
         try:
-            user_guid_or_name = get_current_user_extended_data(ExtendedNameFormat.NameUniqueId)
-            logger.debug(f"Using user GUID to retrieve domain groups: {user_guid_or_name}")
+            user_guid_or_name = get_current_user_extended_data(
+                ExtendedNameFormat.NameUniqueId
+            )
+            logger.debug(
+                f"Using user GUID to retrieve domain groups: {user_guid_or_name}"
+            )
         except Exception as err:
-            logger.info(f"Unable to retrieve user GUID. Fallback to user name. Trace: {err}")
+            logger.info(
+                f"Unable to retrieve user GUID. Fallback to user name. Trace: {err}"
+            )
     else:
         user_guid_or_name = getuser()
         logger.debug(f"Using username to retrieve domain groups: {user_guid_or_name}")
@@ -117,7 +123,9 @@ def get_user_local_groups(user_name: str | None = None) -> list[str]:
     elif opersys.lower() in ("win32", "windows"):
         server_host_name = uname()[1]
         try:
-            local_groups = sorted(set(win32net.NetUserGetLocalGroups(server_host_name, user_name)))
+            local_groups = sorted(
+                set(win32net.NetUserGetLocalGroups(server_host_name, user_name))
+            )
         except PyWinException as err:
             logger.info(
                 f"Retrieving user ('{user_name}') local groups on {server_host_name} "
@@ -178,7 +186,11 @@ def get_user_domain_groups(user_guid_or_name: str | None = None) -> list[str]:
             )
 
         return sorted(
-            {grp.get_attribute("name")[0] for grp in user_groups if isinstance(grp, pyad.ADGroup)}
+            {
+                grp.get_attribute("name")[0]
+                for grp in user_groups
+                if isinstance(grp, pyad.ADGroup)
+            }
         )
     else:
         raise NotImplementedError(f"Unsupported operating system: {opersys}")
@@ -275,7 +287,9 @@ def is_computer_attached_to_a_domain() -> bool:
         return False
     elif opersys.lower() in ("win32", "windows"):
         try:
-            logger.debug("Determine if computer joined to a domain using WMI through win32 API.")
+            logger.debug(
+                "Determine if computer joined to a domain using WMI through win32 API."
+            )
             return _is_computer_in_domain_win32()
         except Exception as err:
             logger.error(

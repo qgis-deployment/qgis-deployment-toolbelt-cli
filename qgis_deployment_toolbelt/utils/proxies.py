@@ -102,7 +102,9 @@ def get_proxy_settings(url: str | None = None) -> dict:
                 f"{proxy_settings}"
             )
     else:
-        logger.debug("No proxy settings found in environment vars nor OS settings nor PAC File.")
+        logger.debug(
+            "No proxy settings found in environment vars nor OS settings nor PAC File."
+        )
 
     # check scheme and URL validity
     if isinstance(proxy_settings, dict):
@@ -139,7 +141,9 @@ def load_pac_file_from_environment_variable(qdt_pac_file: str) -> PACFile | None
             return PACFile(f.read())
 
 
-def get_proxy_settings_from_pac_file(pac: PACFile, url: str | None = None) -> dict[str, str]:
+def get_proxy_settings_from_pac_file(
+    pac: PACFile, url: str | None = None
+) -> dict[str, str]:
     """Define proxy settings from pac file
 
     Args:

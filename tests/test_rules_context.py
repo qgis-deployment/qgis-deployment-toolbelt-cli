@@ -33,7 +33,9 @@ class TestQdtRulesContext(unittest.TestCase):
 
         rules_context = QdtRulesContext()
 
-        with tempfile.TemporaryDirectory(prefix="qdt_test_rules_context") as tmp_dir_name:
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_rules_context"
+        ) as tmp_dir_name:
             context_json_path = Path(tmp_dir_name).joinpath("qdt_rules_context.json")
 
             # write into the file passing extra parameters to json.dumps

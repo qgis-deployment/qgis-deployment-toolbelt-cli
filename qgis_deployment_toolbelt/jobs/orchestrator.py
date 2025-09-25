@@ -70,7 +70,9 @@ class JobsOrchestrator:
         """Instanciate orchestrator."""
         # log environment variables prefixed with QDT_
         qdt_env_vars = {
-            env_var: value for env_var, value in environ.items() if env_var.startswith("QDT_")
+            env_var: value
+            for env_var, value in environ.items()
+            if env_var.startswith("QDT_")
         }
         if nb_qdt_envvars := len(qdt_env_vars):
             logger.debug(f"{nb_qdt_envvars} environment variables related to QDT:")

@@ -23,7 +23,9 @@ import requests
 
 # project
 from qgis_deployment_toolbelt.__about__ import __title_clean__, __version__
-from qgis_deployment_toolbelt.profiles.profiles_handler_base import RemoteProfilesHandlerBase
+from qgis_deployment_toolbelt.profiles.profiles_handler_base import (
+    RemoteProfilesHandlerBase,
+)
 from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
 from qgis_deployment_toolbelt.utils.formatters import url_ensure_trailing_slash
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
@@ -124,7 +126,9 @@ class HttpHandler(RemoteProfilesHandlerBase):
         if not len(success):
             logger.error("No files downloaded! Please check the above log messages.")
         if len(fails):
-            logger.warning(f"{len(fails)} download failed. Check the above log messages.")
+            logger.warning(
+                f"{len(fails)} download failed. Check the above log messages."
+            )
 
     def download_files_to_local(
         self, li_files_to_download: list[str], target_folder: Path

@@ -37,7 +37,9 @@ class TestQgisIniHelper(unittest.TestCase):
 
     def test_load_profile_config_default(self):
         """Test profile QGIS/QGIS3.ini loader."""
-        new_config_file = Path("tests/fixtures/qgis_ini/default_no_customization/QGIS3.ini")
+        new_config_file = Path(
+            "tests/fixtures/qgis_ini/default_no_customization/QGIS3.ini"
+        )
 
         with tempfile.TemporaryDirectory(
             prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
@@ -71,7 +73,9 @@ class TestQgisIniHelper(unittest.TestCase):
 
     def test_enable_customization(self):
         """Test profile QGIS/QGIS3.ini loader."""
-        fixture_ini_file = Path("tests/fixtures/qgis_ini/default_no_customization/QGIS3.ini")
+        fixture_ini_file = Path(
+            "tests/fixtures/qgis_ini/default_no_customization/QGIS3.ini"
+        )
 
         with tempfile.TemporaryDirectory(
             prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
@@ -112,11 +116,15 @@ class TestQgisIniHelper(unittest.TestCase):
             self.assertTrue(unexisting_config_file.exists())
 
     def test_splash_already_set(self):
-        fake_config = "[Customization]\nsplashpath=/home/$USER/.share/QGIS/QGIS3/images/"
+        fake_config = (
+            "[Customization]\nsplashpath=/home/$USER/.share/QGIS/QGIS3/images/"
+        )
         with tempfile.TemporaryDirectory(
             prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
         ) as tmpdirname:
-            tmp_ini_customization = Path(tmpdirname).joinpath("customization_with_splashpath.ini")
+            tmp_ini_customization = Path(tmpdirname).joinpath(
+                "customization_with_splashpath.ini"
+            )
             tmp_ini_customization.parent.mkdir(parents=True, exist_ok=True)
             tmp_ini_customization.write_text(fake_config)
 

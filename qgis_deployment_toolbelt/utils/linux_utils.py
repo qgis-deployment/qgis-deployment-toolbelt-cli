@@ -57,10 +57,14 @@ def bash_user_which_file_to_store() -> Path:
     """
     # check if one of the bash file exists and using it. Order matters.
     if bash_user_dot_bash_profile.is_file():
-        logger.debug(f"Using {bash_user_dot_bash_profile} to store environment variables.")
+        logger.debug(
+            f"Using {bash_user_dot_bash_profile} to store environment variables."
+        )
         return bash_user_dot_bash_profile
     elif bash_user_dot_bash_login.is_file():
-        logger.debug(f"Using {bash_user_dot_bash_login} to store environment variables.")
+        logger.debug(
+            f"Using {bash_user_dot_bash_login} to store environment variables."
+        )
         return bash_user_dot_bash_login
     elif bash_user_dot_profile.is_file():
         logger.debug(f"Using {bash_user_dot_profile} to store environment variables.")
@@ -272,13 +276,19 @@ def delete_environment_variable(
     pos = []
     if line_found:
         pos.append(line_begin_line)
-        logger.debug(f"Environment variable and key {envvar_name} was found. It will be removed")
+        logger.debug(
+            f"Environment variable and key {envvar_name} was found. It will be removed"
+        )
     if block_start_found:
         pos.append(block_start_line)
-        logger.debug(f"QDT block start was found for '{envvar_name}'. Block start will be removed.")
+        logger.debug(
+            f"QDT block start was found for '{envvar_name}'. Block start will be removed."
+        )
     if block_end_found:
         pos.append(block_end_line)
-        logger.info(f"QDT block end was found for: '{envvar_name}'. Block end will be removed.")
+        logger.info(
+            f"QDT block end was found for: '{envvar_name}'. Block end will be removed."
+        )
 
     new_lines = [lines[i] for i, e in enumerate(lines) if i not in pos]
     with profile_file.open(mode="w", encoding="UTF-8") as file:

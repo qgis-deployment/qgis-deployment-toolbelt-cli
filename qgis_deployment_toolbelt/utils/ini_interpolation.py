@@ -76,7 +76,9 @@ class EnvironmentVariablesInterpolation(BasicInterpolation):
         try:
             return expandvars(expanduser(value))  # noqa: PTH111
         except Exception as exc:
-            logger.error(f"Failed to interpolate {value} in {section}/{option}. Trace: {exc}")
+            logger.error(
+                f"Failed to interpolate {value} in {section}/{option}. Trace: {exc}"
+            )
             return value
 
     def before_set(
@@ -124,7 +126,9 @@ class EnvironmentVariablesInterpolation(BasicInterpolation):
         try:
             return expandvars(expanduser(value))  # noqa: PTH111
         except Exception as exc:
-            logger.error(f"Failed to interpolate {value} in {section}/{option}. Trace: {exc}")
+            logger.error(
+                f"Failed to interpolate {value} in {section}/{option}. Trace: {exc}"
+            )
             return value
 
 

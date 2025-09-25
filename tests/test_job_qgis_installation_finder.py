@@ -53,7 +53,9 @@ class TestJobQgisInstallationFinder(unittest.TestCase):
     def test_get_latest_version_from_list(self):
         """Test definition of latest version from a list of version"""
         self.assertEqual(
-            JobQgisInstallationFinder._get_latest_version_from_list(["3.25.1", "4.0.1", "3.28.2"]),
+            JobQgisInstallationFinder._get_latest_version_from_list(
+                ["3.25.1", "4.0.1", "3.28.2"]
+            ),
             "4.0.1",
         )
 

@@ -120,7 +120,9 @@ def headers():
     logger.info(f"{'=' * 10} {__title__} - {__version__} {'=' * 10}")
     logger.debug(f"Operating System: {platform()}")
     if distro:
-        logger.debug(f"Distribution name and version: {distro.name()} {distro.version()}")
+        logger.debug(
+            f"Distribution name and version: {distro.name()} {distro.version()}"
+        )
     logger.debug(f"Architecture: {architecture()[0]}")
     logger.debug(f"Computer: {gethostname()}")
     logger.debug(f"Launched by user: {getuser()}")

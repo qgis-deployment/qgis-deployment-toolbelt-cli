@@ -189,7 +189,9 @@ class JobShortcutsManager(GenericJob):
 
         # 2. check if icon specified in scenario exists in profile folder
         try:
-            li_icons_sub_profile_folder = list(profile.path_in_qgis.rglob(f"{icon_filename}"))
+            li_icons_sub_profile_folder = list(
+                profile.path_in_qgis.rglob(f"{icon_filename}")
+            )
             if len(li_icons_sub_profile_folder):
                 logger.debug(
                     "Icon found under the installed profile folder: "
@@ -240,7 +242,9 @@ class JobShortcutsManager(GenericJob):
                 in_arguments = in_arguments.split(" ")
             elif isinstance(in_arguments, list):
                 in_arguments = [
-                    str(arg) for arg in in_arguments if isinstance(arg, (str, int, float))
+                    str(arg)
+                    for arg in in_arguments
+                    if isinstance(arg, (str, int, float))
                 ]
             elif not isinstance(in_arguments, (list, str)):
                 raise TypeError(

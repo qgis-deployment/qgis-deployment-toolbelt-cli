@@ -158,7 +158,9 @@ class ScenarioReader:
         # check scenario basic structure
         if any([i not in self.scenario for i in required_root_keys]):
             report.append(
-                "Some of required root keys are missing: {}".format(", ".join(required_root_keys))
+                "Some of required root keys are missing: {}".format(
+                    ", ".join(required_root_keys)
+                )
             )
             valid = False
 

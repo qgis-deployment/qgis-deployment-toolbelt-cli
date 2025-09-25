@@ -54,7 +54,7 @@ class QgisPlugin:
     """Model describing a QGIS plugin."""
 
     # optional mapping on attributes names.
-    # Structure: {attribute_name_in_output_object: attribute_name_from_input_file}  # noqa: E800, ERA001
+    # Structure: {attribute_name_in_output_object: attribute_name_from_input_file}  # noqa: ERA001
     ATTR_MAP = {
         "location": "type",
         "qgis_maximum_version": "qgisMaximumVersion",
@@ -311,7 +311,11 @@ class QgisPlugin:
         Returns:
             str: URI (path or URL) to the plugin ZIP archive
         """
-        if self.url and isinstance(self.url, str) and self.url.startswith(("http://", "https://")):
+        if (
+            self.url
+            and isinstance(self.url, str)
+            and self.url.startswith(("http://", "https://"))
+        ):
             return self.download_url
         elif (
             self.url

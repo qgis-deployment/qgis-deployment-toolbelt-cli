@@ -110,7 +110,10 @@ class JobSplashScreenManager(GenericJob):
                         and profile_installed.splash.is_file()
                     ):
                         # make sure that the filename complies with what QGIS expects
-                        if profile_installed.splash.name != installed_splash_screen_filepath.name:
+                        if (
+                            profile_installed.splash.name
+                            != installed_splash_screen_filepath.name
+                        ):
                             splash_filepath = profile_installed.splash.with_name(
                                 self.SPLASH_FILENAME
                             )
@@ -128,7 +131,9 @@ class JobSplashScreenManager(GenericJob):
                             )
 
                 else:
-                    logger.info(f"No profile.json found for profile '{profile_downloaded.folder}'")
+                    logger.info(
+                        f"No profile.json found for profile '{profile_downloaded.folder}'"
+                    )
 
                 # now, splash screen image should be at {profile_dir}/images/splash.png
                 if not installed_splash_screen_filepath.is_file():

@@ -48,7 +48,9 @@ class RemoteGitHandler(RemoteProfilesHandlerBase):
             source_repository_url (Union[str, Path]): input URI (http://, https://, git://)
 
         """
-        super().__init__(source_repository_type=source_repository_type, branch_to_use=branch_to_use)
+        super().__init__(
+            source_repository_type=source_repository_type, branch_to_use=branch_to_use
+        )
 
         self.SOURCE_REPOSITORY_PATH_OR_URL = source_repository_url
 

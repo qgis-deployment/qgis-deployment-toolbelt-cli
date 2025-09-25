@@ -21,7 +21,9 @@ from pathlib import Path
 from sys import platform as opersys
 
 # package
-from qgis_deployment_toolbelt.jobs.job_environment_variables import JobEnvironmentVariables
+from qgis_deployment_toolbelt.jobs.job_environment_variables import (
+    JobEnvironmentVariables,
+)
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
 
 
@@ -47,7 +49,9 @@ class TestJobEnvironmentVariables(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
-        cls.good_scenario_files = sorted(Path("tests/fixtures/").glob("scenarios/good_*.y*ml"))
+        cls.good_scenario_files = sorted(
+            Path("tests/fixtures/").glob("scenarios/good_*.y*ml")
+        )
 
     # standard methods
     def setUp(self):
@@ -97,7 +101,9 @@ class TestJobEnvironmentVariables(unittest.TestCase):
         # check if environment variables have been set
         if opersys == "win32":
             self.assertTrue(
-                str2bool(get_environment_variable("QDT_TEST_FAKE_ENV_VAR_BOOL", "user")),
+                str2bool(
+                    get_environment_variable("QDT_TEST_FAKE_ENV_VAR_BOOL", "user")
+                ),
                 True,
             )
             self.assertEqual(
@@ -139,13 +145,17 @@ class TestJobEnvironmentVariables(unittest.TestCase):
             job_env_vars = JobEnvironmentVariables(fake_env_vars)
             job_env_vars.run()
 
-            self.assertIsNone(get_environment_variable("QDT_TEST_FAKE_ENV_VAR_BOOL", "user"))
+            self.assertIsNone(
+                get_environment_variable("QDT_TEST_FAKE_ENV_VAR_BOOL", "user")
+            )
             self.assertIsNone(
                 get_environment_variable("QDT_TEST_FAKE_ENV_VAR_PATH"),
             )
         elif opersys == "linux":
             self.assertTrue(
-                str2bool(get_environment_variable("QDT_TEST_FAKE_ENV_VAR_BOOL", "user")),
+                str2bool(
+                    get_environment_variable("QDT_TEST_FAKE_ENV_VAR_BOOL", "user")
+                ),
                 True,
             )
             self.assertEqual(
@@ -187,7 +197,9 @@ class TestJobEnvironmentVariables(unittest.TestCase):
             job_env_vars = JobEnvironmentVariables(fake_env_vars)
             job_env_vars.run()
 
-            self.assertIsNone(get_environment_variable("QDT_TEST_FAKE_ENV_VAR_BOOL", "user"))
+            self.assertIsNone(
+                get_environment_variable("QDT_TEST_FAKE_ENV_VAR_BOOL", "user")
+            )
             self.assertIsNone(
                 get_environment_variable("QDT_TEST_FAKE_ENV_VAR_PATH"),
             )

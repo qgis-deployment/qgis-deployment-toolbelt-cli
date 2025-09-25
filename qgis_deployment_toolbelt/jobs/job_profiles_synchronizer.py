@@ -118,7 +118,10 @@ class JobProfilesSynchronizer(GenericJob):
         li_profiles_equal = []
 
         for downloaded_profile in li_downloaded_profiles:
-            if not downloaded_profile.version or not downloaded_profile.is_loaded_from_json:
+            if (
+                not downloaded_profile.version
+                or not downloaded_profile.is_loaded_from_json
+            ):
                 logger.error(
                     "Unable to load profile.json from downloaded profile "
                     f"{downloaded_profile}, so it's impossible to compare "
@@ -128,7 +131,9 @@ class JobProfilesSynchronizer(GenericJob):
 
             if Path(downloaded_profile.path_in_qgis, "profile.json").is_file():
                 profile_installed: QdtProfile = QdtProfile.from_json(
-                    profile_json_path=Path(downloaded_profile.path_in_qgis, "profile.json"),
+                    profile_json_path=Path(
+                        downloaded_profile.path_in_qgis, "profile.json"
+                    ),
                     profile_folder=downloaded_profile.path_in_qgis,
                 )
             else:
@@ -165,7 +170,9 @@ class JobProfilesSynchronizer(GenericJob):
         """
         logger.debug(f"Sync mode: {self.options.get('sync_mode')}.")
         # if local profiles folder exists or it's empty -> copy downloaded profiles
-        if not self.qgis_profiles_path.exists() or not any(self.qgis_profiles_path.iterdir()):
+        if not self.qgis_profiles_path.exists() or not any(
+            self.qgis_profiles_path.iterdir()
+        ):
             logger.info(
                 "The QGIS profiles folder does not exist or is empty: "
                 f"{self.qgis_profiles_path.resolve()}. Probably a fresh install. "
@@ -227,7 +234,9 @@ class JobProfilesSynchronizer(GenericJob):
                 li_downloaded_profiles=downloaded_profiles
             )[0]
             if not outdated:
-                logger.info("All installed profiles are up-to-date with downloaded ones.")
+                logger.info(
+                    "All installed profiles are up-to-date with downloaded ones."
+                )
                 return
             self.sync_overwrite_local_profiles(profiles_to_copy=outdated)
         elif self.options.get("sync_mode") == "only_different_version":
@@ -235,13 +244,19 @@ class JobProfilesSynchronizer(GenericJob):
                 li_downloaded_profiles=downloaded_profiles
             )
             if not different and not outdated:
-                logger.info(f"All installed profiles are the same as downloaded ones: {len(same)}")
+                logger.info(
+                    f"All installed profiles are the same as downloaded ones: {len(same)}"
+                )
                 return
             self.sync_overwrite_local_profiles(profiles_to_copy=different + outdated)
         elif self.options.get("sync_mode") == "overwrite":
-            logger.debug("Installed profiles are going to be overridden by downloaded ones.")
+            logger.debug(
+                "Installed profiles are going to be overridden by downloaded ones."
+            )
             # copy all downloaded profiles
-            self.sync_overwrite_local_profiles(profiles_to_copy=downloaded_profiles, overwrite=True)
+            self.sync_overwrite_local_profiles(
+                profiles_to_copy=downloaded_profiles, overwrite=True
+            )
 
         else:
             logger.debug(

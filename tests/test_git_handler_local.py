@@ -116,7 +116,9 @@ class TestGitHandlerLocal(unittest.TestCase):
             ignore_cleanup_errors=True,
             suffix="_specified_branch_existing",
         ) as tmpdirname:
-            target_repo = local_git_handler.download(destination_local_path=Path(tmpdirname))
+            target_repo = local_git_handler.download(
+                destination_local_path=Path(tmpdirname)
+            )
             self.assertIsInstance(target_repo, Repo)
 
     def test_clone_with_specified_branch_not_existing(self):
@@ -129,14 +131,18 @@ class TestGitHandlerLocal(unittest.TestCase):
         self.assertEqual(local_git_handler.SOURCE_REPOSITORY_TYPE, "git_local")
         self.assertEqual(local_git_handler.DESTINATION_BRANCH_TO_USE, "main")
 
-        local_git_handler.download(destination_local_path=self.local_git_path_target.resolve())
+        local_git_handler.download(
+            destination_local_path=self.local_git_path_target.resolve()
+        )
 
         with tempfile.TemporaryDirectory(
             prefix="QDT_test_local_git_",
             ignore_cleanup_errors=True,
             suffix="_specified_branch_not_existing",
         ) as tmpdirname:
-            target_repo = local_git_handler.download(destination_local_path=Path(tmpdirname))
+            target_repo = local_git_handler.download(
+                destination_local_path=Path(tmpdirname)
+            )
             self.assertIsInstance(target_repo, Repo)
 
     def test_clone_then_fetch_pull(self):

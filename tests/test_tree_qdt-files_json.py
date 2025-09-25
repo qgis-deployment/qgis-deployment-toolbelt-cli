@@ -35,7 +35,9 @@ class TestTreeQdtFilesReader(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
-        cls.tree_qdt_files = sorted(Path("tests/fixtures/").glob("treefiles/qdt-files*.json"))
+        cls.tree_qdt_files = sorted(
+            Path("tests/fixtures/").glob("treefiles/qdt-files*.json")
+        )
 
     # -- Tests methods --
     def test_load_tree_json_files(self):
