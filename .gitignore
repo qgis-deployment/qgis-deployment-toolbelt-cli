@@ -129,6 +129,8 @@ dmypy.json
 # CUSTOM ##########
 # #################
 
+qdt_metadata_pkg.txt
+qgis_deployment_toolbelt/_version.py
 version_info.txt
 _logs/
 *.exe
