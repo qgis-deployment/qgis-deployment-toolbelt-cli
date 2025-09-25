@@ -175,6 +175,7 @@ jobs:
         run: echo "exe_path=$(ls dist/*.exe | head -n 1)" >> $GITHUB_ENV
 
       - name: Decode Code Signing Certificate
+        if: github.event.repository.fork != true
         env:
           WINDOWS_CERTIFICATE_PFX_B64: ${{ secrets.WINDOWS_CERTIFICATE_PFX }}
         shell: bash
@@ -194,6 +195,7 @@ jobs:
           openssl x509 -in cert.pem -noout -text | grep -A 10 "X509v3 Extended Key Usage"
 
       - name: Sign Executable
+        if: github.event.repository.fork != true
         shell: pwsh
         env:
           exe_path: ${{ env.exe_path }}
@@ -222,7 +224,7 @@ jobs:
       contents: write
       discussions: write
 
-    if: startsWith(github.ref, 'refs/tags/')
+    if: startsWith(github.ref, 'refs/tags/') && github.event.repository.fork != true
 
     steps:
       - name: Retrieve artifact from Python build
