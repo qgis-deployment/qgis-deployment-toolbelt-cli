@@ -20,6 +20,7 @@ from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
 
+
 # ############################################################################
 # ########## Classes #############
 # ################################
@@ -32,15 +33,11 @@ class TestQgisPluginObject(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
-        cls.good_profiles_files = sorted(
-            Path("tests/fixtures/").glob("profiles/good_*.json")
-        )
+        cls.good_profiles_files = sorted(Path("tests/fixtures/").glob("profiles/good_*.json"))
 
         # -- Download a plugin to perfom tests
         # prepare local download path
-        cls.sample_plugin_downloaded = Path(
-            "tests/fixtures/tmp/qtribu/2733_qtribu_0-14-2.zip"
-        )
+        cls.sample_plugin_downloaded = Path("tests/fixtures/tmp/qtribu/2733_qtribu_0-14-2.zip")
         cls.sample_plugin_downloaded.parent.mkdir(parents=True, exist_ok=True)
 
         # download plugin zip archive (only if it doesn't exist already)
@@ -52,9 +49,7 @@ class TestQgisPluginObject(unittest.TestCase):
             )
 
         # check download worked
-        assert (
-            cls.sample_plugin_downloaded.is_file() is True
-        ), "Downloading fixture plugin failed."
+        assert cls.sample_plugin_downloaded.is_file() is True, "Downloading fixture plugin failed."
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -152,9 +147,7 @@ class TestQgisPluginObject(unittest.TestCase):
         self.assertTrue(local_plugin_download.is_file())
 
         # load from zip
-        plugin_obj_from_zip: QgisPlugin = QgisPlugin.from_zip(
-            input_zip_path=local_plugin_download
-        )
+        plugin_obj_from_zip: QgisPlugin = QgisPlugin.from_zip(input_zip_path=local_plugin_download)
 
         # check types
         self.assertIsInstance(plugin_obj_from_zip.name, str)

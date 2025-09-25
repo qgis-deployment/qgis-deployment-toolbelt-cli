@@ -10,7 +10,6 @@ Author: Julien Moura (Oslandia)
 # ########## Libraries #############
 # ##################################
 
-
 # standard library
 import unittest
 
@@ -27,6 +26,7 @@ from qgis_deployment_toolbelt.commands.upgrade import (
     replace_domain,
 )
 from qgis_deployment_toolbelt.constants import SUPPORTED_OPERATING_SYSTEMS_CODENAMES
+
 
 # #############################################################################
 # ######## Functions ###############
@@ -74,21 +74,13 @@ class TestUpgradeUtils(unittest.TestCase):
         self.assertTrue("assets" in latest_release)
 
         dl_hyperlinks = [
-            get_download_url_for_os(latest_release.get("assets"), override_opersys=os)[
-                0
-            ]
+            get_download_url_for_os(latest_release.get("assets"), override_opersys=os)[0]
             for os in SUPPORTED_OPERATING_SYSTEMS_CODENAMES
         ]
         self.assertTrue(len(dl_hyperlinks), 3)
 
         self.assertTrue(
-            all(
-                [
-                    dl_url.startswith("https")
-                    for dl_url in dl_hyperlinks
-                    if isinstance(dl_url, str)
-                ]
-            )
+            all([dl_url.startswith("https") for dl_url in dl_hyperlinks if isinstance(dl_url, str)])
         )
 
 

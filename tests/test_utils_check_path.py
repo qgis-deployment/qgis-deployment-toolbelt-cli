@@ -10,13 +10,12 @@ Usage from the repo root folder:
     python -m unittest tests.test_utils_check_path.TestUtilsCheckPath.test_check_path_as_str_ok
 """
 
-
 # standard library
 import platform
 import stat
 import tempfile
 import unittest
-from os import chmod, getenv
+from os import getenv
 from pathlib import Path
 
 # project
@@ -28,6 +27,7 @@ from qgis_deployment_toolbelt.utils.check_path import (
     check_path_is_writable,
     check_var_can_be_path,
 )
+
 
 # ############################################################################
 # ########## Classes #############
@@ -51,9 +51,7 @@ class TestUtilsCheckPath(unittest.TestCase):
 
     def test_check_path_as_str_ok(self):
         """Test filepath as str is converted into Path."""
-        self.assertTrue(
-            check_var_can_be_path(input_var="/this/is/an/imaginary/file.imaginary")
-        )
+        self.assertTrue(check_var_can_be_path(input_var="/this/is/an/imaginary/file.imaginary"))
 
         self.assertTrue(
             check_var_can_be_path(input_var="%PROGRAMFILES%/QGIS/3_22/bin/qgis-bin.exe")
@@ -86,9 +84,7 @@ class TestUtilsCheckPath(unittest.TestCase):
             check_path_exists(input_path="/this/is/an/imaginary/file.imaginary")
         # no exception but False
         self.assertFalse(
-            check_path_exists(
-                input_path="/this/is/an/imaginary/file.imaginary", raise_error=False
-            )
+            check_path_exists(input_path="/this/is/an/imaginary/file.imaginary", raise_error=False)
         )
 
     def test_check_path_readable_ok(self):
@@ -120,9 +116,7 @@ class TestUtilsCheckPath(unittest.TestCase):
             unreadable_file.touch(mode=0o333, exist_ok=True)
 
             # no exception but False
-            self.assertFalse(
-                check_path_is_readable(input_path=unreadable_file, raise_error=False)
-            )
+            self.assertFalse(check_path_is_readable(input_path=unreadable_file, raise_error=False))
 
     def test_check_path_writable_ok(self):
         """Test path is writable."""
@@ -148,16 +142,14 @@ class TestUtilsCheckPath(unittest.TestCase):
             unwritable_file.touch(exist_ok=True)
             unwritable_file.write_text("this content is the last to be written here")
 
-            chmod(unwritable_file, stat.S_IROTH)
+            unwritable_file.chmod(stat.S_IROTH)
 
             # str not valid, an existing file but not writable
             with self.assertRaises(IOError):
                 check_path_is_writable(input_path=unwritable_file)
 
             # no exception but False
-            self.assertFalse(
-                check_path_is_writable(input_path=unwritable_file, raise_error=False)
-            )
+            self.assertFalse(check_path_is_writable(input_path=unwritable_file, raise_error=False))
 
     def test_check_path_meta_ok(self):
         """Test meta check path."""
@@ -199,9 +191,7 @@ class TestUtilsCheckPath(unittest.TestCase):
 
         # must exist
         self.assertFalse(
-            check_path(
-                input_path="imaginary/path", raise_error=False, must_exists=False
-            )
+            check_path(input_path="imaginary/path", raise_error=False, must_exists=False)
         )
         self.assertFalse(
             check_path(input_path="imaginary/path", raise_error=False, must_exists=True)
@@ -281,21 +271,17 @@ class TestUtilsCheckPath(unittest.TestCase):
                 must_be_a_folder=True,
             )
 
-    @unittest.skipIf(
-        getenv("CI"), "Creating file on CI with specific rights is not working."
-    )
+    @unittest.skipIf(getenv("CI"), "Creating file on CI with specific rights is not working.")
     def test_check_path_meta_ko_specific(self):
         """Test meta check path is readbale / writable fail cases (specific)."""
         # temporary fixture
         not_writable_file = Path("tests/fixtures/tmp_file_no_writable.txt")
         not_writable_file.touch()
-        chmod(not_writable_file, stat.S_IREAD | stat.S_IROTH)
+        not_writable_file.chmod(stat.S_IREAD | stat.S_IROTH)
 
         # str not valid, an existing file but not writable
         with self.assertRaises(IOError):
-            check_path(
-                input_path=not_writable_file, must_be_a_file=True, must_be_writable=True
-            )
+            check_path(input_path=not_writable_file, must_be_a_file=True, must_be_writable=True)
 
         # no exception but False
         self.assertFalse(

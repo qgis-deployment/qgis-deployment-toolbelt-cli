@@ -17,6 +17,7 @@ from pathlib import Path
 # project
 from qgis_deployment_toolbelt.utils.ini_parser_with_path import CustomConfigParser
 
+
 # ############################################################################
 # ########## Classes #############
 # ################################

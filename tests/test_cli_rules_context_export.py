@@ -10,12 +10,12 @@ Author: Julien Moura (Oslandia)
 # ########## Libraries #############
 # ##################################
 
-
 # 3rd party
 import pytest
 
 # project
 from qgis_deployment_toolbelt import cli
+
 
 # #############################################################################
 # ######## Classes #################

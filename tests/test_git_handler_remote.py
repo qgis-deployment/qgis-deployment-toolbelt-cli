@@ -27,6 +27,7 @@ from giturlparse import GitUrlParsed
 # package
 from qgis_deployment_toolbelt.profiles.remote_git_handler import RemoteGitHandler
 
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################

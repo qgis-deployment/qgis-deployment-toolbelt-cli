@@ -16,6 +16,7 @@ import unittest
 # project
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
 
+
 # ############################################################################
 # ########## Classes #############
 # ################################

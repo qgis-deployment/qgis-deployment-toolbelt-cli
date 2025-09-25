@@ -21,6 +21,7 @@ from pathlib import Path
 # module target
 from qgis_deployment_toolbelt.scenarios.scenario_reader import ScenarioReader
 
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################
@@ -33,9 +34,7 @@ class TestScenarioReader(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
-        cls.good_scenario_files = sorted(
-            Path("tests/fixtures/").glob("scenarios/good_*.y*ml")
-        )
+        cls.good_scenario_files = sorted(Path("tests/fixtures/").glob("scenarios/good_*.y*ml"))
 
     # standard methods
     def setUp(self):

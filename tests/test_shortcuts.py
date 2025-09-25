@@ -18,6 +18,7 @@ from sys import platform as opersys
 # project
 from qgis_deployment_toolbelt.shortcuts.shortcuts_handler import ApplicationShortcut
 
+
 # ############################################################################
 # ########## Classes #############
 # ################################

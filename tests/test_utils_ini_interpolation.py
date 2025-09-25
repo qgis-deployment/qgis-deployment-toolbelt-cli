@@ -20,9 +20,8 @@ from pathlib import Path
 from sys import platform as opersys
 
 # project
-from qgis_deployment_toolbelt.utils.ini_interpolation import (
-    EnvironmentVariablesInterpolation,
-)
+from qgis_deployment_toolbelt.utils.ini_interpolation import EnvironmentVariablesInterpolation
+
 
 # ############################################################################
 # ########## Classes #############
@@ -89,7 +88,7 @@ class TestUtilsIniCustomInterpolation(unittest.TestCase):
         ) as tmpdirname:
             # Write new .ini : environnement variable will be written
             tmp_copy = Path(tmpdirname).joinpath("new_file.ini")
-            with open(tmp_copy, "w") as f:
+            with tmp_copy.open(mode="w") as f:
                 config.write(f)
             # Check that environnement variable are replaced
             default_config_parser = ConfigParser()
@@ -105,9 +104,7 @@ class TestUtilsIniCustomInterpolation(unittest.TestCase):
             config (ConfigParser): parser to check
         """
         self.assertEqual(config.get(section="test", option="user"), getuser())
-        self.assertEqual(
-            config.get(section="test", option="user_home"), getenv("USERPROFILE")
-        )
+        self.assertEqual(config.get(section="test", option="user_home"), getenv("USERPROFILE"))
         self.assertEqual(
             config.get(section="test", option="fake_value_from_environment_variable"),
             getenv("QDT_TEST_ENV_VARIABLE"),
@@ -156,7 +153,7 @@ class TestUtilsIniCustomInterpolation(unittest.TestCase):
         ) as tmpdirname:
             # Write new .ini : environnement variable will be written
             tmp_copy = Path(tmpdirname).joinpath("new_file.ini")
-            with open(tmp_copy, "w") as f:
+            with tmp_copy.open(mode="w") as f:
                 config.write(f)
             # Check that environnement variable are replaced
             default_config_parser = ConfigParser()

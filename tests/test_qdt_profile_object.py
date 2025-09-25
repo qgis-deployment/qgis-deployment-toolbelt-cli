@@ -17,6 +17,7 @@ from pathlib import Path
 # project
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 
+
 # ############################################################################
 # ########## Classes #############
 # ################################
@@ -29,9 +30,7 @@ class TestQdtProfile(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
-        cls.good_profiles_files = sorted(
-            Path("tests/fixtures/").glob("profiles/good_*.json")
-        )
+        cls.good_profiles_files = sorted(Path("tests/fixtures/").glob("profiles/good_*.json"))
 
     def test_profile_load_from_json_basic(self):
         """Test profile loading from JSON."""

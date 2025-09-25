@@ -16,6 +16,7 @@ import unittest
 # project
 from qgis_deployment_toolbelt.utils.slugger import sluggy
 
+
 # ############################################################################
 # ########## Classes #############
 # ################################

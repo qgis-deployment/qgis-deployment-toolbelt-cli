@@ -17,6 +17,7 @@ from sys import platform as opersys
 # project
 from qgis_deployment_toolbelt.utils.win32utils import get_environment_variable
 
+
 # ############################################################################
 # ########## Classes #############
 # ################################

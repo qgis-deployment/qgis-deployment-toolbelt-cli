@@ -10,7 +10,6 @@ Usage from the repo root folder:
     python -m unittest tests.test_utils_images_size.TestUtilsImagesSizeChecker.get_svg_size
 """
 
-
 # standard library
 import unittest
 from pathlib import Path
@@ -26,6 +25,7 @@ from qgis_deployment_toolbelt.utils.check_image_size import (
     get_image_size,
 )
 
+
 # ############################################################################
 # ########## Classes #############
 # ################################
@@ -39,9 +39,7 @@ class TestUtilsImagesSizeChecker(unittest.TestCase):
     def setUpClass(cls) -> None:
         """Set up test."""
 
-        cls.img_tmp_folder = TemporaryDirectory(
-            prefix=f"{__title_clean__}_{__version__}_"
-        )
+        cls.img_tmp_folder = TemporaryDirectory(prefix=f"{__title_clean__}_{__version__}_")
 
         # create a temporary image
         cls.img_black_800x600 = Path(cls.img_tmp_folder.name, "img_black_800x600.jpg")

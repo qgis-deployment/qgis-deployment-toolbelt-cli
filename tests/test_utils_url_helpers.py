@@ -10,7 +10,6 @@ Usage from the repo root folder:
     python -m unittest tests.test_utils_url_helpers.TestUtilsUrlHelpers.test_check_str_is_url
 """
 
-
 # standard library
 import unittest
 from pathlib import Path
@@ -18,6 +17,7 @@ from pathlib import Path
 # project
 from qgis_deployment_toolbelt.__about__ import __uri__
 from qgis_deployment_toolbelt.utils.url_helpers import check_str_is_url
+
 
 # ############################################################################
 # ########## Classes #############

@@ -17,10 +17,11 @@ import unittest
 from pathlib import Path
 
 # 3rd party
-from requests.exceptions import ConnectionError, HTTPError
+from requests import exceptions as requests_exceptions
 
 # project
 from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
+
 
 # ############################################################################
 # ########## Classes #############
@@ -88,7 +89,7 @@ class TestUtilsFileDownloader(unittest.TestCase):
             prefix="qdt_test_downloader_", ignore_cleanup_errors=True
         ) as tmpdirname:
             target_path = Path(tmpdirname).joinpath("dl_404.html")
-            with self.assertRaises(HTTPError):
+            with self.assertRaises(requests_exceptions.HTTPError):
                 download_remote_file_to_local(
                     remote_url_to_download="https://qgis.org/fake-page",
                     local_file_path=target_path,
@@ -102,7 +103,7 @@ class TestUtilsFileDownloader(unittest.TestCase):
             prefix="qdt_test_downloader_", ignore_cleanup_errors=True
         ) as tmpdirname:
             target_path = Path(tmpdirname).joinpath("fake_file.dmg")
-            with self.assertRaises(ConnectionError):
+            with self.assertRaises(requests_exceptions.ConnectionError):
                 download_remote_file_to_local(
                     remote_url_to_download="https://fake_url/youpi.dmg",
                     local_file_path=target_path,
