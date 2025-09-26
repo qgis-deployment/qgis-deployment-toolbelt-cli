@@ -74,6 +74,7 @@ class TestJobDefaultProfileSetter(unittest.TestCase):
 
     def test_job_default_profile_setter_run_with_existing_profiles_ini(self):
         """Run the job with existing profiles.ini."""
+        # first without selectionPolicy
         self.profiles_ini.write_text("[core]\ndefaultProfile=existing_profile")
         self.default_profile_setter_job.run()
         self.assertTrue(self.profiles_ini.exists())
@@ -82,10 +83,24 @@ class TestJobDefaultProfileSetter(unittest.TestCase):
         expected_content = "[core]\ndefaultProfile=qdt_test_profile_minimal\n\n"
         self.assertEqual(content, expected_content)
 
+        # then with selectionPolicy
+        self.profiles_ini.write_text(
+            "[core]\ndefaultProfile=existing_profile\nselectionPolicy=2"
+        )
+        self.default_profile_setter_job.run()
+        self.assertTrue(self.profiles_ini.exists())
+
+        content = self.profiles_ini.read_text()
+        expected_content = (
+            "[core]\ndefaultProfile=qdt_test_profile_minimal\nselectionPolicy=2\n\n"
+        )
+        self.assertEqual(content, expected_content)
+
     def test_job_default_profile_setter_run_with_force_profile_selection_policy(self):
         """Run the job with force profile selection policy."""
-        self.default_profile_setter_job.options["force_profile_selection_policy"] = True
+        self.default_profile_setter_job.options["force_profile_selection_policy"] = 1
 
+        # first without profiles.ini
         self.default_profile_setter_job.run()
         self.assertTrue(self.profiles_ini.exists())
         content = self.profiles_ini.read_text()
@@ -94,6 +109,7 @@ class TestJobDefaultProfileSetter(unittest.TestCase):
         )
         self.assertEqual(content, expected_content)
 
+        # then with existing profiles.ini
         self.profiles_ini.write_text("[core]\ndefaultProfile=existing_profile")
         self.default_profile_setter_job.run()
         self.assertTrue(self.profiles_ini.exists())
@@ -104,6 +120,7 @@ class TestJobDefaultProfileSetter(unittest.TestCase):
         )
         self.assertEqual(content, expected_content)
 
+        # then with existing profiles.ini and existing selectionPolicy
         self.profiles_ini.write_text(
             "[core]\ndefaultProfile=existing_profile\nselectionPolicy=2"
         )
@@ -113,5 +130,25 @@ class TestJobDefaultProfileSetter(unittest.TestCase):
         content = self.profiles_ini.read_text()
         expected_content = (
             "[core]\ndefaultProfile=qdt_test_profile_minimal\nselectionPolicy=1\n\n"
+        )
+        self.assertEqual(content, expected_content)
+
+        self.default_profile_setter_job.options["force_profile_selection_policy"] = 2
+
+        self.default_profile_setter_job.run()
+        self.assertTrue(self.profiles_ini.exists())
+        content = self.profiles_ini.read_text()
+        expected_content = (
+            "[core]\ndefaultProfile=qdt_test_profile_minimal\nselectionPolicy=2\n\n"
+        )
+        self.assertEqual(content, expected_content)
+
+        self.default_profile_setter_job.options["force_profile_selection_policy"] = 0
+
+        self.default_profile_setter_job.run()
+        self.assertTrue(self.profiles_ini.exists())
+        content = self.profiles_ini.read_text()
+        expected_content = (
+            "[core]\ndefaultProfile=qdt_test_profile_minimal\nselectionPolicy=0\n\n"
         )
         self.assertEqual(content, expected_content)
