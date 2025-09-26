@@ -167,7 +167,7 @@ class JobPluginsSynchronizer(GenericJob):
                     )
                     continue
 
-                # if verisons are different
+                # if versions are different
                 if plugin_installed.is_older_than(expected_plugin):
                     logger.info(
                         f"Profile {qdt_profile.name} - "
@@ -177,6 +177,13 @@ class JobPluginsSynchronizer(GenericJob):
                     )
                     profile_plugins_to_upgrade.append(
                         (qdt_profile, expected_plugin, plugin_downloaded_zip_source)
+                    )
+                else:
+                    logger.debug(
+                        f"Profile {qdt_profile.name} - "
+                        f"Plugin {expected_plugin.name} is already installed "
+                        f"but in a newer version: {plugin_installed.version} > "
+                        f"{expected_plugin.version}. It will be kept as is."
                     )
 
         # log parse results
