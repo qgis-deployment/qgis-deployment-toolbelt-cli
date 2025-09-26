@@ -16,6 +16,20 @@ Unreleased
 
 -->
 
+## 0.39.1 - 2025-09-26
+
+### Bugs fixes 🐛
+
+* fix(logs): downgrade pyad again to avoid logging conflicts by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/707>
+
+### Features and enhancements 🎉
+
+* change(tooling): replace black, flake8 and isort by ruff by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/706>
+
+### Tooling 🔧
+
+* improve(packaging): use setuptools_scm to define version from git by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/704>
+
 ## 0.39.0 - 2025-09-25
 
 ### Bugs fixes 🐛
