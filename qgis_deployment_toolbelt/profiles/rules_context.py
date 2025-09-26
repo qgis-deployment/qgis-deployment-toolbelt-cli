@@ -119,9 +119,10 @@ class QdtRulesContext:
                 f"{platform.freedesktop_os_release().get('VERSION_ID')}"
             )
         except OSError as err:
-            logger.debug(
-                f"Unable to determine current Linux distribution. Trace: {err}."
-            )
+            if opersys == "linux":
+                logger.debug(
+                    f"Unable to determine current Linux distribution. Trace: {err}."
+                )
             linux_distribution_name = None
             linux_distribution_version = None
 
