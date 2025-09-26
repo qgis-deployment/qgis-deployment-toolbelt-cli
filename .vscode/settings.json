@@ -41,7 +41,7 @@
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.formatOnSave": true,
         "editor.codeActionsOnSave": {
             "source.organizeImports": "explicit"
@@ -72,10 +72,6 @@
     "autoDocstring.guessTypes": true,
     "autoDocstring.docstringFormat": "google",
     "autoDocstring.generateDocstringOnEnter": false,
-    "flake8.args": [
-        "--config=pyproject.toml",
-        "--verbose"
-    ],
     "yaml.schemas": {
         "docs/schemas/scenario/schema.json": [
             "scenario*qdt.yml",
@@ -88,7 +84,7 @@
             "indent": 4
         },
         "MD024": {
-            "allow_different_nesting": true
+            "siblings_only": true
         },
     },
     "markdown-mermaid.languages": [

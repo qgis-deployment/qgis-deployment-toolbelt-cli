@@ -26,6 +26,7 @@ from qgis_deployment_toolbelt.utils.check_path import check_path
 from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -114,8 +115,7 @@ class JobPluginsDownloader(GenericJob):
             logger.debug(f"{len(downloaded_plugins)} plugins downloaded.")
             if len(failed_downloads):
                 logger.error(
-                    f"{len(failed_downloads)} failed plugin downloads. "
-                    "Check previous log lines."
+                    f"{len(failed_downloads)} failed plugin downloads. Check previous log lines."
                 )
 
         if len(qdt_plugins_to_copy):
@@ -126,8 +126,7 @@ class JobPluginsDownloader(GenericJob):
             logger.debug(f"{len(copied_plugins)} plugins copied.")
             if len(failed_copies):
                 logger.error(
-                    f"{len(failed_copies)} failed plugin copies. "
-                    "Check previous log lines."
+                    f"{len(failed_copies)} failed plugin copies. Check previous log lines."
                 )
 
         logger.debug(f"Job {self.ID} ran successfully.")
@@ -163,8 +162,7 @@ class JobPluginsDownloader(GenericJob):
                 src_plugin_path = Path(plugin.url)
             except Exception as err:
                 logger.error(
-                    f"The plugin '{plugin.name}' can't be copied from {plugin.url}. "
-                    f"Trace: {err}."
+                    f"The plugin '{plugin.name}' can't be copied from {plugin.url}. Trace: {err}."
                 )
                 failed_plugins.append(plugin)
                 continue
@@ -343,8 +341,7 @@ class JobPluginsDownloader(GenericJob):
             # check if file already exists
             if plugin_download_path.is_file():
                 logger.debug(
-                    f"Plugin already exists at {plugin_download_path}, so it "
-                    "won't be downloaded."
+                    f"Plugin already exists at {plugin_download_path}, so it won't be downloaded."
                 )
                 continue
 

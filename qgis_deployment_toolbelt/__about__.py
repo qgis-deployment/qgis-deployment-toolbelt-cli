@@ -8,6 +8,7 @@ See: https://packaging.python.org/guides/single-sourcing-package-version/
 from datetime import date
 from importlib import metadata
 
+
 # import metadata from installed package, if possible
 _pkg_metadata = metadata.metadata("qgis-deployment-toolbelt") or {}
 

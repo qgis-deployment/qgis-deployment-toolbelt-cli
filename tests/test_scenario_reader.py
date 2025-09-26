@@ -21,6 +21,7 @@ from pathlib import Path
 # module target
 from qgis_deployment_toolbelt.scenarios.scenario_reader import ScenarioReader
 
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################

@@ -24,6 +24,7 @@ from qgis_deployment_toolbelt.utils.ini_interpolation import (
     EnvironmentVariablesInterpolation,
 )
 
+
 # ############################################################################
 # ########## Classes #############
 # ################################
@@ -89,7 +90,7 @@ class TestUtilsIniCustomInterpolation(unittest.TestCase):
         ) as tmpdirname:
             # Write new .ini : environnement variable will be written
             tmp_copy = Path(tmpdirname).joinpath("new_file.ini")
-            with open(tmp_copy, "w") as f:
+            with tmp_copy.open(mode="w") as f:
                 config.write(f)
             # Check that environnement variable are replaced
             default_config_parser = ConfigParser()
@@ -156,7 +157,7 @@ class TestUtilsIniCustomInterpolation(unittest.TestCase):
         ) as tmpdirname:
             # Write new .ini : environnement variable will be written
             tmp_copy = Path(tmpdirname).joinpath("new_file.ini")
-            with open(tmp_copy, "w") as f:
+            with tmp_copy.open(mode="w") as f:
                 config.write(f)
             # Check that environnement variable are replaced
             default_config_parser = ConfigParser()

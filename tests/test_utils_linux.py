@@ -19,6 +19,7 @@ from sys import platform as opersys
 # project
 from qgis_deployment_toolbelt.utils import linux_utils
 
+
 # ############################################################################
 # ########## Classes #############
 # ################################

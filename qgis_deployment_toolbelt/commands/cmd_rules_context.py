@@ -22,6 +22,7 @@ from qgis_deployment_toolbelt.constants import get_qdt_working_directory
 from qgis_deployment_toolbelt.profiles.rules_context import QdtRulesContext
 from qgis_deployment_toolbelt.utils.bouncer import exit_cli_error, exit_cli_success
 
+
 # ############################################################################
 # ########## GLOBALS #############
 # ################################
@@ -85,7 +86,7 @@ def run(args: argparse.Namespace):
             wf.write(rules_context.to_json(indent=4, sort_keys=True))
 
         # exit nicely
-        print(f"Rules context exported in {args.output_path}")
+        print(f"Rules context exported in {args.output_path}")  # noqa: T201
         exit_cli_success(f"Rules context exported in {args.output_path}")
     except Exception as err:
         exit_cli_error(err)

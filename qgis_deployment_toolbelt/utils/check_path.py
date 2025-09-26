@@ -16,6 +16,7 @@ from os import R_OK, W_OK, access
 from os.path import expanduser, expandvars
 from pathlib import Path
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -75,7 +76,7 @@ def check_var_can_be_path(
 
     try:
         if attempt == 2:
-            input_var = Path(expandvars(expanduser(input_var)))
+            input_var = Path(expandvars(expanduser(input_var)))  # noqa: PTH111
         else:
             input_var = Path(input_var)
         return True
@@ -90,7 +91,7 @@ def check_var_can_be_path(
 
         error_message += " Attempt 2/2. Game over."
         if raise_error:
-            raise TypeError(error_message)
+            raise TypeError(error_message) from exc
         else:
             logger.error(error_message)
             return False
@@ -122,9 +123,8 @@ def check_path_exists(
         input_path = Path(input_path)
 
     # if second attempt, try to expand user and vars
-
     if attempt == 2:
-        input_path = Path(expandvars(expanduser(input_path)))
+        input_path = Path(expandvars(expanduser(input_path)))  # noqa: PTH111
     else:
         input_path = Path(input_path)
 

@@ -11,7 +11,6 @@ Author: Julien Moura (https://github.com/guts).
 # ########## Libraries #############
 # ##################################
 
-
 # Standard library
 import logging
 from concurrent.futures import ThreadPoolExecutor
@@ -32,6 +31,7 @@ from qgis_deployment_toolbelt.utils.formatters import url_ensure_trailing_slash
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
 from qgis_deployment_toolbelt.utils.tree_files_reader import tree_to_download_list
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -95,6 +95,7 @@ class HttpHandler(RemoteProfilesHandlerBase):
                 proxies=get_proxy_settings(
                     url=f"{self.SOURCE_REPOSITORY_PATH_OR_URL}qdt-files.json"
                 ),
+                timeout=(30, 60),
             )
             req.raise_for_status()
             qdt_tree = req.json()
@@ -111,8 +112,7 @@ class HttpHandler(RemoteProfilesHandlerBase):
         # make sure destination path exists
         if not destination_local_path.exists():
             logger.debug(
-                f"Destination folder ({destination_local_path}) does not exist. "
-                "Let's create it!"
+                f"Destination folder ({destination_local_path}) does not exist. Let's create it!"
             )
             destination_local_path.mkdir(parents=True)
 

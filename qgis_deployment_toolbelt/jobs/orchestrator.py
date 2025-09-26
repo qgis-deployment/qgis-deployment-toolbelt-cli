@@ -37,6 +37,7 @@ from qgis_deployment_toolbelt.jobs.job_qgis_installation_finder import (
 from qgis_deployment_toolbelt.jobs.job_shortcuts import JobShortcutsManager
 from qgis_deployment_toolbelt.jobs.job_splash_screen import JobSplashScreenManager
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################

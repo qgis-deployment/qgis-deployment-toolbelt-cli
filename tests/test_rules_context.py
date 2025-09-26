@@ -10,7 +10,6 @@ Usage from the repo root folder:
     python -m unittest tests.test_rules_context.testQdtRulesContext.test_rules_export_to_json
 """
 
-
 # standard library
 import json
 import tempfile
@@ -19,6 +18,7 @@ from pathlib import Path
 
 # project
 from qgis_deployment_toolbelt.profiles.rules_context import QdtRulesContext
+
 
 # ############################################################################
 # ########## Classes #############

@@ -20,6 +20,7 @@ from validators import url
 # project
 from qgis_deployment_toolbelt import __about__
 
+
 # ############################################################################
 # ########## Classes #############
 # ################################

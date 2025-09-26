@@ -26,13 +26,14 @@ from qgis_deployment_toolbelt.constants import (
     get_qdt_working_directory,
 )
 from qgis_deployment_toolbelt.exceptions import (
-    JobOptionBadName,
-    JobOptionBadValue,
-    JobOptionBadValueType,
+    JobOptionBadNameError,
+    JobOptionBadValueError,
+    JobOptionBadValueTypeError,
 )
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 from qgis_deployment_toolbelt.profiles.rules_context import QdtRulesContext
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -187,12 +188,11 @@ class GenericJob:
 
         qdt_profile = matching_qdt_profile[0]
         logger.info(
-            f"Downloaded profile matched: {qdt_profile.name} from "
-            f"{qdt_profile.folder}"
+            f"Downloaded profile matched: {qdt_profile.name} from {qdt_profile.folder}"
         )
         return qdt_profile
 
-    @lru_cache(maxsize=1024)
+    @lru_cache(maxsize=1024)  # noqa: B019
     def filter_profiles_on_rules(
         self, tup_qdt_profiles: tuple[QdtProfile]
     ) -> tuple[list[QdtProfile], list[QdtProfile]]:
@@ -223,8 +223,7 @@ class GenericJob:
                 results = engine.evaluate(obj=self.qdt_rules_context.to_dict())
                 if len(results) == len(profile.rules):
                     logger.debug(
-                        f"Profile '{profile.name}' matches {len(profile.rules)} "
-                        "deployment rule(s)."
+                        f"Profile '{profile.name}' matches {len(profile.rules)} deployment rule(s)."
                     )
                     li_profiles_matched.append(profile)
                 else:
@@ -237,8 +236,7 @@ class GenericJob:
 
             except Exception as err:
                 logger.error(
-                    f"Error occurred parsing rules of profile '{profile.name}'. "
-                    f"Trace: {err}"
+                    f"Error occurred parsing rules of profile '{profile.name}'. Trace: {err}"
                 )
 
         return li_profiles_matched, li_profiles_unmatched
@@ -261,7 +259,7 @@ class GenericJob:
 
         for option in options:
             if option not in self.OPTIONS_SCHEMA:
-                raise JobOptionBadName(
+                raise JobOptionBadNameError(
                     job_id=self.ID,
                     bad_option_name=option,
                     expected_options_names=self.OPTIONS_SCHEMA.keys(),
@@ -271,7 +269,7 @@ class GenericJob:
             option_def: dict = self.OPTIONS_SCHEMA.get(option)
             # check value type
             if not isinstance(option_in, option_def.get("type")):
-                raise JobOptionBadValueType(
+                raise JobOptionBadValueTypeError(
                     job_id=self.ID,
                     bad_option_name=option,
                     bad_option_value=option_in,
@@ -281,7 +279,7 @@ class GenericJob:
             if option_def.get("condition") == "startswith" and not option_in.startswith(
                 option_def.get("possible_values")
             ):
-                raise JobOptionBadValue(
+                raise JobOptionBadValueError(
                     job_id=self.ID,
                     bad_option_name=option,
                     bad_option_value=option_in,
@@ -291,7 +289,7 @@ class GenericJob:
             elif option_def.get(
                 "condition"
             ) == "in" and option_in not in option_def.get("possible_values"):
-                raise JobOptionBadValue(
+                raise JobOptionBadValueError(
                     job_id=self.ID,
                     bad_option_name=option,
                     bad_option_value=option_in,

@@ -15,7 +15,6 @@
 # ########## Libraries #############
 # ##################################
 
-
 # Standard library
 import unittest
 
@@ -23,6 +22,7 @@ import unittest
 from qgis_deployment_toolbelt.jobs.job_qgis_installation_finder import (
     JobQgisInstallationFinder,
 )
+
 
 # 3rd party
 

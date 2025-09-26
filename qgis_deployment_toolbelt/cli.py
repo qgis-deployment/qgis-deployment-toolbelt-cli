@@ -32,6 +32,7 @@ from qgis_deployment_toolbelt.commands.deployment import parser_main_deployment
 from qgis_deployment_toolbelt.commands.upgrade import parser_upgrade
 from qgis_deployment_toolbelt.utils.journalizer import configure_logger
 
+
 # ############################################################################
 # ########## FUNCTIONS ###########
 # ################################

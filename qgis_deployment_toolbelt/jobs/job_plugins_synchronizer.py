@@ -21,6 +21,7 @@ from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -187,8 +188,7 @@ class JobPluginsSynchronizer(GenericJob):
             )
         ):
             logger.info(
-                "Every plugins are up to date in the "
-                f"{len(qdt_profiles)} profiles parsed."
+                f"Every plugins are up to date in the {len(qdt_profiles)} profiles parsed."
             )
         else:
             self.install_plugin_into_profile(profile_plugins_to_create)

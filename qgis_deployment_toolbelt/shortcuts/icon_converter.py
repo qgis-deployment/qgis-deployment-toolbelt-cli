@@ -16,6 +16,7 @@ Widely inspired from:
 import logging
 from pathlib import Path
 
+
 # 3rd party
 try:
     from PIL import Image, UnidentifiedImageError
@@ -23,12 +24,12 @@ except ImportError as error:
     import sys
 
     sys.exit(
-        "Please install Pillow ('pip install pillow') to make image conversion. "
-        f"Trace: {error}"
+        f"Please install Pillow ('pip install pillow') to make image conversion. Trace: {error}"
     )
 
 # package
 from qgis_deployment_toolbelt.utils.check_path import check_path
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -90,8 +91,7 @@ def png2ico(in_png_path: Path, out_ico_path: Path | None = None) -> Path:
             im.save(out_ico_path, sizes=AUTO_RESIZE_OUTPUT_ICO_SIZES)
     except UnidentifiedImageError as error:
         logger.error(
-            f"Something went wrong converting icon image '{in_png_path}' to .ico with "
-            "Pillow,"
+            f"Something went wrong converting icon image '{in_png_path}' to .ico with Pillow,"
         )
         raise error
 

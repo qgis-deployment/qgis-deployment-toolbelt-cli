@@ -6,7 +6,6 @@ See also: https://github.com/newville/pyshortcuts/
 Author: Julien Moura (https://github.com/guts)
 """
 
-
 # #############################################################################
 # ########## Libraries #############
 # ##################################
@@ -20,6 +19,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from string import Template
 from sys import platform as opersys
+
 
 # Imports depending on operating system
 if opersys == "win32":
@@ -38,6 +38,7 @@ from qgis_deployment_toolbelt.constants import (
 )
 from qgis_deployment_toolbelt.utils.check_path import check_path
 from qgis_deployment_toolbelt.utils.slugger import sluggy
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -222,8 +223,7 @@ class ApplicationShortcut:
         """
         if icon_path is None:
             logger.debug(
-                f"Shortcut '{self.name}' has no icon specified. Fallback to default "
-                "QGIS icon."
+                f"Shortcut '{self.name}' has no icon specified. Fallback to default QGIS icon."
             )
             return self.os_config.shortcut_icon_default_path
 
@@ -291,7 +291,7 @@ class ApplicationShortcut:
                 desktop_paths = re.findall('XDG_DESKTOP_DIR="([^"]*)', data)
                 if len(desktop_paths):
                     return Path(
-                        re.sub(r"\$HOME", os.path.expanduser("~"), desktop_paths[0])
+                        re.sub(r"\$HOME", str(Path("~").expanduser()), desktop_paths[0])
                     )
 
             return default_value
@@ -324,12 +324,12 @@ class ApplicationShortcut:
                 logger.debug("Home directory can’t be resolved with pathlib: %s", err)
             # try another way
             if home is None:
-                home = os.path.expanduser("~")
+                home = Path("~").expanduser()
             if home is None:
-                home = os.path.normpath(os.environ.get("HOME", os.path.abspath(".")))
+                home = os.path.normpath(os.environ.get("HOME", str(Path().resolve())))
             return Path(home)
         elif opersys == "darwin":
-            return Path(os.path.expanduser("~"))
+            return Path("~").expanduser()
         else:
             logger.error(f"Unrecognized operating system: {opersys}.")
             return None
@@ -454,7 +454,7 @@ class ApplicationShortcut:
             tuple[Path | None, Path | None]: desktop and startmenu path
         """
         # variable
-        _WSHELL = win32com.client.Dispatch("Wscript.Shell", pythoncom.CoInitialize())
+        _WSHELL = win32com.client.Dispatch("Wscript.Shell", pythoncom.CoInitialize())  # noqa: N806
 
         # desktop shortcut
         if self.desktop:

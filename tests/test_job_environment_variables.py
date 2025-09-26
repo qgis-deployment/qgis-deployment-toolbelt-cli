@@ -15,10 +15,8 @@
 # ########## Libraries #############
 # ##################################
 
-
 # Standard library
 import unittest
-from os.path import expanduser
 from pathlib import Path
 from sys import platform as opersys
 
@@ -27,6 +25,7 @@ from qgis_deployment_toolbelt.jobs.job_environment_variables import (
     JobEnvironmentVariables,
 )
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
+
 
 # 3rd party
 
@@ -109,7 +108,7 @@ class TestJobEnvironmentVariables(unittest.TestCase):
             )
             self.assertEqual(
                 get_environment_variable("QDT_TEST_FAKE_ENV_VAR_PATH"),
-                str(Path(expanduser("~/scripts/qgis_startup.py")).resolve()),
+                str(Path("~/scripts/qgis_startup.py").expanduser().resolve()),
             )
             self.assertEqual(
                 get_environment_variable("QDT_TEST_URL_API_PLUGIN"),
@@ -161,7 +160,7 @@ class TestJobEnvironmentVariables(unittest.TestCase):
             )
             self.assertEqual(
                 get_environment_variable("QDT_TEST_FAKE_ENV_VAR_PATH"),
-                str(Path(expanduser("~/scripts/qgis_startup.py")).resolve()),
+                str(Path("~/scripts/qgis_startup.py").expanduser().resolve()),
             )
             self.assertEqual(
                 get_environment_variable("QDT_TEST_URL_API_PLUGIN"),

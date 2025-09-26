@@ -15,9 +15,8 @@ from urllib.parse import parse_qs, unquote, urlparse
 
 # 3rd party
 import truststore
-from requests import Response, Session
+from requests import Response, Session, exceptions as requests_exceptions
 from requests.adapters import HTTPAdapter
-from requests.exceptions import ConnectionError, HTTPError
 from requests.utils import requote_uri
 from urllib3.exceptions import InsecureRequestWarning
 
@@ -26,6 +25,7 @@ from qgis_deployment_toolbelt.__about__ import __title_clean__, __version__
 from qgis_deployment_toolbelt.utils.formatters import convert_octets
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
+
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -162,7 +162,7 @@ def download_remote_file_to_local(
                 f"Downloading {remote_url_to_download} to {local_file_path} "
                 f"({convert_octets(local_file_path.stat().st_size)}) succeeded."
             )
-    except HTTPError as error:
+    except requests_exceptions.HTTPError as error:
         logger.error(
             f"Downloading {remote_url_to_download} to {local_file_path} failed. "
             f"Cause: HTTPError. Trace: {error}."
@@ -178,7 +178,7 @@ def download_remote_file_to_local(
             )
 
         raise error
-    except ConnectionError as error:
+    except requests_exceptions.ConnectionError as error:
         logger.error(
             f"Downloading {remote_url_to_download} to {local_file_path} failed. "
             f"Cause: ConnectionError. Trace: {error}"

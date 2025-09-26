@@ -27,6 +27,7 @@ from qgis_deployment_toolbelt.utils.ini_interpolation import (
 from qgis_deployment_toolbelt.utils.ini_parser_with_path import CustomConfigParser
 from qgis_deployment_toolbelt.utils.win32utils import normalize_path
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -163,8 +164,7 @@ class QgisIniHelper:
 
         if self.ini_type not in ("profile_qgis3", "profile_qgis3customization"):
             logger.debug(
-                f"Invalid ini type: {self.ini_type}. Must a QGIS3.ini or a "
-                "QGIS3CUSTOMIZATION.ini"
+                f"Invalid ini type: {self.ini_type}. Must a QGIS3.ini or a QGIS3CUSTOMIZATION.ini"
             )
             return None
 
@@ -217,13 +217,6 @@ class QgisIniHelper:
             )
             return self.is_splash_screen_set(ini_file=self.profile_customization_path)
 
-        # if self.ini_type not in ("profile_qgis3", "profile_qgis3customization"):
-        #     logger.debug(
-        #         f"Invalid ini type: {self.ini_type}. Must a QGIS3.ini or a "
-        #         "QGIS3CUSTOMIZATION.ini"
-        #     )
-        #     return None
-
         if isinstance(ini_file, CustomConfigParser):
             if ini_file.has_option(section="Customization", option="splashpath"):
                 splash_path = ini_file.get(section="Customization", option="splashpath")
@@ -240,8 +233,7 @@ class QgisIniHelper:
                     return True
             else:
                 logger.debug(
-                    f"{ini_file.get_initial_file_path().resolve()} has no "
-                    "splash path set."
+                    f"{ini_file.get_initial_file_path().resolve()} has no splash path set."
                 )
                 return False
         elif isinstance(ini_file, Path) and check_path(
@@ -405,8 +397,7 @@ class QgisIniHelper:
             )
         elif ini_file is None and self.profile_customization_path is None:
             raise ValueError(
-                "Both passed ini file and the object's defined are not "
-                "defined. Can't process."
+                "Both passed ini file and the object's defined are not defined. Can't process."
             )
 
         # SWITCH=False and NOT DEFINED --> EXIT

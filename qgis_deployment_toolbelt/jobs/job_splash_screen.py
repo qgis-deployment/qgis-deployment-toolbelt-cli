@@ -16,11 +16,12 @@ import logging
 from pathlib import Path
 
 # package
-from qgis_deployment_toolbelt.exceptions import SplashScreenBadDimensions
+from qgis_deployment_toolbelt.exceptions import SplashScreenBadDimensionsError
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 from qgis_deployment_toolbelt.profiles.qgis_ini_handler import QgisIniHelper
 from qgis_deployment_toolbelt.utils.check_image_size import check_image_dimensions
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -156,7 +157,7 @@ class JobSplashScreenManager(GenericJob):
                     allowed_images_extensions=(".png",),
                 )
                 if not is_img_compliant:
-                    err = SplashScreenBadDimensions(
+                    err = SplashScreenBadDimensionsError(
                         image_filepath=installed_splash_screen_filepath,
                         profile_name=profile_installed.name,
                     )

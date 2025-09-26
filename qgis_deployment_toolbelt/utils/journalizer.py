@@ -19,6 +19,7 @@ from socket import gethostname
 import certifi
 from requests.utils import DEFAULT_CA_BUNDLE_PATH
 
+
 # Imports depending on operating system
 if "linux" in uname().system.lower():
     import distro
@@ -30,6 +31,7 @@ from qgis_deployment_toolbelt.__about__ import __title__, __version__
 from qgis_deployment_toolbelt.constants import get_qdt_logs_folder
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
+
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -115,7 +117,7 @@ def configure_logger(verbosity: int = 1, logfile: None | Path | str = None):
 def headers():
     """Basic information to log before other message."""
     # initialize the log
-    logger.info(f"{'='*10} {__title__} - {__version__} {'='*10}")
+    logger.info(f"{'=' * 10} {__title__} - {__version__} {'=' * 10}")
     logger.debug(f"Operating System: {platform()}")
     if distro:
         logger.debug(

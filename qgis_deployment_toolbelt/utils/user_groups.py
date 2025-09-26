@@ -18,15 +18,18 @@ from getpass import getuser
 from platform import uname
 from sys import platform as opersys
 
+
 # Imports depending on operating system
 if opersys == "win32":
     """windows"""
+    # standard
+    import shutil
 
     # 3rd party
     import pyad
     import win32com
     import win32net
-    from pywintypes import error as PyWinException
+    from pywintypes import error as PyWinException  # noqa: N812
 
 else:
     import grp
@@ -36,6 +39,7 @@ from qgis_deployment_toolbelt.utils.win32utils import (
     ExtendedNameFormat,
     get_current_user_extended_data,
 )
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -198,11 +202,16 @@ def _is_computer_in_domain_powershell() -> bool:
     Returns:
         bool: True if the computer is joined to a domain or workgroup, False otherwise.
     """
+    powershell_path = shutil.which("powershell.exe")
+    if not powershell_path:
+        raise FileNotFoundError("powershell.exe not found in PATH.")
+
     # use PowerShell to retrieve domain information
-    domain = subprocess.run(
-        ["powershell.exe", "(Get-CimInstance Win32_ComputerSystem).Domain"],
+    domain = subprocess.run(  # noqa: S603
+        [powershell_path, "-Command", "(Get-CimInstance Win32_ComputerSystem).Domain"],
         stdout=subprocess.PIPE,
         text=True,
+        check=True,
     ).stdout.strip()
 
     # check if domain is different from workgroup
@@ -220,8 +229,7 @@ def _is_computer_in_domain_pyad() -> bool:
         return bool(len(user_obj.get_attribute("memberOf")))
     except Exception as err:
         logger.info(
-            "Based on pyad, the current computer is not attached to any domain."
-            f" Trace: {err}"
+            f"Based on pyad, the current computer is not attached to any domain. Trace: {err}"
         )
         return False
 
@@ -236,7 +244,7 @@ def _is_computer_in_domain_win32() -> bool:
     try:
         wmi = win32com.client.GetObject("winmgmts://./root/cimv2")
     except Exception as err:
-        logging.info(
+        logger.info(
             "Unable to load WMI (Windows Management Instrumentation) from "
             f"win32com.client. Other options will be used. Trace: {err}"
         )
@@ -294,8 +302,7 @@ def is_computer_attached_to_a_domain() -> bool:
             return _is_computer_in_domain_pyad()
         except Exception as err:
             logger.error(
-                f"Something went wrong using PyAD. Trace: {err}. "
-                "Fallback to PowerShell..."
+                f"Something went wrong using PyAD. Trace: {err}. Fallback to PowerShell..."
             )
         # fallback with PowerShell
         return _is_computer_in_domain_powershell()
@@ -329,8 +336,7 @@ def is_user_in_group(group_name: str, user_name: str | None = None) -> bool:
     try:
         local_groups = get_user_local_groups()
         logger.debug(
-            f"User '{user_name}' belongs to following LOCAL groups: "
-            f"{'; '.join(local_groups)}. "
+            f"User '{user_name}' belongs to following LOCAL groups: {'; '.join(local_groups)}. "
         )
     except Exception as err:
         logger.error(f"Retrieving user's LOCAL groups failed. Trace: {err}")
@@ -342,8 +348,7 @@ def is_user_in_group(group_name: str, user_name: str | None = None) -> bool:
     try:
         domain_groups = get_user_domain_groups()
         logger.debug(
-            f"User '{user_name}' belongs to following DOMAIN groups: "
-            f"{'; '.join(domain_groups)}. "
+            f"User '{user_name}' belongs to following DOMAIN groups: {'; '.join(domain_groups)}. "
         )
     except Exception as err:
         logger.error(f"Retrieving user's DOMAIN groups failed. Trace: {err}")

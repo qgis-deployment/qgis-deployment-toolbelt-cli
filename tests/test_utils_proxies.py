@@ -18,6 +18,7 @@ from pathlib import Path
 # project
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 
+
 # ############################################################################
 # ########## Classes #############
 # ################################

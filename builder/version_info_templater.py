@@ -17,13 +17,15 @@ See:
 import argparse
 import re
 import sys
-from os import W_OK, access, path
+from os import W_OK, access
 from pathlib import Path
 
-sys.path.insert(0, path.abspath(r"."))
+
+sys.path.insert(0, Path().resolve().as_posix())
 
 # module
 from qgis_deployment_toolbelt import __about__
+
 
 # #############################################################################
 # ########### MAIN #################
@@ -113,8 +115,8 @@ def run():
 
         # log user
         print(f"Version info written to: {out_version_file.resolve()}")
-    except KeyboardInterrupt:
-        raise SystemExit("Aborted by user request.")
+    except KeyboardInterrupt as err:
+        raise SystemExit("Aborted by user request.") from err
 
 
 # Stand alone execution

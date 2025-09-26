@@ -28,6 +28,7 @@ from git import Repo as GitPythonRepo
 # package
 from qgis_deployment_toolbelt.profiles.local_git_handler import LocalGitHandler
 
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################

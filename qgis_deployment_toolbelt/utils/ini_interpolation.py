@@ -17,6 +17,7 @@ from collections import ChainMap
 from configparser import BasicInterpolation, ConfigParser, InterpolationSyntaxError
 from os.path import expanduser, expandvars
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -73,7 +74,7 @@ class EnvironmentVariablesInterpolation(BasicInterpolation):
             return value
 
         try:
-            return expandvars(expanduser(value))
+            return expandvars(expanduser(value))  # noqa: PTH111
         except Exception as exc:
             logger.error(
                 f"Failed to interpolate {value} in {section}/{option}. Trace: {exc}"
@@ -123,7 +124,7 @@ class EnvironmentVariablesInterpolation(BasicInterpolation):
         """
         value = super().before_write(parser, section, option, value)
         try:
-            return expandvars(expanduser(value))
+            return expandvars(expanduser(value))  # noqa: PTH111
         except Exception as exc:
             logger.error(
                 f"Failed to interpolate {value} in {section}/{option}. Trace: {exc}"

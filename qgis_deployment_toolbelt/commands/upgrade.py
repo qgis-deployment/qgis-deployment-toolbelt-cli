@@ -30,8 +30,8 @@ from qgis_deployment_toolbelt.__about__ import (
     __title__,
     __title_clean__,
     __uri_repository__,
+    __version__ as actual_version,
 )
-from qgis_deployment_toolbelt.__about__ import __version__ as actual_version
 from qgis_deployment_toolbelt.utils.bouncer import (
     exit_cli_error,
     exit_cli_normal,
@@ -40,6 +40,7 @@ from qgis_deployment_toolbelt.utils.bouncer import (
 from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -113,6 +114,7 @@ def get_latest_release(api_repo_url: str) -> dict | None:
             url=request_url,
             headers=headers,
             proxies=get_proxy_settings(url=request_url),
+            timeout=(30, 60),
         )
         req.raise_for_status()
         release_info = req.json()
@@ -222,9 +224,9 @@ def run(args: argparse.Namespace):
     # compare it
     latest_version: str = latest_release.get("tag_name")
     if Version(version=actual_version) < Version(version=latest_version):
-        print(f"A newer version is available: {latest_version}")
+        print(f"A newer version is available: {latest_version}")  # noqa: T201
         if args.opt_show_release_notes:
-            print(latest_release.get("body"))
+            print(latest_release.get("body"))  # noqa: T201
         if args.opt_only_check:
             exit_cli_normal(
                 f"A newer version is available: {latest_version}. No download because "
@@ -233,7 +235,7 @@ def run(args: argparse.Namespace):
             )
     else:
         exit_msg = f"You already have the latest released version: {latest_version}."
-        print(exit_msg)
+        print(exit_msg)  # noqa: T201
         exit_cli_normal(
             message=exit_msg,
             abort=True,
@@ -243,13 +245,13 @@ def run(args: argparse.Namespace):
     # check if we are in frozen mode (typically PyInstaller) or as "normal" Python
     if not (getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")):
         logger.debug("Running in a normal Python process.")
-        print(
+        print(  # noqa: T201
             "\n\nTo get the latest version, run (adapt command to your environment):"
             f"\n\npython -m pip install -U {__package_name__}"
         )
         sys.exit(0)
 
-    print(f"Downloading newer version of executable for {opersys}: {latest_version}")
+    print(f"Downloading newer version of executable for {opersys}: {latest_version}")  # noqa: T201
 
     # select remote download URL
     if release_asset_for_os := get_download_url_for_os(latest_release.get("assets")):
@@ -281,24 +283,3 @@ def run(args: argparse.Namespace):
         exit_cli_error(f"Download new version failed. Trace: {err}")
 
     exit_cli_success(f"New version of {__title__} downloaded here: {dest_filepath}.")
-
-
-# #############################################################################
-# ##### Stand alone program ########
-# ##################################
-if __name__ == "__main__":
-    """Standalone execution."""
-    latest_release = get_latest_release(
-        replace_domain(url=__uri_repository__, new_domain="api.github.com/repos")
-    )
-    print(
-        latest_release.keys(),
-        latest_release.get("assets_url"),
-        # latest_release.get("assets"),
-    )
-
-    dl_link_linux, dl_link_macos, dl_link_windows = (
-        get_download_url_for_os(latest_release.get("assets"), override_opersys=os)[0]
-        for os in ["linux", "darwin", "win32"]
-    )
-    print(dl_link_linux, dl_link_macos, dl_link_windows)

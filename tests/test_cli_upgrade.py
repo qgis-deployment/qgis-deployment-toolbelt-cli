@@ -10,7 +10,6 @@ Author: Julien Moura (Oslandia)
 # ########## Libraries #############
 # ##################################
 
-
 # standard library
 import unittest
 
@@ -27,6 +26,7 @@ from qgis_deployment_toolbelt.commands.upgrade import (
     replace_domain,
 )
 from qgis_deployment_toolbelt.constants import SUPPORTED_OPERATING_SYSTEMS_CODENAMES
+
 
 # #############################################################################
 # ######## Functions ###############

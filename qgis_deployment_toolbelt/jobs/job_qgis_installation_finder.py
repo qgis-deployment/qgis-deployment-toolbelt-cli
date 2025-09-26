@@ -10,7 +10,6 @@ Author: Jean-Marie KERLOCH (https://github.com/jmkerloch)
 # ########## Libraries #############
 # ##################################
 
-
 # Standard library
 import logging
 import os
@@ -26,9 +25,10 @@ from qgis_deployment_toolbelt.constants import (
     RE_QGIS_FINDER_DIR,
     RE_QGIS_FINDER_VERSION,
 )
-from qgis_deployment_toolbelt.exceptions import QgisInstallNotFound
+from qgis_deployment_toolbelt.exceptions import QgisInstallNotFoundError
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.utils.check_path import check_path_exists
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -71,7 +71,7 @@ class JobQgisInstallationFinder(GenericJob):
                 expandvars("%PROGRAMFILES%"),
                 expandvars(
                     expanduser(getenv("QDT_OSGEO4W_INSTALL_DIR", "C:\\OSGeo4W"))
-                ),
+                ),  # noqa: PTH111
             ),
             "possible_values": None,
             "condition": None,
@@ -104,7 +104,7 @@ class JobQgisInstallationFinder(GenericJob):
             os.environ["QDT_QGIS_EXE_PATH"] = installed_qgis_path
         else:
             if self.options.get("if_not_found", "warning") == "error":
-                raise QgisInstallNotFound()
+                raise QgisInstallNotFoundError()
             else:
                 logger.warning("No QGIS installation found")
 
@@ -133,8 +133,7 @@ class JobQgisInstallationFinder(GenericJob):
                         "the QGIS version can't be defined. Check environment variable."
                     )
         logger.debug(
-            "'QDT_QGIS_EXE_PATH' is not defined. "
-            "Searching for QGIS executable is necessary."
+            "'QDT_QGIS_EXE_PATH' is not defined. Searching for QGIS executable is necessary."
         )
         return True
 
@@ -260,7 +259,7 @@ class JobQgisInstallationFinder(GenericJob):
         search_paths = []
         if "search_paths" in self.options:
             for path in self.options["search_paths"]:
-                search_paths.append(expandvars(expanduser(getenv(path, path))))
+                search_paths.append(expandvars(expanduser(getenv(path, path))))  # noqa: PTH111
         return search_paths
 
     def _get_windows_installed_qgis_path(self) -> dict[str, str]:
@@ -276,11 +275,11 @@ class JobQgisInstallationFinder(GenericJob):
             # Program files
             prog_file_dir = expandvars("%PROGRAMFILES%")
 
-            for dir_name in os.listdir(prog_file_dir):
+            for prog_files_subfolder in Path(prog_file_dir).iterdir():
                 # Check if the directory name matches the pattern
-                match = RE_QGIS_FINDER_DIR.match(dir_name)
+                match = RE_QGIS_FINDER_DIR.match(prog_files_subfolder.name)
                 if match:
-                    search_paths.append(os.path.join(prog_file_dir, dir_name))
+                    search_paths.append(f"{prog_files_subfolder.resolve()}")
 
             # OSGEO4W
             search_paths.append(environ.get("QDT_OSGEO4W_INSTALL_DIR", "C:\\OSGeo4W"))
@@ -365,7 +364,7 @@ class JobQgisInstallationFinder(GenericJob):
         Returns:
             str | None: SemVer version, None if version not found
         """
-        process = subprocess.Popen(
+        process = subprocess.Popen(  # noqa: S602
             f'"{qgis_bin}" --version', stdout=subprocess.PIPE, shell=True
         )
         stdout_, _ = process.communicate()

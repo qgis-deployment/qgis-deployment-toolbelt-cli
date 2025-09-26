@@ -10,7 +10,6 @@ Author: Julien Moura (Oslandia)
 # ########## Libraries #############
 # ##################################
 
-
 # Standard library
 import tempfile
 from os import environ, getenv
@@ -22,6 +21,7 @@ import pytest
 # project
 from qgis_deployment_toolbelt import __about__, cli
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
+
 
 # #############################################################################
 # ######## Globals #################

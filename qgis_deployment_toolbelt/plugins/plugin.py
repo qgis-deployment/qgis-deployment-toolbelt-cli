@@ -31,6 +31,7 @@ from packaging.version import InvalidVersion, Version
 from qgis_deployment_toolbelt.utils.check_path import check_path
 from qgis_deployment_toolbelt.utils.slugger import sluggy
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -53,7 +54,7 @@ class QgisPlugin:
     """Model describing a QGIS plugin."""
 
     # optional mapping on attributes names.
-    # Structure: {attribute_name_in_output_object: attribute_name_from_input_file} # noqa: E800
+    # Structure: {attribute_name_in_output_object: attribute_name_from_input_file}  # noqa: ERA001
     ATTR_MAP = {
         "location": "type",
         "qgis_maximum_version": "qgisMaximumVersion",
@@ -249,7 +250,7 @@ class QgisPlugin:
         else:
             return sluggy(self.name)
 
-    def is_older_than(self, version_to_compare: str | QgisPlugin) -> bool:
+    def is_older_than(self, version_to_compare: str | QgisPlugin) -> bool | None:
         """Determine if the actual object version is older than the given version to \
             compare.
 
@@ -303,7 +304,7 @@ class QgisPlugin:
         return plugin_version < version_to_compare
 
     @property
-    def uri_to_zip(self) -> str:
+    def uri_to_zip(self) -> str | Path:
         """Get the plugin URI. Can be either a local path or remote URL (in that case
             it's mapped to dowload_url property).
 
@@ -327,103 +328,6 @@ class QgisPlugin:
                 logger.debug(
                     f"URI cleaning: 'file://' protocol prefix removed. Result: {uri_or_path}"
                 )
-            return Path(expandvars(expanduser(uri_or_path)))
+            return Path(expandvars(expanduser(uri_or_path)))  # noqa: PTH111
         else:
             return self.url
-
-
-# #############################################################################
-# ##### Stand alone program ########
-# ##################################
-
-if __name__ == "__main__":
-    """Standalone execution."""
-    sample_plugin_complete = {
-        "name": "french_locator_filter",
-        "version": "1.0.4",
-        "url": "https://plugins.qgis.org/plugins/french_locator_filter/version/1.0.4/download/",
-        "location": "remote",
-    }
-
-    plugin_obj_one: QgisPlugin = QgisPlugin.from_dict(sample_plugin_complete)
-    assert plugin_obj_one.url == plugin_obj_one.download_url
-    print(plugin_obj_one)
-
-    sample_plugin_minimal = {
-        "name": "french_locator_filter",
-        "version": "1.0.4",
-        "official_repository": True,
-    }
-
-    plugin_obj_two = QgisPlugin.from_dict(sample_plugin_minimal)
-    print(plugin_obj_two)
-
-    assert plugin_obj_one == plugin_obj_two
-
-    sample_plugin_unofficial = {
-        "name": "Geotuileur",
-        "version": "1.0.0",
-        "official_repository": False,
-        "repository_url_xml": "https://oslandia.gitlab.io/qgis/ign-geotuileur/plugins.xml",
-    }
-
-    plugin_obj_three: QgisPlugin = QgisPlugin.from_dict(sample_plugin_unofficial)
-    print(plugin_obj_three)
-    print(plugin_obj_three.folder_name)
-    print(plugin_obj_three.installation_folder_name)
-    print(plugin_obj_three.download_url)
-
-    sample_plugin_different_name = {
-        "name": "Layers menu from project",
-        "version": "2.1.0",
-        "url": "https://plugins.qgis.org/plugins/menu_from_project/version/2.1.0/download/",
-        "location": "remote",
-        "plugin_id": 1846,
-    }
-
-    plugin_obj_four: QgisPlugin = QgisPlugin.from_dict(sample_plugin_different_name)
-    print(plugin_obj_four.url)
-    print(plugin_obj_four.official_repository)
-    print(plugin_obj_four.folder_name)
-    print(plugin_obj_four.installation_folder_name)
-    print(plugin_obj_four.folder_name)
-    assert plugin_obj_four.url == plugin_obj_four.download_url
-
-    sample_zip = (
-        Path.home() / ".cache/qgis-deployment-toolbelt/plugins/qompligis_v1-1-0.zip"
-    )
-    plugin_from_zip: QgisPlugin = QgisPlugin.from_zip(sample_zip)
-    print(plugin_from_zip)
-
-    sample_plugin_qtribu = {
-        "name": "QTribu",
-        "version": "0.14.2",
-        "official_repository": True,
-        "folder_name": "qtribu",
-    }
-    plugin_obj_five: QgisPlugin = QgisPlugin.from_dict(sample_plugin_qtribu)
-    print(plugin_obj_five.url)
-
-    sample_plugin_qtribu_newer: QgisPlugin = QgisPlugin.from_dict(
-        {
-            "name": "QTribu",
-            "version": "0.15.0",
-            "official_repository": True,
-            "folder_name": "qtribu",
-        }
-    )
-
-    assert plugin_obj_five.is_older_than(sample_plugin_qtribu_newer) is True
-    assert sample_plugin_qtribu_newer.is_older_than(plugin_obj_five) is False
-
-    plugin_dict_local = {
-        "name": "STSI Locator Filter",
-        "folder_name": "stsi_locator_filter",
-        "official_repository": False,
-        "plugin_id": 202303,
-        "location": "local",
-        "url": "~/Git/Oslandia/QGIS/stsi-plugin-qgis-geocoder-locator-filter/stsi_locator_filter.1.0.0.zip",
-        "version": "1.0.0",
-    }
-    plugin_obj_six = QgisPlugin.from_dict(plugin_dict_local)
-    print(plugin_obj_six.uri_to_zip)

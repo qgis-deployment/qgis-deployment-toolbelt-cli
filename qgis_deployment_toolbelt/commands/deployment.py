@@ -31,6 +31,7 @@ from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_
 from qgis_deployment_toolbelt.utils.slugger import sluggy
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################

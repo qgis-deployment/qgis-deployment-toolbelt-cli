@@ -20,7 +20,7 @@ import logging
 import tempfile
 from pathlib import Path
 from shutil import copy2, copytree
-from typing import Literal
+from typing import Any, Literal
 
 # 3rd party
 from packaging.version import InvalidVersion, Version
@@ -33,6 +33,7 @@ from qgis_deployment_toolbelt.constants import (
 from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qgis_ini_handler import QgisIniHelper
 from qgis_deployment_toolbelt.utils.check_path import check_path
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -49,7 +50,7 @@ class QdtProfile:
     """Object definition for QGIS Profile handled by QDT."""
 
     # optional mapping on attributes names.
-    # {attribute_name_in_output_object: attribute_name_from_input_file}  # noqa: E800
+    # {attribute_name_in_output_object: attribute_name_from_input_file}  # noqa: ERA001
     ATTR_MAP = {
         "qgis_maximum_version": "qgisMaximumVersion",
         "qgis_minimum_version": "qgisMinimumVersion",
@@ -72,7 +73,7 @@ class QdtProfile:
         rules: list[dict] | None = None,
         splash: str | None = None,
         version: str | None = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         """Initialize a QDT Profile object.
 
@@ -152,9 +153,7 @@ class QdtProfile:
 
             .. code-block:: python
 
-                QdtProfile = QdtProfile.from_json(
-                        Path(src_profile / "profile.json")
-                    )
+                QdtProfile = QdtProfile.from_json(Path(src_profile / "profile.json"))
                 print(profile.splash.resolve())
         """
         # checks

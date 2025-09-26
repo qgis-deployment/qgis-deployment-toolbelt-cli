@@ -19,6 +19,7 @@ from qgis_deployment_toolbelt.utils.formatters import (
     url_ensure_trailing_slash,
 )
 
+
 # ############################################################################
 # ########## Classes #############
 # ################################

@@ -24,13 +24,12 @@ from dulwich import porcelain
 from dulwich.client import LsRemoteResult
 from dulwich.errors import GitProtocolError, NotGitRepository
 from dulwich.repo import Repo
-from giturlparse import GitUrlParsed
-from giturlparse import parse as git_parse
-from giturlparse import validate as git_validate
+from giturlparse import GitUrlParsed, parse as git_parse, validate as git_validate
 
 # project
 from qgis_deployment_toolbelt.utils import proxies
 from qgis_deployment_toolbelt.utils.check_path import check_folder_is_empty
+
 
 # #############################################################################
 # ########## Globals ###############

@@ -21,12 +21,13 @@ from pathlib import Path
 
 # package
 from qgis_deployment_toolbelt.exceptions import (
-    JobOptionBadName,
-    JobOptionBadValue,
-    JobOptionBadValueType,
+    JobOptionBadNameError,
+    JobOptionBadValueError,
+    JobOptionBadValueTypeError,
 )
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
+
 
 # #############################################################################
 # ########## Classes ###############
@@ -138,7 +139,7 @@ class TestJobGeneric(unittest.TestCase):
             "bad_option_name": "git",
         }
 
-        with self.assertRaises(JobOptionBadName):
+        with self.assertRaises(JobOptionBadNameError):
             self.generic_job.validate_options(bad_option_name)
 
     def test_validate_options_bad_condition_in(self):
@@ -149,7 +150,7 @@ class TestJobGeneric(unittest.TestCase):
             "option_two": "bad-value-not-in-possibles",
         }
 
-        with self.assertRaises(JobOptionBadValue):
+        with self.assertRaises(JobOptionBadValueError):
             self.generic_job.validate_options(bad_options_scope)
 
     def test_validate_options_bad_condition_startswith(self):
@@ -160,7 +161,7 @@ class TestJobGeneric(unittest.TestCase):
             "option_two": "user",
         }
 
-        with self.assertRaises(JobOptionBadValue):
+        with self.assertRaises(JobOptionBadValueError):
             self.generic_job.validate_options(bad_options_scope)
 
     def test_validate_options_bad_type(self):
@@ -171,5 +172,5 @@ class TestJobGeneric(unittest.TestCase):
             "option_two": "user",
         }
 
-        with self.assertRaises(JobOptionBadValueType):
+        with self.assertRaises(JobOptionBadValueTypeError):
             self.generic_job.validate_options(bad_options)

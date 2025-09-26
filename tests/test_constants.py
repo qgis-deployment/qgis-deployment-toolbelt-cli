@@ -10,13 +10,12 @@ Usage from the repo root folder:
     python -m unittest tests.test_constants.TestConstants.test_constants
 """
 
-
 # standard
 import tempfile
 import unittest
 from dataclasses import is_dataclass
 from os import environ, getenv, unsetenv
-from os.path import expanduser, expandvars
+from os.path import expandvars
 from pathlib import Path
 from sys import platform as opersys
 
@@ -26,6 +25,7 @@ from qgis_deployment_toolbelt.constants import (
     get_qdt_logs_folder,
     get_qdt_working_directory,
 )
+
 
 # ############################################################################
 # ########## Classes #############
@@ -131,7 +131,7 @@ class TestConstants(unittest.TestCase):
         os_config = OSConfiguration.from_opersys()
         self.assertEqual(
             os_config.get_qgis_bin_path,
-            Path(expanduser("~/qgis-ltr-bin.exe")).resolve(),
+            Path("~/qgis-ltr-bin.exe").expanduser().resolve(),
         )
 
         environ.pop("QDT_QGIS_EXE_PATH")
@@ -152,7 +152,7 @@ class TestConstants(unittest.TestCase):
 
         self.assertEqual(
             os_config.get_qgis_bin_path,
-            Path(expandvars(expanduser(d_test.get(opersys)))),
+            Path(expandvars(Path(d_test.get(opersys)).expanduser())),
         )
 
         environ.pop("QDT_QGIS_EXE_PATH")

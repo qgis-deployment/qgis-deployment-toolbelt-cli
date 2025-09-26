@@ -19,6 +19,7 @@ from datetime import date
 from getpass import getuser
 from os import _Environ, environ
 from sys import platform as opersys
+from typing import Any
 
 # package
 from qgis_deployment_toolbelt.utils.user_groups import (
@@ -29,6 +30,7 @@ from qgis_deployment_toolbelt.utils.win32utils import (
     ExtendedNameFormat,
     get_current_user_extended_data,
 )
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -178,7 +180,7 @@ class QdtRulesContext:
                 result[attr.removeprefix("_context_")] = getattr(self, attr)
         return result
 
-    def to_json(self, **kwargs) -> str:
+    def to_json(self, **kwargs: Any) -> str:
         """Supersedes json.dumps using the dictionary returned by to_dict().
         kwargs are passed to json.dumps.
 

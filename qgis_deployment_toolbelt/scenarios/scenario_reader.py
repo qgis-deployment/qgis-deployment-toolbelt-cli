@@ -22,6 +22,7 @@ import yaml
 # package
 from qgis_deployment_toolbelt.utils.check_path import check_path
 
+
 # #############################################################################
 # ########## Globals ###############
 # ##################################
@@ -62,8 +63,7 @@ class ScenarioReader:
             self.scenario = yaml.safe_load(self.input_yaml)
         else:
             raise TypeError(
-                "Unsupported data type. Expects a str, Path or buffered IO. "
-                f"Got: {type(in_yaml)}"
+                f"Unsupported data type. Expects a str, Path or buffered IO. Got: {type(in_yaml)}"
             )
 
     # -- CHECKS --

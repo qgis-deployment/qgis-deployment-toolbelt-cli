@@ -10,7 +10,6 @@ Author: Julien Moura (https://github.com/guts)
 # ########## Libraries #############
 # ##################################
 
-
 # Standard library
 import logging
 import os
@@ -25,6 +24,7 @@ from qgis_deployment_toolbelt.utils.check_path import (
     check_var_can_be_path,
 )
 from qgis_deployment_toolbelt.utils.url_helpers import check_str_is_url
+
 
 # conditional import
 if opersys == "linux":
@@ -176,7 +176,7 @@ class JobEnvironmentVariables(GenericJob):
                 )
             else:
                 logger.warning(
-                    f"{value} seems to be an invalid URL. " "It will be applied anyway."
+                    f"{value} seems to be an invalid URL. It will be applied anyway."
                 )
 
             return value.strip()
@@ -185,7 +185,7 @@ class JobEnvironmentVariables(GenericJob):
         elif value_type == "path":
             # test if value is a path
             if check_var_can_be_path(input_var=value, raise_error=False):
-                value_as_path = Path(expanduser(expandvars(value)))
+                value_as_path = Path(expanduser(expandvars(value)))  # noqa: PTH111
                 if not check_path_exists(input_path=value_as_path, raise_error=False):
                     logger.warning(
                         f"{value} seems to be a valid path but does not exist (yet)."

@@ -49,15 +49,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-    "black",
-    "flake8-bugbear>=23",
-    "flake8-builtins>=2.1",
-    "flake8-eradicate>=1",
-    "flake8-isort>=5",
-    "Flake8-pyproject>=1.2.3",
-    "pre-commit>=4,<5",
-]
+dev = ["ruff>=0.13.1", "pre-commit>=4,<5"]
 
 doc = [
     "furo>=2024",
@@ -116,33 +108,76 @@ branch = true
 include = ["qgis_deployment_toolbelt/*"]
 omit = [".venv/*", "*tests*"]
 
-[tool.flake8]
-count = true
-exclude = [
-    ".git",
-    "__pycache__",
-    "docs/conf.py",
-    "old",
-    "build",
-    "dist",
-    ".venv*",
-    "tests",
-]
-ignore = ["E121", "E123", "E126", "E203", "E226", "E24", "E704", "W503", "W504"]
-max-complexity = 15
-max-doc-length = 130
-max-line-length = 100
-statistics = true
-tee = true
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+exclude = [".git", "__pycache__", "old", "build", "dist", "tests/dev", ".venv*"]
 
-[tool.isort]
-ensure_newline_before_comments = true
-force_grid_wrap = 0
-include_trailing_comma = true
-line_length = 88
-multi_line_output = 3
-profile = "black"
-use_parentheses = true
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+indent-style = "space"
+line-ending = "auto"
+quote-style = "double"
+skip-magic-trailing-comma = false
+
+[tool.ruff.lint]
+select = [
+    "A",   # flake8-builtins
+    "ANN", # flake8-annotations
+    "B",   # flake8-bugbear
+    "C90", # mccabe complexity
+    "E",   # pycodestyle errors
+    "ERA", # eradicate (commented code)
+    "F",   # pyflakes
+    "I",   # isort
+    "LOG", # flake8-logging
+    "N",   # pep8-naming
+    "PTH", # flake8-pathlib
+    "S",   # bandit security
+    "TC",  # flake8-type-checking
+    "T20", # flake8-print
+    "W",   # pycodestyle warnings
+]
+
+ignore = [
+    "ANN201", # Missing return type annotation for public function
+    "ANN204", #  Missing return type annotation for special method `__init__`
+    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed in `**kwargs`
+    "E501",   # line too long (handled by black)
+    # "E203", # whitespace before ':'
+    # "E226", # missing whitespace around arithmetic operator
+    # "E24",  # multiple spaces after ','
+]
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-single-line = false
+lines-after-imports = 2
+split-on-trailing-comma = true
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+# Ignore `E402` (import violations) in all `__init__.py` files
+"__init__.py" = ["E402"]
+"builder/*.py" = ["T201"] # Ignore T20 (print) in packaging scripts
+"docs/conf.py" = [
+    "A001",
+    "ANN001",
+    "ANN2",
+    "S101",
+    "T20",
+] # Ignore rules in Sphinx config
+"tests/test_*.py" = ["ANN001", "ANN2", "S101", "T20"] # Ignore rules in tests
+
 
 [tool.pytest.ini_options]
 addopts = """
