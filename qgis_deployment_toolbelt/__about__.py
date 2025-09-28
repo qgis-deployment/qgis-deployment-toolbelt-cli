@@ -38,6 +38,7 @@ __title_clean__ = "".join(e for e in __title__ if e.isalnum())
 __uri_homepage__ = "https://qgis-deployment.github.io/qgis-deployment-toolbelt-cli/"
 __uri_repository__ = "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/"
 __uri__ = __uri_repository__
+__version_clean__: str = __version__.split(".dev")[0].split("+")[0]
 __version_info__ = tuple(
     [
         int(num) if num.isdigit() else num

@@ -27,7 +27,9 @@ author = __about__.__author__
 copyright = __about__.__copyright__
 description = __about__.__summary__
 project = __about__.__title__
-version = release = __about__.__version__
+version = __about__.__version__
+release = __about__.__version_clean__
+
 
 # -- General configuration ---------------------------------------------------
 
@@ -174,6 +176,7 @@ myst_substitutions = {
     "license": __about__.__license__,
     "repo_url": __about__.__uri__,
     "title": project,
+    "release": release,
     "version": version,
 }
 

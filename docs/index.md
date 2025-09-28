@@ -2,9 +2,10 @@
 
 > **Description:** {{ description }}  
 > **Author and contributors:** {{ author }}  
-> **Version:** {{ version }}  
 > **Source code:** {{ repo_url }}  
 > **License:** {{ license }}  
+> **Last released version:** {{ release }}  
+> **Current version:** {{ version }}  
 > **Last documentation build:** {{ date_update }}
 
 [![PyPi version badge](https://badgen.net/pypi/v/qgis-deployment-toolbelt)](https://pypi.org/project/qgis-deployment-toolbelt/)
