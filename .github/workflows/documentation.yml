@@ -44,6 +44,8 @@ jobs:
     steps:
       - name: Get source code
         uses: actions/checkout@v4
+        with:
+            fetch-tags: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
