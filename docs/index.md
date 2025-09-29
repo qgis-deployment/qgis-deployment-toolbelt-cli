@@ -131,7 +131,7 @@ pipx run qgis-deployment-toolbelt -s https://github.com/qgis-deployment/qgis-dep
 
 1. Download latest version that matches your environment from [releases](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/releases/latest)
 1. Open a terminal in the same folder
-1. Rename 'Windows_QGISDeploymentToolbelt_{{ version | replace(".","-")  }}' as `qdt.exe`:
+1. Rename 'Windows_QGISDeploymentToolbelt_{{ release | replace(".","-")  }}' as `qdt.exe`:
 
     ```powershell
     mv *_QGISDeploymentToolbelt_* qdt.exe
@@ -147,7 +147,7 @@ pipx run qgis-deployment-toolbelt -s https://github.com/qgis-deployment/qgis-dep
 
 1. Download latest version that matches your environment from [releases](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/releases/latest)
 1. Open a terminal in the same folder
-1. Rename 'Ubuntu_QGISDeploymentToolbelt_{{ version | replace(".","-")  }}' it as `qdt.bin`:
+1. Rename 'Ubuntu_QGISDeploymentToolbelt_{{ release | replace(".","-")  }}' it as `qdt.bin`:
 
     ```sh
     mv *_QGISDeploymentToolbelt_* qdt.bin

@@ -1,13 +1,21 @@
 #! python3  # noqa: E265
 
-"""
-Metadata bout the package to easily retrieve informations about it.
-See: https://packaging.python.org/guides/single-sourcing-package-version/
+"""Package's metadata to easily retrieve informations about it.
+See: https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html#dynamic-metadata
 """
 
+# standard lib
+import logging
 from datetime import date
 from importlib import metadata
+from os import getenv
+from pathlib import Path
+from shutil import which
+from subprocess import check_output
+from venv import logger
 
+
+logger = logging.getLogger(__name__)
 
 # import metadata from installed package, if possible
 _pkg_metadata = metadata.metadata("qgis-deployment-toolbelt") or {}
@@ -16,6 +24,29 @@ try:
     from ._version import version as __version__
 except ImportError:
     __version__ = _pkg_metadata.get("Version", "0.0.0-dev0")
+
+
+# get latest git tag if possible, if not fallback to __version__
+release: str | None = None
+try:
+    github_ref = getenv("GITHUB_REF", "")
+    if github_ref.startswith("refs/tags/"):
+        release = github_ref[len("refs/tags/") :]
+        logger.debug("Git tag found from GITHUB_REF:", release)
+    elif git_path := which("git"):
+        release = (
+            check_output(
+                [git_path, "describe", "--tags", "--abbrev=0"],
+                cwd=Path(__file__).parent.resolve(),
+            )
+            .decode()
+            .strip()
+        )
+        logger.debug("Git tag found from git:", release)
+except Exception:
+    logger.debug("No git tag found, fallback to __version__")
+    release = __version__  # fallback
+
 
 # store metadata into module attributes
 __author__: str = _pkg_metadata.get(
@@ -45,7 +76,7 @@ __version_info__ = tuple(
         for num in __version__.replace("-", ".", 1).split(".")
     ]
 )
-
+print(release)
 
 __all__ = [
     "__author__",
