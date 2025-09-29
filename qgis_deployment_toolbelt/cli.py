@@ -24,6 +24,7 @@ from qgis_deployment_toolbelt.__about__ import (
     __title_clean__,
     __uri_homepage__,
     __version__,
+    __version_clean__,
 )
 from qgis_deployment_toolbelt.commands.cmd_rules_context import (
     parser_rules_context_export,
@@ -202,7 +203,8 @@ def main(in_args: list[str] | None = None):
     # log configuration
     if args.opt_logfile_disabled:
         configure_logger(
-            verbosity=args.verbosity, logfile=f"{__title_clean__}_{__version__}.log"
+            verbosity=args.verbosity,
+            logfile=f"{__title_clean__}_{__version_clean__}.log",
         )
     else:
         configure_logger(verbosity=args.verbosity)

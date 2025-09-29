@@ -11,11 +11,6 @@ from pathlib import Path
 
 # project
 from qgis_deployment_toolbelt import __about__
-from qgis_deployment_toolbelt.commands.upgrade import (
-    get_download_url_for_os,
-    get_latest_release,
-    replace_domain,
-)
 from qgis_deployment_toolbelt.profiles.rules_context import QdtRulesContext
 
 
@@ -27,7 +22,9 @@ author = __about__.__author__
 copyright = __about__.__copyright__
 description = __about__.__summary__
 project = __about__.__title__
-version = release = __about__.__version__
+version: str = __about__.__version__
+release: str = __about__.release or version
+
 
 # -- General configuration ---------------------------------------------------
 
@@ -174,6 +171,7 @@ myst_substitutions = {
     "license": __about__.__license__,
     "repo_url": __about__.__uri__,
     "title": project,
+    "release": release,
     "version": version,
 }
 
@@ -195,9 +193,8 @@ ogp_custom_meta_tags = [
 # sitemap
 sitemap_url_scheme = "{link}"
 
+
 # -- Functions ------------------------------------------------------------------
-
-
 def generate_rules_context(_):
     """Generate context object as JSON that it passed to rules engine to check profiles
     conditions."""
@@ -212,26 +209,9 @@ def generate_rules_context(_):
 def populate_download_page(_):
     """Generate download section included into installation page."""
     logger.warning("=== START POPULATING DOWNLOAD SECTION ===")
-    try:
-        latest_release = get_latest_release(
-            replace_domain(
-                url=__about__.__uri_repository__, new_domain="api.github.com/repos"
-            )
-        )
-
-        dl_link_linux, dl_link_macos, dl_link_windows = (
-            get_download_url_for_os(latest_release.get("assets"), override_opersys=os)[
-                0
-            ]
-            for os in ["linux", "darwin", "win32"]
-        )
-    except Exception as err:
-        logger.error(
-            f"Error occured during GitHub release calls. Fallback to current version. Trace: {err}"
-        )
-        dl_link_linux = f"{__about__.__uri_repository__}releases/download/{version}/Ubuntu_QGISDeploymentToolbelt_{version}"
-        dl_link_macos = f"{__about__.__uri_repository__}releases/download/{version}/MacOS_QGISDeploymentToolbelt_{version}"
-        dl_link_windows = f"{__about__.__uri_repository__}releases/download/{version}/Windows_QGISDeploymentToolbelt_{version}.exe"
+    dl_link_linux = f"{__about__.__uri_repository__}releases/download/{release}/Ubuntu_QGISDeploymentToolbelt_{release.replace('.', '-')}"
+    dl_link_macos = f"{__about__.__uri_repository__}releases/download/{release}/MacOS_QGISDeploymentToolbelt_{release.replace('.', '-')}"
+    dl_link_windows = f"{__about__.__uri_repository__}releases/download/{release}/Windows_QGISDeploymentToolbelt_{release.replace('.', '-')}.exe"
 
     out_download_section = (
         "::::{grid} 3\n:gutter: 2\n\n"

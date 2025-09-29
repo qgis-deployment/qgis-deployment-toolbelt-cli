@@ -30,7 +30,7 @@ from qgis_deployment_toolbelt.__about__ import (
     __title__,
     __title_clean__,
     __uri_repository__,
-    __version__ as actual_version,
+    __version_clean__ as actual_version,
 )
 from qgis_deployment_toolbelt.utils.bouncer import (
     exit_cli_error,
