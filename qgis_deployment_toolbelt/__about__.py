@@ -26,28 +26,6 @@ except ImportError:
     __version__ = _pkg_metadata.get("Version", "0.0.0-dev0")
 
 
-# get latest git tag if possible, if not fallback to __version__
-release: str | None = None
-try:
-    github_ref = getenv("GITHUB_REF", "")
-    if github_ref.startswith("refs/tags/"):
-        release = github_ref[len("refs/tags/") :]
-        logger.debug("Git tag found from GITHUB_REF:", release)
-    elif git_path := which("git"):
-        release = (
-            check_output(
-                [git_path, "describe", "--tags", "--abbrev=0"],
-                cwd=Path(__file__).parent.resolve(),
-            )
-            .decode()
-            .strip()
-        )
-        logger.debug("Git tag found from git:", release)
-except Exception:
-    logger.debug("No git tag found, fallback to __version__")
-    release = __version__  # fallback
-
-
 # store metadata into module attributes
 __author__: str = _pkg_metadata.get(
     "Maintainer-email",
@@ -86,3 +64,24 @@ __all__ = [
     "__uri__",
     "__version__",
 ]
+
+# get latest git tag if possible, if not fallback to __version__
+release: str | None = None
+try:
+    github_ref = getenv("GITHUB_REF", "")
+    if github_ref.startswith("refs/tags/"):
+        release = github_ref[len("refs/tags/") :]
+        logger.debug("Git tag found from GITHUB_REF:", release)
+    elif git_path := which("git"):
+        release = (
+            check_output(
+                [git_path, "describe", "--tags", "--abbrev=0"],
+                cwd=Path(__file__).parent.resolve(),
+            )
+            .decode()
+            .strip()
+        )
+        logger.debug("Git tag found from git:", release)
+except Exception:
+    logger.debug("No git tag found, fallback to __version__")
+    release = __version_clean__
