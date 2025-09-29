@@ -7,6 +7,7 @@ Configuration for project documentation using Sphinx.
 # standard
 import logging
 from datetime import datetime
+from importlib.metadata import version as get_version
 from pathlib import Path
 
 # project
@@ -28,7 +29,8 @@ copyright = __about__.__copyright__
 description = __about__.__summary__
 project = __about__.__title__
 version = __about__.__version__
-release = __about__.__version_clean__
+version: str = get_version(__about__.__package_name__)
+release: str = ".".join(version.split(".")[:3])
 
 
 # -- General configuration ---------------------------------------------------
