@@ -134,14 +134,16 @@ class RemoteProfilesHandlerBase:
             "git_remote",
             "remote",
         ) and not self._is_url_git_repository(
-            remote_git_url=source_repository_path_or_url
+            remote_git_url=source_repository_path_or_url,
+            raise_error=False,
         ):
             valid_source = False
         elif repository_type in (
             "git_local",
             "local",
         ) and not self._is_local_path_git_repository(
-            local_path=source_repository_path_or_url
+            local_path=source_repository_path_or_url,
+            raise_error=False,
         ):
             valid_source = False
 
@@ -162,7 +164,7 @@ class RemoteProfilesHandlerBase:
         return valid_source
 
     def _is_local_path_git_repository(
-        self, local_path: Path | None, raise_error: bool = True
+        self, local_path: Path | None = None, raise_error: bool = True
     ) -> bool:
         """Check if local folder is a git repository.
 
