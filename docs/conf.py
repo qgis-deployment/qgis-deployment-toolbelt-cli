@@ -23,7 +23,7 @@ copyright = __about__.__copyright__
 description = __about__.__summary__
 project = __about__.__title__
 version: str = __about__.__version__
-release: str = __about__.release or version
+release: str = __about__.release or __about__.__version_clean__
 
 
 # -- General configuration ---------------------------------------------------
