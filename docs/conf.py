@@ -28,7 +28,6 @@ author = __about__.__author__
 copyright = __about__.__copyright__
 description = __about__.__summary__
 project = __about__.__title__
-version = __about__.__version__
 version: str = get_version(__about__.__package_name__)
 release: str = ".".join(version.split(".")[:3])
 
