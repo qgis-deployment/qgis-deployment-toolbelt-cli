@@ -187,7 +187,7 @@ jobs:
         run: echo "exe_path=$(ls dist/*.exe | head -n 1)" >> $GITHUB_ENV
 
       - name: Decode Code Signing Certificate
-        if: github.event.repository.fork != true
+        if: env.WINDOWS_CERTIFICATE_PFX_B64 != '' && github.event.repository.fork != true
         env:
           WINDOWS_CERTIFICATE_PFX_B64: ${{ secrets.WINDOWS_CERTIFICATE_PFX }}
         shell: bash
@@ -196,9 +196,10 @@ jobs:
           certutil -decode builder/code_signing_certificate.pfx.b64 builder/code_signing_certificate.pfx
 
       - name: Show certificate details from PFX exporting as PEM (without keys)
-        shell: bash
+        if: env.WINDOWS_CERTIFICATE_PFX_PASSWORD != '' && github.event.repository.fork != true
         env:
           WINDOWS_CERTIFICATE_PFX_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PFX_PASSWORD }}
+        shell: bash
         run: |
           openssl pkcs12 -in builder/code_signing_certificate.pfx -clcerts -nokeys -passin pass:"$WINDOWS_CERTIFICATE_PFX_PASSWORD" -out cert.pem
           echo "Certificate Subject:"
@@ -207,11 +208,11 @@ jobs:
           openssl x509 -in cert.pem -noout -text | grep -A 10 "X509v3 Extended Key Usage"
 
       - name: Sign Executable
-        if: github.event.repository.fork != true
-        shell: pwsh
+        if: env.WINDOWS_CERTIFICATE_PFX_PASSWORD != '' && github.event.repository.fork != true
         env:
           exe_path: ${{ env.exe_path }}
           WINDOWS_CERTIFICATE_PFX_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PFX_PASSWORD }}
+        shell: pwsh
         run: |
           & "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe" sign /f builder/code_signing_certificate.pfx /p $env:WINDOWS_CERTIFICATE_PFX_PASSWORD /n "oslandia.com" /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 $env:exe_path
 
