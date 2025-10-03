@@ -246,25 +246,25 @@ jobs:
 
     steps:
       - name: Retrieve artifact from Python build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: python_wheel
           path: builds/wheel/dist/
 
       - name: Retrieve artifact from MacOS build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: macos_executable
           path: builds/macos/
 
       - name: Retrieve artifact from Ubuntu build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: ubuntu_executable
           path: builds/ubuntu/
 
       - name: Retrieve artifact from Windows build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: windows_executable
           path: builds/windows/
@@ -309,7 +309,7 @@ jobs:
           python -m pip install -U twine
 
       - name: Retrieve artifact from Python build
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: python_wheel
           path: builds/wheel/
