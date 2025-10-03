@@ -18,6 +18,11 @@ on:
       - "qgis_deployment_toolbelt"
       - pyproject.toml
 
+# Allow one concurrent run of this workflow per branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 # Globals
 env:
   PROJECT_FOLDER: "qgis_deployment_toolbelt"
