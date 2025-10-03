@@ -194,7 +194,7 @@ class QgisPlugin:
         return cls.from_dict(plugin_md_as_dict)
 
     @property
-    def download_url(self) -> str:
+    def download_url(self) -> str | None:
         """Try to guess download URL if it's not set during the object init.
 
         Returns:
