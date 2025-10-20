@@ -160,13 +160,11 @@ class OSConfiguration:
     shortcut_icon_extensions: tuple[str, ...] | None = None
     shortcut_icon_default_path: str | None = None
 
-    @property
-    def get_qgis_bin_path(self) -> Path:
-        """Returns the QGIS path determined from QDT_QGIS_EXE_PATH environment variable,
-        or result of which command or fallback to default value passed to the object.
+    def _is_envvar_qgis_exe_path_a_dict(self) -> bool:
+        """Check if the QDT_QGIS_EXE_PATH environment variable is a dictionary.
 
         Returns:
-            Path: path to the QGIS bin/exe
+            bool: True if the environment variable is a dictionary, False otherwise.
         """
         if envvar := getenv("QDT_QGIS_EXE_PATH"):
             if envvar.startswith("{") and envvar.endswith("}"):
@@ -176,40 +174,85 @@ class OSConfiguration:
                         logger.debug(
                             f"'QDT_QGIS_EXE_PATH' is a valid dictionary: {envvar}"
                         )
-                        for k, v in qdt_qgis_exe_path.items():
-                            if k in self.names_alter + [self.name_python]:
-                                logger.debug(
-                                    f"QGIS path found in 'QDT_QGIS_EXE_PATH' dictionary: {v}"
-                                )
-                                return Path(expandvars(expanduser(v)))  # noqa: PTH111
+                        return True
                 except Exception as err:
-                    logger.error(
-                        f"Failed to interpret 'QDT_QGIS_EXE_PATH' value: {envvar}.Trace: {err}"
+                    logger.info(
+                        f"Failed to interpret 'QDT_QGIS_EXE_PATH' value: {envvar}. "
+                        f"Trace: {err}"
                     )
-            elif check_path(
-                input_path=envvar,
+        return False
+
+    def _is_envvar_qgis_exe_path_a_string(self) -> bool:
+        """Check if the QDT_QGIS_EXE_PATH environment variable is a string.
+
+        Returns:
+            bool: True if the environment variable is a string, False otherwise.
+        """
+        if isinstance(getenv("QDT_QGIS_EXE_PATH"), str):
+            return check_path(
+                input_path=getenv("QDT_QGIS_EXE_PATH"),
                 must_exists=False,
                 must_be_readable=False,
                 raise_error=False,
-            ):
+            )
+        return False
+
+    def get_qgis_bin_path(self, use_fallback: bool = True) -> bool | Path:
+        """Returns the QGIS path determined from QDT_QGIS_EXE_PATH environment variable,
+        or result of which command or fallback to default value passed to the object.
+
+        Returns:
+            Path: path to the QGIS bin/exe
+        """
+        if envvar := getenv("QDT_QGIS_EXE_PATH"):
+            if self._is_envvar_qgis_exe_path_a_dict():
+                try:
+                    for k, v in ast.literal_eval(envvar).items():
+                        if k in self.names_alter + [self.name_python]:
+                            logger.debug(
+                                f"QGIS path found in 'QDT_QGIS_EXE_PATH' dictionary: {v}"
+                            )
+                            return Path(expandvars(expanduser(v)))  # noqa: PTH111
+                except Exception as err:
+                    logger.error(
+                        f"Failed to use 'QDT_QGIS_EXE_PATH' dict value: {envvar}. "
+                        f"Trace: {err}"
+                    )
+            elif self._is_envvar_qgis_exe_path_a_string():
                 logger.debug(
                     f"'QDT_QGIS_EXE_PATH' is a simple string and a valid path: {envvar}"
                 )
                 return Path(expandvars(expanduser(envvar)))  # noqa: PTH111
 
+            if not use_fallback:
+                logger.info(
+                    "Environment variable 'QDT_QGIS_EXE_PATH' is set but no valid path "
+                    "found. No fallback as requested, returning False."
+                )
+                return False
+
             # fallback
             logger.warning(
-                f"Unrecognised value format for 'QDT_QGIS_EXE_PATH': {envvar}. "
+                f"Unrecognized value format for 'QDT_QGIS_EXE_PATH': {envvar}. "
                 "Fallback to default path: "
                 f"{Path(expandvars(expanduser(self.qgis_bin_exe_path)))}"  # noqa: PTH111
             )
             return Path(expandvars(expanduser(self.qgis_bin_exe_path)))  # noqa: PTH111
-        elif which_qgis_path := which("qgis"):
+
+        # not defined in environment variable
+        logger.debug("Environment variable 'QDT_QGIS_EXE_PATH' is not set.")
+        if not use_fallback:
+            logger.info("No fallback as requested, returning False for QGIS exe path.")
+            return False
+
+        # fallback to which or default
+        if which_qgis_path := which("qgis"):
             logger.debug(f"QGIS path found using which: {which_qgis_path}")
             return Path(which_qgis_path)
         else:
             logger.debug(
-                f"QGIS path not found, using default value: {self.qgis_bin_exe_path}"
+                "which command did not find QGIS executable. "
+                f"Using default value: {self.qgis_bin_exe_path}"
             )
             return Path(expandvars(expanduser(self.qgis_bin_exe_path)))  # noqa: PTH111
 
@@ -221,7 +264,7 @@ class OSConfiguration:
             shortcut_name (str): given shortcut name to check
 
         Returns:
-            bool: True if the givn string can be used as shortcut name
+            bool: True if the given string can be used as shortcut name
         """
         if self.shortcut_forbidden_chars is None:
             return True
