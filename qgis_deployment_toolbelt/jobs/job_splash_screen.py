@@ -164,7 +164,7 @@ class JobSplashScreenManager(GenericJob):
                     if self.options.get("strict") is True:
                         raise err
                     else:
-                        logger.warning(err.message)
+                        logger.info(err.message)
 
                 # enable UI customization
                 qini_helper_installed.set_ui_customization_enabled(
