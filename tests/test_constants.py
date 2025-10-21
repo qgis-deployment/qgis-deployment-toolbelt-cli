@@ -116,7 +116,7 @@ class TestConstants(unittest.TestCase):
         """Test get GIS exe path helper property"""
         os_config = OSConfiguration.from_opersys()
         # default value
-        self.assertEqual(os_config.get_qgis_bin_path, os_config.qgis_bin_exe_path)
+        self.assertEqual(os_config.get_qgis_bin_path(), os_config.qgis_bin_exe_path)
 
     def test_get_qgis_bin_path_with_env_var_str(self):
         """Test with environment var set as str"""
@@ -124,13 +124,13 @@ class TestConstants(unittest.TestCase):
             environ.pop("QDT_QGIS_EXE_PATH")
         environ["QDT_QGIS_EXE_PATH"] = "/usr/bin/toto"
         os_config = OSConfiguration.from_opersys()
-        self.assertEqual(os_config.get_qgis_bin_path, Path("/usr/bin/toto"))
+        self.assertEqual(os_config.get_qgis_bin_path(), Path("/usr/bin/toto"))
 
         environ.pop("QDT_QGIS_EXE_PATH")
         environ["QDT_QGIS_EXE_PATH"] = "~/qgis-ltr-bin.exe"
         os_config = OSConfiguration.from_opersys()
         self.assertEqual(
-            os_config.get_qgis_bin_path,
+            os_config.get_qgis_bin_path(),
             Path("~/qgis-ltr-bin.exe").expanduser().resolve(),
         )
 
@@ -151,7 +151,7 @@ class TestConstants(unittest.TestCase):
         os_config = OSConfiguration.from_opersys()
 
         self.assertEqual(
-            os_config.get_qgis_bin_path,
+            os_config.get_qgis_bin_path(),
             Path(expandvars(Path(d_test.get(opersys)).expanduser())),
         )
 

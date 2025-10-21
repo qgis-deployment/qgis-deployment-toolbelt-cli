@@ -131,7 +131,7 @@ class JobShortcutsManager(GenericJob):
                 # instanciate shortcut
                 shortcut = ApplicationShortcut(
                     name=inc_shortcut.get("label"),
-                    exec_path=self.os_config.get_qgis_bin_path,
+                    exec_path=self.os_config.get_qgis_bin_path(),
                     description=f"Created with {__title__} {__version__}",
                     icon_path=self.get_icon_path(
                         profile=qdt_profile, icon_filename=inc_shortcut.get("profile")
@@ -253,12 +253,3 @@ class JobShortcutsManager(GenericJob):
             arguments.extend(in_arguments)
 
         return arguments
-
-
-# #############################################################################
-# ##### Stand alone program ########
-# ##################################
-
-if __name__ == "__main__":
-    """Standalone execution."""
-    pass

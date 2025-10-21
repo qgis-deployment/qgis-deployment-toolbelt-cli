@@ -118,8 +118,12 @@ class JobQgisInstallationFinder(GenericJob):
         Returns:
             bool: return True if job must be run, False otherwise
         """
-        if qgis_bin_path := getenv("QDT_QGIS_EXE_PATH"):
+        if qgis_bin_path := self.os_config.get_qgis_bin_path(use_fallback=False):
             if check_path_exists(input_path=qgis_bin_path, raise_error=False):
+                logger.info(
+                    f"QDT_QGIS_EXE_PATH defined and path {qgis_bin_path} exists so it "
+                    f"gonna be used for QGIS executable. {self.ID} job is skipped. "
+                )
                 version_str = self._get_qgis_bin_version(qgis_bin_path)
                 if version_str:
                     logger.info(
@@ -129,9 +133,10 @@ class JobQgisInstallationFinder(GenericJob):
                     return False
                 else:
                     logger.warning(
-                        f"QDT_QGIS_EXE_PATH defined and path {qgis_bin_path} exists but "
-                        "the QGIS version can't be defined. Check environment variable."
+                        f"The QGIS version can't be defined from the path {qgis_bin_path}. "
+                        "If this behavior is not expected, check the environment variable."
                     )
+                    return False
         logger.debug(
             "'QDT_QGIS_EXE_PATH' is not defined. Searching for QGIS executable is necessary."
         )

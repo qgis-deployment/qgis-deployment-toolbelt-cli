@@ -12,7 +12,7 @@ settings:
   DEBUG: false
   LOCAL_WORK_DIR: ~/.cache/qgis-deployment-toolbelt/tests/
   QGIS_EXE_PATH:
-    linux: /usr/bin/qgis
+    linux: /usr/local/bin/qgis
     mac: /usr/bin/qgis
     windows: "%PROGRAMFILES%/QGIS/3_22/bin/qgis-bin.exe"
   SCENARIO_VALIDATION: true
