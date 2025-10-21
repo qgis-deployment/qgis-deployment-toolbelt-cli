@@ -72,7 +72,7 @@ You can also deploy profiles based on environment variables. In the following ex
 
 By default, only prefixed variables can be used in rules. Default prefixes are `QDT_` and `QGIS_`. You can use your own prefixes in scenario settings:
 
-```json
+```yaml
 [...]
 
 settings:
