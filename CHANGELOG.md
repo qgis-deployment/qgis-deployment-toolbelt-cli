@@ -16,6 +16,37 @@ Unreleased
 
 -->
 
+## 0.40.0 - 2025-10-21
+
+### Bugs fixes 🐛
+
+* fix(logs): disable error raising about invalid repo by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/716>
+* fix(qgis-finder): handle case where QDT_QGIS_EXE_PATH can be a (stringified) dict by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/732>
+
+### Features and enhancements 🎉
+
+* Minor logging improvements by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/711>
+* feature(shortcut): add context action on linux shortcut to allow profile removal by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/688>
+* change(splash-screen): decrease log level from warning to info when an image is not fully compliant and if the strict mode is disabled by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/736>
+* Allow to set selectionPolicy to 0, 1 or 2 for a full control by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/712>
+
+### Tooling 🔧
+
+* Docs and upgrade: distinguish current version from last release by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/713>
+* build(deps): update pytest-cov requirement from <7,>=4 to >=4,<8 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/725>
+* improve(ci): auto cancel concurrent workflow runs on same branch by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/728>
+* build(deps): bump actions/checkout from 4 to 5 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/721>
+* build(deps): bump actions/setup-python from 5 to 6 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/719>
+* build(deps): bump codecov/codecov-action from 5.4.3 to 5.5.1 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/717>
+* build(deps): bump actions/download-artifact from 4 to 5 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/720>
+* build(deps): bump actions/upload-pages-artifact from 3 to 4 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/718>
+* build(deps): update pyinstaller requirement from <6.16,>=6.13 to >=6.13,<6.17 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/724>
+* build(deps): update dulwich requirement from <0.24.2,>=0.24.1 to >=0.24.1,<0.24.3 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/723>
+* [pre-commit.ci] pre-commit autoupdate by @pre-commit-ci[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/729>
+* build(deps): bump actions/labeler from 5 to 6 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/733>
+* build(deps): update pillow requirement from <11.4,>=10.4.0 to >=10.4.0,<12.1 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/734>
+* build(deps): update dulwich requirement from <0.24.3,>=0.24.1 to >=0.24.1,<0.24.7 by @dependabot[bot] in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/735>
+
 ## 0.39.1 - 2025-09-26
 
 ### Bugs fixes 🐛

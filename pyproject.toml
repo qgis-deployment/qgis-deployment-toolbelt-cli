@@ -207,4 +207,4 @@ where = ["."]
 
 [tool.setuptools_scm]
 write_to = "qgis_deployment_toolbelt/_version.py"
-fallback_version = "0.40.0-dev"
+fallback_version = "0.41.0-dev"
