@@ -128,7 +128,7 @@ class JobDefaultProfileSetter(GenericJob):
                 ini_profiles.has_option("core", "selectionPolicy")
                 and ini_profiles.getint("core", "selectionPolicy") != selection_policy
             ):
-                logger.warning(
+                logger.info(
                     "The selection policy is already set in the profiles.ini file. "
                     f"It will be overridden from {ini_profiles.getint('core', 'selectionPolicy')} to {selection_policy}."
                 )
