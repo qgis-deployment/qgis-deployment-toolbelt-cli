@@ -2,7 +2,29 @@
 
 Use this job to find installed QGIS version for automatic definition of QDT environnement variable `QDT_QGIS_EXE_PATH` (used for shortcut creation).
 
-If the environment variable is already defined and a valid QGIS installation is found by this variable, the job is skipped.
+In certains conditions, the job is skipped:
+
+- if the environment variable `QDT_QGIS_EXE_PATH` is already defined (either a simple string or a stringified dictionary);
+- if the value points to an existing file.
+
+Typically, if the scenario contains:
+
+```yaml
+settings:
+  QGIS_EXE_PATH:
+    linux: /usr/local/bin/qgis
+    mac: /usr/bin/qgis
+    windows: "%PROGRAMFILES%/QGIS/3_40/bin/qgis-ltr-bin.exe"
+```
+
+or
+
+```yaml
+settings:
+  QGIS_EXE_PATH: "%PROGRAMFILES%/QGIS/3_40/bin/qgis-ltr-bin.exe"
+```
+
+And if paths are pointing to an existing file, the job is skipped.
 
 ----
 
