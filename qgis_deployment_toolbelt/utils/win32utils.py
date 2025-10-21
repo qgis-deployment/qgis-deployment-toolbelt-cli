@@ -309,7 +309,7 @@ def set_environment_variable(
 def read_registry_value(
     key: tuple, value_name: str, access_mode: Literal["read", "write"] = "read"
 ) -> str | None:
-    """Read a value from the Windows registry.
+    r"""Read a value from the Windows registry.
 
     Args:
         key: registry key to read from, e.g. (winreg.HKEY_CURRENT_USER, "Software\Classes\QGIS Project\Shell\open\command")
