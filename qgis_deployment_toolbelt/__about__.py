@@ -12,7 +12,6 @@ from os import getenv
 from pathlib import Path
 from shutil import which
 from subprocess import check_output
-from venv import logger
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +36,7 @@ __executable_name__ = __package_name__ = _pkg_metadata.get(
 )
 __license__: str = _pkg_metadata.get("License-Expression", "Apache-2.0")
 __summary__ = (
-    "QGIS deployment toolbelt is a CLI (Command Line Interface) "
+    "QGIS Deployment Toolbelt (QDT) is a CLI (Command Line Interface) "
     "to perform redundant operations after a QGIS deployment, "
     "managing QGIS profiles, plugins, environment variables, "
     "start menu / desktop shortcuts and many things to rationalize your QGIS installations."
