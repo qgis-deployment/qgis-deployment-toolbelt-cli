@@ -14,6 +14,7 @@ Usage from the repo root folder:
 import unittest
 from sys import platform as opersys
 
+
 # Imports depending on operating system
 if opersys == "win32":
     """windows"""
