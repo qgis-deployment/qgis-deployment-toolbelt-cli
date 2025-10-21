@@ -10,9 +10,13 @@
             "type": "string"
         },
         "force_profile_selection_policy": {
-            "description": "Force the profile selection policy to 1 (always open default profile).",
-            "type": "boolean",
-            "default": false
+            "description": "Force the profile selection policy: 0: open last closed profile (default), 1: always use default profile, 2: always ask.",
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ]
         }
     }
 }
