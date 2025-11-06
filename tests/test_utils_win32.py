@@ -14,8 +14,18 @@ Usage from the repo root folder:
 import unittest
 from sys import platform as opersys
 
+
+# Imports depending on operating system
+if opersys == "win32":
+    """windows"""
+    # standard
+    import winreg
+
 # project
-from qgis_deployment_toolbelt.utils.win32utils import get_environment_variable
+from qgis_deployment_toolbelt.utils.win32utils import (
+    get_environment_variable,
+    read_registry_value,
+)
 
 
 # ############################################################################
@@ -34,6 +44,32 @@ class TestUtilsWin32(unittest.TestCase):
 
         # KO
         self.assertIsNone(get_environment_variable("YOUPI"))
+
+    @unittest.skipUnless(opersys == "win32", "Test specific to Windows.")
+    def test_win32_read_registry_value(self):
+        """Test specific Windows registry value reader."""
+        # OK
+        self.assertIsInstance(
+            read_registry_value(
+                (
+                    winreg.HKEY_LOCAL_MACHINE,
+                    r"SOFTWARE\Microsoft\Windows NT\CurrentVersion",
+                ),
+                "ProductName",
+            ),
+            str,
+        )
+
+        # KO
+        self.assertIsNone(
+            read_registry_value(
+                (
+                    winreg.HKEY_CURRENT_USER,
+                    r"Software\Microsoft\Windows\CurrentVersion\Explorer",
+                ),
+                "NonExistentKey",
+            )
+        )
 
 
 # ############################################################################
