@@ -84,4 +84,4 @@ steps:
     uses: default-profile-setter
     with:
       profile: qdt_demo
-      force_profile_selection_policy: false
+      force_profile_selection_policy: 0
