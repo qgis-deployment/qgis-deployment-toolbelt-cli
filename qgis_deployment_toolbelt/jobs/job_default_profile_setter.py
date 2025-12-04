@@ -13,10 +13,12 @@ Author: Nicolas Godet (https://github.com/nicogodet)
 
 # Standard library
 import logging
+from sys import platform as opersys
 
 # package
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.utils.ini_parser_with_path import CustomConfigParser
+from qgis_deployment_toolbelt.utils.win32utils import set_qgis_command
 
 
 # #############################################################################
@@ -47,11 +49,50 @@ class JobDefaultProfileSetter(GenericJob):
             "condition": None,
         },
         "force_profile_selection_policy": {
-            "type": bool | int,
+            "type": bool,
             "required": False,
             "default": None,
             "possible_values": (None, 0, 1, 2, True, False),
             "condition": None,
+        },
+        "profile_file_association_arguments": {
+            "type": str,
+            "required": False,
+            "default": None,
+            "possible_values": None,
+            "condition": lambda options: options.get("force_profile_file_association")
+            is True,
+        },
+        "force_registry_key_creation": {
+            "type": bool,
+            "required": False,
+            "default": False,
+            "possible_values": None,
+            "condition": lambda options: options.get("force_profile_file_association")
+            is True,
+        },
+        "force_profile_file_association": {
+            "type": bool,
+            "required": False,
+            "default": False,
+            "possible_values": None,
+            "condition": None,
+        },
+        "profile_file_association_arguments": {
+            "type": str,
+            "required": False,
+            "default": None,
+            "possible_values": None,
+            "condition": lambda options: options.get("force_profile_file_association")
+            is True,
+        },
+        "force_registry_key_creation": {
+            "type": bool,
+            "required": False,
+            "default": False,
+            "possible_values": None,
+            "condition": lambda options: options.get("force_profile_file_association")
+            is True,
         },
     }
 
@@ -93,32 +134,61 @@ class JobDefaultProfileSetter(GenericJob):
 
         selection_policy = self.options.get("force_profile_selection_policy")
 
-        ini_profiles_path = self.qgis_profiles_path / "profiles.ini"
+        self.ini_profiles_path = self.qgis_profiles_path / "profiles.ini"
 
         # check if the profiles.ini file exists and create it with default profile set
         # if not
-        if not ini_profiles_path.exists():
-            logger.warning(
-                "Configuration file profiles.ini doesn't exist. "
-                "It will be created but maybe it was not the expected behavior."
+        if not self.ini_profiles_path.exists():
+            self._create_ini_profiles()
+        else:
+            self._alter_ini_profiles()
+
+        if self.options.get("force_profile_file_association"):
+            qgis_cmd = (
+                f'"{self.os_config.get_qgis_bin_path}" --profile "{qdt_profile.name}"'
             )
-            ini_profiles_path.touch(exist_ok=True)
+            if self.options.get("profile_file_association_arguments"):
+                qgis_cmd += f" {self.options.get('profile_file_association_arguments')}"
+            qgis_cmd += ' "%1"'
+            logger.debug(f"Command to set file association: {qgis_cmd}")
+            if opersys == "win32":
+                command_setted = set_qgis_command(
+                    qgis_cmd=qgis_cmd,
+                    force_key_creation=self.options.get(
+                        "force_registry_key_creation", False
+                    ),
+                )
+                if not command_setted:
+                    logger.error(
+                        "Failed to set file association for the default profile."
+                    )
+            else:
+                logger.warning(
+                    "File association is only supported on Windows. "
+                    "Skipping file association setting."
+                )
+
+        logger.debug(f"Job {self.ID} ran successfully.")
+
+    def _create_ini_profiles(self) -> None:
+        """Create the profiles.ini file with the default profile."""
+        if not self.ini_profiles_path.exists():
+            self.ini_profiles_path.touch(exist_ok=True)
             data = f"[core]\ndefaultProfile={self.options.get('profile')}"
-            if selection_policy is not None:
-                data += f"\nselectionPolicy={selection_policy}"
-            ini_profiles_path.write_text(
+            if self.options.get("force_profile_selection_policy"):
+                data += "\nselectionPolicy=1"
+            self.ini_profiles_path.write_text(
                 data=data,
                 encoding="UTF8",
             )
             logger.info(f"Default profile set to {self.options.get('profile')}")
-            logger.debug(f"Job {self.ID} ran successfully.")
-            return
 
+    def _alter_ini_profiles(self) -> None:
+        """Alter the ini profiles with the default profile."""
         ini_profiles = CustomConfigParser()
         ini_profiles.optionxform = str
         ini_profiles.read(self.qgis_profiles_path / "profiles.ini", encoding="UTF8")
 
-        # set the default profile
         if not ini_profiles.has_section("core"):
             ini_profiles.add_section("core")
 
@@ -139,8 +209,6 @@ class JobDefaultProfileSetter(GenericJob):
                 )
             ini_profiles.set("core", "selectionPolicy", str(selection_policy))
 
-        with ini_profiles_path.open("w", encoding="UTF8") as wf:
+        with self.ini_profiles_path.open("w", encoding="UTF8") as wf:
             ini_profiles.write(wf, space_around_delimiters=False)
             logger.info(f"Default profile set to {self.options.get('profile')}")
-
-        logger.debug(f"Job {self.ID} ran successfully.")
