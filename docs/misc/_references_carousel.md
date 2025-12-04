@@ -57,5 +57,11 @@
 :text-align: center
 :::
 
+:::{card} Eurométropole de Strasbourg
+:img-top: /static/logo_strasbourg_eu_opensource.png
+:link: https://www.strasbourg.eu/
+:text-align: center
+:::
+
 ::::
 <!-- markdownlint-enable MD034 -->
