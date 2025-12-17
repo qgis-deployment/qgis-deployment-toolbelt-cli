@@ -13,8 +13,9 @@ from os import getenv
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
-# 3rd party
 import truststore
+
+# 3rd party
 from requests import Response, Session, exceptions as requests_exceptions
 from requests.adapters import HTTPAdapter
 from requests.utils import requote_uri
@@ -64,132 +65,169 @@ class TruststoreAdapter(HTTPAdapter):
         Args:
             connections (int): number of urllib3 connection pools to cache.
             maxsize (int): maximum number of connections to save in the pool.
-            block (bool, optional): Block when no free connections are available.. Defaults to False.
+            block (bool, optional): block when no free connections are available. Defaults to False.
 
         """
         ctx = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         return super().init_poolmanager(connections, maxsize, block, ssl_context=ctx)
 
 
-# ############################################################################
-# ########## FUNCTIONS ###########
-# ################################
+class HttpDownloader:
+    """Class to download remote files over HTTP/HTTPS protocols."""
 
+    req_session: Session | None = None
 
-def download_remote_file_to_local(
-    remote_url_to_download: str,
-    local_file_path: Path,
-    user_agent: str = f"{__title_clean__}/{__version__}",
-    content_type: str | None = None,
-    chunk_size: int = 8192,
-    timeout: tuple[int, int] = (800, 800),
-    use_stream: bool = True,
-) -> Path:
-    """Check if the local index file exists. If not, download the search index from \
-        remote URL. If it does exist, check if it has been modified.
+    def __init__(
+        self,
+        auto_init_session: bool = False,
+        user_agent: str = f"{__title_clean__}/{__version__}",
+    ) -> None:
+        """Constructor."""
+        self.user_agent = user_agent
 
-    Args:
-        remote_url_to_download (str): remote URL of the search index
-        local_file_path (Path): local path to the index file
-        user_agent (str, optional): user agent to use to perform the request. Defaults \
-            to f"{__title_clean__}/{__version__}".
-        content_type (str | None, optional): HTTP content-type. Defaults to None.
-        chunk_size (int, optional): size of each chunk to read and write in bytes. \
-            Defaults to 8192.
-        timeout (tuple[int, int], optional): custom timeout (request, response). \
-            Defaults to (800, 800).
-        use_stream (bool, optional): Option to enable/disable streaming download. \
-            Defaults to True.
+        if auto_init_session:
+            self.req_session = self.init_session()
 
-    Returns:
-        Path: path to the local file (should be the same as local_file_path)
-    """
-    # check if file exists
-    if local_file_path.exists():
-        logger.info(f"{local_file_path} already exists. It's about to be replaced.")
-        local_file_path.unlink(missing_ok=True)
+    def init_session(self) -> Session:
+        """Initialize and return a requests Session object.
 
-    # make sure parents folder exist
-    local_file_path.parent.mkdir(parents=True, exist_ok=True)
+        Returns:
+            Session: initialized requests Session object
+        """
+        self.req_session = Session()
+        self.req_session.verify = str2bool(getenv("QDT_SSL_VERIFY", True))
+        self.req_session.headers = {"User-Agent": self.user_agent}
 
-    # headers
-    headers = {"User-Agent": user_agent}
-    if content_type:
-        headers["Accept"] = content_type
+        # handle local system certificates store
+        if str2bool(getenv("QDT_SSL_USE_SYSTEM_STORES", False)):
+            logger.debug("Option to use native system certificates stores is enabled.")
+            self.req_session.mount("https://", TruststoreAdapter())
 
-    try:
-        with Session() as dl_session:
-            dl_session.headers.update(headers)
-            dl_session.proxies.update(
-                get_proxy_settings(url=requote_uri(remote_url_to_download))
-            )
-            dl_session.verify = str2bool(getenv("QDT_SSL_VERIFY", True))
+        return self.req_session
 
-            # handle local system certificates store
-            if str2bool(getenv("QDT_SSL_USE_SYSTEM_STORES", False)):
-                logger.debug(
-                    "Option to use native system certificates stores is enabled."
+    def download_remote_file_to_local(
+        self,
+        remote_url_to_download: str,
+        local_file_path: Path,
+        content_type: str | None = None,
+        chunk_size: int = 8192,
+        timeout: tuple[int, int] = (800, 800),
+        use_stream: bool = True,
+    ) -> Path:
+        """Check if the local index file exists. If not, download the search index from \
+            remote URL. If it does exist, check if it has been modified.
+
+        Args:
+            remote_url_to_download (str): remote URL of the search index
+            local_file_path (Path): local path to the index file
+            user_agent (str, optional): user agent to use to perform the request. Defaults \
+                to f"{__title_clean__}/{__version__}".
+            content_type (str | None, optional): HTTP content-type. Defaults to None.
+            chunk_size (int, optional): size of each chunk to read and write in bytes. \
+                Defaults to 8192.
+            timeout (tuple[int, int], optional): custom timeout (request, response). \
+                Defaults to (800, 800).
+            use_stream (bool, optional): Option to enable/disable streaming download. \
+                Defaults to True.
+
+        Returns:
+            Path: path to the local file (should be the same as local_file_path)
+        """
+        # check if file exists
+        if local_file_path.exists():
+            logger.info(f"{local_file_path} already exists. It's about to be replaced.")
+            local_file_path.unlink(missing_ok=True)
+
+        # make sure parents folder exist
+        local_file_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # use existing session if any
+        if self.req_session is not None:
+            dl_session = self.req_session
+        else:
+            dl_session = self.init_session()
+
+        # headers
+        if content_type:
+            self.req_session.headers.update({"Accept": content_type})
+
+        self.req_session.proxies.update(
+            get_proxy_settings(url=requote_uri(remote_url_to_download))
+        )
+
+        try:
+            with Session() as dl_session:
+                dl_session.headers.update(headers)
+                dl_session.proxies.update(
+                    get_proxy_settings(url=requote_uri(remote_url_to_download))
                 )
-                dl_session.mount("https://", TruststoreAdapter())
+                dl_session.verify = str2bool(getenv("QDT_SSL_VERIFY", True))
 
-            # Clean url
-            parsed_url = urlparse(unquote(remote_url_to_download))
-            # Reconstruct base URL
-            base_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}"
-            # Get existing params if any exist
-            params = (
-                parse_qs(parsed_url.query, keep_blank_values=True)
-                if parsed_url.query
-                else {}
-            )
-            with dl_session.get(
-                url=base_url,
-                params=params,
-                stream=use_stream,
-                timeout=timeout,
-            ) as req:
-                req.raise_for_status()
-                if use_stream:
-                    with local_file_path.open(mode="wb") as buffile:
-                        for chunk in req.iter_content(chunk_size=chunk_size):
-                            if chunk:
-                                buffile.write(chunk)
-                else:
-                    # Download download the entire content at once
-                    local_file_path.write_bytes(req.content)
+                # handle local system certificates store
+                if str2bool(getenv("QDT_SSL_USE_SYSTEM_STORES", False)):
+                    logger.debug(
+                        "Option to use native system certificates stores is enabled."
+                    )
+                    dl_session.mount("https://", TruststoreAdapter())
 
-            logger.info(
-                f"Downloading {remote_url_to_download} to {local_file_path} "
-                f"({convert_octets(local_file_path.stat().st_size)}) succeeded."
-            )
-    except requests_exceptions.HTTPError as error:
-        logger.error(
-            f"Downloading {remote_url_to_download} to {local_file_path} failed. "
-            f"Cause: HTTPError. Trace: {error}."
-        )
-        if isinstance(req, Response):
-            http_error_details = {
-                "status": req.status_code,
-                "headers": req.headers,
-                "body": req.content,
-            }
+                # Clean url
+                parsed_url = urlparse(unquote(remote_url_to_download))
+                # Reconstruct base URL
+                base_url = f"{parsed_url.scheme}://{parsed_url.netloc}{parsed_url.path}"
+                # Get existing params if any exist
+                params = (
+                    parse_qs(parsed_url.query, keep_blank_values=True)
+                    if parsed_url.query
+                    else {}
+                )
+                with dl_session.get(
+                    url=base_url,
+                    params=params,
+                    stream=use_stream,
+                    timeout=timeout,
+                ) as req:
+                    req.raise_for_status()
+                    if use_stream:
+                        with local_file_path.open(mode="wb") as buffile:
+                            for chunk in req.iter_content(chunk_size=chunk_size):
+                                if chunk:
+                                    buffile.write(chunk)
+                    else:
+                        # Download download the entire content at once
+                        local_file_path.write_bytes(req.content)
+
+                logger.info(
+                    f"Downloading {remote_url_to_download} to {local_file_path} "
+                    f"({convert_octets(local_file_path.stat().st_size)}) succeeded."
+                )
+        except requests_exceptions.HTTPError as error:
             logger.error(
-                f"Addtional details grabbed from HTTP response: {http_error_details}"
+                f"Downloading {remote_url_to_download} to {local_file_path} failed. "
+                f"Cause: HTTPError. Trace: {error}."
             )
+            if isinstance(req, Response):
+                http_error_details = {
+                    "status": req.status_code,
+                    "headers": req.headers,
+                    "body": req.content,
+                }
+                logger.error(
+                    f"Addtional details grabbed from HTTP response: {http_error_details}"
+                )
 
-        raise error
-    except requests_exceptions.ConnectionError as error:
-        logger.error(
-            f"Downloading {remote_url_to_download} to {local_file_path} failed. "
-            f"Cause: ConnectionError. Trace: {error}"
-        )
-        raise error
-    except Exception as error:
-        logger.error(
-            f"Downloading {remote_url_to_download} to {local_file_path} failed. "
-            f"Cause: Unknown error. Trace: {error}",
-            stack_info=True,
-        )
-        raise error
+            raise error
+        except requests_exceptions.ConnectionError as error:
+            logger.error(
+                f"Downloading {remote_url_to_download} to {local_file_path} failed. "
+                f"Cause: ConnectionError. Trace: {error}"
+            )
+            raise error
+        except Exception as error:
+            logger.error(
+                f"Downloading {remote_url_to_download} to {local_file_path} failed. "
+                f"Cause: Unknown error. Trace: {error}",
+                stack_info=True,
+            )
+            raise error
 
-    return local_file_path
+        return local_file_path
