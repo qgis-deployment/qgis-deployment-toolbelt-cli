@@ -74,7 +74,7 @@ jobs:
           --outdir dist/
           .
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: python_wheel
           path: dist/*
@@ -111,7 +111,7 @@ jobs:
       - name: Generates Executable
         run: python -O ./builder/pyinstaller_build_macos.py
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: macos_executable
           path: |
@@ -149,7 +149,7 @@ jobs:
       - name: Generates Executable
         run: python -O ./builder/pyinstaller_build_ubuntu.py
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: ubuntu_executable
           path: |
@@ -226,7 +226,7 @@ jobs:
           & "C:\Program Files (x86)\Microsoft SDKs\ClickOnce\SignTool\signtool.exe" sign /f builder/code_signing_certificate.pfx /p $env:WINDOWS_CERTIFICATE_PFX_PASSWORD /n "oslandia.com" /tr http://timestamp.digicert.com /td SHA256 /fd SHA256 $env:exe_path
 
       - name: Save it as artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: windows_executable
           path: |
