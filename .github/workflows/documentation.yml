@@ -31,22 +31,18 @@ on:
 
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  id-token: write
-  pages: write
-
 jobs:
   build-docs:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
 
     steps:
       - name: Get source code
         uses: actions/checkout@v6
         with:
-            fetch-depth: 0
-            fetch-tags: true
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -95,6 +91,9 @@ jobs:
 
   deploy-docs:
     needs: build-docs
+    permissions:
+      id-token: write
+      pages: write
     runs-on: ubuntu-latest
     if: ${{
       (github.event_name == 'push' &&
