@@ -34,14 +34,12 @@ env:
   PYTHON_VERSION: "3.12"
   PYINSTALLER_LOG_LEVEL: "DEBUG"
 
-# Sets permissions of the GITHUB_TOKEN
-permissions:
-  contents: read
-
 # Jobs definition
 jobs:
   build-python-wheel:
     name: "🐍 Python Wheel"
+    permissions:
+      contents: read
     runs-on: ubuntu-22.04
 
     steps:
@@ -84,6 +82,8 @@ jobs:
 
   build-macos:
     name: "🍏 Mac OS"
+    permissions:
+      contents: read
     runs-on: macos-15
 
     steps:
@@ -121,6 +121,8 @@ jobs:
 
   build-ubuntu:
     name: "🐧 Ubuntu LTS"
+    permissions:
+      contents: read
     runs-on: ubuntu-22.04
 
     steps:
@@ -157,6 +159,8 @@ jobs:
 
   build-windows:
     name: "🏠 Windows"
+    permissions:
+      contents: read
     runs-on: windows-latest
 
     steps:

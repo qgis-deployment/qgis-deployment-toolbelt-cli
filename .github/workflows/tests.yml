@@ -29,12 +29,10 @@ concurrency:
 env:
   PROJECT_FOLDER: "qgis_deployment_toolbelt"
 
-# Sets permissions of the GITHUB_TOKEN
-permissions:
-  contents: read
-
 jobs:
   unit-test:
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       # max-parallel: 4
@@ -86,6 +84,8 @@ jobs:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   integration-test:
+    permissions:
+      contents: read
     strategy:
       fail-fast: false
       # max-parallel: 4
