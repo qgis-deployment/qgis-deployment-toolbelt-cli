@@ -28,14 +28,12 @@ env:
   PROJECT_FOLDER: "qgis_deployment_toolbelt"
   PYTHON_VERSION: "3.13"
 
-# Sets permissions of the GITHUB_TOKEN
-permissions:
-  contents: read
-
 # Jobs definition
 jobs:
   check-bandit:
     name: "🦹‍♂️ Bandit"
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
 
     steps:
@@ -60,6 +58,8 @@ jobs:
 
   check-safety:
     name: "🛡 Safety PyUp"
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     if: github.event.repository.fork != true
 
