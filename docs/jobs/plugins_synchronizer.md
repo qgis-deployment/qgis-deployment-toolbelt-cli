@@ -12,7 +12,8 @@ Sample job configuration in your scenario file:
   - name: Synchronize plugins
     uses: qplugins-synchronizer
     with:
-      force: false
+      action: create_or_restore
+      profile_ref: downloaded
 ```
 
 ----
