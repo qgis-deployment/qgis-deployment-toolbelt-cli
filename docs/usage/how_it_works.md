@@ -4,9 +4,11 @@
 
 To run the workflow properly, you need 3 items:
 
-| QGIS profiles | A scenario | The QDT executable |
+<!-- markdownlint-disable MD033 -->
+| The QDT executable | a QDT scenario | QGIS/QDT profiles |
 | ------------- | ---------- | ------------------ |
-| ![icon profiles](/static/icon_profiles.svg) | ![icon scenario](/static/icon_scenario.svg) | ![icon QDT](/static/logo_qdt.png) |
+| ![icon QDT](../static/logo_qdt.png)<br>`%APPDATA%/QDT/qdt.exe` | ![icon scenario](../static/icon_scenario.svg)<br>`scenario.qdt.yml` | ![icon profiles](../static/icon_profiles.svg)<br>`profiles/{name_profile}/profile.json` |
+<!-- markdownlint-enable MD033 -->
 
 ### QGIS profiles
 
