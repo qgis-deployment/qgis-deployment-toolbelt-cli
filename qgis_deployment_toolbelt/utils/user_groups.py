@@ -1,7 +1,6 @@
 #! python3  # noqa: E265
 
-"""
-Utilities to manage user security groups either on Linux and Windows.
+"""Utilities to manage user security groups either on Linux and Windows.
 
 Author: Julien Moura (https://github.com/guts)
 """
@@ -143,9 +142,9 @@ def get_user_local_groups(user_name: str | None = None) -> list[str]:
 def get_user_domain_groups(user_guid_or_name: str | None = None) -> list[str]:
     """Lists the domain groups to which the user belong.
 
-    On Linux and MacOS, it always return an empty list. TODO: implement it (probably
-        using pure LDAP).
-    On Windows, it relies on win32net (COM).
+    On Linux and MacOS, it always return an empty list. On Windows, it relies on win32net (COM).
+
+    TODO: implement it for Linux and MacOS (probably using pure LDAP).
 
     Args:
         user_guid_or_name (str | None, optional): name of user. If None, the current user name
@@ -272,9 +271,9 @@ def _is_computer_in_domain_win32() -> bool:
 def is_computer_attached_to_a_domain() -> bool:
     """Determine if the computer is attached to a domain or not.
 
-    On Linux and MacOS, it always return False.
-    On Windows, it tries to use wmi (Windows Management Instrumentation), Active
-        Directory (through pyad) or subprocessed powershell as final fallback.
+    On Linux and MacOS, it always return False. On Windows, it tries to use wmi
+        (Windows Management Instrumentation), Active Directory (through pyad) or
+        subprocessed powershell as final fallback.
 
     Raises:
         NotImplementedError: if operating system is not supported.

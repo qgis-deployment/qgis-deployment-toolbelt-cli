@@ -1,7 +1,6 @@
-#! python3  # noqa: E265
+#! python3
 
-"""
-Read and write QGIS configuration files.
+"""Read and write QGIS configuration files.
 
 Author: Julien Moura (https://github.com/guts)
 """
@@ -64,14 +63,14 @@ class QgisIniHelper:
 
         Args:
             ini_filepath (Path): path to the QGIS3.ini configuration file
-            ini_type (Literal[ &quot;profile_qgis3&quot;, \
-                &quot;profile_qgis3customization&quot;, &quot;plugin_metadata&quot;, \
-                None ], optional): type of ini file. None enables autodetection. \
-                Defaults to None.
-            strict (bool, optional): strict mode applied to ConfigParser. Defaults to \
+            ini_type (Literal['profile_qgis3', 'profile_qgis3customization',\
+                'plugin_metadata', None ], optional): type of ini file.\
+                None enables autodetection. Defaults to None.
+            strict (bool, optional): strict mode applied to ConfigParser. Defaults to
                 False.
-            enable_environment_variables_interpolation (bool, optional): if enabled, \
+            enable_environment_variables_interpolation (bool, optional): if enabled,
                 values matching environment variables are interepreted. Defaults to True.
+
         """
         if (
             ini_filepath is not None

@@ -104,7 +104,7 @@ A security warning may appear for self-signed certificates; confirm by clicking 
 
 ### Automate import with a PowerShell script
 
-:::{info}
+:::{important}
 This script is a sample and might not comply with your environment and/or IT policy. If you intend to use it in production, take time to review it before. If you improve or fix it, please share it.
 :::
 

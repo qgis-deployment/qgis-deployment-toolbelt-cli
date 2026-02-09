@@ -1,6 +1,6 @@
 # How to use behind a network proxy
 
-:::{info}
+:::{note}
 Only HTTP and HTTPS proxies are supported. No socks. Automatic values definition from PAC file available.
 :::
 
