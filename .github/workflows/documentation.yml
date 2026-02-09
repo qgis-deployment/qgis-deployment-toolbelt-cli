@@ -46,7 +46,7 @@ jobs:
 
       - name: Install pipx to run pipdeptree and pip-licenses
         run: |
-          apt update && apt install -y pipx
+          sudo apt update && apt install -y pipx
 
       - name: Set up Python
         uses: actions/setup-python@v6
