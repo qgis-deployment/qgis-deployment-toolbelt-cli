@@ -188,7 +188,6 @@ usage/settings
 ```{toctree}
 ---
 caption: Guides
-glob:
 maxdepth: 1
 ---
 guides/howto_download_latest_qdt_exe.md
@@ -201,7 +200,6 @@ guides/howto_publish_http
 guides/howto_qgis_get_plugin_id
 guides/howto_schedule_deployment
 guides/howto_windows_sign_executable
-guides/*
 ```
 
 ```{toctree}

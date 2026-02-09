@@ -1,10 +1,8 @@
 #! python3  # noqa: E265
 
-"""
-Utilities specific for Linux.
+"""Utilities specific for Linux.
 
 Author: Julien Moura (https://github.com/guts)
-
 """
 
 # #############################################################################
@@ -98,7 +96,8 @@ def find_key_from_values(value_to_find: str) -> str | None:
 
 
 def get_environment_variable(envvar_name: str, scope: str = "user") -> str | None:
-    """Get environment variable from Linux profile file
+    """Get environment variable from Linux profile file.
+
     Args:
         envvar_name (str): environment variable name (= key) to retrieve
         scope (str, optional): environment variable scope. Must be "user" or "system",
@@ -134,7 +133,8 @@ def get_environment_variable(envvar_name: str, scope: str = "user") -> str | Non
 def set_environment_variable(
     envvar_name: str, envvar_value: str | bool | int, scope: str = "user"
 ) -> bool:
-    """Set environment variable in Linux profile file
+    """Set environment variable in Linux profile file.
+
     Args:
         envvar_name (str): environment variable name (= key) to set
         envvar_value (str): environment variable value to set
@@ -225,7 +225,8 @@ def set_environment_variable(
 def delete_environment_variable(
     envvar_name: str, scope: Literal["system", "user"] = "user"
 ) -> bool:
-    """Remove environment variable from Linux profile file
+    """Remove environment variable from Linux profile file.
+
     Args:
         envvar_name (str): environment variable name (= key) to remove
         scope (str, optional): environment variable scope. Must be "user" or "system",
@@ -316,7 +317,8 @@ def refresh_environment() -> bool:
 
 
 def get_profile_file(scope: Literal["system", "user"]) -> Path | None:
-    """Get Linux profile file depending on shell and scope
+    """Get Linux profile file depending on shell and scope.
+
     Args:
         scope (str, optional): environment variable scope. Must be "user" or "system",
             defaults to "user". Defaults to "user".

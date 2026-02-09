@@ -1,7 +1,6 @@
 #! python3  # noqa: E265
 
-"""
-Synchronize profiles between downloaded (in QDT working folder) and installed
+"""Synchronize profiles between downloaded (in QDT working folder) and installed
     profiles (in QGIS profiles'folder).
 
 Author: Julien Moura (https://github.com/guts)
@@ -108,10 +107,10 @@ class JobProfilesSynchronizer(GenericJob):
         Returns:
             tuple[list[QdtProfile], list[QdtProfile], list[QdtProfile]]: a tuple with
             the following structure (
-                list of installed profiles which are outdated (lesser version number),
-                list of installed profiles with a different version (lesser or greater),
-                list of profiles with the same version number in downloaded/installed
-                )
+            list of installed profiles and outdated (lesser version number),
+            list of installed profiles with a different version (lesser or greater),
+            list of profiles with the same version number in downloaded/installed
+            )
         """
         li_profiles_outdated = []
         li_profiles_different = []
