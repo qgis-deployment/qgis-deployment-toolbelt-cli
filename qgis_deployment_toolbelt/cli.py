@@ -19,6 +19,7 @@ from os import environ
 # submodules
 from qgis_deployment_toolbelt.__about__ import (
     __author__,
+    __executable_name__,
     __summary__,
     __title__,
     __title_clean__,
@@ -135,6 +136,7 @@ def main(in_args: list[str] | None = None):
         epilog=f"Developed by: {__author__}\nDocumentation: {__uri_homepage__}",
         description=f"{__title__} {__version__} - {__summary__}",
         argument_default=argparse.SUPPRESS,
+        prog=f"{__executable_name__}",
     )
 
     # -- ROOT ARGUMENTS --
@@ -163,7 +165,6 @@ def main(in_args: list[str] | None = None):
         "deploy",
         help="QDT's main logic: run the deployment's scenario.",
         formatter_class=main_parser.formatter_class,
-        prog="deployment",
     )
     add_common_arguments(subcmd_deployment)
     parser_main_deployment(subcmd_deployment)
@@ -174,7 +175,6 @@ def main(in_args: list[str] | None = None):
         help="Export QDT rules context taking into account the local environment to "
         "help rules writing.",
         formatter_class=main_parser.formatter_class,
-        prog="rules-context-export",
     )
     add_common_arguments(subcmd_rules_context)
     parser_rules_context_export(subcmd_rules_context)
@@ -185,7 +185,6 @@ def main(in_args: list[str] | None = None):
         aliases=["auto-update", "update"],
         help="Check if a new version of QDT is available and download it locally.",
         formatter_class=main_parser.formatter_class,
-        prog="upgrade",
     )
     add_common_arguments(subcmd_upgrade)
     parser_upgrade(subcmd_upgrade)
