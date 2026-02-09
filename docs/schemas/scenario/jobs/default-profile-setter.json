@@ -17,6 +17,24 @@
                 1,
                 2
             ]
+        },
+        "force_profile_file_association": {
+            "description": "Force the QGIS project file association to starts QGIS with the default profile.",
+            "type": "boolean",
+            "default": false
+        },
+        "profile_file_association_arguments": {
+            "description": "Arguments to pass to QGIS executable when force_profile_file_association is true.",
+            "type": "string",
+            "example": "--noversioncheck"
+        },
+        "force_registry_key_creation": {
+            "description": "Force the creation of the registry key for the default profile. This is useful when QGIS is not installed yet.",
+            "type": "boolean",
+            "default": false
         }
-    }
+    },
+    "required": [
+        "profile"
+    ]
 }

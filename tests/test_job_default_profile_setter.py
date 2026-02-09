@@ -17,12 +17,21 @@
 # Standard library
 import tempfile
 import unittest
+from os import environ, getenv
 from pathlib import Path
+from sys import platform as opersys
 
 # package
 from qgis_deployment_toolbelt.jobs.job_default_profile_setter import (
     JobDefaultProfileSetter,
 )
+
+
+if opersys == "win32":
+    from qgis_deployment_toolbelt.utils.win32utils import (
+        qgis_command_user_hkey,
+        read_registry_value,
+    )
 
 
 # #############################################################################
@@ -132,6 +141,53 @@ class TestJobDefaultProfileSetter(unittest.TestCase):
             "[core]\ndefaultProfile=qdt_test_profile_minimal\nselectionPolicy=1\n\n"
         )
         self.assertEqual(content, expected_content)
+
+    @unittest.skipUnless(
+        opersys == "win32" and getenv("GITHUB_ACTIONS", False),
+        "Test specific to Windows and run only in CI to avoid modifying registry.",
+    )
+    def test_job_default_profile_setter_run_with_force_profile_file_association(self):
+        """Run the job with force profile file association."""
+        self.default_profile_setter_job.options["force_profile_file_association"] = True
+        self.default_profile_setter_job.options["force_registry_key_creation"] = True
+        environ["QDT_QGIS_EXE_PATH"] = "/usr/bin/toto"
+
+        self.default_profile_setter_job.run()
+        self.assertTrue(self.profiles_ini.exists())
+
+        reg_value = read_registry_value(
+            qgis_command_user_hkey,
+            "",
+        )
+        expected_reg_value = (
+            '"\\usr\\bin\\toto" --profile "qdt_test_profile_minimal" "%1"'
+        )
+        self.assertEqual(reg_value, expected_reg_value)
+
+    @unittest.skipUnless(
+        opersys == "win32" and getenv("GITHUB_ACTIONS", False),
+        "Test specific to Windows and run only in CI to avoid modifying registry.",
+    )
+    def test_job_default_profile_setter_run_with_profile_file_association_arguments(
+        self,
+    ):
+        """Run the job with force profile file association."""
+        self.default_profile_setter_job.options["force_profile_file_association"] = True
+        self.default_profile_setter_job.options["force_registry_key_creation"] = True
+        self.default_profile_setter_job.options[
+            "profile_file_association_arguments"
+        ] = "--noversioncheck"
+        environ["QDT_QGIS_EXE_PATH"] = "/usr/bin/toto"
+
+        self.default_profile_setter_job.run()
+        self.assertTrue(self.profiles_ini.exists())
+
+        reg_value = read_registry_value(
+            qgis_command_user_hkey,
+            "",
+        )
+        expected_reg_value = '"\\usr\\bin\\toto" --profile "qdt_test_profile_minimal" --noversioncheck "%1"'
+        self.assertEqual(reg_value, expected_reg_value)
 
         self.default_profile_setter_job.options["force_profile_selection_policy"] = 2
 
