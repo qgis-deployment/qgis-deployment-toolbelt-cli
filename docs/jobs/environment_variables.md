@@ -84,15 +84,14 @@ Possible_values:
 - `True`
 - `False`
 
-When using a `path` environnement variable in a QGIS .ini file, we can have issue in Windows because the expanded environnement variable will use simple backslash.
+When using a `path` environnement variable in a QGIS .ini file, we can have issue when we are using user environment variable (for example `%USERPROFIL%`) in Windows.
+The expanded environnement variable will use backslash for path definition which is not supported by QGIS when reading .ini files. When using backslashes in .ini files, it must be doubled.
 
 Example:
 
 ```ìni
 searchPathsForSVG=$PROFILES_RESSOURCES_PATH/QGIS_SVG
 ```
-
-When you define `PROFILES_RESSOURCES_PATH`, if you don't use `qgis_ini_use` option the path will be invalid.
 
 ```yaml
 steps:
@@ -112,7 +111,11 @@ Result:
 searchPathsForSVG = C:\User\jmker/QGIS profiles ressources
 ```
 
-Mixed value of backslash and slash are not supported by QGIS when reading .ini file and the settings will be broken.
+Simple backslashes are not supported by QGIS when reading .ini file and the settings will be broken.
+
+```ini
+searchPathsForSVG = C:sersmker/QGIS profiles ressources
+```
 
 You need to update your environnement variable to use qgis_ini_use` option :
 
@@ -134,3 +137,7 @@ Result:
 ```ìni
 searchPathsForSVG = C:/User/jmker/QGIS profiles ressources
 ```
+
+:::{note}
+You can still use a mix of double backslashes or slashes for your path definition but you must not use simple backslash.
+:::
