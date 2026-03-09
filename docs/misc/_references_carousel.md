@@ -63,5 +63,11 @@
 :text-align: center
 :::
 
+:::{card} Clermont Auvergne Métropole
+:img-top: /static/logo_clermont_auvergne_metropole.svg
+:link: https://www.clermontmetropole.eu/
+:text-align: center
+:::
+
 ::::
 <!-- markdownlint-enable MD034 -->
