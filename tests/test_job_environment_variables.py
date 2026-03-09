@@ -15,8 +15,10 @@
 # ########## Libraries #############
 # ##################################
 
-# Standard library
 import unittest
+
+# Standard library
+from os.path import expanduser, expandvars
 from pathlib import Path
 from sys import platform as opersys
 
@@ -231,3 +233,19 @@ class TestJobEnvironmentVariables(unittest.TestCase):
                 job_env_vars.prepare_value(value=[]),
                 "[]",
             )
+
+        value_test = "%HOME%/ressources_qdt"
+
+        self.assertEqual(
+            job_env_vars.prepare_value(
+                value=value_test, value_type="path", qgis_ini_use=False
+            ),
+            str(Path(expanduser(expandvars(value_test))).resolve()),
+        )
+
+        self.assertEqual(
+            job_env_vars.prepare_value(
+                value=value_test, value_type="path", qgis_ini_use=True
+            ),
+            str(Path(expanduser(expandvars(value_test))).resolve()).replace("\\", "/"),
+        )
