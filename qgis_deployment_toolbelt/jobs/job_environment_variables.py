@@ -95,6 +95,13 @@ class JobEnvironmentVariables(GenericJob):
             "possible_values": ("bool", "path", "str", "url"),
             "condition": "in",
         },
+        "qgis_ini_use": {
+            "type": bool,
+            "required": False,
+            "default": False,
+            "possible_values": (True, False),
+            "condition": "in",
+        },
     }
 
     def __init__(self, options: list[dict]) -> None:
@@ -121,6 +128,7 @@ class JobEnvironmentVariables(GenericJob):
                     envvar_value = self.prepare_value(
                         value=env_var.get("value", None),
                         value_type=env_var.get("value_type", None),
+                        qgis_ini_use=env_var.get("qgis_ini_use", False),
                     )
                     set_environment_variable(
                         envvar_name=envvar_name,
@@ -155,7 +163,12 @@ class JobEnvironmentVariables(GenericJob):
         logger.debug(f"Job {self.ID} ran successfully.")
 
     # -- INTERNAL LOGIC ------------------------------------------------------
-    def prepare_value(self, value: str, value_type: str | None = None) -> str:
+    def prepare_value(
+        self,
+        value: str,
+        value_type: str | None = None,
+        qgis_ini_use: bool = False,
+    ) -> str:
         """Prepare value to be used in the environment variable.
 
         It performs some checks or operations depending on value type: user and
@@ -164,6 +177,7 @@ class JobEnvironmentVariables(GenericJob):
         Args:
             value (str): value to prepare.
             value_type (str, optional): type of input value. Defaults to "str".
+            qgis_ini_use (bool, optional): replace backslash by slash for `path` value_type. Defaults to False.
 
         Returns:
             str: prepared value.
@@ -191,9 +205,10 @@ class JobEnvironmentVariables(GenericJob):
                         f"{value} seems to be a valid path but does not exist (yet)."
                     )
                 expanded_value = str(Path(value_as_path).resolve())
-                # Need to convert value to ini supported value by escaping double backslash
-                ini_value = expanded_value.replace("\\", "\\\\")
-                return ini_value
+                if qgis_ini_use:
+                    # Need to convert value to QGIS .ini supported value by replacing backslash by slash
+                    expanded_value = expanded_value.replace("\\", "/")
+                return expanded_value
             else:
                 logger.debug(
                     f"Value {value} is not a valid path. The raw string will be used."
