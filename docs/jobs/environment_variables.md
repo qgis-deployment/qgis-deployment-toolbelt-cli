@@ -112,7 +112,7 @@ Result:
 searchPathsForSVG = C:\User\jmker/QGIS profiles ressources
 ```
 
-Mixed value of backlash and antibackslash are not supported by QGIS when reading .ini file and the settings will be broken.
+Mixed value of backslash and slash are not supported by QGIS when reading .ini file and the settings will be broken.
 
 You need to update your environnement variable to use qgis_ini_use` option :
 
