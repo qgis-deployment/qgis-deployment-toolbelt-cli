@@ -26,6 +26,12 @@ Sample job configuration in your scenario file:
       scope: "user"
       value: "\\SIG\\QGIS\\CONFIG\\qgis_global_settings.ini"
       value_type: path
+    - name: PROFILES_RESSOURCES_PATH
+      action: "add"
+      scope: "user"
+      value: "%USERPROFILE%/QGIS profiles ressources"
+      value_type: path
+      qgis_ini_use: true
 ```
 
 ----
@@ -68,3 +74,63 @@ Possible_values:
 - `path`: a valid local path (user and variables expansion are supported)
 - `str`: a raw and simple string. Default value.
 - `url`: an HTTP/S URL
+
+### qgis_ini_use
+
+Indicate that environnement variable will be used in QGIS .ini file.
+
+Possible_values:
+
+- `True`
+- `False`
+
+When using a `path` environnement variable in a QGIS .ini file, we can have issue in Windows because the expanded environnement variable will use simple backslash.
+
+Example:
+
+```ìni
+searchPathsForSVG=$PROFILES_RESSOURCES_PATH/QGIS_SVG
+```
+
+When you define `PROFILES_RESSOURCES_PATH`, if you don't use `qgis_ini_use` option the path will be invalid.
+
+```yaml
+steps:
+  - name: Set environment variables
+    uses: manage-env-vars
+    with:
+      - name: PROFILES_RESSOURCES_PATH
+        action: "add"
+        scope: "user"
+        value: "%USERPROFILE%/QGIS profiles ressources"
+        value_type: path
+```
+
+Result:
+
+```ìni
+searchPathsForSVG = C:\User\jmker/QGIS profiles ressources
+```
+
+Mixed value of backlash and antibackslash are not supported by QGIS when reading .ini file and the settings will be broken.
+
+You need to update your environnement variable to use qgis_ini_use` option :
+
+```yaml
+steps:
+  - name: Set environment variables
+    uses: manage-env-vars
+    with:
+      - name: PROFILES_RESSOURCES_PATH
+        action: "add"
+        scope: "user"
+        value: "%USERPROFILE%/QGIS profiles ressources"
+        value_type: path
+        qgis_ini_use: True
+```
+
+Result:
+
+```ìni
+searchPathsForSVG = C:/User/jmker/QGIS profiles ressources
+```
