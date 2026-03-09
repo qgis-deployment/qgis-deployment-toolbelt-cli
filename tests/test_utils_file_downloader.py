@@ -88,7 +88,7 @@ class TestUtilsFileDownloader(unittest.TestCase):
             self.assertTrue(downloaded_file_one.is_file())
 
             downloaded_file_two = download_remote_file_to_local(
-                remote_url_to_download="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/README.md?raw=true",
+                remote_url_to_download="https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/README.md",
                 local_file_path=Path(tmpdirname).joinpath("README2.md"),
                 authorization=self.authorization_header(),
             )
