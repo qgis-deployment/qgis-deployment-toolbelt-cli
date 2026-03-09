@@ -190,7 +190,10 @@ class JobEnvironmentVariables(GenericJob):
                     logger.warning(
                         f"{value} seems to be a valid path but does not exist (yet)."
                     )
-                return str(Path(value_as_path).resolve())
+                expanded_value = str(Path(value_as_path).resolve())
+                # Need to convert value to ini supported value by escaping double backslash
+                ini_value = expanded_value.replace("\\", "\\\\")
+                return ini_value
             else:
                 logger.debug(
                     f"Value {value} is not a valid path. The raw string will be used."
