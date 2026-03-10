@@ -14,6 +14,7 @@ Usage from the repo root folder:
 import filecmp
 import tempfile
 import unittest
+from os import getenv
 from pathlib import Path
 
 # 3rd party
@@ -31,6 +32,16 @@ from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_
 class TestUtilsFileDownloader(unittest.TestCase):
     """Test package utilities."""
 
+    def authorization_header(self) -> str | None:
+        """Define authorization header if GITHUB_TOKEN available
+
+        Returns:
+            str | None: authorization header, None if GITHUB_TOKEN unavailable
+        """
+        if getenv("GITHUB_TOKEN"):
+            return f"Bearer {getenv('GITHUB_TOKEN')}"
+        return None
+
     def test_download_file_exists(self):
         """Test download remote file locally to a file which already exists."""
         with tempfile.TemporaryDirectory(
@@ -40,6 +51,7 @@ class TestUtilsFileDownloader(unittest.TestCase):
             downloaded_file = download_remote_file_to_local(
                 remote_url_to_download="https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/README.md",
                 local_file_path=Path(tmpdirname).joinpath("README_from_remote.md"),
+                authorization=self.authorization_header(),
             )
             self.assertIsInstance(downloaded_file, Path)
             self.assertTrue(downloaded_file.exists())
@@ -54,6 +66,7 @@ class TestUtilsFileDownloader(unittest.TestCase):
                 remote_url_to_download="https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/README.md",
                 local_file_path=Path(tmpdirname).joinpath("README_from_remote.md"),
                 use_stream=False,
+                authorization=self.authorization_header(),
             )
             self.assertIsInstance(downloaded_file, Path)
             self.assertTrue(downloaded_file.exists())
@@ -68,14 +81,16 @@ class TestUtilsFileDownloader(unittest.TestCase):
             downloaded_file_one = download_remote_file_to_local(
                 remote_url_to_download="https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/README.md",
                 local_file_path=Path(tmpdirname).joinpath("README1.md"),
+                authorization=self.authorization_header(),
             )
             self.assertIsInstance(downloaded_file_one, Path)
             self.assertTrue(downloaded_file_one.exists())
             self.assertTrue(downloaded_file_one.is_file())
 
             downloaded_file_two = download_remote_file_to_local(
-                remote_url_to_download="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/README.md?raw=true",
+                remote_url_to_download="https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/README.md",
                 local_file_path=Path(tmpdirname).joinpath("README2.md"),
+                authorization=self.authorization_header(),
             )
             self.assertIsInstance(downloaded_file_two, Path)
             self.assertTrue(downloaded_file_two.exists())
