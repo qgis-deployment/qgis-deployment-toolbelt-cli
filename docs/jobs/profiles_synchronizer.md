@@ -74,7 +74,7 @@ The merge follows these steps:
    - Keys present **only in the installed** file (e.g. `[Recent Projects]`) are untouched.
    - Keys present **only in the downloaded** file are added.
    - Environment variables (e.g. `$USER`) are interpolated at write time.
-5. **Copy the merged result** back into the QGIS profiles folder.
+5. **Copy the merged result** back into the QGIS profile folder.
 
 See the diagram below to have a graphical representation of this workflow:
 
