@@ -190,7 +190,7 @@ current_user=alice
 - **admin wins on conflicts**: when the same key exists in both files with different values, the downloaded (admin) value always takes precedence.
 - **user-only sections are preserved**: sections missing from the downloaded profile (e.g. `[Recent Projects]`, bookmarks, window geometries) are never touched.
 - **backup sections are traceable**: every overwritten value is saved in `QDT_backup_<section>` so the previous state is always recoverable.
-- **environment variables are resolved at write time**: a value like `$USER` in the downloaded profile is expanded to the actual username of the machine running QDT.
+- **environment variables are converted at write time**: a value like `$USER` in the downloaded profile is converted to the actual username of the machine running QDT.
 - **`overwrite` mode skips all of this**: with `sync_mode: overwrite`, the profile folder is copied without any merge nor backup sections. Use it only when you want a full reset of the installed profile.
 
 :::{note}
