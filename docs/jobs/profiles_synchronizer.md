@@ -68,7 +68,7 @@ The merge follows these steps:
 1. **Create a temporary directory** prefixed `QDT_merge_profile_<name>_`.
 2. **Copy the downloaded profile** into that temporary directory. This is the starting state.
 3. **Overwrite the temporary INI** with the currently installed one. The temporary directory now holds the user's existing settings.
-4. **Merge the downloaded INI into the temp INI**, section by section:
+4. **Merge the downloaded INI into the temporary INI**, section by section:
    - For every key present in **both** files with **different values**: the installed (user) value is saved into a `QDT_backup_<section>` section.
    - The downloaded (admin) value is then written, overwriting the installed one.
    - Keys present **only in the installed** file (e.g. `[Recent Projects]`) are untouched.
