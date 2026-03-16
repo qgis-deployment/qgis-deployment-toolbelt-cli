@@ -18,6 +18,7 @@ from pathlib import Path
 from shutil import copy2, copytree
 
 # package
+from qgis_deployment_toolbelt.constants import COPY_IGNORED_PATTERNS
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 
@@ -283,6 +284,7 @@ class JobProfilesSynchronizer(GenericJob):
                     d.path_in_qgis,
                     copy_function=copy2,
                     dirs_exist_ok=True,
+                    ignore=COPY_IGNORED_PATTERNS,
                 )
 
             # Environment variable will be converted during merge
