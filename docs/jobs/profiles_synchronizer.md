@@ -53,7 +53,7 @@ Possible_values:
 
 ----
 
-## How do it works
+## How does it work
 
 ### INI files merge strategy
 
