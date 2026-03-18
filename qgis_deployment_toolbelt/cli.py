@@ -14,7 +14,7 @@ Main command-line.
 import argparse
 import logging
 import sys
-from os import environ
+from os import environ, getenv
 
 # submodules
 from qgis_deployment_toolbelt.__about__ import (
@@ -44,6 +44,7 @@ def add_common_arguments(
     parser_to_update: argparse.ArgumentParser,
     add_verbosity: bool = True,
     add_proxy: bool = True,
+    add_logs_filename: bool = True,
 ):
     """Apply common arguments to an existing parser.
 
@@ -51,6 +52,7 @@ def add_common_arguments(
         parser_to_update (argparse.ArgumentParser): parser to which arguments need to be added
         add_verbosity (bool, optional): if enabled, add --verbose. Defaults to True.
         add_proxy (bool, optional): if enabled, adds --proxy-http. Defaults to True.
+        add_logs_filename (bool, optional): if enabled, adds --logs-filename. Defaults to True.
 
     Returns:
         argparse.ArgumentParser: parser with added options
@@ -74,6 +76,18 @@ def add_common_arguments(
             help="Option to specify an HTTP proxy in the form: "
             "scheme://[user:passwd@]proxy.server:port",
             metavar="QDT_PROXY_HTTP",
+            type=str,
+        )
+
+    if add_logs_filename:
+        parser_to_update.add_argument(
+            "--logs-filename",
+            default=getenv(
+                "QDT_LOGS_FILENAME", f"{__title_clean__}_{__version_clean__}.log"
+            ),
+            dest="logs_filename",
+            help=f"Option to specify an QDT log filename. Use environment variable QDT_LOGS_FILENAME for default value, {__title_clean__}_{__version_clean__}.log if not defined.",
+            metavar="QDT_LOGS_FILENAME",
             type=str,
         )
 
@@ -102,6 +116,7 @@ def set_default_subparser(
             "--help",
             "--version",
             "--no-logfile",
+            "--logs-filename",
         ]:  # ignore main parser args
             break
 
@@ -156,7 +171,9 @@ def main(in_args: list[str] | None = None):
         help="Display CLI version",
     )
 
-    add_common_arguments(main_parser, add_verbosity=True, add_proxy=True)
+    add_common_arguments(
+        main_parser, add_verbosity=True, add_proxy=True, add_logs_filename=True
+    )
     # -- SUB-COMMANDS --
     subparsers = main_parser.add_subparsers(title="Sub-commands", dest="command")
 
@@ -203,7 +220,7 @@ def main(in_args: list[str] | None = None):
     if args.opt_logfile_disabled:
         configure_logger(
             verbosity=args.verbosity,
-            logfile=f"{__title_clean__}_{__version_clean__}.log",
+            logfile=args.logs_filename,
         )
     else:
         configure_logger(verbosity=args.verbosity)
