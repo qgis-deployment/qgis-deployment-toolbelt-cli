@@ -15,6 +15,7 @@ import argparse
 import logging
 import sys
 from os import environ, getenv
+from pathlib import Path
 
 # submodules
 from qgis_deployment_toolbelt.__about__ import (
@@ -32,6 +33,7 @@ from qgis_deployment_toolbelt.commands.cmd_rules_context import (
 )
 from qgis_deployment_toolbelt.commands.deployment import parser_main_deployment
 from qgis_deployment_toolbelt.commands.upgrade import parser_upgrade
+from qgis_deployment_toolbelt.constants import get_qdt_logs_folder
 from qgis_deployment_toolbelt.utils.journalizer import configure_logger
 
 
@@ -45,6 +47,7 @@ def add_common_arguments(
     add_verbosity: bool = True,
     add_proxy: bool = True,
     add_logs_filename: bool = True,
+    add_logs_dir: bool = True,
 ):
     """Apply common arguments to an existing parser.
 
@@ -53,6 +56,7 @@ def add_common_arguments(
         add_verbosity (bool, optional): if enabled, add --verbose. Defaults to True.
         add_proxy (bool, optional): if enabled, adds --proxy-http. Defaults to True.
         add_logs_filename (bool, optional): if enabled, adds --logs-filename. Defaults to True.
+        add_logs_dir (bool, optional): if enabled, adds --logs-dir. Defaults to True.
 
     Returns:
         argparse.ArgumentParser: parser with added options
@@ -86,9 +90,19 @@ def add_common_arguments(
                 "QDT_LOGS_FILENAME", f"{__title_clean__}_{__version_clean__}.log"
             ),
             dest="logs_filename",
-            help=f"Option to specify an QDT log filename. Use environment variable QDT_LOGS_FILENAME for default value, {__title_clean__}_{__version_clean__}.log if not defined.",
+            help=f"Option to specify a QDT log filename. Use environment variable QDT_LOGS_FILENAME for default value, {__title_clean__}_{__version_clean__}.log if not defined.",
             metavar="QDT_LOGS_FILENAME",
             type=str,
+        )
+
+    if add_logs_dir:
+        parser_to_update.add_argument(
+            "--logs-dir",
+            default=get_qdt_logs_folder(),
+            dest="logs_dir",
+            help="Option to specify a QDT log directory. Use environment variable QDT_LOGS_DIR for default value.",
+            metavar="QDT_LOGS_DIR",
+            type=Path,
         )
 
     return parser_to_update
@@ -221,6 +235,7 @@ def main(in_args: list[str] | None = None):
         configure_logger(
             verbosity=args.verbosity,
             logfile=args.logs_filename,
+            logs_folder=args.logs_dir,
         )
     else:
         configure_logger(verbosity=args.verbosity)
