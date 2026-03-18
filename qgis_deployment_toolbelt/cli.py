@@ -171,8 +171,8 @@ def main(in_args: list[str] | None = None):
     # -- ROOT ARGUMENTS --
     main_parser.add_argument(
         "--no-logfile",
-        default=True,
-        action="store_false",
+        default=False,
+        action="store_true",
         dest="opt_logfile_disabled",
         help="Disable log file. Log files are usually created, rotated and stored in the"
         "folder set by QDT_LOGS_DIR.",
@@ -232,13 +232,13 @@ def main(in_args: list[str] | None = None):
 
     # log configuration
     if args.opt_logfile_disabled:
+        configure_logger(verbosity=args.verbosity)
+    else:
         configure_logger(
             verbosity=args.verbosity,
             logfile=args.logs_filename,
             logs_folder=args.logs_dir,
         )
-    else:
-        configure_logger(verbosity=args.verbosity)
 
     # add the handler to the root logger
     logger = logging.getLogger(__title_clean__)
