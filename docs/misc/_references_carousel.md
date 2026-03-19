@@ -69,5 +69,11 @@
 :text-align: center
 :::
 
+:::{card} Opale
+:img-top: /static/logo_opale.png
+:link: https://www.opale-energies.fr/
+:text-align: center
+:::
+
 ::::
 <!-- markdownlint-enable MD034 -->
