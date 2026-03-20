@@ -31,6 +31,7 @@ Some others parameters can be set using environment variables.
 | `QDT_SSL_USE_SYSTEM_STORES` | By default, a bundle of SSL certificates is used, through [certifi](https://pypi.org/project/certifi/). If this environment variable is set to `true`, QDT tries to uses the system certificates store. Based on [truststore](https://truststore.readthedocs.io/). See also [How to use custom SSL certificates](../guides/howto_use_custom_ssl_certs.md).  | `False` |
 | `QDT_SSL_VERIFY` | Enables/disables SSL certificate verification. Useful for environments where the proxy is unreliable with HTTPS connections. Boolean: `true` or `false`. | `True` |
 | `QDT_PAC_FILE` | Define PAC file for proxy definition. See also [How to use behind a proxy](../guides/howto_behind_proxy.md). | `` |
+| `QDT_DELAY_LOG_FILE_CREATION` | Delay creation of log file to the first added log. | `true` |
 
 ----
 
