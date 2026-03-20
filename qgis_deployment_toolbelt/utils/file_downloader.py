@@ -84,6 +84,7 @@ def download_remote_file_to_local(
     chunk_size: int = 8192,
     timeout: tuple[int, int] = (800, 800),
     use_stream: bool = True,
+    authorization: str | None = None,
 ) -> Path:
     """Check if the local index file exists. If not, download the search index from \
         remote URL. If it does exist, check if it has been modified.
@@ -116,6 +117,8 @@ def download_remote_file_to_local(
     headers = {"User-Agent": user_agent}
     if content_type:
         headers["Accept"] = content_type
+    if authorization:
+        headers["Authorization"] = authorization
 
     try:
         with Session() as dl_session:
