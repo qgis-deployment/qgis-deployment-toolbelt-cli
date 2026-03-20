@@ -18,11 +18,12 @@ from __future__ import annotations
 import ast
 import logging
 import re
+from collections.abc import Callable
 from dataclasses import dataclass
 from os import PathLike, getenv
 from os.path import expanduser, expandvars
 from pathlib import Path
-from shutil import which
+from shutil import ignore_patterns, which
 from sys import platform as opersys
 
 # package
@@ -38,6 +39,9 @@ logger = logging.getLogger(__name__)
 
 # defaults
 DEFAULT_QDT_WORKING_FOLDER = Path.home().joinpath(".cache/qgis-deployment-toolbelt")
+
+# files to ignore when copying profiles. TODO: make it configurable?
+COPY_IGNORED_PATTERNS: Callable = ignore_patterns("*.lnk", "thumbs.db", ".DS_Store")
 
 # QGIS executable filenames
 QGIS_BIN_WINDOWS_FILENAME: str = "qgis-bin.exe"

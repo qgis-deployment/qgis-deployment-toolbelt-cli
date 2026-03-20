@@ -27,6 +27,7 @@ from packaging.version import InvalidVersion, Version
 
 # Package
 from qgis_deployment_toolbelt.constants import (
+    COPY_IGNORED_PATTERNS,
     OSConfiguration,
     get_qdt_working_directory,
 )
@@ -466,11 +467,10 @@ class QdtProfile:
         )
 
     def merge_to(self, dst: QdtProfile) -> None:
-        """Merge QdtProfile to another profile
-
+        """Merge QdtProfile to another profile.
 
         Args:
-            dst (QdtProfile): _description_
+            dst (QdtProfile): profile to merge to (i.e. destination profile, typically the installed one)
         """
         with tempfile.TemporaryDirectory(
             prefix=f"QDT_merge_profile_{self.name}_", ignore_cleanup_errors=True
@@ -484,6 +484,7 @@ class QdtProfile:
                 tmpdirname,
                 copy_function=copy2,
                 dirs_exist_ok=True,
+                ignore=COPY_IGNORED_PATTERNS,
             )
             # Merge INI files
             tmp_profile = QdtProfile(folder=Path(tmpdirname))
@@ -519,6 +520,7 @@ class QdtProfile:
                 dst.path_in_qgis,
                 copy_function=copy2,
                 dirs_exist_ok=True,
+                ignore=COPY_IGNORED_PATTERNS,
             )
 
 
