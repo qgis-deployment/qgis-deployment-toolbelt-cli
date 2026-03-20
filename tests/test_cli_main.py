@@ -92,10 +92,10 @@ def test_main_run(capsys, option):
     ) as tmpdirname:
         # customize QDT working folder and profiles destination folder
         tmp_dir = Path(tmpdirname).joinpath(f"scenario_{good_scenarios.index(option)}")
-        environ["QDT_LOCAL_WORK_DIR"] = (
-            f"{Path(tmpdirname).joinpath('qdt_working_folder').resolve()}"
-        )
+        qdt_working_folder = Path(tmpdirname).joinpath("qdt_working_folder")
+        environ["QDT_LOCAL_WORK_DIR"] = f"{qdt_working_folder.resolve()}"
         environ["QGIS_CUSTOM_CONFIG_PATH"] = f"{tmp_dir.resolve()}"
+        environ["QDT_DELAY_LOG_FILE_CREATION"] = "False"
 
         assert getenv("QGIS_CUSTOM_CONFIG_PATH") is not None
 
@@ -114,8 +114,97 @@ def test_main_run(capsys, option):
         assert Path(getenv("QGIS_CUSTOM_CONFIG_PATH")).is_dir()
         assert len(created_profiles) > 0
 
+        assert any(Path(qdt_working_folder / "logs").glob("*.log"))
+
     # clean up environment vars
     environ.pop("QGIS_CUSTOM_CONFIG_PATH")
+    environ.pop("QDT_DELAY_LOG_FILE_CREATION")
+
+
+def test_main_run_no_log_file(capsys):
+    """Test main cli command without log file"""
+
+    with tempfile.TemporaryDirectory(
+        prefix="QDT_test_cli_run_no_log_file",
+        ignore_cleanup_errors=True,
+    ) as tmpdirname:
+        # customize QDT working folder and profiles destination folder
+        tmp_dir = Path(tmpdirname)
+        qdt_working_folder = Path(tmpdirname).joinpath("qdt_working_folder")
+        environ["QDT_LOCAL_WORK_DIR"] = f"{qdt_working_folder.resolve()}"
+        environ["QGIS_CUSTOM_CONFIG_PATH"] = f"{tmp_dir.resolve()}"
+
+        assert getenv("QGIS_CUSTOM_CONFIG_PATH") is not None
+
+        with pytest.raises(SystemExit):
+            cli.main(
+                [
+                    "--no-logfile",
+                    "deploy",
+                    f"--scenario={sample_scenario_good.resolve()}",
+                ]
+            )
+
+        _, err = capsys.readouterr()
+        assert err == ""
+
+        # checks
+        created_profiles = [
+            QdtProfile.from_json(profile_json_path=f, profile_folder=f.parent)
+            for f in tmp_dir.glob("**/profile.json")
+        ]
+
+        assert Path(getenv("QGIS_CUSTOM_CONFIG_PATH")).is_dir()
+        assert len(created_profiles) > 0
+
+        assert not any(Path(qdt_working_folder / "logs").glob("*.log"))
+
+    # clean up environment vars
+    environ.pop("QGIS_CUSTOM_CONFIG_PATH")
+
+
+def test_main_run_log_filename(capsys):
+    """Test main cli command with log filename definition"""
+
+    with tempfile.TemporaryDirectory(
+        prefix="QDT_test_cli_run_log_filename",
+        ignore_cleanup_errors=True,
+    ) as tmpdirname:
+        # customize QDT working folder and profiles destination folder
+        tmp_dir = Path(tmpdirname)
+        qdt_working_folder = Path(tmpdirname).joinpath("qdt_working_folder")
+        environ["QDT_LOCAL_WORK_DIR"] = f"{qdt_working_folder.resolve()}"
+        environ["QGIS_CUSTOM_CONFIG_PATH"] = f"{tmp_dir.resolve()}"
+        environ["QDT_DELAY_LOG_FILE_CREATION"] = "False"
+
+        assert getenv("QGIS_CUSTOM_CONFIG_PATH") is not None
+
+        with pytest.raises(SystemExit):
+            cli.main(
+                [
+                    "deploy",
+                    "--logs-filename=custom_qdt_logfile.log",
+                    f"--scenario={sample_scenario_good.resolve()}",
+                ]
+            )
+
+        _, err = capsys.readouterr()
+        assert err == ""
+
+        # checks
+        created_profiles = [
+            QdtProfile.from_json(profile_json_path=f, profile_folder=f.parent)
+            for f in tmp_dir.glob("**/profile.json")
+        ]
+
+        assert Path(getenv("QGIS_CUSTOM_CONFIG_PATH")).is_dir()
+        assert len(created_profiles) > 0
+
+        assert Path(qdt_working_folder / "logs" / "custom_qdt_logfile.log").exists()
+
+    # clean up environment vars
+    environ.pop("QGIS_CUSTOM_CONFIG_PATH")
+    environ.pop("QDT_DELAY_LOG_FILE_CREATION")
 
 
 def test_main_run_as_admin(capsys):
