@@ -191,3 +191,37 @@ class TestJobGlobalConfigManager(unittest.TestCase):
 
         # clean up environment vars
         environ.pop("QDT_LOCAL_WORK_DIR")
+
+    def test_dst_copy_exception(self):
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            config_file = Path(tmpdirname).joinpath("custom_qgis_global_settings.ini")
+            config_file.write_text("[qgis]\ncheckVersion=true")
+
+            job = JobGlobalConfigManager(
+                {
+                    "src": str(config_file),
+                    "dst": "/usr/share/qgis/resources/qgis_global_settings.ini",
+                }
+            )
+
+            with self.assertRaises(ValueError):
+                job.run()
+
+    def test_relative_dst(self):
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            config_file = Path(tmpdirname).joinpath("custom_qgis_global_settings.ini")
+            config_file.write_text("[qgis]\ncheckVersion=true")
+
+            job = JobGlobalConfigManager(
+                {
+                    "src": str(config_file),
+                    "dst": "../qgis_global_settings.ini",
+                }
+            )
+
+            with self.assertRaises(ValueError):
+                job.run()
