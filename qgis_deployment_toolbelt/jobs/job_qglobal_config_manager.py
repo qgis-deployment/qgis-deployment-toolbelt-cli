@@ -21,6 +21,7 @@ from urllib.parse import urlsplit
 # package
 from qgis_deployment_toolbelt.constants import OSConfiguration
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
+from qgis_deployment_toolbelt.profiles.qgis_ini_handler import QgisIniHelper
 from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
 from qgis_deployment_toolbelt.utils.slugger import sluggy
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
@@ -141,7 +142,23 @@ class JobGlobalConfigManager(GenericJob):
         try:
             # Create directory for destination
             dst_path.parent.mkdir(parents=True, exist_ok=True)
-            copy2(src=src_path, dst=dst_path)
+
+            # Copy current installed file
+            copy2(
+                src_path,
+                dst_path,
+            )
+
+            dst_ini_helper = QgisIniHelper(
+                ini_filepath=dst_path, ini_type="qgis_global_settings"
+            )
+            src_ini_helper = QgisIniHelper(
+                ini_filepath=src_path, ini_type="qgis_global_settings"
+            )
+
+            # Merge
+            src_ini_helper.merge_to(dst_ini_helper)
+
         except Exception:
             err_msg = f"Can't copy `{src_path}` to `{dst_path}` for job {self.ID}. Check permission for destination."
             raise ValueError(err_msg)
