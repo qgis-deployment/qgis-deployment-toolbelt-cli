@@ -151,6 +151,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
                 Path(tmpdirname).joinpath("qdt_working_folder").resolve()
             )
             environ["QDT_LOCAL_WORK_DIR"] = f"{qdt_local_workdir}"
+            environ["QDT_TMP_RUNNING_SCENARIO_ID"] = "default"
             qdt_local_workdir.mkdir(parents=True)
 
             qdt_downloaded_repositories = qdt_local_workdir / "repositories" / "default"
@@ -191,6 +192,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
 
         # clean up environment vars
         environ.pop("QDT_LOCAL_WORK_DIR")
+        environ.pop("QDT_TMP_RUNNING_SCENARIO_ID")
 
     def test_dst_copy_exception(self):
         with tempfile.TemporaryDirectory(
@@ -202,7 +204,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
             job = JobGlobalConfigManager(
                 {
                     "src": str(config_file),
-                    "dst": "/usr/share/qgis/resources/qgis_global_settings.ini",
+                    "dst": "/sys/dev/qgis_global_settings.ini",
                 }
             )
 
