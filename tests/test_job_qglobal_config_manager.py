@@ -140,6 +140,39 @@ class TestJobGlobalConfigManager(unittest.TestCase):
                 ),
             )
 
+    def test_valid_with_env_var_options(self):
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            environ["CUSTOM_GLOBAL_SETTINGS"] = f"{Path(tmpdirname)}"
+
+            config_file = Path(tmpdirname).joinpath("input_qgis_global_settings.ini")
+            config_file.write_text(
+                "[help]\nhelpSearchPath=$HOME/offline_qgis_doc", encoding="UTF-8"
+            )
+
+            dst_file = Path(tmpdirname) / "dest" / "custom_qgis_global_settings.ini"
+
+            job = JobGlobalConfigManager(
+                {
+                    "src": "$CUSTOM_GLOBAL_SETTINGS/input_qgis_global_settings.ini",
+                    "dst": "$CUSTOM_GLOBAL_SETTINGS/dest/custom_qgis_global_settings.ini",
+                }
+            )
+
+            # Run job
+            job.run()
+
+            # Check file exists
+            self.assertTrue(dst_file.exists())
+
+            # Check environment variable QGIS_GLOBAL_SETTINGS_FILE is updated
+            if get_environment_variable is not None:
+                self.assertEqual(
+                    get_environment_variable("QGIS_GLOBAL_SETTINGS_FILE"),
+                    str(dst_file),
+                )
+
     def test_relative_source_qdt_work_dir(self):
         with tempfile.TemporaryDirectory(
             prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
