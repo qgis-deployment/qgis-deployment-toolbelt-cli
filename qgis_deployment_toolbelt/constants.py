@@ -163,6 +163,7 @@ class OSConfiguration:
     shortcut_forbidden_chars: tuple[str, ...] | None = None
     shortcut_icon_extensions: tuple[str, ...] | None = None
     shortcut_icon_default_path: str | None = None
+    qgis_global_settings_file_path: Path | None = None
 
     def _is_envvar_qgis_exe_path_a_dict(self) -> bool:
         """Check if the QDT_QGIS_EXE_PATH environment variable is a dictionary.
@@ -318,6 +319,13 @@ class OSConfiguration:
                 ),
                 shortcut_extension="app",
                 shortcut_icon_extensions=("icns",),
+                qgis_global_settings_file_path=Path(
+                    getenv(
+                        "QGIS_GLOBAL_SETTINGS_FILE",
+                        Path.home()
+                        / "Library/Application Support/QGIS/QGIS3/qgis_global_setting.ini",
+                    )
+                ),
             )
         elif operating_system_codename == "linux":
             return cls(
@@ -333,6 +341,12 @@ class OSConfiguration:
                 shortcut_extension=".desktop",
                 shortcut_icon_extensions=("ico", "svg", "png"),
                 shortcut_icon_default_path="qgis",
+                qgis_global_settings_file_path=Path(
+                    getenv(
+                        "QGIS_GLOBAL_SETTINGS_FILE",
+                        Path.home() / ".local/share/QGIS/QGIS3/qgis_global_setting.ini",
+                    )
+                ),
             )
         elif operating_system_codename == "win32":
             return cls(
@@ -350,6 +364,12 @@ class OSConfiguration:
                 shortcut_extension=".lnk",
                 shortcut_forbidden_chars=("<", ">", ":", '"', "/", "\\", "|", "?", "*"),
                 shortcut_icon_extensions=("ico",),
+                qgis_global_settings_file_path=Path(
+                    getenv(
+                        "QGIS_GLOBAL_SETTINGS_FILE",
+                        expandvars("%APPDATA%/QGIS/QGIS3/qgis_global_setting.ini"),
+                    )
+                ),
             )
         else:
             raise ValueError(
