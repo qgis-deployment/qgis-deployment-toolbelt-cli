@@ -28,7 +28,6 @@ if opersys == "win32":
     import win32com.client
     from win32comext.shell import shell, shellcon
 
-
 # package
 from qgis_deployment_toolbelt.__about__ import __title__, __version__
 from qgis_deployment_toolbelt.constants import (
@@ -482,7 +481,16 @@ class ApplicationShortcut:
                     logger.warning(
                         f"Bad icon path type: {type(self.icon_path)} != (Path, str)."
                     )
-            wscript.save()
+            try:
+                wscript.save()
+            except PermissionError as err:
+                logger.error(
+                    f"Permission error when creating desktop shortcut at "
+                    f"{shortcut_desktop_path}. Trace: {err}"
+                )
+
+                shortcut_desktop_path = None
+
         else:
             shortcut_desktop_path = None
 
@@ -505,7 +513,15 @@ class ApplicationShortcut:
                 wscript.Description = f"Created by {__title__} {__version__}"
             if self.icon_path is not None:
                 wscript.IconLocation = str(self.icon_path.resolve())
-            wscript.save()
+            try:
+                wscript.save()
+            except PermissionError as err:
+                logger.error(
+                    f"Permission error when creating start menu shortcut at "
+                    f"{shortcut_start_menu_path}. Trace: {err}"
+                )
+
+                shortcut_start_menu_path = None
         else:
             shortcut_start_menu_path = None
 
