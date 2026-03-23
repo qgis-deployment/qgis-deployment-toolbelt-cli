@@ -270,3 +270,70 @@ class TestJobGlobalConfigManager(unittest.TestCase):
 
             with self.assertRaises(ValueError):
                 job.run()
+
+    def test_default_src(self):
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            temp_qgis_exe_path = Path(tmpdirname) / "bin"
+            environ["QDT_QGIS_EXE_PATH"] = f"{temp_qgis_exe_path}"
+
+            default_qgis_global_setting_path = (
+                Path(tmpdirname) / "resources" / "qgis_global_settings.ini"
+            )
+            default_qgis_global_setting_path.parent.mkdir()
+            default_qgis_global_setting_path.write_text("[qgis]\ncheckVersion=true")
+
+            dst_file = Path(tmpdirname) / "dest" / "custom_qgis_global_settings.ini"
+
+            job = JobGlobalConfigManager(
+                {
+                    "dst": str(dst_file),
+                }
+            )
+
+            # Run job
+            job.run()
+
+            # Check file exists
+            self.assertTrue(dst_file.exists())
+
+            # Check environment variable QGIS_GLOBAL_SETTINGS_FILE is updated
+            if get_environment_variable is not None:
+                self.assertEqual(
+                    get_environment_variable("QGIS_GLOBAL_SETTINGS_FILE"),
+                    str(dst_file),
+                )
+
+        # clean up environment vars
+        environ.pop("QDT_QGIS_EXE_PATH")
+
+    def test_default_dst(self):
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            config_file = Path(tmpdirname).joinpath("custom_qgis_global_settings.ini")
+            config_file.write_text("[qgis]\ncheckVersion=true")
+
+            default_dst = (
+                Path(tmpdirname).joinpath("qgis_global_settings.ini").resolve()
+            )
+            environ["QGIS_GLOBAL_SETTINGS_FILE"] = f"{default_dst}"
+
+            job = JobGlobalConfigManager({"src": str(config_file)})
+
+            # Run job
+            job.run()
+
+            # Check file exists
+            self.assertTrue(default_dst.exists())
+
+            # Check environment variable QGIS_GLOBAL_SETTINGS_FILE is updated
+            if get_environment_variable is not None:
+                self.assertEqual(
+                    get_environment_variable("QGIS_GLOBAL_SETTINGS_FILE"),
+                    str(default_dst),
+                )
+
+        # clean up environment vars
+        environ.pop("QGIS_GLOBAL_SETTINGS_FILE")
