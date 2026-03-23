@@ -201,7 +201,7 @@ class TestConstants(unittest.TestCase):
         elif opersys == "win32":
             self.assertEqual(
                 os_config.get_qgis_global_settings_file_path(check_exists=False),
-                expandvars("%APPDATA%/QGIS/QGIS3/qgis_global_setting.ini"),
+                Path(expandvars("%APPDATA%/QGIS/QGIS3/qgis_global_setting.ini")),
             )
 
     def test_get_qgis_global_settings_file_custom(self):
