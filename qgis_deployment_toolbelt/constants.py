@@ -283,7 +283,9 @@ class OSConfiguration:
 
         # Check if file exists
         if default_file_path:
-            if check_exists and default_file_path.exists():
+            if not check_exists:
+                return default_file_path
+            elif default_file_path.exists():
                 return default_file_path
 
         # Define from qgis bin path
@@ -293,8 +295,11 @@ class OSConfiguration:
                 Path(qgis_bin_path).parent / "resources" / "qgis_global_settings.ini"
             )
 
-        if check_exists and default_file_path.exists():
-            return default_file_path
+        if default_file_path:
+            if not check_exists:
+                return default_file_path
+            elif default_file_path.exists():
+                return default_file_path
 
         return None
 
