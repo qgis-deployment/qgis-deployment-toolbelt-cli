@@ -312,6 +312,54 @@ class TestConstants(unittest.TestCase):
             environ.pop("QDT_QGIS_EXE_PATH")
             unsetenv("QDT_QGIS_EXE_PATH")
 
+    def test_get_qgis_global_settings_file(self):
+        """Test QGIS global settings file."""
+
+        os_config: OSConfiguration = OSConfiguration.from_opersys()
+
+        self.assertTrue(is_dataclass(os_config))
+        self.assertIsInstance(os_config, OSConfiguration)
+
+        if opersys == "linux":
+            self.assertEqual(
+                os_config.qgis_global_settings_file_path,
+                Path.home() / ".local/share/QGIS/QGIS3/qgis_global_setting.ini",
+            )
+        elif opersys == "darwin":
+            self.assertEqual(
+                os_config.qgis_global_settings_file_path,
+                Path.home()
+                / "Library/Application Support/QGIS/QGIS3/qgis_global_setting.ini",
+            )
+        elif opersys == "win32":
+            self.assertEqual(
+                os_config.qgis_global_settings_file_path,
+                expandvars("%APPDATA%/QGIS/QGIS3/qgis_global_setting.ini"),
+            )
+
+    def test_get_qgis_global_settings_file_custom(self):
+        """Test QGIS global settings file custom."""
+        if "QGIS_GLOBAL_SETTINGS_FILE" in environ:
+            environ.pop("QGIS_GLOBAL_SETTINGS_FILE")
+
+        custom_qgis_global_settings_file = Path(
+            "tests/fixtures/tmp/custom_qgis_global_settings_file"
+        )
+        environ["QGIS_GLOBAL_SETTINGS_FILE"] = f"{custom_qgis_global_settings_file}"
+
+        os_config: OSConfiguration = OSConfiguration.from_opersys()
+
+        self.assertTrue(is_dataclass(os_config))
+        self.assertIsInstance(os_config, OSConfiguration)
+
+        self.assertEqual(
+            os_config.qgis_global_settings_file_path,
+            custom_qgis_global_settings_file,
+        )
+
+        environ.pop("QGIS_GLOBAL_SETTINGS_FILE")
+        unsetenv("QGIS_GLOBAL_SETTINGS_FILE")
+
 
 # ############################################################################
 # ####### Stand-alone run ########
