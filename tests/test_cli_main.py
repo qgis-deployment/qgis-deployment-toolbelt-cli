@@ -95,7 +95,7 @@ def test_main_run(capsys, option):
         qdt_working_folder = Path(tmpdirname).joinpath("qdt_working_folder")
         environ["QDT_LOCAL_WORK_DIR"] = f"{qdt_working_folder.resolve()}"
         environ["QGIS_CUSTOM_CONFIG_PATH"] = f"{tmp_dir.resolve()}"
-        environ["QDT_DELAY_LOG_FILE_CREATION"] = "False"
+        environ["QDT_LOGS_DELAY_FILE_CREATION"] = "False"
 
         assert getenv("QGIS_CUSTOM_CONFIG_PATH") is not None
 
@@ -118,7 +118,7 @@ def test_main_run(capsys, option):
 
     # clean up environment vars
     environ.pop("QGIS_CUSTOM_CONFIG_PATH")
-    environ.pop("QDT_DELAY_LOG_FILE_CREATION")
+    environ.pop("QDT_LOGS_DELAY_FILE_CREATION")
 
 
 def test_main_run_no_log_file(capsys):
@@ -175,7 +175,7 @@ def test_main_run_log_filename(capsys):
         qdt_working_folder = Path(tmpdirname).joinpath("qdt_working_folder")
         environ["QDT_LOCAL_WORK_DIR"] = f"{qdt_working_folder.resolve()}"
         environ["QGIS_CUSTOM_CONFIG_PATH"] = f"{tmp_dir.resolve()}"
-        environ["QDT_DELAY_LOG_FILE_CREATION"] = "False"
+        environ["QDT_LOGS_DELAY_FILE_CREATION"] = "False"
 
         assert getenv("QGIS_CUSTOM_CONFIG_PATH") is not None
 
@@ -204,7 +204,7 @@ def test_main_run_log_filename(capsys):
 
     # clean up environment vars
     environ.pop("QGIS_CUSTOM_CONFIG_PATH")
-    environ.pop("QDT_DELAY_LOG_FILE_CREATION")
+    environ.pop("QDT_LOGS_DELAY_FILE_CREATION")
 
 
 def test_main_run_as_admin(capsys):

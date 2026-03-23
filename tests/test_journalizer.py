@@ -25,12 +25,12 @@ def test_configure_logger_logfile():
         prefix="QDT_test_journalizer_logfile",
         ignore_cleanup_errors=True,
     ) as tmpdirname:
-        environ["QDT_DELAY_LOG_FILE_CREATION"] = "False"
+        environ["QDT_LOGS_DELAY_FILE_CREATION"] = "False"
         configure_logger(verbosity=4, logfile="test.log", logs_folder=Path(tmpdirname))
         assert Path(Path(tmpdirname) / "test.log").exists()
 
     # clean up environment vars
-    environ.pop("QDT_DELAY_LOG_FILE_CREATION")
+    environ.pop("QDT_LOGS_DELAY_FILE_CREATION")
 
 
 def test_configure_logger_default_log_dir():
@@ -41,10 +41,10 @@ def test_configure_logger_default_log_dir():
         qdt_working_folder = Path(tmpdirname).joinpath("qdt_working_folder")
         environ["QDT_LOCAL_WORK_DIR"] = f"{qdt_working_folder.resolve()}"
 
-        environ["QDT_DELAY_LOG_FILE_CREATION"] = "False"
+        environ["QDT_LOGS_DELAY_FILE_CREATION"] = "False"
         configure_logger(verbosity=4, logfile="test.log")
         assert Path(Path(qdt_working_folder) / "logs" / "test.log").exists()
 
     # clean up environment vars
-    environ.pop("QDT_DELAY_LOG_FILE_CREATION")
+    environ.pop("QDT_LOGS_DELAY_FILE_CREATION")
     environ.pop("QDT_LOCAL_WORK_DIR")

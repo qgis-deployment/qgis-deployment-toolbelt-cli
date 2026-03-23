@@ -96,7 +96,7 @@ def configure_logger(
         logs_folder.mkdir(exist_ok=True, parents=True)
         logs_filepath = Path(logs_folder, logfile)
 
-        delay = str2bool(getenv("QDT_DELAY_LOG_FILE_CREATION", True))
+        delay = str2bool(getenv("QDT_LOGS_DELAY_FILE_CREATION", True))
 
         log_file_handler = RotatingFileHandler(
             backupCount=10,
