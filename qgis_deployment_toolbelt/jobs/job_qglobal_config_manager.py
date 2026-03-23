@@ -114,6 +114,10 @@ class JobGlobalConfigManager(GenericJob):
         else:
             dst_path = Path(dst)
 
+        if not dst_path.is_absolute():
+            err_msg = f"dst option file path `{dst_path}` must be absolute for job {self.ID}. Can't update QGIS global settings file."
+            raise ValueError(err_msg)
+
         if dst_path is None:
             err_msg = f"Can't define destination for job {self.ID}."
             raise ValueError(err_msg)
