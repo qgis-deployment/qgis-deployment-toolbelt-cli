@@ -113,6 +113,8 @@ class QgisIniHelper:
             self.profile_config_path = None
             self.profile_customization_path = None
         else:
+            self.profile_config_path = None
+            self.profile_customization_path = None
             logger.warning(f"Unrecognized ini type: {ini_filepath}")
 
         # check if file exists
