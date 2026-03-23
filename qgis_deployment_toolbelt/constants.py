@@ -261,6 +261,43 @@ class OSConfiguration:
             )
             return Path(expandvars(expanduser(self.qgis_bin_exe_path)))  # noqa: PTH111
 
+    def get_qgis_global_settings_file_path(
+        self, check_exists: bool = True
+    ) -> Path | None:
+        """Returns the QGIS global settings file from default value used by QGIS
+        See https://docs.qgis.org/latest/en/docs/user_manual/introduction/qgis_configuration.html#globalsettingsfile
+
+        - first from environment variable QGIS_GLOBAL_SETTINGS_FILE
+        - second from AppDataLocation folder
+        - then from installation directory
+
+        Args:
+            check_exists (bool, optional): _description_. Defaults to True.
+
+        Returns:
+            Path | None: qgis global settings file path, None if can't define default value
+        """
+
+        # Default value from environment variable and AppDataLocation folder defined in constructor (see from_opersys)
+        default_file_path = self.qgis_global_settings_file_path
+
+        # Check if file exists
+        if default_file_path:
+            if check_exists and default_file_path.exists():
+                return default_file_path
+
+        # Define from qgis bin path
+        qgis_bin_path = self.get_qgis_bin_path()
+        if qgis_bin_path:
+            default_file_path = (
+                Path(qgis_bin_path).parent / "resources" / "qgis_global_settings.ini"
+            )
+
+        if check_exists and default_file_path.exists():
+            return default_file_path
+
+        return None
+
     def valid_shortcut_name(self, shortcut_name: str) -> bool:
         """Check if a given string is a valid shortcut name for the current operating
         system.

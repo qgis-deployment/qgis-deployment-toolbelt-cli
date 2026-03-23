@@ -189,18 +189,18 @@ class TestConstants(unittest.TestCase):
 
         if opersys == "linux":
             self.assertEqual(
-                os_config.qgis_global_settings_file_path,
+                os_config.get_qgis_global_settings_file_path(check_exists=False),
                 Path.home() / ".local/share/QGIS/QGIS3/qgis_global_setting.ini",
             )
         elif opersys == "darwin":
             self.assertEqual(
-                os_config.qgis_global_settings_file_path,
+                os_config.get_qgis_global_settings_file_path(check_exists=False),
                 Path.home()
                 / "Library/Application Support/QGIS/QGIS3/qgis_global_setting.ini",
             )
         elif opersys == "win32":
             self.assertEqual(
-                os_config.qgis_global_settings_file_path,
+                os_config.get_qgis_global_settings_file_path(check_exists=False),
                 expandvars("%APPDATA%/QGIS/QGIS3/qgis_global_setting.ini"),
             )
 
@@ -220,7 +220,7 @@ class TestConstants(unittest.TestCase):
         self.assertIsInstance(os_config, OSConfiguration)
 
         self.assertEqual(
-            os_config.qgis_global_settings_file_path,
+            os_config.get_qgis_global_settings_file_path(check_exists=False),
             custom_qgis_global_settings_file,
         )
 
