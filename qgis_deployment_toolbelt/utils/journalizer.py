@@ -45,12 +45,17 @@ logger = logging.getLogger(__name__)
 # ################################
 
 
-def configure_logger(verbosity: int = 1, logfile: None | Path | str = None):
+def configure_logger(
+    verbosity: int = 1,
+    logfile: None | Path | str = None,
+    logs_folder: None | Path | str = None,
+):
     """Configure logging according to verbosity from CLI.
 
     Args:
         verbosity (int): verbosity level
         logfile (Path, optional): file where to store log. Defaults to None.
+        logs_folder (Path, optional): directory where to store log. Defaults to None.
     """
     # handle log level overridden by environment variable
     verbosity = getenv("QDT_LOGS_LEVEL", verbosity)
@@ -83,15 +88,19 @@ def configure_logger(verbosity: int = 1, logfile: None | Path | str = None):
         )
 
     else:
-        logs_folder = get_qdt_logs_folder()
+        # Use default folder if not defined
+        if logs_folder is None:
+            logs_folder = get_qdt_logs_folder()
 
         # make sure folder exists
         logs_folder.mkdir(exist_ok=True, parents=True)
         logs_filepath = Path(logs_folder, logfile)
 
+        delay = str2bool(getenv("QDT_LOGS_DELAY_FILE_CREATION", True))
+
         log_file_handler = RotatingFileHandler(
             backupCount=10,
-            delay=True,
+            delay=delay,
             encoding="UTF-8",
             filename=logs_filepath,
             maxBytes=3000000,
