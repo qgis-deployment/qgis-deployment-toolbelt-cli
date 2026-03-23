@@ -17,6 +17,7 @@
 # Standard library
 import tempfile
 import unittest
+from os import environ
 from pathlib import Path
 from sys import platform as opersys
 
@@ -102,3 +103,91 @@ class TestJobGlobalConfigManager(unittest.TestCase):
                     get_environment_variable("QGIS_GLOBAL_SETTINGS_FILE"),
                     str(dst_file),
                 )
+
+    def test_relative_source_qdt_work_dir(self):
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            qdt_local_workdir = (
+                Path(tmpdirname).joinpath("qdt_working_folder").resolve()
+            )
+            environ["QDT_LOCAL_WORK_DIR"] = f"{qdt_local_workdir}"
+            qdt_local_workdir.mkdir(parents=True)
+
+            # Config file related to QDT_LOCAL_WORK_DIR
+            config_file = qdt_local_workdir.joinpath("custom_qgis_global_settings.ini")
+            config_file.write_text("[qgis]\ncheckVersion=true")
+
+            dst_file = Path(tmpdirname) / "dest" / "custom_qgis_global_settings.ini"
+
+            job = JobGlobalConfigManager(
+                {
+                    "src": "./custom_qgis_global_settings.ini",
+                    "dst": str(dst_file),
+                }
+            )
+
+            # Run job
+            job.run()
+
+            # Check file exists
+            self.assertTrue(dst_file.exists())
+
+            # Check environment variable QGIS_GLOBAL_SETTINGS_FILE is updated
+            if get_environment_variable is not None:
+                self.assertEqual(
+                    get_environment_variable("QGIS_GLOBAL_SETTINGS_FILE"),
+                    str(dst_file),
+                )
+
+        # clean up environment vars
+        environ.pop("QDT_LOCAL_WORK_DIR")
+
+    def test_relative_source_qdt_repository(self):
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            qdt_local_workdir = (
+                Path(tmpdirname).joinpath("qdt_working_folder").resolve()
+            )
+            environ["QDT_LOCAL_WORK_DIR"] = f"{qdt_local_workdir}"
+            qdt_local_workdir.mkdir(parents=True)
+
+            qdt_downloaded_repositories = qdt_local_workdir / "repositories" / "default"
+            qdt_downloaded_repositories.mkdir(parents=True)
+
+            qdt_downloaded_repository = qdt_downloaded_repositories.joinpath(
+                "myprofiles"
+            )
+            qdt_downloaded_repository.mkdir(parents=True)
+
+            # Config file related to downloaded repositories
+            config_file = qdt_downloaded_repository.joinpath(
+                "custom_qgis_global_settings.ini"
+            )
+            config_file.write_text("[qgis]\ncheckVersion=true")
+
+            dst_file = Path(tmpdirname) / "dest" / "custom_qgis_global_settings.ini"
+
+            job = JobGlobalConfigManager(
+                {
+                    "src": "./myprofiles/custom_qgis_global_settings.ini",
+                    "dst": str(dst_file),
+                }
+            )
+
+            # Run job
+            job.run()
+
+            # Check file exists
+            self.assertTrue(dst_file.exists())
+
+            # Check environment variable QGIS_GLOBAL_SETTINGS_FILE is updated
+            if get_environment_variable is not None:
+                self.assertEqual(
+                    get_environment_variable("QGIS_GLOBAL_SETTINGS_FILE"),
+                    str(dst_file),
+                )
+
+        # clean up environment vars
+        environ.pop("QDT_LOCAL_WORK_DIR")

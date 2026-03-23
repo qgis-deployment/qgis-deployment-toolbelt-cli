@@ -91,8 +91,18 @@ class JobGlobalConfigManager(GenericJob):
             err_msg = f"Can't define default src option for job {self.ID}. Can't update QGIS global settings file."
             raise ValueError(err_msg)
 
-        # Check file exists
         src_path = Path(src)
+
+        # Check if file is relative
+        if not src_path.is_absolute():
+            # Check with downloaded repositories
+            if Path(self.qdt_downloaded_repositories / src_path).exists():
+                src_path = Path(self.qdt_downloaded_repositories / src_path).resolve()
+            # Check with QDT working dir
+            elif Path(self.qdt_working_folder / src_path).exists():
+                src_path = Path(self.qdt_working_folder / src_path).resolve()
+
+        # Check file exists
         if not src_path.exists():
             err_msg = f"src option file `{src}` is not available for job {self.ID}. Can't update QGIS global settings file."
             raise ValueError(err_msg)
@@ -111,7 +121,7 @@ class JobGlobalConfigManager(GenericJob):
         # Copy source to destination
         try:
             # Create directory for destination
-            dst_path.mkdir(parents=True, exist_ok=True)
+            dst_path.parent.mkdir(parents=True, exist_ok=True)
             copy2(src=src_path, dst=dst_path)
         except Exception:
             err_msg = f"Can't copy `{src_path}` to `{dst_path}` for job {self.ID}. Check permission for destination."
