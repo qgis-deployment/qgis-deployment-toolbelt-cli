@@ -12,13 +12,19 @@ Author: Julien Moura (https://github.com/guts)
 
 # Standard library
 import logging
+from os import getenv
 from pathlib import Path
 from shutil import copy2
 from sys import platform as opersys
+from urllib.parse import urlsplit
 
 # package
 from qgis_deployment_toolbelt.constants import OSConfiguration
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
+from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
+from qgis_deployment_toolbelt.utils.slugger import sluggy
+from qgis_deployment_toolbelt.utils.str2bool import str2bool
+from qgis_deployment_toolbelt.utils.url_helpers import check_str_is_url
 
 
 # 3rd party
@@ -87,9 +93,18 @@ class JobGlobalConfigManager(GenericJob):
             # Define default src file from os config
             src = os_config.get_qgis_global_settings_file_path(check_exists=True)
 
-        if src is None:
-            err_msg = f"Can't define default src option for job {self.ID}. Can't update QGIS global settings file."
-            raise ValueError(err_msg)
+            if src is None:
+                err_msg = f"Can't define default src option for job {self.ID}. Can't update QGIS global settings file."
+                raise ValueError(err_msg)
+
+        # Check if src is a url
+        if check_str_is_url(input_str=src, raise_error=False):
+            logger.info(f"{src} is a valid URL. Downloading QGIS global settings file.")
+            try:
+                src = self.get_remote_qgis_global_settings_from_url(remote_url=src)
+            except Exception as exc:
+                err_msg = f"Error download external url `{src}` for job {self.ID} : {exc}. Can't update QGIS global settings file."
+                raise ValueError(err_msg) from exc
 
         src_path = Path(src)
 
@@ -139,3 +154,39 @@ class JobGlobalConfigManager(GenericJob):
             )
 
         logger.debug(f"Job {self.ID} ran successfully.")
+
+    def get_remote_qgis_global_settings_from_url(self, remote_url: str) -> Path:
+        """Download remote qgis global settings and return local file path.
+
+        Args:
+            remote_url (str): URL to remote qgis global settings
+
+        Returns:
+            Path: local path to downloaded qgis global settings.
+        """
+        # try to build file path from URL
+        try:
+            url_splitted = urlsplit(remote_url)
+            local_filepath_for_remote_global_settings = (
+                "remote_qgis_global_settings/"
+                f"{sluggy(url_splitted.netloc)}/"
+                f"{sluggy(str(Path(url_splitted.path).parent))}/"
+                f"{Path(url_splitted.path).name}"
+            )
+        except Exception as err:
+            local_filepath_for_remote_global_settings = (
+                "remote_qgis_global_settings/qgis_global_settings.ini"
+            )
+            logger.warning(
+                f"Failed to extract a proper filename from URL: {remote_url}."
+                f" Trace: {err}. Fallback to default: {local_filepath_for_remote_global_settings}"
+            )
+
+        return download_remote_file_to_local(
+            remote_url_to_download=remote_url,
+            local_file_path=Path(
+                self.qdt_working_folder.parent,
+                local_filepath_for_remote_global_settings,
+            ),
+            use_stream=str2bool(getenv("QDT_STREAMED_DOWNLOADS", True)),
+        )

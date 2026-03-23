@@ -227,3 +227,46 @@ class TestJobGlobalConfigManager(unittest.TestCase):
 
             with self.assertRaises(ValueError):
                 job.run()
+
+    def test_url_src(self):
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            dst_file = Path(tmpdirname) / "dest" / "custom_qgis_global_settings.ini"
+
+            job = JobGlobalConfigManager(
+                {
+                    "src": "https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/resources/qgis_global_settings.ini",
+                    "dst": str(dst_file),
+                }
+            )
+
+            # Run job
+            job.run()
+
+            # Check file exists
+            self.assertTrue(dst_file.exists())
+
+            # Check environment variable QGIS_GLOBAL_SETTINGS_FILE is updated
+            if get_environment_variable is not None:
+                self.assertEqual(
+                    get_environment_variable("QGIS_GLOBAL_SETTINGS_FILE"),
+                    str(dst_file),
+                )
+
+    def test_invalid_src_url(self):
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            config_file = Path(tmpdirname).joinpath("custom_qgis_global_settings.ini")
+            config_file.write_text("[qgis]\ncheckVersion=true")
+
+            job = JobGlobalConfigManager(
+                {
+                    "src": "https://invalidrepository.com/qgis/QGIS/refs/heads/master/resources/qgis_global_settings.ini",
+                    "dst": "../qgis_global_settings.ini",
+                }
+            )
+
+            with self.assertRaises(ValueError):
+                job.run()
