@@ -85,7 +85,7 @@ class JobGlobalConfigManager(GenericJob):
 
         if src is None:
             # Define default src file from os config
-            src = os_config.qgis_global_settings_file_path
+            src = os_config.get_qgis_global_settings_file_path(check_exists=True)
 
         if src is None:
             err_msg = f"Can't define default src option for job {self.ID}. Can't update QGIS global settings file."
@@ -100,7 +100,7 @@ class JobGlobalConfigManager(GenericJob):
         # Get destination file
         dst = self.options.get("dst", None)
         if dst is None:
-            dst_path = os_config.qgis_global_settings_file_path
+            dst_path = os_config.get_qgis_global_settings_file_path(check_exists=False)
         else:
             dst_path = Path(dst)
 
