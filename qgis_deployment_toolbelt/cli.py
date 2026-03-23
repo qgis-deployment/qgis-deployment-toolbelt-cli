@@ -90,7 +90,7 @@ def add_common_arguments(
                 "QDT_LOGS_FILENAME", f"{__title_clean__}_{__version_clean__}.log"
             ),
             dest="logs_filename",
-            help=f"Option to specify a QDT log filename. Use environment variable QDT_LOGS_FILENAME for default value, {__title_clean__}_{__version_clean__}.log if not defined.",
+            help=f"Option to specify a QDT log filename. Can also be defined with the environment variable 'QDT_LOGS_FILENAME'. Defaults to '{__title_clean__}_{__version_clean__}.log'.",
             metavar="QDT_LOGS_FILENAME",
             type=str,
         )
@@ -100,7 +100,7 @@ def add_common_arguments(
             "--logs-dir",
             default=get_qdt_logs_folder(),
             dest="logs_dir",
-            help="Option to specify a QDT log directory. Use environment variable QDT_LOGS_DIR for default value.",
+            help="Option to specify a QDT log directory. Can be defined with the environment variable 'QDT_LOGS_DIR'. Defaults to ~/.cache/qgis-deployment-toolbelt/logs'.",
             metavar="QDT_LOGS_DIR",
             type=Path,
         )
