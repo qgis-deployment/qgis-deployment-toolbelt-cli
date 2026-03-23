@@ -24,7 +24,9 @@ Sample job configuration in your scenario file:
 
 ### src
 
-Define source .ini file path. This can be an url, in this case, QDT download the .ini file in a local directory before copying to the destination.
+Define source .ini file path. You can use environment variable that will be converted before use.
+
+This can be an url, in this case, QDT download the .ini file in a local directory before copying to the destination.
 
 `src` can be a relative path. In this case we check for .ini file related to:
 
@@ -38,7 +40,9 @@ The job fails if source .ini file doesn't exist or can't be downloaded.
 
 ### dst
 
-Define destination .ini file path. The file path must be absolute.
+Define destination .ini file path. You can use environment variable that will be converted before use.
+
+The file path must be absolute.
 
 If the source .ini file use environment variables, they are converted in destination .ini file.
 

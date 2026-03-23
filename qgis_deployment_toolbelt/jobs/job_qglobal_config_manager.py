@@ -14,6 +14,7 @@ Author: Julien Moura (https://github.com/guts)
 import logging
 from os import getenv
 from pathlib import Path
+from posixpath import expanduser, expandvars
 from shutil import copy2
 from sys import platform as opersys
 from urllib.parse import urlsplit
@@ -98,6 +99,9 @@ class JobGlobalConfigManager(GenericJob):
                 err_msg = f"Can't define default src option for job {self.ID}. Can't update QGIS global settings file."
                 raise ValueError(err_msg)
 
+        # Interpolate value
+        src = expandvars(expanduser(src))
+
         # Check if src is a url
         if check_str_is_url(input_str=src, raise_error=False):
             logger.info(f"{src} is a valid URL. Downloading QGIS global settings file.")
@@ -126,9 +130,12 @@ class JobGlobalConfigManager(GenericJob):
         # Get destination file
         dst = self.options.get("dst", None)
         if dst is None:
-            dst_path = os_config.get_qgis_global_settings_file_path(check_exists=False)
-        else:
-            dst_path = Path(dst)
+            dst = os_config.get_qgis_global_settings_file_path(check_exists=False)
+
+        # Interpolate value
+        dst = expandvars(expanduser(dst))
+
+        dst_path = Path(dst)
 
         if not dst_path.is_absolute():
             err_msg = f"dst option file path `{dst_path}` must be absolute for job {self.ID}. Can't update QGIS global settings file."
