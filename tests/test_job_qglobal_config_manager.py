@@ -19,6 +19,7 @@ import tempfile
 import unittest
 from os import environ
 from pathlib import Path
+from posixpath import expanduser, expandvars
 from sys import platform as opersys
 
 # package
@@ -103,6 +104,41 @@ class TestJobGlobalConfigManager(unittest.TestCase):
                     get_environment_variable("QGIS_GLOBAL_SETTINGS_FILE"),
                     str(dst_file),
                 )
+
+    def test_valid_with_env_var(self):
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            config_file = Path(tmpdirname).joinpath("custom_qgis_global_settings.ini")
+            config_file.write_text(
+                "[help]\nhelpSearchPath=$HOME/offline_qgis_doc", encoding="UTF-8"
+            )
+
+            dst_file = Path(tmpdirname) / "dest" / "custom_qgis_global_settings.ini"
+
+            job = JobGlobalConfigManager(
+                {"src": str(config_file), "dst": str(dst_file)}
+            )
+
+            # Run job
+            job.run()
+
+            # Check file exists
+            self.assertTrue(dst_file.exists())
+
+            # Check environment variable QGIS_GLOBAL_SETTINGS_FILE is updated
+            if get_environment_variable is not None:
+                self.assertEqual(
+                    get_environment_variable("QGIS_GLOBAL_SETTINGS_FILE"),
+                    str(dst_file),
+                )
+            read_ini = dst_file.read_text("UTF-8")
+            self.assertEqual(
+                read_ini,
+                expanduser(
+                    expandvars("[help]\nhelpSearchPath = $HOME/offline_qgis_doc\n\n")
+                ),
+            )
 
     def test_relative_source_qdt_work_dir(self):
         with tempfile.TemporaryDirectory(

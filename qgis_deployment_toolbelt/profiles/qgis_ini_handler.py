@@ -42,10 +42,11 @@ logger = logging.getLogger(__name__)
 class QgisIniHelper:
     """Helper to manipulate QGIS configuration files (*.ini)."""
 
-    SUPPORTED_INI_TYPES: tuple[str, str, str] = (
+    SUPPORTED_INI_TYPES: tuple[str, str, str, str] = (
         "plugin_metadata",
         "profile_qgis3",
         "profile_qgis3customization",
+        "qgis_global_settings",
     )
 
     ini_type: str | None = None
@@ -54,7 +55,11 @@ class QgisIniHelper:
         self,
         ini_filepath: Path,
         ini_type: Literal[
-            "profile_qgis3", "profile_qgis3customization", "plugin_metadata", None
+            "profile_qgis3",
+            "profile_qgis3customization",
+            "plugin_metadata",
+            "qgis_global_settings",
+            None,
         ] = None,
         strict: bool = False,
         enable_environment_variables_interpolation: bool = True,
@@ -101,6 +106,10 @@ class QgisIniHelper:
             self.profile_customization_path = ini_filepath
         elif ini_filepath.name == "metadata.txt":
             self.ini_type = "plugin_metadata"
+            self.profile_config_path = None
+            self.profile_customization_path = None
+        elif ini_filepath.name == "qgis_global_settings.ini":
+            self.ini_type = "qgis_global_settings"
             self.profile_config_path = None
             self.profile_customization_path = None
         else:
