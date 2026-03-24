@@ -92,6 +92,8 @@ class JobGlobalConfigManager(GenericJob):
 
         # Copy source to destination
         try:
+            logger.info(f"Copying `{src_path}` to `{dst_path}`")
+
             # Create directory for destination
             dst_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -109,6 +111,9 @@ class JobGlobalConfigManager(GenericJob):
             )
 
             # Merge
+            logger.info(
+                f"Environment variable conversion from `{src_path}` to `{dst_path}`"
+            )
             src_ini_helper.merge_to(dst_ini_helper)
 
         except Exception:
@@ -117,6 +122,9 @@ class JobGlobalConfigManager(GenericJob):
 
         # Update environment variable
         if set_environment_variable is not None:
+            logger.info(
+                f"QGIS_GLOBAL_SETTINGS_FILE environment variable set to `{dst_path}`"
+            )
             set_environment_variable(
                 envvar_name="QGIS_GLOBAL_SETTINGS_FILE",
                 envvar_value=str(dst_path),
@@ -164,12 +172,25 @@ class JobGlobalConfigManager(GenericJob):
 
         # Check if file is relative
         if not src_path.is_absolute():
+            logger.info(f"{src} is a relative path. Conversion to absolute path.")
+
             # Check with downloaded repositories
             if Path(self.qdt_downloaded_repositories / src_path).exists():
                 src_path = Path(self.qdt_downloaded_repositories / src_path).resolve()
+                logger.info(
+                    f"{src} relative path converted from downloaded repositories to {src_path}"
+                )
             # Check with QDT working dir
             elif Path(self.qdt_working_folder / src_path).exists():
                 src_path = Path(self.qdt_working_folder / src_path).resolve()
+                logger.info(
+                    f"{src} relative path converted from QDT working folder to {src_path}"
+                )
+            else:
+                src_path = src_path.resolve()
+                logger.warning(
+                    f"{src} relative path converted from current directory : {src_path}"
+                )
 
         # Check file exists
         if src_path is None or not src_path.exists():
