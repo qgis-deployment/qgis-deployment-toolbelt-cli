@@ -35,6 +35,8 @@ This can be an url, in this case, QDT download the .ini file in a local director
     - .ini file can be stored in profile repository and defined with a relative `src` : `./myprofile/qgis_global_settings.ini`
 - qdt local working directory.
     - can be defined with `QDT_LOCAL_WORK_DIR` environment variable
+- qdt run directory.
+    - path can be relative to the current directory where qdt is launched
 
 The job fails if source .ini file doesn't exist or can't be downloaded.
 
