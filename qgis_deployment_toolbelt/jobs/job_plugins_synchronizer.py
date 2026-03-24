@@ -14,7 +14,7 @@ Author: Julien Moura (https://github.com/guts)
 # Standard library
 import logging
 from pathlib import Path
-from shutil import ReadError, unpack_archive
+from shutil import ReadError, rmtree, unpack_archive
 
 # package
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
@@ -221,6 +221,25 @@ class JobPluginsSynchronizer(GenericJob):
 
             # make sure destination folder exists
             profile_plugins_folder.mkdir(parents=True, exist_ok=True)
+
+            if plugin.upgrade_mode == "delete":
+                # if the plugin is already present into the profile, delete it before installing the new version
+                plugin_installed_folder = Path(
+                    profile_plugins_folder, plugin.installation_folder_name
+                )
+                if plugin_installed_folder.is_dir():
+                    logger.debug(
+                        f"Profile {profile.name} - "
+                        f"Plugin {plugin.name} is already installed. It will be deleted before installing the new version."
+                    )
+                    try:
+                        rmtree(plugin_installed_folder)
+                    except OSError as err:
+                        logger.error(
+                            f"Profile {profile.name} - "
+                            f"Plugin {plugin.name} could not be deleted before installing the new version. Trace: {err}"
+                        )
+                        continue
 
             # in some cases related to proxies issues, the plugin archive download
             # returns a success but in fact it's just some HTML error from the proxy

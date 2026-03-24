@@ -16,13 +16,15 @@
       "version": "1.0.4",
       "url": "https://plugins.qgis.org/plugins/french_locator_filter/version/1.0.4/download/",
       "location": "remote",
-      "plugin_id": 1846
+      "plugin_id": 1846,
+      "upgrade_mode": "delete"
     },
     {
       "name": "pg_metadata",
       "version": "1.2.1",
       "url": "https://plugins.qgis.org/plugins/pg_metadata/version/1.2.1/download/",
-      "location": "remote"
+      "location": "remote",
+      "upgrade_mode": "keep"
     },
     {
       "name": "Layers menu from project",

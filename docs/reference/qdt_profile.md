@@ -104,6 +104,36 @@ qdt export-rules-context -o qdt_rules_context.json
 
 ----
 
+## Plugin upgrade mode
+
+> Added in version 0.41
+
+By default, when upgrading a plugin, the new version is unpacked on top of the existing folder (`keep` mode). This works well in most cases but can cause issues when a plugin removes or renames files between versions: leftover files from the old version may remain and cause conflicts or unexpected behavior.
+
+Setting `upgrade_mode` to `delete` on a plugin ensures a clean installation by removing the existing plugin folder before unpacking the new version. This is recommended for plugins that are known to have breaking changes between versions or that do not handle leftover files gracefully.
+
+Example in `profile.json`:
+
+```json
+{
+  "plugins": [
+    {
+      "name": "my_plugin",
+      "version": "2.0.0",
+      "official_repository": true,
+      "upgrade_mode": "delete"
+    }
+  ]
+}
+```
+
+Possible values:
+
+- `keep` (default): existing plugin folder is kept, newer version is unpacked on top of it.
+- `delete`: existing plugin folder is deleted before unpacking the new version.
+
+----
+
 ## Model definition
 
 The project comes with a [JSON schema](https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/docs/schemas/profile/qgis_profile.json) describing the model of a profile:

@@ -265,6 +265,31 @@ class TestQgisPluginObject(unittest.TestCase):
         self.assertTrue(plugin_v2.is_older_than(plugin_v3))
         self.assertFalse(plugin_v2.is_older_than(plugin_v1))
 
+    def test_qplugin_upgrade_mode_default(self):
+        """Test plugin upgrade_mode defaults to 'keep'."""
+        plugin = QgisPlugin.from_dict({"name": "Sample plugin", "version": "1.0.0"})
+        self.assertEqual(plugin.upgrade_mode, "keep")
+
+    def test_qplugin_upgrade_mode_from_dict(self):
+        """Test plugin upgrade_mode is correctly loaded from dict."""
+        plugin_delete = QgisPlugin.from_dict(
+            {
+                "name": "Sample plugin",
+                "version": "1.0.0",
+                "upgrade_mode": "delete",
+            }
+        )
+        self.assertEqual(plugin_delete.upgrade_mode, "delete")
+
+        plugin_keep = QgisPlugin.from_dict(
+            {
+                "name": "Sample plugin",
+                "version": "1.0.0",
+                "upgrade_mode": "keep",
+            }
+        )
+        self.assertEqual(plugin_keep.upgrade_mode, "keep")
+
     def test_qplugin_versions_comparison_bad(self):
         """Test plugin compare versions issues"""
         plugin_v1: QgisPlugin = QgisPlugin.from_dict(

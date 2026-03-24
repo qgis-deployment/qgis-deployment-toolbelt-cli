@@ -74,6 +74,7 @@ class QgisPlugin:
     repository_url_xml: str = None
     url: str = None
     version: str = "latest"
+    upgrade_mode: str = "keep"
 
     @classmethod
     def from_dict(cls, input_dict: dict) -> QgisPlugin:
@@ -228,7 +229,7 @@ class QgisPlugin:
     @property
     def installation_folder_name(self) -> str:
         """Name of the folder when the plugin is installed into QGIS/profile/python/plugins/. \
-            If not clearly specified intot the profile.json, it tries to extract it from \
+            If not clearly specified into the profile.json, it tries to extract it from \
             the download URL. As final fallback, it returns the slufigied plugin name.
 
         Returns:
