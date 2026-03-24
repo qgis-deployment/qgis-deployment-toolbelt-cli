@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/refs/heads/main/docs/schemas/scenario/qdt_scenario.json
+
+metadata:
+  title: "Demonstration scenario of QGIS Deployment Toolbelt, with update of QGIS settings for all profiles"
+  id: qdt-demo-scenario-global-config
+  description: >-
+    Demonstration scenario of QGIS Deployment Toolbelt capabilities, with update of QGIS settings for all profiles.
+
+# Toolbelt settings
+settings:
+  # LOCAL_WORK_DIR: ~/.cache/qgis-deployment-toolbelt/demo/
+  # QGIS_EXE_PATH:
+  #   linux: /usr/bin/qgis
+  #   mac: /usr/bin/qgis
+  #   windows: "%PROGRAMFILES%/QGIS/3_28/bin/qgis-ltr-bin.exe"
+  SCENARIO_VALIDATION: true
+
+# Deployment workflow, step by step
+steps:
+  - name: Find installed QGIS
+    uses: qgis-installation-finder
+    with:
+      version_priority:
+        - "3.40"
+        - "3.34"
+        - "3.28"
+        - "3.38"
+        - "3.36"
+        - "3.32"
+      search_paths:
+        - "%PROGRAMFILES%/QGIS"
+      if_not_found: warning
+
+  - name: Download profiles from remote git repository
+    uses: qprofiles-downloader
+    with:
+      source: https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli.git
+      protocol: git_remote
+      branch: feat/qglobal_config_manager
+
+  - name: Download profiles from remote git repository
+    uses: qprofiles-synchronizer
+    with:
+      sync_mode: overwrite
+
+  - name: Download plugins
+    uses: qplugins-downloader
+    with:
+      force: false
+      threads: 5
+
+  - name: Synchronize plugins
+    uses: qplugins-synchronizer
+    with:
+      action: create_or_restore
+
+  - name: Handle the qgis_global_settings.ini file (applied for all profiles)
+    uses: qglobal-config-manager
+    with:
+      src: ./examples/global_config/qgis_global_settings.ini
