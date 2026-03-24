@@ -14,7 +14,8 @@ Main command-line.
 import argparse
 import logging
 import sys
-from os import environ
+from os import environ, getenv
+from pathlib import Path
 
 # submodules
 from qgis_deployment_toolbelt.__about__ import (
@@ -32,6 +33,7 @@ from qgis_deployment_toolbelt.commands.cmd_rules_context import (
 )
 from qgis_deployment_toolbelt.commands.deployment import parser_main_deployment
 from qgis_deployment_toolbelt.commands.upgrade import parser_upgrade
+from qgis_deployment_toolbelt.constants import get_qdt_logs_folder
 from qgis_deployment_toolbelt.utils.journalizer import configure_logger
 
 
@@ -44,6 +46,8 @@ def add_common_arguments(
     parser_to_update: argparse.ArgumentParser,
     add_verbosity: bool = True,
     add_proxy: bool = True,
+    add_logs_filename: bool = True,
+    add_logs_dir: bool = True,
 ):
     """Apply common arguments to an existing parser.
 
@@ -51,6 +55,8 @@ def add_common_arguments(
         parser_to_update (argparse.ArgumentParser): parser to which arguments need to be added
         add_verbosity (bool, optional): if enabled, add --verbose. Defaults to True.
         add_proxy (bool, optional): if enabled, adds --proxy-http. Defaults to True.
+        add_logs_filename (bool, optional): if enabled, adds --logs-filename. Defaults to True.
+        add_logs_dir (bool, optional): if enabled, adds --logs-dir. Defaults to True.
 
     Returns:
         argparse.ArgumentParser: parser with added options
@@ -75,6 +81,28 @@ def add_common_arguments(
             "scheme://[user:passwd@]proxy.server:port",
             metavar="QDT_PROXY_HTTP",
             type=str,
+        )
+
+    if add_logs_filename:
+        parser_to_update.add_argument(
+            "--logs-filename",
+            default=getenv(
+                "QDT_LOGS_FILENAME", f"{__title_clean__}_{__version_clean__}.log"
+            ),
+            dest="logs_filename",
+            help=f"Option to specify a QDT log filename. Can also be defined with the environment variable 'QDT_LOGS_FILENAME'. Defaults to '{__title_clean__}_{__version_clean__}.log'.",
+            metavar="QDT_LOGS_FILENAME",
+            type=str,
+        )
+
+    if add_logs_dir:
+        parser_to_update.add_argument(
+            "--logs-dir",
+            default=get_qdt_logs_folder(),
+            dest="logs_dir",
+            help="Option to specify a QDT log directory. Can be defined with the environment variable 'QDT_LOGS_DIR'. Defaults to ~/.cache/qgis-deployment-toolbelt/logs'.",
+            metavar="QDT_LOGS_DIR",
+            type=Path,
         )
 
     return parser_to_update
@@ -102,6 +130,7 @@ def set_default_subparser(
             "--help",
             "--version",
             "--no-logfile",
+            "--logs-filename",
         ]:  # ignore main parser args
             break
 
@@ -142,8 +171,8 @@ def main(in_args: list[str] | None = None):
     # -- ROOT ARGUMENTS --
     main_parser.add_argument(
         "--no-logfile",
-        default=True,
-        action="store_false",
+        default=False,
+        action="store_true",
         dest="opt_logfile_disabled",
         help="Disable log file. Log files are usually created, rotated and stored in the"
         "folder set by QDT_LOGS_DIR.",
@@ -156,7 +185,9 @@ def main(in_args: list[str] | None = None):
         help="Display CLI version",
     )
 
-    add_common_arguments(main_parser, add_verbosity=True, add_proxy=True)
+    add_common_arguments(
+        main_parser, add_verbosity=True, add_proxy=True, add_logs_filename=True
+    )
     # -- SUB-COMMANDS --
     subparsers = main_parser.add_subparsers(title="Sub-commands", dest="command")
 
@@ -201,12 +232,13 @@ def main(in_args: list[str] | None = None):
 
     # log configuration
     if args.opt_logfile_disabled:
+        configure_logger(verbosity=args.verbosity)
+    else:
         configure_logger(
             verbosity=args.verbosity,
-            logfile=f"{__title_clean__}_{__version_clean__}.log",
+            logfile=args.logs_filename,
+            logs_folder=args.logs_dir,
         )
-    else:
-        configure_logger(verbosity=args.verbosity)
 
     # add the handler to the root logger
     logger = logging.getLogger(__title_clean__)
