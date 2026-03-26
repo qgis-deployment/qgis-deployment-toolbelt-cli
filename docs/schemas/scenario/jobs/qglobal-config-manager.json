@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/docs/schemas/scenario/jobs/qglobal-config-manager.json",
+  "description": "This jobs handles copy of a source .ini file to a destination .ini file and definition of `QGIS_GLOBAL_SETTINGS_FILE` environment variable so the file can be used by QGIS.",
+  "title": "QGIS global config manager",
+  "type": "object",
+  "properties": {
+    "src": {
+      "description": "Source .ini file path. Can use environment variable that will be converted before use.",
+      "type": "string"
+    },
+    "dst": {
+      "description": "Destination .ini file path. Can use environment variable that will be converted before use.",
+      "type": "string"
+    }
+  }
+}
