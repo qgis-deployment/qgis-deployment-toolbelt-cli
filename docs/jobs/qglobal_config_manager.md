@@ -70,3 +70,12 @@ If no value defined in jobs, default values are used. The value is defined with 
 1. Check `src` definition (use default value / download from url / check if exists)
 1. Copy `src` .ini file to `dst` .ini with environment variable conversion
 1. Update `QGIS_GLOBAL_SETTINGS_FILE` environment variable with `dst` .ini file path
+
+----
+
+## Schema
+
+```{eval-rst}
+.. literalinclude:: ../schemas/scenario/jobs/qglobal-config-manager.json
+  :language: json
+```
