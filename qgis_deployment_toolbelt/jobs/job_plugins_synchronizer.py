@@ -113,7 +113,7 @@ class JobPluginsSynchronizer(GenericJob):
 
         for qdt_profile in qdt_profiles:
             # determine folder
-            if self.options.get("installed"):
+            if self.options.get("profile_ref") == "installed":
                 profile_plugins_folder = qdt_profile.folder / "python/plugins"
             else:
                 profile_plugins_folder = qdt_profile.path_in_qgis / "python/plugins"
@@ -214,7 +214,7 @@ class JobPluginsSynchronizer(GenericJob):
                 of tuples containing the target profile, the plugin object and the ZIP path.
         """
         for profile, plugin, source_path in list_plugins_to_profiles:
-            if self.options.get("installed"):
+            if self.options.get("profile_ref") == "installed":
                 profile_plugins_folder = profile.folder / "python/plugins"
             else:
                 profile_plugins_folder = profile.path_in_qgis / "python/plugins"
