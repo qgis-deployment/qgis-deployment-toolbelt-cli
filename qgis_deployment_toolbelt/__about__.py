@@ -81,6 +81,8 @@ try:
             .strip()
         )
         logger.debug("Git tag found from git:", release)
+    if not release:
+        release = __version_clean__
 except Exception:
     logger.debug("No git tag found, fallback to __version__")
     release = __version_clean__
