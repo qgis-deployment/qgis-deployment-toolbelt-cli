@@ -19,7 +19,6 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
-from shutil import rmtree
 
 # package
 from qgis_deployment_toolbelt.jobs.job_plugins_synchronizer import (
@@ -41,15 +40,12 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
-        cls.tmp_dir = Path(tempfile.mkdtemp(prefix="QDT_test_plugins_sync_"))
-
-        cls.job = JobPluginsSynchronizer(options={"action": "create_or_restore"})
-        print(f"Created temporary directory for tests: {cls.tmp_dir}")
+        pass
 
     @classmethod
     def tearDownClass(cls):
         """Executed when module is unloaded after all tests."""
-        rmtree(cls.tmp_dir, ignore_errors=True)
+        pass
 
     # -- Helpers -----------------------------------------------------------------
     @staticmethod
@@ -62,81 +58,94 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
             )
             zf.writestr(f"{folder_name}/__init__.py", "")
 
-    def _make_profile_in_tmpdir(self, name: str) -> QdtProfile:
+    @staticmethod
+    def _make_profile_in_tmpdir(tmp_dir: Path, name: str) -> QdtProfile:
         """Create a QdtProfile whose path_in_qgis points into the temp dir."""
         profile = QdtProfile(name=name)
-        profile.os_config.qgis_profiles_path = self.tmp_dir / "qgis_profiles"
+        profile.os_config.qgis_profiles_path = tmp_dir / "qgis_profiles"
         return profile
 
     # -- Tests -------------------------------------------------------------------
     def test_install_plugin_upgrade_mode_delete(self):
         """Test that upgrade_mode=delete removes the plugin folder before unzip."""
-        profile = self._make_profile_in_tmpdir("test_delete")
-        plugins_folder = profile.path_in_qgis / "python/plugins"
-        plugin_folder = plugins_folder / "test_plugin"
-        plugin_folder.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(
+            prefix="QDT_test_plugins_sync_upgrade_delete_"
+        ) as tmp_dir:
+            options = {"action": "create_or_restore"}
+            job = JobPluginsSynchronizer(options=options)
 
-        # simulate an old installed plugin with a leftover file
-        leftover_file = plugin_folder / "old_leftover.py"
-        leftover_file.write_text("# this file should be removed")
+            profile = self._make_profile_in_tmpdir(Path(tmp_dir), "test_delete")
+            plugins_folder = profile.path_in_qgis / "python/plugins"
+            plugin_folder = plugins_folder / "test_plugin"
+            plugin_folder.mkdir(parents=True, exist_ok=True)
 
-        # create a fake plugin zip
-        zip_path = self.tmp_dir / "test_plugin_delete.zip"
-        self._create_fake_plugin_zip(zip_path, "test_plugin")
+            # simulate an old installed plugin with a leftover file
+            leftover_file = plugin_folder / "old_leftover.py"
+            leftover_file.write_text("# this file should be removed")
 
-        # plugin object with upgrade_mode=delete
-        plugin = QgisPlugin.from_dict(
-            {
-                "name": "Test Plugin",
-                "folder_name": "test_plugin",
-                "version": "2.0.0",
-                "upgrade_mode": "delete",
-            }
-        )
+            # create a fake plugin zip
+            zip_path = Path(tmp_dir) / "test_plugin_delete.zip"
+            self._create_fake_plugin_zip(zip_path, "test_plugin")
 
-        # run install
-        self.job.install_plugin_into_profile([(profile, plugin, zip_path)])
+            # plugin object with upgrade_mode=delete
+            plugin = QgisPlugin.from_dict(
+                {
+                    "name": "Test Plugin",
+                    "folder_name": "test_plugin",
+                    "version": "2.0.0",
+                    "upgrade_mode": "delete",
+                }
+            )
 
-        # the leftover file should be gone
-        self.assertFalse(leftover_file.exists())
-        # the plugin folder should exist with new files
-        self.assertTrue(plugin_folder.is_dir())
-        self.assertTrue((plugin_folder / "metadata.txt").exists())
-        self.assertTrue((plugin_folder / "__init__.py").exists())
+            # run install
+            job.install_plugin_into_profile([(profile, plugin, zip_path)])
+
+            # the leftover file should be gone
+            self.assertFalse(leftover_file.exists())
+            # the plugin folder should exist with new files
+            self.assertTrue(plugin_folder.is_dir())
+            self.assertTrue((plugin_folder / "metadata.txt").exists())
+            self.assertTrue((plugin_folder / "__init__.py").exists())
 
     def test_install_plugin_upgrade_mode_keep(self):
         """Test that upgrade_mode=keep preserves existing files in the plugin folder."""
-        profile = self._make_profile_in_tmpdir("test_keep")
-        plugins_folder = profile.path_in_qgis / "python/plugins"
-        plugin_folder = plugins_folder / "test_plugin"
-        plugin_folder.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(
+            prefix="QDT_test_plugins_sync_upgrade_keep_"
+        ) as tmp_dir:
+            options = {"action": "create_or_restore"}
+            job = JobPluginsSynchronizer(options=options)
 
-        # simulate an old installed plugin with a leftover file
-        leftover_file = plugin_folder / "old_leftover.py"
-        leftover_file.write_text("# this file should remain")
+            profile = self._make_profile_in_tmpdir(Path(tmp_dir), "test_keep")
+            plugins_folder = profile.path_in_qgis / "python/plugins"
+            plugin_folder = plugins_folder / "test_plugin"
+            plugin_folder.mkdir(parents=True, exist_ok=True)
 
-        # create a fake plugin zip
-        zip_path = self.tmp_dir / "test_plugin_keep.zip"
-        self._create_fake_plugin_zip(zip_path, "test_plugin")
+            # simulate an old installed plugin with a leftover file
+            leftover_file = plugin_folder / "old_leftover.py"
+            leftover_file.write_text("# this file should remain")
 
-        # plugin object with upgrade_mode=keep (default)
-        plugin = QgisPlugin.from_dict(
-            {
-                "name": "Test Plugin",
-                "folder_name": "test_plugin",
-                "version": "2.0.0",
-                "upgrade_mode": "keep",
-            }
-        )
+            # create a fake plugin zip
+            zip_path = Path(tmp_dir) / "test_plugin_keep.zip"
+            self._create_fake_plugin_zip(zip_path, "test_plugin")
 
-        # run install
-        self.job.install_plugin_into_profile([(profile, plugin, zip_path)])
+            # plugin object with upgrade_mode=keep (default)
+            plugin = QgisPlugin.from_dict(
+                {
+                    "name": "Test Plugin",
+                    "folder_name": "test_plugin",
+                    "version": "2.0.0",
+                    "upgrade_mode": "keep",
+                }
+            )
 
-        # the leftover file should still be there
-        self.assertTrue(leftover_file.exists())
-        # and the new files should also be present
-        self.assertTrue((plugin_folder / "metadata.txt").exists())
-        self.assertTrue((plugin_folder / "__init__.py").exists())
+            # run install
+            job.install_plugin_into_profile([(profile, plugin, zip_path)])
+
+            # the leftover file should still be there
+            self.assertTrue(leftover_file.exists())
+            # and the new files should also be present
+            self.assertTrue((plugin_folder / "metadata.txt").exists())
+            self.assertTrue((plugin_folder / "__init__.py").exists())
 
 
 # #############################################################################
