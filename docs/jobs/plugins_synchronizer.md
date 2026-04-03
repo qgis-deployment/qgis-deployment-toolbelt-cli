@@ -58,4 +58,6 @@ Default: `~/.cache/qgis-deployment-toolbelt/plugins`
 1. List plugins archives into the source folder. Default: `~/.cache/qgis-deployment-toolbelt/plugins`
 1. Parse profiles installed
 1. Compare plugin versions between referenced in profile.json and the one installed
-1. If version plugin in installed profile is inferior, unzip the download plugin in installed profiles
+1. If version plugin in installed profile is inferior, unzip the download plugin in installed profiles. Upgrade process can be controlled per plugin in `profile.json` using [`upgrade_mode`](../reference/qdt_profile.md#plugin-upgrade-mode):
+   - `keep` (default): existing plugin folder is kept, newer version is unpacked on top of it,
+   - `delete`: existing plugin folder is deleted before unpack.

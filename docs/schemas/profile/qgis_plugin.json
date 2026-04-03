@@ -10,7 +10,10 @@
     },
     "location": {
       "description": "Indicates if the plugin is located on a remote server or on local drive/network.",
-      "enum": ["local", "remote"],
+      "enum": [
+        "local",
+        "remote"
+      ],
       "type": "string"
     },
     "name": {
@@ -42,7 +45,9 @@
     "repository_url_xml": {
       "description": "URL to the plugin repository file (XML).",
       "type": "string",
-      "examples": ["https://oslandia.gitlab.io/qgis/ngp-connect/plugins.xml"]
+      "examples": [
+        "https://oslandia.gitlab.io/qgis/ngp-connect/plugins.xml"
+      ]
     },
     "url": {
       "description": "Direct URI (URL or local path) to download the plugin archive (.zip).",
@@ -55,6 +60,15 @@
     },
     "version": {
       "description": "Version of the plugin to be installed.",
+      "type": "string"
+    },
+    "upgrade_mode": {
+      "description": "Indicates whether the existing plugin folder should be deleted or not when upgrading.",
+      "default": "keep",
+      "enum": [
+        "delete",
+        "keep"
+      ],
       "type": "string"
     }
   }
