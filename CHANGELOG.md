@@ -16,6 +16,37 @@ Unreleased
 
 -->
 
+## 0.41.0 - 2026-04-03
+
+### Bugs fixes 🐛
+
+* fix(docs): subcommands used the 'prog' attribute, hiding the right name by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/768>
+* improve(shortcuts): catch permission errors when creating shortcuts on Windows by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/782>
+* fix(job): value of option "profile_ref" was not correctly retrieved from Plugins Synchronizer job by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/785>
+* fix(docs): use clean version as fallback to fix latest release hyperlink and displayed version by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/786>
+
+### Features and enhancements 🎉
+
+* improve(ci): move GH Token permissions to job level by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/751>
+* improve(ci): move GH Token permissions to job level by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/752>
+* improve(docs:) cleaning up docstrings and admonitions by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/767>
+* feat(environment variable): add option for path compatibility in QGIS .ini files by @jmkerloch in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/774>
+* improve(profiles-sync): add files patterns to be ignored during profiles copy by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/778>
+* feat(logs): add --logs-filename and --logs-dir cli option by @jmkerloch in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/779>
+* feat(plugins): add `upgrade_mode` option to delete plugin folder before upgrade by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/783>
+
+### Tooling 🔧
+
+* update(tooling): exclude bots from auto release notes by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/743>
+* chore(deps): bump pillow minimal version to 12.1.1 by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/784>
+
+### Documentation 📖
+
+* update(docs): add Strasbourg Eurométropole as known user by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/746>
+* update(docs): welcome Clermont Auvergne Métropole among actual QDT users by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/775>
+* add(docs): how QDT does to merge QGIS ini files by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/777>
+* add(user): welcome Opale by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/780>
+
 ## 0.40.0 - 2025-10-21
 
 ### Bugs fixes 🐛
