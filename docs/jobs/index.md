@@ -13,6 +13,7 @@ plugins_downloader.md
 plugins_synchronizer.md
 profiles_downloader.md
 profiles_synchronizer.md
+qglobal_config_manager.md
 shortcuts_manager.md
 splash_screen_manager.md
 *

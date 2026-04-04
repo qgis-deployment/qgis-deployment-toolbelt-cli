@@ -30,6 +30,7 @@
           "qplugins-synchronizer",
           "qprofiles-downloader",
           "qprofiles-synchronizer",
+          "qglobal-config-manager",
           "qprofiles-manager",
           "shortcuts-manager",
           "splash-screen-manager"
@@ -104,6 +105,16 @@
           },
           "with": {
             "$ref": "qprofiles-synchronizer.json"
+          }
+        }
+      },
+      {
+        "properties": {
+          "uses": {
+            "const": "qglobal-config-manager"
+          },
+          "with": {
+            "$ref": "qglobal-config-manager.json"
           }
         }
       },
