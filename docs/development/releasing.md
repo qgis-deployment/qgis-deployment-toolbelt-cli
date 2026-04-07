@@ -5,6 +5,12 @@
     1. In `Choose a tag`, enter the new tag (obviously complying with [SemVer](https://semver.org/))
     1. Click on `Generate release notes`
     1. Copy/paste the generated text from `## What's changed` until the line before `**Full changelog**:...` in the CHANGELOG.md replacing `What's changed` with the tag and the publication date
+    1. Close this tab.
+
+    :::{warning}
+    DO **NOT** CREATE/PUBLISH THE RELASE THROUGH WEB INTERFACE: due to the [Immutable Release policy](https://docs.github.com/code-security/supply-chain-security/understanding-your-software-supply-chain/immutable-releases), the publishing workflow won't be unable to push assets to the release and it won't be possible to edit it anymore. The only option would be to create a new tag, as [we already experienced it with the 0.41.~~0~~1](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/releases/tag/0.41.1).
+    :::
+
 1. Commit changes with a message like `release: bump version to X.x.x` to the main branch
 1. Apply a git tag with the relevant version: `git tag -a 0.3.0 {git commit hash} -m "New awesome feature"`
 1. Push commit and tag to main branch: `git push --tags`
