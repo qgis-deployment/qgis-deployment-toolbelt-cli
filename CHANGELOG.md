@@ -16,7 +16,9 @@ Unreleased
 
 -->
 
-## 0.41.0 - 2026-04-03
+## 0.41.1 - 2026-04-07
+
+> Due to enforced security policy blocking pushing assets to the 0.41.0 release, it doesn't exist. In fact, this 0.41.1 is the 0.41.0.
 
 ### Bugs fixes 🐛
 
