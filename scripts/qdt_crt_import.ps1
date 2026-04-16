@@ -45,29 +45,53 @@ if ($storeScope -eq "LocalMachine") {
     $currentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
     if (-not $currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
         Write-Warning "This script requires administrator privileges for LocalMachine scope. Relaunching with elevation..."
-        Start-Process -FilePath "powershell" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" $args" -Verb RunAs
+        # prepare cmd args
+        $argList = @(
+            "-NoProfile",
+            "-ExecutionPolicy", "Bypass",
+            "-File", "`"$PSCommandPath`"",
+            "-storeName", $storeName,
+            "-storeScope", $storeScope,
+            "-friendlyName", "`"$friendlyName`"",
+            "-description", "`"$description`""
+        )
+        Start-Process -FilePath "powershell" -ArgumentList $argList -Verb RunAs
         exit
     }
 }
 
-Invoke-WebRequest -Uri $certUrl -OutFile $localCertPath
-Write-Host "Certificate downloaded to $localCertPath"
+# download remote certificate to local path
+try {
+    Invoke-WebRequest -Uri $certUrl -OutFile $localCertPath -ErrorAction Stop
+    Write-Host "Certificate downloaded to $localCertPath"
+}
+catch {
+    Write-Error "Failed to download certificate from $certUrl"
+    exit 1
+}
 
 # Load the certificate
 $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($localCertPath)
 
 # Add metadata to improve integration with Windows certificate manager
-$cert.FriendlyName = "QDT Code Signing Certificate"
-$cert.Extensions.Add(
-    New-Object System.Security.Cryptography.X509Certificates.X509Extension("2.5.29.17", [System.Text.Encoding]::ASCII.GetBytes($description), $false)
-)
+$cert.FriendlyName = $friendlyName
 
 # Open the specified certificate store (LocalMachine)
 $store = New-Object System.Security.Cryptography.X509Certificates.X509Store($storeName, $storeScope)
 $store.Open("ReadWrite")
 
-# Import the certificate
-$store.Add($cert)
+# Check if certificate already exists
+$existing = $store.Certificates | Where-Object {
+   $_.Thumbprint.ToUpper() -eq $cert.Thumbprint.ToUpper()
+}
+
+if ($existing) {
+    Write-Host "Certificate already present in store."
+}
+else {
+    $store.Add($cert)
+    Write-Host "Certificate imported successfully."
+}
 $store.Close()
 
 
