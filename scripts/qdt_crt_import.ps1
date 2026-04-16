@@ -45,7 +45,17 @@ if ($storeScope -eq "LocalMachine") {
     $currentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
     if (-not $currentUser.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)) {
         Write-Warning "This script requires administrator privileges for LocalMachine scope. Relaunching with elevation..."
-        Start-Process -FilePath "powershell" -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`" $args" -Verb RunAs
+        # prepare cmd args
+        $argList = @(
+            "-NoProfile",
+            "-ExecutionPolicy", "Bypass",
+            "-File", "`"$PSCommandPath`"",
+            "-storeName", $storeName,
+            "-storeScope", $storeScope,
+            "-friendlyName", "`"$friendlyName`"",
+            "-description", "`"$description`""
+        )
+        Start-Process -FilePath "powershell" -ArgumentList $argList -Verb RunAs
         exit
     }
 }
