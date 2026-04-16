@@ -57,7 +57,7 @@ Write-Host "Certificate downloaded to $localCertPath"
 $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($localCertPath)
 
 # Add metadata to improve integration with Windows certificate manager
-$cert.FriendlyName = "QDT Code Signing Certificate"
+$cert.FriendlyName = $friendlyName
 $cert.Extensions.Add(
     New-Object System.Security.Cryptography.X509Certificates.X509Extension("2.5.29.17", [System.Text.Encoding]::ASCII.GetBytes($description), $false)
 )
