@@ -80,8 +80,18 @@ $cert.FriendlyName = $friendlyName
 $store = New-Object System.Security.Cryptography.X509Certificates.X509Store($storeName, $storeScope)
 $store.Open("ReadWrite")
 
-# Import the certificate
-$store.Add($cert)
+# Check if certificate already exists
+$existing = $store.Certificates | Where-Object {
+   $_.Thumbprint.ToUpper() -eq $cert.Thumbprint.ToUpper()
+}
+
+if ($existing) {
+    Write-Host "Certificate already present in store."
+}
+else {
+    $store.Add($cert)
+    Write-Host "Certificate imported successfully."
+}
 $store.Close()
 
 
