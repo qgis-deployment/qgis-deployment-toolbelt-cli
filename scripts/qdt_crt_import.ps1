@@ -60,8 +60,15 @@ if ($storeScope -eq "LocalMachine") {
     }
 }
 
-Invoke-WebRequest -Uri $certUrl -OutFile $localCertPath
-Write-Host "Certificate downloaded to $localCertPath"
+# download remote certificate to local path
+try {
+    Invoke-WebRequest -Uri $certUrl -OutFile $localCertPath -ErrorAction Stop
+    Write-Host "Certificate downloaded to $localCertPath"
+}
+catch {
+    Write-Error "Failed to download certificate from $certUrl"
+    exit 1
+}
 
 # Load the certificate
 $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($localCertPath)
