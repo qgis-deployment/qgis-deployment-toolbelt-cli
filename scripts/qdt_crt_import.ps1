@@ -58,9 +58,6 @@ $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate
 
 # Add metadata to improve integration with Windows certificate manager
 $cert.FriendlyName = $friendlyName
-$cert.Extensions.Add(
-    New-Object System.Security.Cryptography.X509Certificates.X509Extension("2.5.29.17", [System.Text.Encoding]::ASCII.GetBytes($description), $false)
-)
 
 # Open the specified certificate store (LocalMachine)
 $store = New-Object System.Security.Cryptography.X509Certificates.X509Store($storeName, $storeScope)
