@@ -67,22 +67,37 @@ __all__ = [
 # get latest git tag if possible, if not fallback to __version__
 release: str | None = None
 try:
-    github_ref = getenv("GITHUB_REF", "")
-    if github_ref.startswith("refs/tags/"):
-        release = github_ref[len("refs/tags/") :]
-        logger.debug("Git tag found from GITHUB_REF:", release)
+    github_ref = getenv("GITHUB_REF")
+    logger.info(
+        "Current branch retrieved from GitHub environment variable"
+        f"(meaning running on GitHub Actions): {github_ref=}"
+    )
+    if getenv("GITHUB_REF_TYPE", "") == "tag":
+        release = getenv("GITHUB_REF_NAME", None)
+        logger.info(
+            "Git tag found from GITHUB_REF_NAME environment variable"
+            f"(meaning running on a tag push): {release}"
+        )
     elif git_path := which("git"):
+        logger.debug(f"Git executable found at: {git_path}")
         release = (
             check_output(
                 [git_path, "describe", "--tags", "--abbrev=0"],
-                cwd=Path(__file__).parent.resolve(),
+                cwd=Path.cwd(),
             )
             .decode()
             .strip()
         )
-        logger.debug("Git tag found from git:", release)
+        logger.debug(f"Git tag found from git describe: {release}")
     if not release:
+        logger.info(
+            "Nor GitHub environment variables nor git command provided a tag, "
+            f"fallback to {__version_clean__=}."
+        )
         release = __version_clean__
-except Exception:
-    logger.debug("No git tag found, fallback to __version__")
+except Exception as err:
+    logger.info(
+        "Trying to retrieve latest git tag from environment or git subcmd failed. "
+        f"Fallback to {__version_clean__=}. Trace: {err}"
+    )
     release = __version_clean__
