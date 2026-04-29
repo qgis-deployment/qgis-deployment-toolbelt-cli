@@ -85,7 +85,7 @@ try:
                 [git_path, "describe", "--tags", "--abbrev=0"],
                 cwd=Path.cwd(),
                 shell=False,
-            )
+            )  # nosec B603
             .decode()
             .strip()
         )

@@ -370,7 +370,9 @@ class JobQgisInstallationFinder(GenericJob):
             str | None: SemVer version, None if version not found
         """
         process = subprocess.Popen(  # noqa: S602
-            f'"{qgis_bin}" --version', stdout=subprocess.PIPE, shell=True
+            f'"{qgis_bin}" --version',
+            stdout=subprocess.PIPE,
+            shell=True,  # nosec B602
         )
         stdout_, _ = process.communicate()
         version_str = stdout_.decode()
