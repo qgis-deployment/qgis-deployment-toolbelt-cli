@@ -50,7 +50,8 @@ repos:
     hooks:
       - id: bandit
         args:
-          - --configfile=bandit.yaml
+          - --configfile=pyproject.toml
+        additional_dependencies: [ "bandit[toml]" ]
 
 ci:
   autoupdate_schedule: quarterly

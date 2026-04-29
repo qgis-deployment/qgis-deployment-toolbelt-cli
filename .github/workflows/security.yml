@@ -54,7 +54,7 @@ jobs:
         run: python -m pip install -U -e .[security]
 
       - name: Run Bandit check
-        run: bandit --configfile bandit.yaml --format screen -r qgis_deployment_toolbelt
+        run: bandit --configfile pyproject.toml --format screen -r qgis_deployment_toolbelt
 
   check-safety:
     name: "🛡 Safety PyUp"

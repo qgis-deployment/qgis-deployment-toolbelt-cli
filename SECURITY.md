@@ -44,13 +44,13 @@ python -m pip install -U -e .[security]
 In a terminal:
 
 ```sh
-bandit --configfile bandit.yaml --format screen -r qgis_deployment_toolbelt
+bandit --configfile pyproject.toml --format screen -r qgis_deployment_toolbelt
 ```
 
 It's also possible to get results as a CSV:
 
 ```sh
-bandit --configfile bandit.yaml --format csv --output bandit_report.csv -r qgis_deployment_toolbelt
+bandit --configfile pyproject.toml --format csv --output bandit_report.csv -r qgis_deployment_toolbelt
 ```
 
 Then open the `bandit_report.csv` file.

@@ -70,7 +70,7 @@ packaging = [
     "pypiwin32==223 ; sys_platform == 'win32'",
 ]
 
-security = ["bandit>=1.8.3,<2", "safety>=3.3.1,<4"]
+security = ["bandit[toml]>=1.8.3,<2", "safety>=3.3.1,<4"]
 
 test = [
     "GitPython>=3.1,<3.2",
@@ -93,6 +93,15 @@ releasenotes = "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/
 Source = "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli.git"
 
 # -- TOOLING CONFIGURATION --
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = [
+    "B314", # https://bandit.readthedocs.io/en/latest/blacklists/blacklist_calls.html#b313-b319-xml
+    "B404", # https://bandit.readthedocs.io/en/latest/blacklists/blacklist_imports.html#b404-import-subprocess
+    "B405", # https://bandit.readthedocs.io/en/latest/blacklists/blacklist_imports.html#b405-import-xml-etree
+]
+
+
 [tool.coverage.report]
 exclude_lines = [
     "if self.debug:",
