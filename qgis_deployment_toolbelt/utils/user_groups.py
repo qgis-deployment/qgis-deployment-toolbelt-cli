@@ -206,9 +206,9 @@ def _is_computer_in_domain_powershell() -> bool:
         raise FileNotFoundError("powershell.exe not found in PATH.")
 
     # use PowerShell to retrieve domain information
-    domain = subprocess.run(  # noqa: S603
+    domain = subprocess.run(  # noqa: S603 nosec B603
         [powershell_path, "-Command", "(Get-CimInstance Win32_ComputerSystem).Domain"],
-        stdout=subprocess.PIPE,
+        stdout=subprocess.PIPE,  # nosec B603
         text=True,
         check=True,
     ).stdout.strip()

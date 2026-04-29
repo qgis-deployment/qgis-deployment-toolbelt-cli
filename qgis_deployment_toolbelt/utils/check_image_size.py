@@ -70,7 +70,7 @@ def get_svg_size(image_filepath: Path) -> tuple[int, int] | None:
     :return Tuple[int, int]: tuple of dimensions as integers (width,height)
     """
     try:
-        tree = ET.parse(image_filepath)  # noqa: S314
+        tree = ET.parse(image_filepath)  # noqa: B314 S314
         root = tree.getroot()
     except Exception as err:
         logger.error(f"Unable to open SVG file as XML: {image_filepath}. Trace: {err}")
