@@ -81,9 +81,10 @@ try:
     elif git_path := which("git"):
         logger.debug(f"Git executable found at: {git_path}")
         release = (
-            check_output(
+            check_output(  # noqa: S603
                 [git_path, "describe", "--tags", "--abbrev=0"],
                 cwd=Path.cwd(),
+                shell=False,
             )
             .decode()
             .strip()
