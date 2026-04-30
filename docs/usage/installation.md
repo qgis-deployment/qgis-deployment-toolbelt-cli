@@ -53,7 +53,7 @@ It's then available as a CLI: see [the relevant section](./cli.md)
 :::{warning}
 The Docker image is **not** a substitute for the standalone binary or Python package when deploying to end-user workstations. It is more designed for **server-side and CI/CD usage** only.
 
-See [deatils below](#scope-and-limitations).
+See [details below](#scope-and-limitations).
 :::
 
 The package is published as container on GitHub Container Registry (GHCR):
