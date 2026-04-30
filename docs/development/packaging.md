@@ -49,19 +49,20 @@ To run it, for example:
 
 ## Docker
 
+### Requirements
+
+- Docker >= 23
+- Docker BuildKit
+
+### Build locally
+
 :::{note}
-Image is meant to be used, not to develop. So, it does not contain side code: `docs`, `tests`, etc.  
+The published image is meant to be used, not to develop. So, it does not contain side code: `docs`, `tests`, etc.  
 If you need that, edit the `.dockerignore` file.
 :::
 
-### Requirements
-
-- Docker >= 20.10
-
-### Build
-
 ```sh
-docker build --pull --rm -f "Dockerfile" -t qdt:latest "."
+docker build --pull --rm -f "Dockerfile" -t qdt:local "."
 ```
 
 ### Run within the container
@@ -69,14 +70,14 @@ docker build --pull --rm -f "Dockerfile" -t qdt:latest "."
 Enter into the container and run commands interactively::
 
 ```sh
-> docker run --rm -it qdt:latest
+> docker run --rm -it --entrypoint bash qdt:local
 root@55c5de0191ee:/user/app# qdt --version
-0.23.1
+0.42.0-dev
 ```
 
 Run QDT directly from the container:
 
 ```sh
-> docker run --rm qdt:latest qdt --version
-0.23.1
+> docker run --rm qdt:local --version
+0.42.0-dev
 ```
