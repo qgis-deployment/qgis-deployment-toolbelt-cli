@@ -114,8 +114,24 @@ show_missing = true
 
 [tool.coverage.run]
 branch = true
-include = ["qgis_deployment_toolbelt/*"]
 omit = [".venv/*", "*tests*"]
+
+[tool.pytest.ini_options]
+addopts = """
+    --junitxml=junit/test-results.xml
+    --cov-append tests/
+    --cov-config=pyproject.toml
+    --cov=qgis_deployment_toolbelt
+    --cov-report=html
+    --cov-report=term
+    --cov-report=xml
+    --ignore=tests/_wip/
+"""
+junit_family = "xunit2"
+minversion = "5.0"
+norecursedirs = ".* build dev development dist docs CVS fixtures _darcs {arch} *.egg venv _wip"
+python_files = "test_*.py"
+testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 88
@@ -187,23 +203,6 @@ convention = "google"
 ] # Ignore rules in Sphinx config
 "tests/test_*.py" = ["ANN001", "ANN2", "S101", "T20"] # Ignore rules in tests
 
-
-[tool.pytest.ini_options]
-addopts = """
-    --junitxml=junit/test-results.xml
-    --cov-append tests/
-    --cov-config=pyproject.toml
-    --cov=qgis_deployment_toolbelt
-    --cov-report=html
-    --cov-report=term
-    --cov-report=xml
-    --ignore=tests/_wip/
-"""
-junit_family = "xunit2"
-minversion = "5.0"
-norecursedirs = ".* build dev development dist docs CVS fixtures _darcs {arch} *.egg venv _wip"
-python_files = "test_*.py"
-testpaths = ["tests"]
 
 # Setuptools configuration
 [tool.setuptools.package-data]
