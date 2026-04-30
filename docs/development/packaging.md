@@ -57,7 +57,7 @@ To run it, for example:
 ### Build locally
 
 :::{note}
-The published image is meant to be used, not to develop. So, it does not contain side code: `docs`, `tests`, etc.  
+The published image is intended for running QDT, not for development. So, it does not contain side code: `docs`, `tests`, etc.  
 If you need that, edit the `.dockerignore` file.
 :::
 
