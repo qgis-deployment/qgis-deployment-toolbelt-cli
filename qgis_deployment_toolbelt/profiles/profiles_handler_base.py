@@ -230,6 +230,10 @@ class RemoteProfilesHandlerBase:
             local_path: Path = self.SOURCE_REPOSITORY_PATH_OR_URL
 
         try:
+            logger.debug(
+                f"Trying to open local repository '{local_path.resolve()}' with "
+                "dulwich porcelain..."
+            )
             porcelain.open_repo_closing(f"{local_path.resolve()}")
             return True
         except NotGitRepository as err:
@@ -304,6 +308,9 @@ class RemoteProfilesHandlerBase:
             source_repository_path_or_url=local_git_repository_path
         )
 
+        logger.debug(
+            f"Retrieve active branch from local repository: {local_git_repository_path}"
+        )
         return porcelain.active_branch(
             repo=f"{local_git_repository_path.resolve()}"
         ).decode()
@@ -390,8 +397,11 @@ class RemoteProfilesHandlerBase:
             )
 
         # get remote branches
+        logger.debug(
+            f"Retrieving remote branches from repository: {source_repository_path_or_url}"
+        )
         ls_remote_refs: LsRemoteResult = porcelain.ls_remote(
-            remote=f"{source_repository_path_or_url}"
+            remote=f"{source_repository_path_or_url}", quiet=True
         )
 
         source_repository_branches = []
@@ -626,6 +636,7 @@ class RemoteProfilesHandlerBase:
             force=True,
             prune=True,
             prune_tags=True,
+            quiet=True,
         )
         destination_local_repository.close()
 
@@ -660,6 +671,7 @@ class RemoteProfilesHandlerBase:
             repo=local_path,
             remote_location=source_repository,
             force=True,
+            kwargs={"quiet": True},
         )
         gobj = destination_local_repository.get_object(
             destination_local_repository.head()
