@@ -1,9 +1,8 @@
 #! python3  # noqa: E265
 
 """
-Tools to manage the environment setup (variables, etc.)
+Job handling QGIS global settings INI file manipulation.
 
-Author: Julien Moura (https://github.com/guts)
 """
 
 # #############################################################################
@@ -165,7 +164,7 @@ class JobGlobalConfigManager(GenericJob):
             try:
                 src = self.get_remote_qgis_global_settings_from_url(remote_url=src)
             except Exception as exc:
-                err_msg = f"Error download external url `{src}` for job {self.ID} : {exc}. Can't update QGIS global settings file."
+                err_msg = f"Error download external url `{src}` for job {self.ID}: {exc}. Can't update QGIS global settings file."
                 raise ValueError(err_msg) from exc
 
         src_path = Path(src)

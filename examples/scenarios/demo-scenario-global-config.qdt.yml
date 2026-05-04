@@ -21,6 +21,8 @@ steps:
     uses: qgis-installation-finder
     with:
       version_priority:
+        - "3.44"
+        - "4.2"
         - "3.40"
         - "3.34"
         - "3.28"
@@ -36,7 +38,7 @@ steps:
     with:
       source: https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli.git
       protocol: git_remote
-      branch: feat/qglobal_config_manager
+      branch: main
 
   - name: Download profiles from remote git repository
     uses: qprofiles-synchronizer
