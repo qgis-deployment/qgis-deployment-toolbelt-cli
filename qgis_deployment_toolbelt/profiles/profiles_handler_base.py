@@ -400,7 +400,7 @@ class RemoteProfilesHandlerBase:
         logger.debug(
             f"Retrieving remote branches from repository: {source_repository_path_or_url}"
         )
-        ls_remote_refs: LsRemoteResult = porcelain.ls_remote(
+        ls_remote_refs = porcelain.ls_remote(
             remote=f"{source_repository_path_or_url}", quiet=True
         )
 
