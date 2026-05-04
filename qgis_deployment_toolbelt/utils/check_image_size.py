@@ -50,7 +50,10 @@ def get_image_size(image_filepath: Path) -> tuple[int, int] | None:
 
     # get image dimensions
     try:
-        return imagesize.get(image_filepath)
+        img_size = imagesize.get(image_filepath)
+        if img_size == (-1, -1):
+            raise ValueError("Unable to determine image dimensions.")
+        return img_size
     except ValueError as exc:
         logger.error(f"Invalid image: {image_filepath.resolve()}. Trace: {exc}")
     except Exception as exc:
