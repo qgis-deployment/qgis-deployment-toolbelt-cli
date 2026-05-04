@@ -204,6 +204,11 @@ class RemoteProfilesHandlerBase:
             and source_repository_path_or_url not in self.CACHE_VALID_GIT_REPOSITORIES
         ):
             self.CACHE_VALID_GIT_REPOSITORIES.append(source_repository_path_or_url)
+        elif (
+            not valid_source
+            and source_repository_path_or_url not in self.CACHE_INVALID_GIT_REPOSITORIES
+        ):
+            self.CACHE_INVALID_GIT_REPOSITORIES.append(source_repository_path_or_url)
 
         return valid_source
 
