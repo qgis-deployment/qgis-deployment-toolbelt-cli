@@ -21,7 +21,6 @@ from typing import Literal
 
 # 3rd party
 from dulwich import porcelain
-from dulwich.client import LsRemoteResult
 from dulwich.errors import GitProtocolError, NotGitRepository
 from dulwich.repo import Repo
 from giturlparse import GitUrlParsed, parse as git_parse, validate as git_validate
@@ -364,7 +363,7 @@ class RemoteProfilesHandlerBase:
     @proxies.os_env_proxy
     def list_remote_branches(
         self, source_repository_path_or_url: Path | str | None = None
-    ) -> tuple[str]:
+    ) -> tuple[str, ...]:
         """Retrieve git active branch from a remote repository. Mainly a checker and a
             wrapper around dulwich logic.
 
@@ -406,14 +405,13 @@ class RemoteProfilesHandlerBase:
 
         source_repository_branches = []
 
-        if isinstance(ls_remote_refs, LsRemoteResult) and len(ls_remote_refs.refs) > 0:
+        if len(ls_remote_refs.refs) > 0:
             source_repository_branches = [
                 ref.decode()
                 for ref in ls_remote_refs.refs
                 if ref.startswith(b"refs/heads/")
             ]
 
-        if source_repository_branches:
             logger.debug(
                 f"{len(source_repository_branches)} branche(s) found in repository "
                 f"{source_repository_path_or_url}: "
