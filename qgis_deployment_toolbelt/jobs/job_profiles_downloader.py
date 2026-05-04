@@ -85,6 +85,11 @@ class JobProfilesDownloader(GenericJob):
             if self.options.get("protocol") == "git_remote" or self.options.get(
                 "source"
             ).startswith(("git://", "http://", "https://")):
+                logger.debug(
+                    "Using remote git handler for downloading "
+                    f"{self.options.get('source')} "
+                    f"(branch : {self.options.get('branch')})"
+                )
                 downloader = RemoteGitHandler(
                     source_repository_url=self.options.get("source"),
                     branch_to_use=self.options.get("branch", "master"),
