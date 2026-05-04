@@ -274,7 +274,7 @@ jobs:
           path: builds/windows/
 
       - name: Upload draft Artifacts
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           draft: true
           fail_on_unmatched_files: true
@@ -282,7 +282,7 @@ jobs:
           generate_release_notes: true
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           draft: false
           discussion_category_name: announcements

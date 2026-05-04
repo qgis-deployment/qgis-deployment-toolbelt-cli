@@ -17,9 +17,6 @@
                 "git_local",
                 "git_remote"
             ],
-            "deprecated": [
-                "git"
-            ],
             "type": "string"
         },
         "source": {
