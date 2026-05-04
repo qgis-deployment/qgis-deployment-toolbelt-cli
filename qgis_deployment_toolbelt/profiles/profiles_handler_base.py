@@ -389,7 +389,8 @@ class RemoteProfilesHandlerBase:
                 f"{source_repository_path_or_url} is not a valid repository."
             )
 
-        ls_remote_refs: LsRemoteResult | dict = porcelain.ls_remote(
+        # get remote branches
+        ls_remote_refs: LsRemoteResult = porcelain.ls_remote(
             remote=f"{source_repository_path_or_url}"
         )
 
@@ -400,10 +401,6 @@ class RemoteProfilesHandlerBase:
                 ref.decode()
                 for ref in ls_remote_refs.refs
                 if ref.startswith(b"refs/heads/")
-            ]
-        elif isinstance(ls_remote_refs, dict) and len(ls_remote_refs) > 0:
-            source_repository_branches = [
-                ref.decode() for ref in ls_remote_refs if ref.startswith(b"refs/heads/")
             ]
 
         if source_repository_branches:
