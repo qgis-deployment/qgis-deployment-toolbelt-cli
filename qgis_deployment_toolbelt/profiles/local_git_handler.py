@@ -93,8 +93,8 @@ class LocalGitHandler(RemoteProfilesHandlerBase):
 
         self.SOURCE_REPOSITORY_PATH_OR_URL = source_repository_path_or_uri
 
-        # validation
-        self.is_valid_git_repository()
+        # validating local repository URL and caching result for next calls
+        self.is_valid_git_repository(force_type="local")
 
         self.SOURCE_REPOSITORY_ACTIVE_BRANCH = (
             self.get_active_branch_from_local_repository()

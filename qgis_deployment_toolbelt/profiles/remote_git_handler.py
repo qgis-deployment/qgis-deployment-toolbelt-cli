@@ -54,8 +54,8 @@ class RemoteGitHandler(RemoteProfilesHandlerBase):
 
         self.SOURCE_REPOSITORY_PATH_OR_URL = source_repository_url
 
-        # validation
-        self.is_valid_git_repository()
+        # validating remote repository URL and caching result for next calls
+        self.is_valid_git_repository(force_type="remote")
 
         # check if passed branch exist
         if branch_to_use is None:

@@ -42,6 +42,8 @@ logger = logging.getLogger(__name__)
 # #############################################################################
 # ########## Classes ###############
 # ##################################
+
+
 class RemoteProfilesHandlerBase:
     """Common git repository handler using dulwich.
 
@@ -51,6 +53,9 @@ class RemoteProfilesHandlerBase:
     - the distant repository (source) is on Internet (github.com, gitlab.com, gitlab.company.org...)
     - the local repository (destination) is on a local network or drive
     """
+
+    CACHE_INVALID_GIT_REPOSITORIES: list[Path | str] = []
+    CACHE_VALID_GIT_REPOSITORIES: list[Path | str] = []
 
     SOURCE_REPOSITORY_ACTIVE_BRANCH: str | None = None
     SOURCE_REPOSITORY_PATH_OR_URL: Path | str | None = None
@@ -92,6 +97,7 @@ class RemoteProfilesHandlerBase:
         source_repository_path_or_url: Path | str | None = None,
         force_type: Literal["git_local", "git_remote", "local", "remote"] | None = None,
         raise_error: bool = True,
+        cached: bool = True,
     ) -> bool:
         """Determine if the given path or URL is a valid repository or not.
 
@@ -103,6 +109,8 @@ class RemoteProfilesHandlerBase:
                 Defaults None.
             raise_error (bool, optional): if True, it raises an exception. Defaults
                 to True.
+            cached (bool, optional): using previously computed value if not None.
+                Defaults to True.
 
         Raises:
             NotGitRepository: if given path or URL is not a valid Git repository
@@ -110,8 +118,6 @@ class RemoteProfilesHandlerBase:
         Returns:
             bool: True if the given path or URL is a valid Git repository
         """
-        valid_source = True
-
         # if no local git repository passed, try to use URL defined at object level
         if source_repository_path_or_url is None and isinstance(
             self.SOURCE_REPOSITORY_PATH_OR_URL, (Path, str)
@@ -119,15 +125,46 @@ class RemoteProfilesHandlerBase:
             source_repository_path_or_url: str | Path = (
                 self.SOURCE_REPOSITORY_PATH_OR_URL
             )
-            logger.info(
-                f"Using source repository set at object's level: {source_repository_path_or_url}"
+            logger.debug(
+                "Using source repository set at object's level: "
+                f"{source_repository_path_or_url}"
             )
 
         # use the repository type if forced or attribute
-        if force_type is None:
+        if force_type is None and isinstance(self.SOURCE_REPOSITORY_TYPE, str):
             repository_type = self.SOURCE_REPOSITORY_TYPE
+            logger.debug(
+                f"Using repository type set at object's level: {repository_type}"
+            )
         else:
             repository_type = force_type
+
+        # check if the validation has already been computed
+        if (
+            cached
+            and source_repository_path_or_url in self.CACHE_VALID_GIT_REPOSITORIES
+        ):
+            logger.debug(
+                f"{source_repository_path_or_url or self.SOURCE_REPOSITORY_PATH_OR_URL} "
+                "has already be checked before and it was valid. Use 'cached=False' to force re-checking."
+            )
+            return True
+        elif (
+            cached
+            and source_repository_path_or_url in self.CACHE_INVALID_GIT_REPOSITORIES
+        ):
+            logger.debug(
+                f"{source_repository_path_or_url or self.SOURCE_REPOSITORY_PATH_OR_URL} "
+                "has already be checked before and it was invalid. Use 'cached=False' to force re-checking."
+            )
+            return False
+        else:
+            logger.debug(
+                f"{source_repository_path_or_url or self.SOURCE_REPOSITORY_PATH_OR_URL} "
+                "has not been checked before. Checking if it's a valid git repository..."
+            )
+
+        valid_source = True
 
         # check according to the repository types
         if repository_type in (
@@ -158,8 +195,20 @@ class RemoteProfilesHandlerBase:
         else:
             logger.debug(
                 f"{source_repository_path_or_url} is a valid "
-                f"{self.SOURCE_REPOSITORY_TYPE} repository."
+                f"'{repository_type}' repository."
             )
+
+        # store validation result
+        if (
+            valid_source
+            and source_repository_path_or_url not in self.CACHE_VALID_GIT_REPOSITORIES
+        ):
+            self.CACHE_VALID_GIT_REPOSITORIES.append(source_repository_path_or_url)
+        elif (
+            not valid_source
+            and source_repository_path_or_url not in self.CACHE_INVALID_GIT_REPOSITORIES
+        ):
+            self.CACHE_INVALID_GIT_REPOSITORIES.append(source_repository_path_or_url)
 
         return valid_source
 
@@ -250,6 +299,7 @@ class RemoteProfilesHandlerBase:
         ):
             local_git_repository_path: Path = self.SOURCE_REPOSITORY_PATH_OR_URL
 
+        # check if URL or path is pointing to a valid git repository
         self.is_valid_git_repository(
             source_repository_path_or_url=local_git_repository_path
         )
@@ -266,7 +316,7 @@ class RemoteProfilesHandlerBase:
         """Determine if the given branch name is part of the given repository.
 
         Args:
-            branch_name (str | bytes): _description_
+            branch_name (str | bytes): branch name to check
             repository_path_or_url (Path | str, optional): URL or path pointing to a
                 git repository. If None, it uses the SOURCE_REPOSITORY_PATH_OR_URL
                 object's attribute
@@ -275,7 +325,7 @@ class RemoteProfilesHandlerBase:
             NotGitRepository: if the path is not a valid Git Repository
 
         Returns:
-            bool: True is the rbanch is part of given repository existing branches
+            bool: True is the branch is part of given repository existing branches
         """
         # make sure this is string
         if isinstance(branch_name, bytes):
@@ -287,13 +337,11 @@ class RemoteProfilesHandlerBase:
         ):
             repository_path_or_url: Path | str = self.SOURCE_REPOSITORY_PATH_OR_URL
 
-        # check if URL or path is pointing to a valid git repository
-        if not self.is_valid_git_repository(
+        # check if URL or path is pointing to a valid git repository, only it has
+        # never been computed before (i.e. None) or already spotted as invalid
+        self.is_valid_git_repository(
             source_repository_path_or_url=repository_path_or_url
-        ):
-            raise NotGitRepository(
-                f"{repository_path_or_url} is not a valid repository."
-            )
+        )
 
         # clean branch name
         refs_heads_prefix = "refs/heads/"
@@ -310,7 +358,7 @@ class RemoteProfilesHandlerBase:
     def list_remote_branches(
         self, source_repository_path_or_url: Path | str | None = None
     ) -> tuple[str]:
-        """Retrieve git active branch from a local repository. Mainly a checker and a
+        """Retrieve git active branch from a remote repository. Mainly a checker and a
             wrapper around dulwich logic.
 
         Args:
@@ -332,7 +380,8 @@ class RemoteProfilesHandlerBase:
                 self.SOURCE_REPOSITORY_PATH_OR_URL
             )
 
-        # check if URL or path is pointing to a valid git repository
+        # check if URL or path is pointing to a valid git repository, only it has
+        # never been computed before (i.e. None) or already spotted as invalid
         if not self.is_valid_git_repository(
             source_repository_path_or_url=source_repository_path_or_url
         ):
@@ -383,6 +432,10 @@ class RemoteProfilesHandlerBase:
         if isinstance(destination_local_path, Path):
             destination_local_path = destination_local_path.resolve()
 
+        logger.debug(
+            f"Start downloading profiles from {self.SOURCE_REPOSITORY_PATH_OR_URL} "
+            f"to {destination_local_path}"
+        )
         local_git_repository = self.clone_or_pull(
             to_local_destination_path=destination_local_path
         )
@@ -485,7 +538,7 @@ class RemoteProfilesHandlerBase:
             )
         else:
             logger.critical(
-                f"Case not handle. Context: {to_local_destination_path} "
+                f"Case not handled. Context: {to_local_destination_path} "
                 f"(empty={check_folder_is_empty(to_local_destination_path)}) "
                 f"valid repo={self.is_valid_git_repository(source_repository_path_or_url=to_local_destination_path, raise_error=False)}"
             )
