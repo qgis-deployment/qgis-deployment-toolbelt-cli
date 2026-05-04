@@ -21,7 +21,6 @@ from typing import Literal
 
 # 3rd party
 from dulwich import porcelain
-from dulwich.client import LsRemoteResult
 from dulwich.errors import GitProtocolError, NotGitRepository
 from dulwich.repo import Repo
 from giturlparse import GitUrlParsed, parse as git_parse, validate as git_validate
@@ -230,6 +229,10 @@ class RemoteProfilesHandlerBase:
             local_path: Path = self.SOURCE_REPOSITORY_PATH_OR_URL
 
         try:
+            logger.debug(
+                f"Trying to open local repository '{local_path.resolve()}' with "
+                "dulwich porcelain..."
+            )
             porcelain.open_repo_closing(f"{local_path.resolve()}")
             return True
         except NotGitRepository as err:
@@ -304,6 +307,9 @@ class RemoteProfilesHandlerBase:
             source_repository_path_or_url=local_git_repository_path
         )
 
+        logger.debug(
+            f"Retrieve active branch from local repository: {local_git_repository_path}"
+        )
         return porcelain.active_branch(
             repo=f"{local_git_repository_path.resolve()}"
         ).decode()
@@ -357,7 +363,7 @@ class RemoteProfilesHandlerBase:
     @proxies.os_env_proxy
     def list_remote_branches(
         self, source_repository_path_or_url: Path | str | None = None
-    ) -> tuple[str]:
+    ) -> tuple[str, ...]:
         """Retrieve git active branch from a remote repository. Mainly a checker and a
             wrapper around dulwich logic.
 
@@ -389,24 +395,23 @@ class RemoteProfilesHandlerBase:
                 f"{source_repository_path_or_url} is not a valid repository."
             )
 
-        ls_remote_refs: LsRemoteResult | dict = porcelain.ls_remote(
-            remote=f"{source_repository_path_or_url}"
+        # get remote branches
+        logger.debug(
+            f"Retrieving remote branches from repository: {source_repository_path_or_url}"
+        )
+        ls_remote_refs = porcelain.ls_remote(
+            remote=f"{source_repository_path_or_url}", quiet=True
         )
 
         source_repository_branches = []
 
-        if isinstance(ls_remote_refs, LsRemoteResult) and len(ls_remote_refs.refs) > 0:
+        if len(ls_remote_refs.refs) > 0:
             source_repository_branches = [
                 ref.decode()
                 for ref in ls_remote_refs.refs
                 if ref.startswith(b"refs/heads/")
             ]
-        elif isinstance(ls_remote_refs, dict) and len(ls_remote_refs) > 0:
-            source_repository_branches = [
-                ref.decode() for ref in ls_remote_refs if ref.startswith(b"refs/heads/")
-            ]
 
-        if source_repository_branches:
             logger.debug(
                 f"{len(source_repository_branches)} branche(s) found in repository "
                 f"{source_repository_path_or_url}: "
@@ -629,6 +634,7 @@ class RemoteProfilesHandlerBase:
             force=True,
             prune=True,
             prune_tags=True,
+            quiet=True,
         )
         destination_local_repository.close()
 
@@ -663,6 +669,7 @@ class RemoteProfilesHandlerBase:
             repo=local_path,
             remote_location=source_repository,
             force=True,
+            kwargs={"quiet": True},
         )
         gobj = destination_local_repository.get_object(
             destination_local_repository.head()
