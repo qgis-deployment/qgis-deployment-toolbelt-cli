@@ -13,7 +13,7 @@ Author: Julien Moura (https://github.com/guts)
 
 # Standard library
 import logging
-from functools import lru_cache
+from functools import cached_property, lru_cache
 from os import getenv
 from pathlib import Path
 
@@ -55,8 +55,6 @@ class GenericJob:
 
     def __init__(self) -> None:
         """Object instanciation."""
-        # operating system configuration
-        self.os_config = OSConfiguration.from_opersys()
 
         # QDT rules context
         only_prefixed_variables = str2bool(
@@ -93,6 +91,17 @@ class GenericJob:
             self.qgis_profiles_path.mkdir(parents=True)
         logger.debug(f"Installed QGIS profiles folder: {self.qgis_profiles_path}")
 
+    # -- Properties
+    @cached_property
+    def os_config(self) -> OSConfiguration:
+        """Get current operating system configuration.
+
+        Returns:
+            OSConfiguration: object with settings regarding operating system and QGIS
+        """
+        return OSConfiguration.from_opersys()
+
+    # -- Methods
     def list_downloaded_profiles(self) -> tuple[QdtProfile] | None:
         """List downloaded QGIS profiles, i.e. a profile's folder located into the QDT
             working folder.
