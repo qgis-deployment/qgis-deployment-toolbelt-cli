@@ -1,9 +1,6 @@
 #! python3  # noqa: E265
 
-"""
-Job handling QGIS global settings INI file manipulation.
-
-"""
+"""Job handling QGIS global settings INI file manipulation."""
 
 # #############################################################################
 # ########## Libraries #############
@@ -49,7 +46,7 @@ logger = logging.getLogger(__name__)
 # ##################################
 
 
-class JobGlobalConfigManager(GenericJob):
+class JobQgisGlobalConfigManager(GenericJob):
     """
     Class to manage the global config of QGIS installation.
     """
@@ -81,7 +78,8 @@ class JobGlobalConfigManager(GenericJob):
         self.options: dict = self.validate_options(options)
 
     def run(self) -> None:
-        """Copy QGIS global settings file to a custom destination and update environment variable for file use in QGIS."""
+        """Copy QGIS global settings file to a custom destination and update
+        environment variable for file use in QGIS."""
 
         # Define source file
         src_path = self.get_src_ini_file(self.options.get("src", None))
@@ -115,9 +113,12 @@ class JobGlobalConfigManager(GenericJob):
             )
             src_ini_helper.merge_to(dst_ini_helper)
 
-        except Exception:
-            err_msg = f"Can't copy `{src_path}` to `{dst_path}` for job {self.ID}. Check permission for destination."
-            raise ValueError(err_msg)
+        except Exception as exc:
+            err_msg = (
+                f"Can't copy `{src_path}` to `{dst_path}` for job {self.ID}. "
+                f"Check permission for destination. Trace: {exc}"
+            )
+            raise ValueError(err_msg) from exc
 
         # Update environment variable
         if set_environment_variable is not None:
@@ -152,7 +153,10 @@ class JobGlobalConfigManager(GenericJob):
             src = os_config.get_qgis_global_settings_file_path(check_exists=True)
 
             if src is None:
-                err_msg = f"Can't define default src option for job {self.ID}. Can't update QGIS global settings file."
+                err_msg = (
+                    f"Can't define default src option for job {self.ID}. "
+                    "Can't update QGIS global settings file."
+                )
                 raise ValueError(err_msg)
 
         # Interpolate value
@@ -164,7 +168,10 @@ class JobGlobalConfigManager(GenericJob):
             try:
                 src = self.get_remote_qgis_global_settings_from_url(remote_url=src)
             except Exception as exc:
-                err_msg = f"Error download external url `{src}` for job {self.ID}: {exc}. Can't update QGIS global settings file."
+                err_msg = (
+                    f"Error download external url `{src}` for job {self.ID}. "
+                    f"Trace: {exc}. Can't update QGIS global settings file."
+                )
                 raise ValueError(err_msg) from exc
 
         src_path = Path(src)
@@ -177,13 +184,15 @@ class JobGlobalConfigManager(GenericJob):
             if Path(self.qdt_downloaded_repositories / src_path).exists():
                 src_path = Path(self.qdt_downloaded_repositories / src_path).resolve()
                 logger.info(
-                    f"{src} relative path converted from downloaded repositories to {src_path}"
+                    f"{src} relative path converted from downloaded repositories "
+                    f"to {src_path}"
                 )
             # Check with QDT working dir
             elif Path(self.qdt_working_folder / src_path).exists():
                 src_path = Path(self.qdt_working_folder / src_path).resolve()
                 logger.info(
-                    f"{src} relative path converted from QDT working folder to {src_path}"
+                    f"{src} relative path converted from QDT working folder "
+                    f"to {src_path}"
                 )
             else:
                 src_path = src_path.resolve()
@@ -193,7 +202,10 @@ class JobGlobalConfigManager(GenericJob):
 
         # Check file exists
         if src_path is None or not src_path.exists():
-            err_msg = f"src option file `{src}` is not available for job {self.ID}. Can't update QGIS global settings file."
+            err_msg = (
+                f"src option file `{src}` is not available for job {self.ID}. "
+                "Can't update QGIS global settings file."
+            )
             raise ValueError(err_msg)
 
         return src_path
@@ -205,7 +217,7 @@ class JobGlobalConfigManager(GenericJob):
             dst (str | None): `dst` job option
 
         Raises:
-            ValueError: `dst` option use a relative file
+            ValueError: `dst` option uses a relative file
             ValueError: Can't define destination .ini file from default option
 
         Returns:
@@ -222,7 +234,10 @@ class JobGlobalConfigManager(GenericJob):
         dst_path = Path(dst)
 
         if not dst_path.is_absolute():
-            err_msg = f"dst option file path `{dst_path}` must be absolute for job {self.ID}. Can't update QGIS global settings file."
+            err_msg = (
+                f"dst option file path `{dst_path}` must be absolute "
+                f"for job {self.ID}. Can't update QGIS global settings file."
+            )
             raise ValueError(err_msg)
 
         if dst_path is None:
@@ -253,8 +268,9 @@ class JobGlobalConfigManager(GenericJob):
                 "remote_qgis_global_settings/qgis_global_settings.ini"
             )
             logger.warning(
-                f"Failed to extract a proper filename from URL: {remote_url}."
-                f" Trace: {err}. Fallback to default: {local_filepath_for_remote_global_settings}"
+                f"Failed to extract a proper filename from URL: {remote_url}. "
+                f"Trace: {err}. "
+                f"Fallback to default: {local_filepath_for_remote_global_settings}"
             )
 
         return download_remote_file_to_local(

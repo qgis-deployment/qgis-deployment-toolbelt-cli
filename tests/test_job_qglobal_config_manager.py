@@ -24,7 +24,7 @@ from sys import platform as opersys
 
 # package
 from qgis_deployment_toolbelt.jobs.job_qglobal_config_manager import (
-    JobGlobalConfigManager,
+    JobQgisGlobalConfigManager,
 )
 
 
@@ -64,7 +64,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
 
     def test_job_id(self):
         """Test JobGlobalConfigManager id"""
-        job = JobGlobalConfigManager({})
+        job = JobQgisGlobalConfigManager({})
         self.assertEqual(job.ID, "qglobal-config-manager")
 
     def test_invalid_src(self):
@@ -74,7 +74,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
             unexisting_config_file = Path(tmpdirname).joinpath("non_existing.ini")
             self.assertFalse(unexisting_config_file.exists())
 
-            job = JobGlobalConfigManager({"src": str(unexisting_config_file)})
+            job = JobQgisGlobalConfigManager({"src": str(unexisting_config_file)})
 
             with self.assertRaises(ValueError):
                 job.run()
@@ -88,7 +88,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
 
             dst_file = Path(tmpdirname) / "dest" / "custom_qgis_global_settings.ini"
 
-            job = JobGlobalConfigManager(
+            job = JobQgisGlobalConfigManager(
                 {"src": str(config_file), "dst": str(dst_file)}
             )
 
@@ -116,7 +116,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
 
             dst_file = Path(tmpdirname) / "dest" / "custom_qgis_global_settings.ini"
 
-            job = JobGlobalConfigManager(
+            job = JobQgisGlobalConfigManager(
                 {"src": str(config_file), "dst": str(dst_file)}
             )
 
@@ -153,7 +153,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
 
             dst_file = Path(tmpdirname) / "dest" / "custom_qgis_global_settings.ini"
 
-            job = JobGlobalConfigManager(
+            job = JobQgisGlobalConfigManager(
                 {
                     "src": "$CUSTOM_GLOBAL_SETTINGS/input_qgis_global_settings.ini",
                     "dst": "$CUSTOM_GLOBAL_SETTINGS/dest/custom_qgis_global_settings.ini",
@@ -189,7 +189,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
 
             dst_file = Path(tmpdirname) / "dest" / "custom_qgis_global_settings.ini"
 
-            job = JobGlobalConfigManager(
+            job = JobQgisGlobalConfigManager(
                 {
                     "src": "./custom_qgis_global_settings.ini",
                     "dst": str(dst_file),
@@ -239,7 +239,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
 
             dst_file = Path(tmpdirname) / "dest" / "custom_qgis_global_settings.ini"
 
-            job = JobGlobalConfigManager(
+            job = JobQgisGlobalConfigManager(
                 {
                     "src": "./myprofiles/custom_qgis_global_settings.ini",
                     "dst": str(dst_file),
@@ -270,7 +270,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
             config_file = Path(tmpdirname).joinpath("custom_qgis_global_settings.ini")
             config_file.write_text("[qgis]\ncheckVersion=true")
 
-            job = JobGlobalConfigManager(
+            job = JobQgisGlobalConfigManager(
                 {
                     "src": str(config_file),
                     "dst": "/sys/dev/qgis_global_settings.ini",
@@ -287,7 +287,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
             config_file = Path(tmpdirname).joinpath("custom_qgis_global_settings.ini")
             config_file.write_text("[qgis]\ncheckVersion=true")
 
-            job = JobGlobalConfigManager(
+            job = JobQgisGlobalConfigManager(
                 {
                     "src": str(config_file),
                     "dst": "../qgis_global_settings.ini",
@@ -303,7 +303,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
         ) as tmpdirname:
             dst_file = Path(tmpdirname) / "dest" / "custom_qgis_global_settings.ini"
 
-            job = JobGlobalConfigManager(
+            job = JobQgisGlobalConfigManager(
                 {
                     "src": "https://raw.githubusercontent.com/qgis/QGIS/refs/heads/master/resources/qgis_global_settings.ini",
                     "dst": str(dst_file),
@@ -330,7 +330,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
             config_file = Path(tmpdirname).joinpath("custom_qgis_global_settings.ini")
             config_file.write_text("[qgis]\ncheckVersion=true")
 
-            job = JobGlobalConfigManager(
+            job = JobQgisGlobalConfigManager(
                 {
                     "src": "https://invalidrepository.com/qgis/QGIS/refs/heads/master/resources/qgis_global_settings.ini",
                     "dst": "../qgis_global_settings.ini",
@@ -355,7 +355,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
 
             dst_file = Path(tmpdirname) / "dest" / "custom_qgis_global_settings.ini"
 
-            job = JobGlobalConfigManager(
+            job = JobQgisGlobalConfigManager(
                 {
                     "dst": str(dst_file),
                 }
@@ -389,7 +389,7 @@ class TestJobGlobalConfigManager(unittest.TestCase):
             )
             environ["QGIS_GLOBAL_SETTINGS_FILE"] = f"{default_dst}"
 
-            job = JobGlobalConfigManager({"src": str(config_file)})
+            job = JobQgisGlobalConfigManager({"src": str(config_file)})
 
             # Run job
             job.run()
