@@ -26,6 +26,8 @@
 
 ## QDT featured during French QGIS user conference 2026 🇫🇷
 
+📑 [slides](https://gitlab.com/osgeo-fr/journees_qgis/-/blob/master/Pr%C3%A9sentations/2026/10-D%C3%A9ploiement_QGIS_avec_QDT_-_retour_d_exp%C3%A9rience__trucs_et_astuces.pdf)
+
 <!-- markdownlint-disable MD033 -->
 <iframe title="10-Déploiement QGIS avec QDT" width="100%" height="400" src="https://video.osgeo.org/videos/embed/353ffe2a-42fd-4a27-87e7-a79c63561977?start=20s" frameborder="0" allowfullscreen="" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
 <!-- markdownlint-enable MD033 -->
