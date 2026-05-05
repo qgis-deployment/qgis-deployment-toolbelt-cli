@@ -67,11 +67,11 @@ __all__ = [
 # get latest git tag if possible, if not fallback to __version__
 release: str | None = None
 try:
-    github_ref = getenv("GITHUB_REF")
-    logger.info(
-        "Current branch retrieved from GitHub environment variable"
-        f"(meaning running on GitHub Actions): {github_ref=}"
-    )
+    if github_ref := getenv("GITHUB_REF"):
+        logger.info(
+            "Current branch retrieved from GitHub environment variable "
+            f"(meaning running on GitHub Actions): {github_ref=}"
+        )
     if getenv("GITHUB_REF_TYPE", "") == "tag":
         release = getenv("GITHUB_REF_NAME", None)
         logger.info(
