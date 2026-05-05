@@ -75,7 +75,10 @@ class JobProfilesDownloader(GenericJob):
         self.options: dict = self.validate_options(options)
 
         # where QDT downloads remote repositories
-        self.qdt_downloaded_repositories.mkdir(exist_ok=True, parents=True)
+        self._ensure_folder_exists(
+            folder_path=self.qdt_downloaded_repositories,
+            log_label="Local repositories folder",
+        )
         logger.debug(f"Local repositories folder: {self.qdt_downloaded_repositories}")
 
     def run(self) -> None:
