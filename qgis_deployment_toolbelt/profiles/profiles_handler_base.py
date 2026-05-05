@@ -15,6 +15,7 @@ Inspired from: QGIS Resource Sharing
 
 # Standard library
 import logging
+from os import getenv
 from pathlib import Path
 from shutil import rmtree
 from typing import Literal
@@ -82,6 +83,24 @@ class RemoteProfilesHandlerBase:
         """
         self.DESTINATION_BRANCH_TO_USE = branch_to_use
         self.SOURCE_REPOSITORY_TYPE = source_repository_type
+
+        # set dulwich log level to avoid too much verbosity
+        logging.getLogger("dulwich").setLevel(int(getenv("QDT_LOGS_DULWICH_LEVEL", 20)))
+        logger.debug(
+            "Log level for dulwich (git operations) has been set to: "
+            f"{logging.getLogger('dulwich').level} "
+            f"({logging.getLevelName(logging.getLogger('dulwich').level)})."
+        )
+        # additional log if logs levels are inconsistent
+        if (
+            logger.level < logging.INFO
+            and logging.getLogger("dulwich").level > logger.level
+            and not getenv("QDT_LOGS_DULWICH_LEVEL")
+        ):
+            logger.debug(
+                "If you want full logs, set 'QDT_LOGS_DULWICH_LEVEL' "
+                "environment variable to '10'"
+            )
 
     def url_parsed(self, remote_git_url: str) -> GitUrlParsed:
         """Return URL parsed to extract git information.

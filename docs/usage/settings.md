@@ -19,12 +19,13 @@ Some options and arguments can be set with environment variables.
 
 Some others parameters can be set using environment variables.
 
-| Variable name       | Description            | Default value      |
+| Variable name       | Description              | Default value      |
 | :------------------ | :----------------------: | :----------------: |
 | `QDT_LOCAL_WORK_DIR` | Local folder where QDT download remote resources (profiles, plugins, etc.) | `~/.cache/qgis-deployment-toolbelt/default/` |
 | `QDT_LOGS_DIR` | Folder where QDT writes the log files, which are automatically rotated. | `~/.cache/qgis-deployment-toolbelt/logs/` |
 | `QDT_LOGS_DELAY_FILE_CREATION` | Delay creation of log file to the first added log. | `true` |
 | `QDT_LOGS_FILENAME` | Name of log files. The extension is part of filename so it must be set. | `{__title_clean__}_{__version_clean__}.log` i.e `QGISDeploymentToolbelt_0.40.0.log` |
+| `QDT_LOGS_DULWICH_LEVEL` | Define the log level of Git operations performed under the hood by [dulwich](https://github.com/jelmer/dulwich), which is really verbose since its version 1.2+ | `20` (= [`logging.INFO`](https://docs.python.org/3/library/logging.html#logging-levels)) |
 | `QDT_OSGEO4W_INSTALL_DIR` | Path to the OSGEO4W install directory. Used to search for installed QGIS and shortcuts creation. | `C:\\OSGeo4W`. |
 | `QDT_PAC_FILE` | Define PAC file for proxy definition. See also [How to use behind a proxy](../guides/howto_behind_proxy.md). | `` |
 | `QDT_RULES_ONLY_PREFIXED_VARIABLES` | If set to `true`, only environment variables prefixed with prefixes listed in RULES_VARIABLES_PREFIX are considered in rules for security concerns. If set to `false`, all environment variables are considered in rules. | `true` |
