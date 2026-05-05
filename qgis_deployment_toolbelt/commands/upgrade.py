@@ -38,6 +38,7 @@ from qgis_deployment_toolbelt.utils.bouncer import (
     exit_cli_success,
 )
 from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
+from qgis_deployment_toolbelt.utils.frozen_app import is_running_pyinstaller
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
 
@@ -243,7 +244,7 @@ def run(args: argparse.Namespace):
 
     # -- DOWNLOAD ------------------------------------------------------------
     # check if we are in frozen mode (typically PyInstaller) or as "normal" Python
-    if not (getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")):
+    if not is_running_pyinstaller():
         logger.debug("Running in a normal Python process.")
         print(  # noqa: T201
             "\n\nTo get the latest version, run (adapt command to your environment):"

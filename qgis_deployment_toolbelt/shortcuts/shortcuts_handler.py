@@ -36,6 +36,7 @@ from qgis_deployment_toolbelt.constants import (
     OSConfiguration,
 )
 from qgis_deployment_toolbelt.utils.check_path import check_path
+from qgis_deployment_toolbelt.utils.frozen_app import is_running_pyinstaller
 from qgis_deployment_toolbelt.utils.slugger import sluggy
 
 
@@ -361,7 +362,7 @@ class ApplicationShortcut:
         """
         # grab shortcut template depending if we are in frozen mode
         # (typically PyInstaller) or as "normal" Python
-        if not (getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")):
+        if not is_running_pyinstaller():
             template_shortcut = Path(__file__).parent / "shortcut_freedesktop.template"
             logger.debug(f"Using shortcut template in Python mode: {template_shortcut}")
         else:
