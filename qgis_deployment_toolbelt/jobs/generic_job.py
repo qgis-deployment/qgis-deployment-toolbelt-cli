@@ -68,6 +68,11 @@ class GenericJob:
 
         # local QDT folders
         self.qdt_working_folder = get_qdt_working_directory()
+        self._ensure_folder_exists(
+            folder_path=self.qdt_working_folder, log_label="QDT working folder"
+        )
+        logger.debug(f"QDT working folder: {self.qdt_working_folder}")
+
         if not self.qdt_working_folder.exists():
             logger.info(
                 f"QDT downloaded folder not found: {self.qdt_working_folder}. "
@@ -309,3 +314,20 @@ class GenericJob:
                 pass
 
         return options
+
+    # -- Utils
+    def _ensure_folder_exists(
+        self, folder_path: Path, log_label: str | None = None
+    ) -> None:
+        """Create folder and its parents when it does not exist yet.
+
+        Args:
+            folder_path (Path): pat to directory to create if absent.
+            log_label (str | None, optional): human-readable name used in the log message. Defaults to None
+        """
+        if not folder_path.exists():
+            msg_display = log_label or str(folder_path)
+            logger.debug(
+                f"{msg_display} not found: {folder_path}. Creating it to properly run the job."
+            )
+            folder_path.mkdir(parents=True, exist_ok=True)

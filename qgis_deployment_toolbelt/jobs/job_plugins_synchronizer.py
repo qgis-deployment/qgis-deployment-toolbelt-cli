@@ -74,8 +74,10 @@ class JobPluginsSynchronizer(GenericJob):
         self.options: dict = self.validate_options(options)
 
         # where QDT downloads plugins
-        self.qdt_plugins_folder.mkdir(exist_ok=True, parents=True)
-        logger.info(f"QDT plugins folder: {self.qdt_plugins_folder}")
+        self._ensure_folder_exists(
+            folder_path=self.qdt_plugins_folder, log_label="QDT plugins folder"
+        )
+        logger.debug(f"QDT plugins folder: {self.qdt_plugins_folder}")
 
         # which profile.json file to use
         if self.options.get("profile_ref") == "installed":
@@ -220,7 +222,10 @@ class JobPluginsSynchronizer(GenericJob):
                 profile_plugins_folder = profile.path_in_qgis / "python/plugins"
 
             # make sure destination folder exists
-            profile_plugins_folder.mkdir(parents=True, exist_ok=True)
+            self._ensure_folder_exists(
+                folder_path=profile_plugins_folder,
+                log_label=f"{profile.name} plugins folder",
+            )
 
             if plugin.upgrade_mode == "delete":
                 # if the plugin is already present into the profile, delete it before installing the new version

@@ -72,8 +72,10 @@ class JobPluginsDownloader(GenericJob):
         self.options: dict = self.validate_options(options)
 
         # where QDT downloads plugins
-        self.qdt_plugins_folder.mkdir(exist_ok=True, parents=True)
-        logger.info(f"QDT plugins folder: {self.qdt_plugins_folder}")
+        self._ensure_folder_exists(
+            folder_path=self.qdt_plugins_folder, log_label="QDT plugins folder"
+        )
+        logger.debug(f"QDT plugins folder: {self.qdt_plugins_folder}")
 
     def run(self) -> None:
         """Execute job logic."""
