@@ -76,7 +76,12 @@ class GenericJob:
         self.qdt_downloaded_repositories = self.qdt_working_folder.joinpath(
             f"repositories/{getenv('QDT_TMP_RUNNING_SCENARIO_ID', 'default')}"
         )
+        logger.debug(
+            f"Current scenario repository folder: {self.qdt_downloaded_repositories}"
+        )
+
         self.qdt_plugins_folder = self.qdt_working_folder.joinpath("plugins")
+        logger.debug(f"QDT local plugins cache folder: {self.qdt_plugins_folder}")
 
         # destination profiles folder
         self.qgis_profiles_path: Path = self.os_config.qgis_profiles_path

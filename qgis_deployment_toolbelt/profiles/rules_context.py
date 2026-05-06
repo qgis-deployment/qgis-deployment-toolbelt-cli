@@ -66,6 +66,8 @@ class QdtRulesContext:
         else:
             self.variables_prefix = variables_prefix
 
+        logger.debug(f"Environment variables prefixes: {self.variables_prefix}")
+
     @property
     def _context_date(self) -> dict:
         """Returns a context dictionary with date informations that can be used in QDT
