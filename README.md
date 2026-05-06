@@ -10,7 +10,7 @@
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/qgis-deployment/qgis-deployment-toolbelt-cli/main.svg)](https://results.pre-commit.ci/latest/github/qgis-deployment/qgis-deployment-toolbelt-cli/main)
 [![security: bandit](https://img.shields.io/badge/security-bandit-yellow.svg)](https://github.com/PyCQA/bandit)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Guts_qgis-deployment-cli&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Guts_qgis-deployment-cli)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=qgis-deployment_qgis-deployment-toolbelt-cli&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=qgis-deployment_qgis-deployment-toolbelt-cli)
 
 [![🎳 Tester](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/actions/workflows/tests.yml/badge.svg)](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/qgis-deployment/qgis-deployment-toolbelt-cli/branch/main/graph/badge.svg?token=ZHGRNMA7TV)](https://codecov.io/gh/qgis-deployment/qgis-deployment-toolbelt-cli)
