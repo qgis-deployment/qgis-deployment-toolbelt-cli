@@ -138,7 +138,7 @@ def headers():
     logger.debug(f"Launched by user: {getuser()}")
     logger.debug(f"From directory: {Path.cwd()}")
     logger.debug(
-        f"Runtime mode: {'PyInstaller' if is_running_pyinstaller() else 'normal Python'}"
+        f"Runtime mode: {'PyInstaller' if is_running_pyinstaller(log=False) else 'normal Python'}"
     )
 
     if getenv("userdomain"):

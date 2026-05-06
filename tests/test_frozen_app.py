@@ -34,7 +34,7 @@ class TestFrozenApp(unittest.TestCase):
     def test_is_frozen_app_true(self):
         """Test sys.frozen is set."""
         with patch.object(frozen_app.sys, "frozen", new=True, create=True):
-            self.assertTrue(frozen_app.is_frozen_app())
+            self.assertTrue(frozen_app.is_frozen_app(log=False))
 
     def test_is_running_pyinstaller_false_when_not_frozen(self):
         """frozen not set, but _MEIPASS exists."""
@@ -56,7 +56,7 @@ class TestFrozenApp(unittest.TestCase):
         """frozen and _MEIPASS both set."""
         with patch.object(frozen_app.sys, "frozen", new=True, create=True):
             with patch.object(frozen_app.sys, "_MEIPASS", new="/tmp/fake", create=True):
-                self.assertTrue(frozen_app.is_running_pyinstaller())
+                self.assertTrue(frozen_app.is_running_pyinstaller(log=False))
 
 
 if __name__ == "__main__":
