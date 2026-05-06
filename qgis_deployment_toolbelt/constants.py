@@ -268,7 +268,7 @@ class OSConfiguration:
     def get_qgis_global_settings_file_path(
         self, check_exists: bool = True
     ) -> Path | None:
-        """Returns the QGIS global settings file from default value used by QGIS
+        """Returns the QGIS global settings file from default value used by QGIS.
         See https://docs.qgis.org/latest/en/docs/user_manual/introduction/qgis_configuration.html#globalsettingsfile
 
         - first from environment variable QGIS_GLOBAL_SETTINGS_FILE
@@ -276,7 +276,7 @@ class OSConfiguration:
         - then from installation directory
 
         Args:
-            check_exists (bool, optional): _description_. Defaults to True.
+            check_exists (bool, optional): ensure that files exists already. Defaults to True.
 
         Returns:
             Path | None: qgis global settings file path, None if can't define default value
