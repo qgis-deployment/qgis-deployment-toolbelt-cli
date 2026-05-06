@@ -21,7 +21,7 @@ class JobOptionBadNameError(KeyError):
         Args:
             job_id (str): job ID
             bad_option_name (str): name of bad option passed
-            expected_options_names (Iterable[str]): _description_
+            expected_options_names (Iterable[str]): list of accepted options
         """
         self.message = (
             f"Job: {job_id}. Option '{bad_option_name}' is not valid. "
@@ -40,21 +40,21 @@ class JobOptionBadValueError(ValueError):
         bad_option_name: str,
         bad_option_value: str,
         condition: str,
-        accepted_values: Iterable[str],
+        accepted_values: Iterable[str] | None = None,
     ):
         """Initialization method.
 
         Args:
             job_id (str): job ID
             bad_option_name (str): name of bad option passed
-            bad_option_type (str): name of bad option passed
+            bad_option_type (str): type of bad option passed
             condition (str): condition
-            accepted_values (Iterable[str]): accepted types of values
+            accepted_values (Iterable[str] | None, optional): accepted types of values. Defaults to None.
         """
         self.message = (
             f"Job: {job_id}. Option '{bad_option_name}' 's value '{bad_option_value}' "
             f"does not comply with condition {condition}. "
-            f"Accepted pattern: {','.join(accepted_values)}"
+            f"Accepted pattern: {','.join(accepted_values) if accepted_values else 'no defined'}"
         )
 
         super().__init__(self.message)
@@ -75,7 +75,7 @@ class JobOptionBadValueTypeError(TypeError):
         Args:
             job_id (str): job ID
             bad_option_name (str): name of bad option passed
-            bad_option_value (str): option's value
+            bad_option_value (str): value of bad option passed
             expected_option_type (Iterable[str]): accepted types of values
         """
         self.message = (
@@ -100,7 +100,7 @@ class SplashScreenBadDimensionsError(Exception):
         self.message = (
             f"Profile {profile_name} -"
             f"{image_filepath.resolve()} dimensions "
-            f"{get_image_size(image_filepath=image_filepath)} do not comply with "
+            f"{get_image_size(image_filepath=image_filepath)} does not comply with "
             " dimensions recomended by QGIS for splash screen: 600x300."
         )
         super().__init__(self.message)
