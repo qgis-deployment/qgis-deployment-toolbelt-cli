@@ -73,14 +73,6 @@ class GenericJob:
         )
         logger.debug(f"QDT working folder: {self.qdt_working_folder}")
 
-        if not self.qdt_working_folder.exists():
-            logger.info(
-                f"QDT downloaded folder not found: {self.qdt_working_folder}. "
-                "Creating it to properly run the job."
-            )
-            self.qdt_working_folder.mkdir(parents=True, exist_ok=True)
-        logger.debug(f"QDT working folder: {self.qdt_working_folder}")
-
         self.qdt_downloaded_repositories = self.qdt_working_folder.joinpath(
             f"repositories/{getenv('QDT_TMP_RUNNING_SCENARIO_ID', 'default')}"
         )
