@@ -92,7 +92,7 @@
         "{mermaid}"
     ],
     "sonarlint.connectedMode.project": {
-        "connectionId": "oslandia",
-        "projectKey": "Guts_qgis-deployment-cli"
+        "connectionId": "qgis-deployment",
+        "projectKey": "qgis-deployment_qgis-deployment-toolbelt-cli"
     }
 }
