@@ -16,6 +16,7 @@ import logging
 from functools import cached_property, lru_cache
 from os import getenv
 from pathlib import Path
+from typing import Any
 
 # 3rd party
 from python_rule_engine import RuleEngine
@@ -51,7 +52,7 @@ class GenericJob:
     """Generic base for QDT jobs."""
 
     ID: str = ""
-    OPTIONS_SCHEMA: dict[dict] = dict(dict())
+    OPTIONS_SCHEMA: dict[str, dict[str, Any]] = {}
 
     def __init__(self) -> None:
         """Object instanciation."""
@@ -76,7 +77,12 @@ class GenericJob:
         self.qdt_downloaded_repositories = self.qdt_working_folder.joinpath(
             f"repositories/{getenv('QDT_TMP_RUNNING_SCENARIO_ID', 'default')}"
         )
+        logger.debug(
+            f"Current scenario repository folder: {self.qdt_downloaded_repositories}"
+        )
+
         self.qdt_plugins_folder = self.qdt_working_folder.joinpath("plugins")
+        logger.debug(f"QDT local plugins cache folder: {self.qdt_plugins_folder}")
 
         # destination profiles folder
         self.qgis_profiles_path: Path = self.os_config.qgis_profiles_path
@@ -247,59 +253,67 @@ class GenericJob:
 
         return li_profiles_matched, li_profiles_unmatched
 
-    def validate_options(self, options: dict[dict]) -> dict[dict]:
-        """Validate options.
+    def validate_options(self, options: dict[str, Any]) -> dict[str, Any]:
+        """Validate job options against ``OPTIONS_SCHEMA``.
 
         Args:
-            options (dict[dict]): options to validate.
+            options (dict[str, Any]): options to validate
 
         Raises:
-            ValueError: if option has an invalid name or doesn't comply with condition
-            TypeError: if the option does'nt not comply with expected type
+            JobOptionBadNameError: if an option name is not in the schema
+            JobOptionBadValueError: if an option value fails its condition
+            JobOptionBadValueTypeError: if an option value has the wrong type
+            TypeError: if options is not a dict
 
         Returns:
-            dict[dict]: options if valid
+            dict[str, Any]: unchanged when all checks pass
         """
         if not isinstance(options, dict):
             raise TypeError(f"Options to validate must be a dict, not {type(options)}.")
 
-        for option in options:
-            if option not in self.OPTIONS_SCHEMA:
+        for option_name, option_value in options.items():
+            if option_name not in self.OPTIONS_SCHEMA:
                 raise JobOptionBadNameError(
                     job_id=self.ID,
-                    bad_option_name=option,
+                    bad_option_name=option_name,
                     expected_options_names=self.OPTIONS_SCHEMA.keys(),
                 )
 
-            option_in = options.get(option)
-            option_def: dict = self.OPTIONS_SCHEMA.get(option)
+            option_def: dict[str, Any] = self.OPTIONS_SCHEMA[option_name]
+
             # check value type
-            if not isinstance(option_in, option_def.get("type")):
+            if not isinstance(option_value, option_def["type"]):
                 raise JobOptionBadValueTypeError(
                     job_id=self.ID,
-                    bad_option_name=option,
-                    bad_option_value=option_in,
-                    expected_option_type=option_def.get("type"),
+                    bad_option_name=option_name,
+                    bad_option_value=option_value,
+                    expected_option_type=option_def["type"],
                 )
+
             # check value condition
-            if option_def.get("condition") == "startswith" and not option_in.startswith(
-                option_def.get("possible_values")
+            option_condition: str | None = option_def.get("condition")
+            option_possible_values: tuple[str, ...] | None = option_def.get(
+                "possible_values"
+            )
+
+            if option_condition == "startswith" and not option_value.startswith(
+                option_possible_values
             ):
                 raise JobOptionBadValueError(
                     job_id=self.ID,
-                    bad_option_name=option,
-                    bad_option_value=option_in,
+                    bad_option_name=option_name,
+                    bad_option_value=option_value,
                     condition="startswith",
-                    accepted_values=option_def.get("possible_values"),
+                    accepted_values=option_possible_values,
                 )
-            elif option_def.get(
-                "condition"
-            ) == "in" and option_in not in option_def.get("possible_values"):
+            elif (
+                option_condition == "in" and option_value not in option_possible_values
+            ):
                 raise JobOptionBadValueError(
                     job_id=self.ID,
-                    bad_option_name=option,
-                    bad_option_value=option_in,
-                    condition="startswith",
+                    bad_option_name=option_name,
+                    bad_option_value=option_value,
+                    condition="in",
                     accepted_values=option_def.get("possible_values"),
                 )
             else:
