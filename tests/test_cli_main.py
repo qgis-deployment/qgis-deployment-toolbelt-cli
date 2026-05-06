@@ -125,7 +125,7 @@ def test_main_run_no_log_file(capsys):
     """Test main cli command without log file"""
 
     with tempfile.TemporaryDirectory(
-        prefix="QDT_test_cli_run_no_log_file",
+        prefix="QDT_test_cli_run_no_log_file_",
         ignore_cleanup_errors=True,
     ) as tmpdirname:
         # customize QDT working folder and profiles destination folder
@@ -167,7 +167,7 @@ def test_main_run_log_filename(capsys):
     """Test main cli command with log filename definition"""
 
     with tempfile.TemporaryDirectory(
-        prefix="QDT_test_cli_run_log_filename",
+        prefix="QDT_test_cli_run_log_filename_",
         ignore_cleanup_errors=True,
     ) as tmpdirname:
         # customize QDT working folder and profiles destination folder
@@ -185,6 +185,7 @@ def test_main_run_log_filename(capsys):
                     "deploy",
                     "--logs-filename=custom_qdt_logfile.log",
                     f"--scenario={sample_scenario_good.resolve()}",
+                    "-vv",
                 ]
             )
 

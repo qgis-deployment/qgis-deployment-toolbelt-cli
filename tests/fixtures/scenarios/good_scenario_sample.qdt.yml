@@ -12,7 +12,6 @@ metadata:
 
 settings:
   DEBUG: false
-  LOCAL_WORK_DIR: ~/.cache/qgis-deployment-toolbelt/tests/
   SCENARIO_VALIDATION: true
 
 steps:
