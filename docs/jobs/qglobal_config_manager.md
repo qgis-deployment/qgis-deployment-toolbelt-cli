@@ -18,6 +18,16 @@ Sample job configuration in your scenario file:
       dst: ~/config/qgis/global_settings.ini
 ```
 
+Using a remote file accessible by end-user computer through HTTP(S):
+
+```yaml
+  - name: Deploy qgis_global_settings.ini from HTTP server
+    uses: qglobal-config-manager
+    with:
+      src: https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/refs/heads/feat/qglobal_config_manager/examples/global_config/qgis_global_settings.ini
+      dst: ~/config/qgis/global_settings.ini
+```
+
 ----
 
 ## Options
