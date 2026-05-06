@@ -13,7 +13,7 @@ Author: Julien Moura (https://github.com/guts)
 
 # Standard library
 import logging
-from functools import cached_property, lru_cache
+from functools import cached_property
 from os import getenv
 from pathlib import Path
 from typing import Any
@@ -53,6 +53,10 @@ class GenericJob:
 
     ID: str = ""
     OPTIONS_SCHEMA: dict[str, dict[str, Any]] = {}
+
+    RULES_FILTER_CACHE: dict[
+        tuple[Path, ...], tuple[list[QdtProfile], list[QdtProfile]]
+    ] = {}
 
     def __init__(self) -> None:
         """Object instanciation."""
@@ -204,22 +208,45 @@ class GenericJob:
         )
         return qdt_profile
 
-    @lru_cache(maxsize=1024)  # noqa: B019
     def filter_profiles_on_rules(
-        self, tup_qdt_profiles: tuple[QdtProfile]
+        self, tup_qdt_profiles: tuple[QdtProfile, ...], cached: bool = True
     ) -> tuple[list[QdtProfile], list[QdtProfile]]:
-        """Evaluate profile regarding to its deployment rules.
+        """Evaluate profile regarding to its deployment rules. Results are stored in
+        the class ``RULES_FILTER_CACHE`` attribute.
 
         Args:
-            tup_qdt_profiles (tuple[QdtProfile]): input tuple of QDT profiles
+            tup_qdt_profiles (tuple[QdtProfile, ...]): input tuple of QDT profiles
+            cached (bool, optional): using previously computed value if not None.
+                Defaults to True.
 
         Returns:
-            tuple[list[QdtProfile], list[QdtProfile]]: tuple of profiles that matched
+            tuple[QdtProfile], list[QdtProfile]]: tuple of profiles that matched
             and those which did not match their deployment rules
         """
-        li_profiles_matched = []
-        li_profiles_unmatched = []
+        # check previous cached result
+        if cached:
+            cache_key: tuple[Path, ...] = tuple(
+                p.folder for p in tup_qdt_profiles if isinstance(p.folder, Path)
+            )
+            if cache_key in self.RULES_FILTER_CACHE:
+                logger.debug(
+                    f"Profiles '{cache_key}' have "
+                    "already been evaluated, returning previous result. "
+                    "Use 'cached=False' to force re-checking."
+                )
+                return self.RULES_FILTER_CACHE[cache_key]
+            logger.debug(
+                f"Profiles '{cache_key}' have not been evaluated yet, checking rules..."
+            )
+        else:
+            logger.debug("Profiles rules evaluation forced, checking rules...")
 
+        # local vars
+        li_profiles_matched: list[QdtProfile] = []
+        li_profiles_unmatched: list[QdtProfile] = []
+        rules_context = self.qdt_rules_context.to_dict()
+
+        # checking each profile against rules
         for profile in tup_qdt_profiles:
             if profile.rules is None:
                 logger.debug(f"No rules to apply to {profile.name}")
@@ -232,10 +259,11 @@ class GenericJob:
             )
             try:
                 engine = RuleEngine(rules=profile.rules)
-                results = engine.evaluate(obj=self.qdt_rules_context.to_dict())
+                results = engine.evaluate(obj=rules_context)
                 if len(results) == len(profile.rules):
                     logger.debug(
-                        f"Profile '{profile.name}' matches {len(profile.rules)} deployment rule(s)."
+                        f"Profile '{profile.name}' matches {len(profile.rules)} "
+                        "deployment rule(s)."
                     )
                     li_profiles_matched.append(profile)
                 else:
@@ -248,9 +276,15 @@ class GenericJob:
 
             except Exception as err:
                 logger.error(
-                    f"Error occurred parsing rules of profile '{profile.name}'. Trace: {err}"
+                    f"Error occurred parsing rules of profile '{profile.name}'. "
+                    f"Trace: {err}"
                 )
 
+        # store result for other jobs that would need it later
+        self.RULES_FILTER_CACHE[cache_key] = (
+            li_profiles_matched,
+            li_profiles_unmatched,
+        )
         return li_profiles_matched, li_profiles_unmatched
 
     def validate_options(self, options: dict[str, Any]) -> dict[str, Any]:

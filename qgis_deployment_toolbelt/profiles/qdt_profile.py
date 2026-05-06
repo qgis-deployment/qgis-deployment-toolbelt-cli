@@ -197,7 +197,7 @@ class QdtProfile:
         return self._alias
 
     @property
-    def folder(self) -> Path:
+    def folder(self) -> Path | None:
         """Returns the path to the folder where the profile is stored.
 
         Returns:
