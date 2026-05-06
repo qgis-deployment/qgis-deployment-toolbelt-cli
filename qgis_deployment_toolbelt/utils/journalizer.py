@@ -29,6 +29,7 @@ else:
 # package
 from qgis_deployment_toolbelt.__about__ import __title__, __version__
 from qgis_deployment_toolbelt.constants import get_qdt_logs_folder
+from qgis_deployment_toolbelt.utils.frozen_app import is_running_pyinstaller
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
 
@@ -135,6 +136,10 @@ def headers():
     logger.debug(f"Architecture: {architecture()[0]}")
     logger.debug(f"Computer: {gethostname()}")
     logger.debug(f"Launched by user: {getuser()}")
+    logger.debug(f"From directory: {Path.cwd()}")
+    logger.debug(
+        f"Runtime mode: {'PyInstaller' if is_running_pyinstaller() else 'normal Python'}"
+    )
 
     if getenv("userdomain"):
         logger.debug(f"OS Domain: {getenv('userdomain')}")
