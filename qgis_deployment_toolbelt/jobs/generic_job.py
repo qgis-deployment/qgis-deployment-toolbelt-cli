@@ -299,7 +299,7 @@ class GenericJob:
                     job_id=self.ID,
                     bad_option_name=option,
                     bad_option_value=option_in,
-                    condition="startswith",
+                    condition="in",
                     accepted_values=option_def.get("possible_values"),
                 )
             else:
