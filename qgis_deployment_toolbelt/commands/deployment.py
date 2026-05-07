@@ -16,7 +16,6 @@ import logging
 from os import environ, getenv
 from pathlib import Path
 from sys import platform as opersys
-from urllib.parse import urlsplit
 
 # submodules
 from qgis_deployment_toolbelt.constants import (
@@ -28,8 +27,8 @@ from qgis_deployment_toolbelt.scenarios import ScenarioReader
 from qgis_deployment_toolbelt.utils.bouncer import exit_cli_error, exit_cli_success
 from qgis_deployment_toolbelt.utils.check_path import check_path
 from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
-from qgis_deployment_toolbelt.utils.slugger import sluggy
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
+from qgis_deployment_toolbelt.utils.url_helpers import filename_from_url
 
 
 # #############################################################################
@@ -53,14 +52,9 @@ def get_remote_scenario_from_url(remote_url: str) -> Path:
     Returns:
         Path: local path to downloaded scenario.
     """
-    # try to build file path from URL
     try:
-        url_splitted = urlsplit(remote_url)
         local_filepath_for_remote_scenario = (
-            "remote_scenarios/"
-            f"{sluggy(url_splitted.netloc)}/"
-            f"{sluggy(str(Path(url_splitted.path).parent))}/"
-            f"{Path(url_splitted.path).name}"
+            f"remote_scenarios/{filename_from_url(remote_url)}"
         )
     except Exception as err:
         local_filepath_for_remote_scenario = "remote_scenarios/default/scenario.qdt.yml"
