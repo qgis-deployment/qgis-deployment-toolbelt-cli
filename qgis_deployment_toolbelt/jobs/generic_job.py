@@ -224,10 +224,10 @@ class GenericJob:
             and those which did not match their deployment rules
         """
         # check previous cached result
+        cache_key: tuple[Path, ...] = tuple(
+            p.folder for p in tup_qdt_profiles if isinstance(p.folder, Path)
+        )
         if cached:
-            cache_key: tuple[Path, ...] = tuple(
-                p.folder for p in tup_qdt_profiles if isinstance(p.folder, Path)
-            )
             if cache_key in self.RULES_FILTER_CACHE:
                 logger.debug(
                     f"Profiles '{cache_key}' have "
