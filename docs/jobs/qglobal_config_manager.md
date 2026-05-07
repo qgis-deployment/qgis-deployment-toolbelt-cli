@@ -18,6 +18,16 @@ Sample job configuration in your scenario file:
       dst: ~/config/qgis/global_settings.ini
 ```
 
+Using environment variables:
+
+```yaml
+  - name: Deploy qgis_global_settings.ini from HTTP server
+    uses: qglobal-config-manager
+    with:
+      src: "%APPDATA%/QDT/config/qgis_global_settings.ini"
+      dst: "%APPDATA%/QGIS/qgis_global_settings.ini"
+```
+
 Using a remote file accessible by end-user computer through HTTP(S):
 
 ```yaml
