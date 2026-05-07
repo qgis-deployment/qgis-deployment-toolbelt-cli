@@ -294,3 +294,6 @@ class JobProfilesSynchronizer(GenericJob):
             logger.info(f"Merging {d.folder} to {d.path_in_qgis}")
             installed_profile = QdtProfile(folder=d.path_in_qgis)
             d.merge_to(installed_profile)
+
+        # Profiles have been written to qgis_profiles_path so let's clear the cache
+        self.clear_profiles_cache(folder_path=self.qgis_profiles_path)
