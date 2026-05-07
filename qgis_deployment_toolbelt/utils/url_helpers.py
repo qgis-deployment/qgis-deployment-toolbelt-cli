@@ -12,7 +12,11 @@ Author: Julien Moura (https://github.com/guts)
 
 # Standard library
 import logging
-from urllib.parse import urlparse
+from pathlib import PurePosixPath
+from urllib.parse import urlparse, urlsplit
+
+# package
+from qgis_deployment_toolbelt.utils.slugger import sluggy
 
 
 # #############################################################################
@@ -75,10 +79,33 @@ def check_str_is_url(
         return False
 
 
-# ############################################################################
-# ##### Stand alone program ########
-# ##################################
+def filename_from_url(url: str) -> str:
+    """Try to determine filename from a given download URL.
 
-if __name__ == "__main__":
-    """Standalone execution."""
-    pass
+    Args:
+        url (str): URL to remote file
+
+    Returns:
+        str: determined filename
+    """
+    url_splitted = urlsplit(url)
+
+    url_host = sluggy(url_splitted.netloc)
+    url_path = PurePosixPath(url_splitted.path)
+    url_file_parent = url_path.parent
+    url_file_name = url_path.name
+
+    if url_file_parent in (PurePosixPath("/"), PurePosixPath("."), PurePosixPath("")):
+        parent_slug = ""
+    else:
+        parent_slug = sluggy(str(url_file_parent).lstrip("/"))
+
+    segments = [url_host]
+
+    if parent_slug:
+        segments.append(parent_slug)
+
+    if url_file_name:
+        segments.append(url_file_name)
+
+    return "/".join(segments)
