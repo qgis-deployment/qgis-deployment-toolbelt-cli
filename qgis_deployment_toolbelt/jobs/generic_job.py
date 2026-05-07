@@ -54,6 +54,8 @@ class GenericJob:
     ID: str = ""
     OPTIONS_SCHEMA: dict[str, dict[str, Any]] = {}
 
+    # -- CACHE --
+    PROFILES_FOLDER_CACHE: dict[Path, tuple[QdtProfile, ...] | None] = {}
     RULES_FILTER_CACHE: dict[
         tuple[Path, ...], tuple[list[QdtProfile], list[QdtProfile]]
     ] = {}
@@ -90,13 +92,29 @@ class GenericJob:
 
         # destination profiles folder
         self.qgis_profiles_path: Path = self.os_config.qgis_profiles_path
-        if not self.qgis_profiles_path.exists():
-            logger.info(
-                f"Installed QGIS profiles folder not found: {self.qgis_profiles_path}. "
-                "Creating it to properly run the job."
-            )
-            self.qgis_profiles_path.mkdir(parents=True)
+        self._ensure_folder_exists(
+            folder_path=self.qgis_profiles_path,
+            log_label="Installed QGIS profiles folder",
+        )
         logger.debug(f"Installed QGIS profiles folder: {self.qgis_profiles_path}")
+
+    # -- Cache management
+    @classmethod
+    def clear_profiles_cache(cls, folder_path: Path | None = None) -> None:
+        """Invalidate the profiles-folder scan cache to make subsequent jobs re-scan
+        the directory instead of returning cached data.
+
+        Args:
+            folder_path (Path | None, optional): specific cached folder to clear.
+                If None, the entire cache is cleared.  Defaults to None.
+        """
+        if folder_path is None:
+            to_be_cleared = len(cls.PROFILES_FOLDER_CACHE)
+            cls.PROFILES_FOLDER_CACHE.clear()
+            logger.debug(f"{to_be_cleared} profiles folder cache cleared.")
+        elif folder_path in cls.PROFILES_FOLDER_CACHE:
+            del cls.PROFILES_FOLDER_CACHE[folder_path]
+            logger.debug(f"Profiles folder cache entry evicted for: {folder_path}")
 
     # -- Properties
     @cached_property
@@ -109,41 +127,53 @@ class GenericJob:
         return OSConfiguration.from_opersys()
 
     # -- Methods
-    def list_downloaded_profiles(self) -> tuple[QdtProfile] | None:
+    def list_downloaded_profiles(self) -> tuple[QdtProfile, ...] | None:
         """List downloaded QGIS profiles, i.e. a profile's folder located into the QDT
             working folder.
             Typically: `~/.cache/qgis-deployment-toolbelt/repositories/geotribu` or
             `%USERPROFILE%/.cache/qgis-deployment-toolbelt/repositories/geotribu`).
 
         Returns:
-            tuple[QdtProfile] | None: tuple of profiles objects or None if no profile
+            tuple[QdtProfile, ...] | None: tuple of profiles objects or None if no profile
                 folder listed
         """
         return self.filter_profiles_folder(
             start_parent_folder=self.qdt_downloaded_repositories
         )
 
-    def list_installed_profiles(self) -> tuple[QdtProfile] | None:
+    def list_installed_profiles(self) -> tuple[QdtProfile, ...] | None:
         """List installed QGIS profiles, i.e. a profile's folder located into the QGIS
             profiles path and so accessible to the end-user through the QGIS interface.
             Typically: `~/.local/share/QGIS/QGIS3/profiles/geotribu` or
             `%APPDATA%/QGIS/QGIS3/profiles/geotribu`).
 
         Returns:
-            tuple[QdtProfile] | None: tuple of profiles objects or None if no profile is
+            tuple[QdtProfile, ...] | None: tuple of profiles objects or None if no profile is
                 installed in QGIS3/profiles
         """
         return self.filter_profiles_folder(start_parent_folder=self.qgis_profiles_path)
 
     def filter_profiles_folder(
-        self, start_parent_folder: Path
+        self, start_parent_folder: Path, cached: bool = True
     ) -> tuple[QdtProfile, ...] | None:
         """Parse a folder structure to filter on QGIS profiles folders.
 
+        Args:
+            start_parent_folder (Path): root directory to scan for profile.json files.
+            cached (bool, optional): return the previously computed result when available.
+                Defaults to True.
+
         Returns:
-            tuple[QdtProfile] | None: tuple of profiles objects matching criteria or
+            tuple[QdtProfile, ...] | None: tuple of profiles objects matching criteria or
                 None if no profile folder found
         """
+        if cached and start_parent_folder in self.PROFILES_FOLDER_CACHE:
+            logger.debug(
+                f"Returning cached profiles for {start_parent_folder} "
+                "(use cached=False to force re-scan)."
+            )
+            return self.PROFILES_FOLDER_CACHE[start_parent_folder]
+
         # first, try to get folders containing a profile.json
         li_qgis_qdt_profiles: list[QdtProfile] = [
             QdtProfile.from_json(profile_json_path=f, profile_folder=f.parent)
@@ -152,6 +182,7 @@ class GenericJob:
 
         if not len(li_qgis_qdt_profiles):
             logger.error(f"No QGIS profile found in {start_parent_folder}.")
+            self.PROFILES_FOLDER_CACHE[start_parent_folder] = None
             return
 
         logger.debug(
@@ -168,6 +199,7 @@ class GenericJob:
                 f"None of the {len(li_qgis_qdt_profiles)} profiles meet the deployment "
                 "requirements."
             )
+            self.PROFILES_FOLDER_CACHE[start_parent_folder] = None
             return
 
         if len(profiles_unmatched):
@@ -177,11 +209,14 @@ class GenericJob:
                 f"{', '.join([p.name for p in profiles_unmatched])}"
             )
 
-        return tuple(profiles_matched)
+        # consolide listing result and cache them for later use
+        tup_profiles_matched = tuple(profiles_matched)
+        self.PROFILES_FOLDER_CACHE[start_parent_folder] = tup_profiles_matched
+        return tup_profiles_matched
 
     def get_matching_profile_from_name(
         self, li_profiles: list[QdtProfile], profile_name: str
-    ) -> QdtProfile:
+    ) -> QdtProfile | None:
         """Get a profile from list of profiles using a profile's name to match.
 
         Args:
@@ -350,8 +385,6 @@ class GenericJob:
                     condition="in",
                     accepted_values=option_def.get("possible_values"),
                 )
-            else:
-                pass
 
         return options
 
