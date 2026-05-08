@@ -11,7 +11,7 @@ from importlib import metadata
 from os import getenv
 from pathlib import Path
 from shutil import which
-from subprocess import check_output
+from subprocess import DEVNULL, check_output
 
 
 logger = logging.getLogger(__name__)
@@ -85,6 +85,7 @@ try:
                 [git_path, "describe", "--tags", "--abbrev=0"],
                 cwd=Path.cwd(),
                 shell=False,
+                stderr=DEVNULL,
             )  # nosec B603
             .decode()
             .strip()
