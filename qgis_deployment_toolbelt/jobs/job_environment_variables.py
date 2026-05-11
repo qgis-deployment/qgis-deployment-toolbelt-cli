@@ -23,22 +23,13 @@ from qgis_deployment_toolbelt.utils.check_path import (
     check_path_exists,
     check_var_can_be_path,
 )
+from qgis_deployment_toolbelt.utils.os_utils_router import (
+    delete_environment_variable,
+    refresh_environment,
+    set_environment_variable,
+)
 from qgis_deployment_toolbelt.utils.url_helpers import check_str_is_url
 
-
-# conditional import
-if opersys == "linux":
-    from qgis_deployment_toolbelt.utils.linux_utils import (
-        delete_environment_variable,
-        refresh_environment,
-        set_environment_variable,
-    )
-elif opersys == "win32":
-    from qgis_deployment_toolbelt.utils.win32utils import (
-        delete_environment_variable,
-        refresh_environment,
-        set_environment_variable,
-    )
 
 # #############################################################################
 # ########## Globals ###############

@@ -18,16 +18,20 @@ from __future__ import annotations
 import ast
 import logging
 import re
-from collections.abc import Callable
 from dataclasses import dataclass
 from os import PathLike, getenv
 from os.path import expanduser, expandvars
 from pathlib import Path
 from shutil import ignore_patterns, which
 from sys import platform as opersys
+from typing import TYPE_CHECKING
 
 # package
 from qgis_deployment_toolbelt.utils.check_path import check_path
+
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 # #############################################################################
