@@ -11,14 +11,11 @@ import logging
 from os import getenv
 from pathlib import Path
 from posixpath import expanduser, expandvars
-from shutil import copy2
 
 # package
 from qgis_deployment_toolbelt.constants import OSConfiguration
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
-from qgis_deployment_toolbelt.profiles.qgis_ini_handler import QgisIniHelper
 from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
-from qgis_deployment_toolbelt.utils.os_utils_router import set_environment_variable
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
 from qgis_deployment_toolbelt.utils.url_helpers import (
     check_str_is_url,
@@ -47,9 +44,10 @@ class JobQgisGlobalConfigManager(GenericJob):
     OPTIONS_SCHEMA: dict = {
         "src": {
             "type": str,
-            "required": False,
+            "required": True,
             "possible_values": None,
-            "default": None,
+            # from QDT working directory or local scenario folder
+            "default": "./global/qgis_global_settings.ini",
         },
         "dst": {
             "type": str,
@@ -62,8 +60,7 @@ class JobQgisGlobalConfigManager(GenericJob):
     def __init__(self, options: dict) -> None:
         """Instantiate the class.
         Args:
-            options (dict): dictionnary with job options
-            or remove.
+            options (dict): dictionnary with job options or remove.
         """
 
         super().__init__()
@@ -76,56 +73,56 @@ class JobQgisGlobalConfigManager(GenericJob):
         # Define source file
         src_path = self.get_src_ini_file(self.options.get("src", None))
 
-        # Get destination file
-        dst_path = self.get_dst_ini_file(self.options.get("dst", None))
+        # # Get destination file
+        # dst_path = self.get_dst_ini_file(self.options.get("dst", None))
 
-        # Copy source to destination
-        try:
-            logger.info(f"Copying `{src_path}` to `{dst_path}`")
+        # # Copy source to destination
+        # try:
+        #     logger.info(f"Copying `{src_path}` to `{dst_path}`")
 
-            # Create directory for destination
-            dst_path.parent.mkdir(parents=True, exist_ok=True)
+        #     # Create directory for destination
+        #     dst_path.parent.mkdir(parents=True, exist_ok=True)
 
-            # Copy current installed file
-            copy2(
-                src_path,
-                dst_path,
-            )
+        #     # Copy current installed file
+        #     copy2(
+        #         src_path,
+        #         dst_path,
+        #     )
 
-            dst_ini_helper = QgisIniHelper(
-                ini_filepath=dst_path, ini_type="qgis_global_settings"
-            )
-            src_ini_helper = QgisIniHelper(
-                ini_filepath=src_path, ini_type="qgis_global_settings"
-            )
+        #     dst_ini_helper = QgisIniHelper(
+        #         ini_filepath=dst_path, ini_type="qgis_global_settings"
+        #     )
+        #     src_ini_helper = QgisIniHelper(
+        #         ini_filepath=src_path, ini_type="qgis_global_settings"
+        #     )
 
-            # Merge
-            logger.info(
-                f"Environment variable conversion from `{src_path}` to `{dst_path}`"
-            )
-            src_ini_helper.merge_to(dst_ini_helper)
+        #     # Merge
+        #     logger.info(
+        #         f"Environment variable conversion from `{src_path}` to `{dst_path}`"
+        #     )
+        #     src_ini_helper.merge_to(dst_ini_helper)
 
-        except Exception as exc:
-            err_msg = (
-                f"Can't copy `{src_path}` to `{dst_path}` for job {self.ID}. "
-                f"Check permission for destination. Trace: {exc}"
-            )
-            raise ValueError(err_msg) from exc
+        # except Exception as exc:
+        #     err_msg = (
+        #         f"Can't copy `{src_path}` to `{dst_path}` for job {self.ID}. "
+        #         f"Check permission for destination. Trace: {exc}"
+        #     )
+        #     raise ValueError(err_msg) from exc
 
-        # Update environment variable
-        if set_environment_variable is not None:
-            logger.info(
-                f"QGIS_GLOBAL_SETTINGS_FILE environment variable set to `{dst_path}`"
-            )
-            set_environment_variable(
-                envvar_name="QGIS_GLOBAL_SETTINGS_FILE",
-                envvar_value=str(dst_path),
-            )
+        # # Update environment variable
+        # if set_environment_variable is not None:
+        #     logger.info(
+        #         f"QGIS_GLOBAL_SETTINGS_FILE environment variable set to `{dst_path}`"
+        #     )
+        #     set_environment_variable(
+        #         envvar_name="QGIS_GLOBAL_SETTINGS_FILE",
+        #         envvar_value=str(dst_path),
+        #     )
 
         logger.debug(f"Job {self.ID} ran successfully.")
 
     def get_src_ini_file(self, src: str | None) -> Path:
-        """Get source .ini file from job option
+        """Get source .ini file from job option.
 
         Args:
             src (str | None): `src` job option
@@ -138,25 +135,17 @@ class JobQgisGlobalConfigManager(GenericJob):
         Returns:
             Path: path to source .ini file
         """
-        os_config: OSConfiguration = OSConfiguration.from_opersys()
-
-        if src is None:
-            # Define default src file from os config
-            src = os_config.get_qgis_global_settings_file_path(check_exists=True)
-
-            if src is None:
-                err_msg = (
-                    f"Can't define default src option for job {self.ID}. "
-                    "Can't update QGIS global settings file."
-                )
-                raise ValueError(err_msg)
+        logger.info(f"Source file passed as parameter (raw): {src}")
 
         # Interpolate value
         src = expandvars(expanduser(src))
+        logger.info(f"Source file (expanded): {src}")
 
         # Check if src is a url
         if check_str_is_url(input_str=src, raise_error=False):
-            logger.info(f"{src} is a valid URL. Downloading QGIS global settings file.")
+            logger.info(
+                f"Remote global config file '{src}' is a valid URL. Downloading QGIS global settings file..."
+            )
             try:
                 src = self.get_remote_qgis_global_settings_from_url(remote_url=src)
             except Exception as exc:
@@ -170,26 +159,47 @@ class JobQgisGlobalConfigManager(GenericJob):
 
         # Check if file is relative
         if not src_path.is_absolute():
-            logger.info(f"{src} is a relative path. Conversion to absolute path.")
+            local_file_match: bool = False
 
-            # Check with downloaded repositories
-            if Path(self.qdt_downloaded_repositories / src_path).exists():
-                src_path = Path(self.qdt_downloaded_repositories / src_path).resolve()
-                logger.info(
-                    f"{src} relative path converted from downloaded repositories "
-                    f"to {src_path}"
-                )
-            # Check with QDT working dir
-            elif Path(self.qdt_working_folder / src_path).exists():
-                src_path = Path(self.qdt_working_folder / src_path).resolve()
-                logger.info(
-                    f"{src} relative path converted from QDT working folder "
-                    f"to {src_path}"
-                )
+            logger.info(
+                f"{src} is a relative path. Starting conversion into absolute path."
+            )
+
+            # Check with downloaded repositories in current scenario
+            logger.info(
+                f"Check if it's relative to the downloaded repository of current scenario: "
+                f"{self.qdt_current_scenario} or then if it's relative to the "
+                f"working directory: {self.qdt_working_folder}"
+            )
+            if Path(self.qdt_current_scenario / src_path).exists():
+                src_path = Path(self.qdt_current_scenario / src_path).resolve()
+                local_file_match = True
+                logger.info(f"Matching repository of current scenario: {src}.")
             else:
+                logger.info(
+                    f"No match with current scenario repository, "
+                    f"{Path(self.qdt_current_scenario / src_path)} does not exits. "
+                    "Checking with QDT working directory."
+                )
+
+            # Check with QDT working dir
+            if (
+                not local_file_match
+                and Path(self.qdt_working_folder / src_path).exists()
+            ):
+                src_path = Path(self.qdt_working_folder / src_path).resolve()
+                logger.info(f"Matching QDT working folder of current scenario: {src}.")
+            else:
+                logger.info(
+                    f"No match with local QDT working folder, "
+                    f"{Path(self.qdt_working_folder / src_path)} does not exits. "
+                    "Fallback to current folder."
+                )
+
+            if not local_file_match:
                 src_path = src_path.resolve()
                 logger.warning(
-                    f"{src} relative path converted from current directory : {src_path}"
+                    f"{src} relative path converted from current directory: {src_path}"
                 )
 
         # Check file exists
