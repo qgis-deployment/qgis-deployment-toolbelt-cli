@@ -61,7 +61,7 @@ def is_running_pyinstaller(log: bool = True) -> bool:
     Returns:
         bool: True if executed from a PyInstaller-built executable, False otherwise.
     """
-    is_pyinstaller = is_frozen_app() and hasattr(sys, "_MEIPASS")
+    is_pyinstaller = is_frozen_app(log=log) and hasattr(sys, "_MEIPASS")
     if not log:
         return is_pyinstaller
     if is_pyinstaller:
