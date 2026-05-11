@@ -12,7 +12,7 @@ Launch PyInstaller using a Python script.
 import platform
 import sys
 from datetime import datetime
-from os import getenv
+from os import environ, getenv
 from pathlib import Path
 
 # 3rd party
@@ -29,6 +29,11 @@ from qgis_deployment_toolbelt import __about__  # noqa: E402
 # #############################################################################
 # ########### MAIN #################
 # ##################################
+
+# force C locale to avoid encoding issues with PyInstaller building on systems with other locales (e.g. fr_FR.UTF-8)
+# see: https://github.com/pyinstaller/pyinstaller/issues/5540
+environ["LANG"] = "C"
+environ["LC_ALL"] = "C"
 
 # write build report
 build_report = (
@@ -57,8 +62,8 @@ PyInstaller.__main__.run(
     [
         "--add-data=LICENSE:.",
         "--add-data=README.md:.",
-        f"--add-data={Path(__file__).parent / 'build' / 'tldextract_cache'/ '.suffix_cache'}:tldextract/.suffix_cache",
-        f"--add-data={Path(__file__).parent / 'build' / 'tldextract_cache'/'.tld_set_snapshot'}:tldextract/",
+        f"--add-data={Path(__file__).parent / 'build' / 'tldextract_cache' / '.suffix_cache'}:tldextract/.suffix_cache",
+        f"--add-data={Path(__file__).parent / 'build' / 'tldextract_cache' / '.tld_set_snapshot'}:tldextract/",
         f"--add-data={package_folder.joinpath('shortcuts/shortcut_freedesktop.template').resolve()}:shortcuts/",
         f"--log-level={getenv('PYINSTALLER_LOG_LEVEL', 'WARN')}",
         f"--name={output_filename}",
