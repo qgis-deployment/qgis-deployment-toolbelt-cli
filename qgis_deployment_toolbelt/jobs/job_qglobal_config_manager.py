@@ -12,13 +12,13 @@ from os import getenv
 from pathlib import Path
 from posixpath import expanduser, expandvars
 from shutil import copy2
-from sys import platform as opersys
 
 # package
 from qgis_deployment_toolbelt.constants import OSConfiguration
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.profiles.qgis_ini_handler import QgisIniHelper
 from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
+from qgis_deployment_toolbelt.utils.os_utils_router import set_environment_variable
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
 from qgis_deployment_toolbelt.utils.url_helpers import (
     check_str_is_url,
@@ -26,18 +26,9 @@ from qgis_deployment_toolbelt.utils.url_helpers import (
 )
 
 
-# conditional imports
-if opersys == "win32":
-    from qgis_deployment_toolbelt.utils.win32utils import set_environment_variable
-elif opersys == "linux":
-    from qgis_deployment_toolbelt.utils.linux_utils import set_environment_variable
-else:
-    set_environment_variable = None
-
 # #############################################################################
 # ########## Globals ###############
 # ##################################
-
 
 # logs
 logger = logging.getLogger(__name__)
