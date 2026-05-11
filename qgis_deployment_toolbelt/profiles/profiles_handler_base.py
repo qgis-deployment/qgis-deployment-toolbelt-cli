@@ -471,7 +471,9 @@ class RemoteProfilesHandlerBase:
 
         return local_git_repository
 
-    def clone_or_pull(self, to_local_destination_path: Path, attempt: int = 1) -> Repo:
+    def clone_or_pull(
+        self, to_local_destination_path: Path, attempt: int = 1
+    ) -> Repo | None:
         """Clone or fetch/pull remote repository to local path. If this one doesn't exist,
         it's created. If fetch or pull action fail, it removes the existing folder and
         clone the remote again.
@@ -498,7 +500,25 @@ class RemoteProfilesHandlerBase:
         ):
             try:
                 logger.debug("Start cloning operations...")
-                return self._clone(local_path=to_local_destination_path)
+                cloned_repo = self._clone(local_path=to_local_destination_path)
+                logger.debug(
+                    f"{self.SOURCE_REPOSITORY_PATH_OR_URL} has been successfully cloned "
+                    f"locally: {to_local_destination_path}."
+                )
+                # update cache
+                if to_local_destination_path in self.CACHE_INVALID_GIT_REPOSITORIES:
+                    self.CACHE_INVALID_GIT_REPOSITORIES.remove(
+                        to_local_destination_path
+                    )
+                    logger.debug(
+                        f"Cache updated: {to_local_destination_path} removed from invalid repositories."
+                    )
+                if to_local_destination_path not in self.CACHE_VALID_GIT_REPOSITORIES:
+                    self.CACHE_VALID_GIT_REPOSITORIES.append(to_local_destination_path)
+                    logger.debug(
+                        f"Cache updated: {to_local_destination_path} added to valid repositories."
+                    )
+                return cloned_repo
             except Exception as err:
                 logger.error(
                     "Error cloning the source repository "
