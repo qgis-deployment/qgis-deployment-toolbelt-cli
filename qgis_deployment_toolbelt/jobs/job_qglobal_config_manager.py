@@ -13,16 +13,17 @@ from pathlib import Path
 from posixpath import expanduser, expandvars
 from shutil import copy2
 from sys import platform as opersys
-from urllib.parse import urlsplit
 
 # package
 from qgis_deployment_toolbelt.constants import OSConfiguration
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.profiles.qgis_ini_handler import QgisIniHelper
 from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
-from qgis_deployment_toolbelt.utils.slugger import sluggy
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
-from qgis_deployment_toolbelt.utils.url_helpers import check_str_is_url
+from qgis_deployment_toolbelt.utils.url_helpers import (
+    check_str_is_url,
+    filename_from_url,
+)
 
 
 # conditional imports
@@ -256,12 +257,8 @@ class JobQgisGlobalConfigManager(GenericJob):
         """
         # try to build file path from URL
         try:
-            url_splitted = urlsplit(remote_url)
             local_filepath_for_remote_global_settings = (
-                "remote_qgis_global_settings/"
-                f"{sluggy(url_splitted.netloc)}/"
-                f"{sluggy(str(Path(url_splitted.path).parent))}/"
-                f"{Path(url_splitted.path).name}"
+                f"remote_qgis_global_settings/{filename_from_url(remote_url)}"
             )
         except Exception as err:
             local_filepath_for_remote_global_settings = (
