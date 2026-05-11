@@ -24,17 +24,8 @@ from sys import platform as opersys
 from qgis_deployment_toolbelt.jobs.job_environment_variables import (
     JobEnvironmentVariables,
 )
+from qgis_deployment_toolbelt.utils.os_utils_router import get_environment_variable
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
-
-
-# 3rd party
-
-
-# conditional imports
-if opersys == "win32":
-    from qgis_deployment_toolbelt.utils.win32utils import get_environment_variable
-elif opersys == "linux":
-    from qgis_deployment_toolbelt.utils.linux_utils import get_environment_variable
 
 
 # #############################################################################
