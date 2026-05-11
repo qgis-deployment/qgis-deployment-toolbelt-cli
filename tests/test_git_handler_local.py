@@ -170,3 +170,34 @@ class TestGitHandlerLocal(unittest.TestCase):
             target_repo = local_git_handler.download(
                 destination_local_path=repo_in_temporary_folder
             )
+
+    def test_clone_then_pull_respects_branch(self):
+        """Test that _pull checks out the requested branch, not the remote default."""
+        # specify 'main'
+        local_git_handler = LocalGitHandler(
+            source_repository_path_or_uri=self.source_git_path_source,
+            branch_to_use="main",
+        )
+
+        with tempfile.TemporaryDirectory(
+            prefix="QDT_test_local_git_",
+            ignore_cleanup_errors=True,
+            suffix="_pull_branch_check",
+        ) as tmpdirname:
+            repo_path = Path(tmpdirname)
+
+            # first clone
+            local_git_handler.download(destination_local_path=repo_path)
+            self.assertTrue(repo_path.joinpath(".git").is_dir())
+
+            # try again, fetch and pull
+            target_repo = local_git_handler.download(destination_local_path=repo_path)
+            self.assertIsInstance(target_repo, Repo)
+
+            # the active branch has to match the one we specified, not the default one
+            # of the remote repository
+            active_branch = local_git_handler.get_active_branch_from_local_repository(
+                local_git_repository_path=repo_path
+            )
+            self.assertEqual(active_branch, "main")
+            self.assertEqual(active_branch, local_git_handler.DESTINATION_BRANCH_TO_USE)

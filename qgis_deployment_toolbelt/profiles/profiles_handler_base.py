@@ -704,10 +704,28 @@ class RemoteProfilesHandlerBase:
         logger.info(f"Pulling repository {source_repository} to {local_path}")
 
         destination_local_repository = Repo(root=f"{local_path.resolve()}")
+
+        # get branch to pull
+        branch: str | None = None
+        if self.DESTINATION_BRANCH_TO_USE:
+            branch = (
+                self.DESTINATION_BRANCH_TO_USE
+                if isinstance(self.DESTINATION_BRANCH_TO_USE, str)
+                else self.DESTINATION_BRANCH_TO_USE.decode()
+            )
+            logger.debug(f"Branch to pull (from class): {branch}")
+        else:
+            branch = self.get_active_branch_from_local_repository(
+                local_git_repository_path=local_path
+            )
+            logger.debug(f"Branch to pull (from local repository): {branch}")
+
+        # pulling remote
         porcelain.pull(
             repo=local_path,
             remote_location=source_repository,
             force=True,
+            refspecs=branch,
             kwargs={"quiet": True},
         )
         gobj = destination_local_repository.get_object(
