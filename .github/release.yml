@@ -6,6 +6,9 @@ changelog:
       - pre-commit-ci
       - pre-commit-ci[bot]
   categories:
+    - title: Security 🔒
+      labels:
+        - security
     - title: Bugs fixes 🐛
       labels:
         - bug
