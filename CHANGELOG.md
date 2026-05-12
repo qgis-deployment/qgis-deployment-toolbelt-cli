@@ -16,6 +16,55 @@ Unreleased
 
 -->
 
+## 0.42.0 - 2026-05-12
+
+### Bugs fixes 🐛
+
+* fix(jobs): options validation was using bad condition type to raise error by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/824>
+* fix(jobs-rules): cache_key has to defined even if cached is False because it's used to store the cache at the method end by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/828>
+* fix(logs): remove unwanted logs in packaged mode by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/831>
+* fix(profiles-sync): pull was ignoring local branch and clear cache when needed by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/834>
+* fix(about): make github_ref log contioned to not None by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/817>
+* fix(scripts): script to import QDT certificate by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/797>
+
+### Features and enhancements 🎉
+
+* chore(deps): bump imagesize minimal version to 2 and migrate impacted code by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/809>
+* chore(profiles-sync): bump dulwich minimal version to 1.2.1 and make related adjustments by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/816>
+* feature(settings): environment variable to customize dulwich logger by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/819>
+* add(util): frozen/bundled app detection by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/818>
+* add(utils): helper to determine filename from URL by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/830>
+* refacto(utils): add a router to functions which are specific to operating systems by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/833>
+* improve(profiles-sync): add a cache mechanism to avoid duplicate calls to '_is_valid_git_repository' by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/814>
+* improve(packaging): make the Docker image more robust and compliant with modern practices by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/806>
+* improve(jobs): move os_config attribute from __init__ to a cached property by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/820>
+* improve(jobs): factorize folder creation to avoid redundant I/O calls in __init__ by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/821>
+* improve(logs): reduce unnecessary logs by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/823>
+* improve(jobs-rules): add a minimalist cache mechanism to rules evaluation to make result persisting between jobs by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/827>
+* improve(jobs-folders): add a minimalist cache mechanism on profiles folders listing to make result persisting between jobs by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/829>
+* remove(profiles-downloader): deprecated 'git' protocol by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/811>
+
+### Tooling 🔧
+
+* update(ci): run tests against MacOS with only one Python version by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/815>
+* chore(python): support Python 3.14 by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/808>
+* update(tooling): refine bandit config by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/800>
+* update(tooling): remove 'include' coverage config by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/810>
+* update(tooling): switch to proper org on SonarQloud by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/825>
+* update(tooling): exclude tests and builder from SonarQube analysis by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/826>
+* improve(packaging): address some warnings during PyInstaller builds by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/832>
+
+### Documentation 📖
+
+* add(docs): QDT_LOGS_FILENAME was undocumented by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/798>
+* project: add ai policy and pr template by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/805>
+* update(docs): add talk of @NROLLANDGrandlyon at QGIS FR 2026 by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/807>
+* update(docs): add hyperlink to slides of QGIS FR 2026 by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/822>
+
+### Other Changes
+
+* improve(security): add flag it as false positive disabling ruff warning about insecure subcmd call by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/799>
+
 ## 0.41.1 - 2026-04-07
 
 > Due to enforced security policy blocking pushing assets to the 0.41.0 release, it doesn't exist. In fact, this 0.41.1 is the 0.41.0.
@@ -208,7 +257,7 @@ Unreleased
 * update(docs): Change the icons in the "They use QDT" section by @florentfougeres in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/633>
 * update(docs): add ExecutionPolicy and parent folder creation to QDT downloader script by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/644>
 
-**Full Changelog**: <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/compare/0.36.3...0.37.0>
+__Full Changelog__: <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/compare/0.36.3...0.37.0>
 
 ## 0.36.3 - 2025-02-19
 
@@ -409,7 +458,7 @@ Killer feature introduced: rules engine. Funded by [Métropole du Grand Lyon](ht
 * docs: add how to check using git hooks by @Guts in <https://github.com/Guts/qgis-deployment-cli/pull/457>
 * docs: add robots.txt for SEO engines by @Guts in <https://github.com/Guts/qgis-deployment-cli/pull/458>
 * docs: enable zoom in mermaid diagrams by @Guts in <https://github.com/Guts/qgis-deployment-cli/pull/459>
-* docs: autodoc **init** functions by @Guts in <https://github.com/Guts/qgis-deployment-cli/pull/460>
+* docs: autodoc __init__ functions by @Guts in <https://github.com/Guts/qgis-deployment-cli/pull/460>
 * docs: add a page referencing QDT projects by @Guts in <https://github.com/Guts/qgis-deployment-cli/pull/465>
 * docs: move how to publish to an HTTP server in a specific guide page by @Guts in <https://github.com/Guts/qgis-deployment-cli/pull/466>
 
@@ -667,7 +716,7 @@ Killer feature introduced: rules engine. Funded by [Métropole du Grand Lyon](ht
 
 * @sigeal made their first contribution in <https://github.com/Guts/qgis-deployment-cli/pull/315>
 
-**Full Changelog**: <https://github.com/Guts/qgis-deployment-cli/compare/0.26.0...0.27.0>
+__Full Changelog__: <https://github.com/Guts/qgis-deployment-cli/compare/0.26.0...0.27.0>
 
 ## 0.26.0 - 2023-06-11
 
