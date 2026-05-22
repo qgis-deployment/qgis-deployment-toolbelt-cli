@@ -40,6 +40,7 @@ dependencies = [
     "giturlparse>=0.12,<0.15",
     "imagesize>=2.0.0,<2.1",
     "packaging>=22,<27",
+    "Pillow>=12.1.1,<13",
     "pypac>=0.16.3,<1",
     "python-rule-engine>=0.5,<1.1",
     "python-win-ad==0.6.2 ; sys_platform == 'win32'", # waiting for logging fix. See issue #700
@@ -74,12 +75,7 @@ packaging = [
 
 security = ["bandit[toml]>=1.8.3,<2", "safety>=3.3.1,<4"]
 
-test = [
-    "GitPython>=3.1,<3.2",
-    "Pillow>=12.1.1,<13",
-    "pytest-cov>=4,<8",
-    "validators>=0.29.0,<0.36",
-]
+test = ["GitPython>=3.1,<3.2", "pytest-cov>=4,<8", "validators>=0.29.0,<0.36"]
 
 [project.scripts]
 qdt = "qgis_deployment_toolbelt.cli:main"

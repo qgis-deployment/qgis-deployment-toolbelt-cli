@@ -16,16 +16,8 @@ Widely inspired from:
 import logging
 from pathlib import Path
 
-
 # 3rd party
-try:
-    from PIL import Image, UnidentifiedImageError
-except ImportError as error:
-    import sys
-
-    sys.exit(
-        f"Please install Pillow ('pip install pillow') to make image conversion. Trace: {error}"
-    )
+from PIL import Image, UnidentifiedImageError
 
 # package
 from qgis_deployment_toolbelt.utils.check_path import check_path
@@ -53,6 +45,62 @@ AUTO_RESIZE_OUTPUT_ICO_SIZES: tuple[tuple[int, int], ...] = (
 # ##################################
 
 
+def ico2png(
+    in_ico_path: Path, out_png_path: Path | None = None, size: int = 256
+) -> Path:
+    """Convert an ICO file to PNG, picking the best available resolution.
+
+    Args:
+        in_ico_path (Path): input ICO image file path.
+        out_png_path (Path | None): output PNG file path, optional. Defaults to
+            same location as input with .png extension.
+        size (int): target size (width and height) in pixels. The largest
+            available size in the ICO up to this value will be used.
+            Defaults to 256.
+
+    Raises:
+        UnidentifiedImageError: if Pillow cannot open the input file.
+
+    Returns:
+        Path: output PNG file path.
+    """
+    check_path(
+        input_path=in_ico_path,
+        must_be_a_file=True,
+        must_be_a_folder=False,
+        must_be_readable=True,
+        must_exists=True,
+    )
+
+    if not isinstance(out_png_path, Path):
+        out_png_path = in_ico_path.with_suffix(".png")
+
+    try:
+        with Image.open(in_ico_path) as im:
+            # ICO files can embed multiple sizes; pick the largest one <= target size
+            if hasattr(im, "ico"):
+                available_sizes = im.ico.sizes()
+                best = max(
+                    (s for s in available_sizes if s[0] <= size),
+                    default=max(available_sizes),
+                )
+                im.size = best
+                im.load()
+
+            if im.mode != "RGBA":
+                im = im.convert("RGBA")
+
+            im.save(out_png_path, format="PNG")
+    except UnidentifiedImageError as error:
+        logger.error(
+            f"Something went wrong converting icon image '{in_ico_path}' to .png with Pillow."
+        )
+        raise error
+
+    logger.debug(f"Converted ICO to PNG: {in_ico_path} -> {out_png_path}")
+    return out_png_path
+
+
 def png2ico(in_png_path: Path, out_ico_path: Path | None = None) -> Path:
     """Convert a PNG file to an multisize ICO.
 
@@ -61,7 +109,7 @@ def png2ico(in_png_path: Path, out_ico_path: Path | None = None) -> Path:
         out_ico_path (Path | None): output ico file path, optional.
 
     Raises:
-        error: if input file does not exist or something goes wrong during conversion.
+        UnidentifiedImageError: if input file does not exist or something goes wrong during conversion.
 
     Returns:
         Path: output ico file path
@@ -96,12 +144,3 @@ def png2ico(in_png_path: Path, out_ico_path: Path | None = None) -> Path:
         raise error
 
     return out_ico_path
-
-
-# #############################################################################
-# ##### Stand alone program ########
-# ##################################
-
-if __name__ == "__main__":
-    """Standalone execution."""
-    pass
