@@ -3,71 +3,103 @@
     "type": "directory",
     "name": ".",
     "size": 4096,
-    "time": "2023-12-29T11:03:36CET",
+    "time": "2026-05-11T15:16:25CEST",
     "contents": [
       {
         "type": "directory",
         "name": "profiles",
         "size": 4096,
-        "time": "2023-12-22T16:14:45CET",
+        "time": "2025-09-02T14:19:22CEST",
         "contents": [
           {
             "type": "directory",
             "name": "demo",
             "size": 4096,
-            "time": "2023-12-22T16:14:45CET",
+            "time": "2025-09-25T14:31:06CEST",
             "contents": [
               {
                 "type": "file",
                 "name": "bookmarks.xml",
                 "size": 1582,
-                "time": "2023-11-14T17:43:43CET"
+                "time": "2025-09-02T14:19:22CEST"
+              },
+              {
+                "type": "file",
+                "name": "icon.png",
+                "size": 15681,
+                "time": "2025-09-25T14:31:06CEST"
+              },
+              {
+                "type": "file",
+                "name": "icon.svg",
+                "size": 17251,
+                "time": "2025-09-25T14:31:06CEST"
               },
               {
                 "type": "directory",
                 "name": "images",
                 "size": 4096,
-                "time": "2023-06-13T17:02:08CEST",
+                "time": "2026-05-23T15:32:45CEST",
                 "contents": [
                   {
                     "type": "file",
-                    "name": "logo_qdt.ico",
-                    "size": 227102,
-                    "time": "2023-06-13T17:02:08CEST"
+                    "name": "icon_shortcut_qdt_demo.ico",
+                    "size": 14376,
+                    "time": "2025-09-02T14:19:22CEST"
+                  },
+                  {
+                    "type": "file",
+                    "name": "icon_shortcut_qdt_demo.png",
+                    "size": 14310,
+                    "time": "2026-05-23T15:32:45CEST"
                   },
                   {
                     "type": "file",
                     "name": "splash.png",
                     "size": 354451,
-                    "time": "2023-06-13T17:02:08CEST"
+                    "time": "2025-09-02T14:19:22CEST"
                   }
                 ]
               },
               {
                 "type": "file",
                 "name": "profile.json",
-                "size": 594,
-                "time": "2023-06-13T17:02:08CEST"
+                "size": 628,
+                "time": "2025-09-02T14:19:22CEST"
               },
               {
                 "type": "directory",
                 "name": "QGIS",
                 "size": 4096,
-                "time": "2023-11-15T11:05:26CET",
+                "time": "2026-05-05T14:32:50CEST",
                 "contents": [
                   {
                     "type": "file",
                     "name": "QGIS3.ini",
-                    "size": 10605,
-                    "time": "2023-11-15T11:05:26CET"
+                    "size": 10658,
+                    "time": "2026-05-05T14:32:50CEST"
                   },
                   {
                     "type": "file",
                     "name": "QGISCUSTOMIZATION3.ini",
                     "size": 144530,
-                    "time": "2023-11-14T08:47:47CET"
+                    "time": "2025-09-02T14:19:22CEST"
                   }
                 ]
+              }
+            ]
+          },
+          {
+            "type": "directory",
+            "name": "only_linux",
+            "size": 4096,
+            "time": "2025-09-02T14:19:22CEST",
+            "contents": [
+              {
+                "type": "file",
+                "name": "profile.json",
+                "size": 913,
+                "time": "2025-09-02T14:19:22CEST"
               }
             ]
           },
@@ -75,75 +107,93 @@
             "type": "file",
             "name": "profiles.ini",
             "size": 34,
-            "time": "2023-12-22T16:14:45CET"
+            "time": "2025-09-02T14:19:22CEST"
           },
           {
             "type": "directory",
             "name": "Viewer Mode",
             "size": 4096,
-            "time": "2023-12-29T10:13:27CET",
+            "time": "2025-09-25T14:31:06CEST",
             "contents": [
               {
                 "type": "file",
                 "name": "bookmarks.xml",
                 "size": 1582,
-                "time": "2023-12-22T16:14:45CET"
+                "time": "2025-09-02T14:19:22CEST"
+              },
+              {
+                "type": "file",
+                "name": "icon.png",
+                "size": 15823,
+                "time": "2025-09-25T14:31:06CEST"
+              },
+              {
+                "type": "file",
+                "name": "icon.svg",
+                "size": 17251,
+                "time": "2025-09-25T14:31:06CEST"
               },
               {
                 "type": "directory",
                 "name": "images",
                 "size": 4096,
-                "time": "2023-12-22T16:14:45CET",
+                "time": "2026-05-23T15:33:07CEST",
                 "contents": [
                   {
                     "type": "file",
-                    "name": "logo_qdt.ico",
-                    "size": 227102,
-                    "time": "2023-12-22T16:14:45CET"
+                    "name": "icon_shortcut_qdt_viewer_mode.ico",
+                    "size": 14704,
+                    "time": "2025-09-02T14:19:22CEST"
+                  },
+                  {
+                    "type": "file",
+                    "name": "icon_shortcut_qdt_viewer_mode.png",
+                    "size": 14640,
+                    "time": "2026-05-23T15:33:07CEST"
                   },
                   {
                     "type": "file",
                     "name": "splash.png",
                     "size": 211808,
-                    "time": "2023-12-22T16:14:45CET"
+                    "time": "2025-09-02T14:19:22CEST"
                   }
                 ]
               },
               {
                 "type": "file",
                 "name": "profile.json",
-                "size": 1481,
-                "time": "2023-12-22T16:14:45CET"
+                "size": 1521,
+                "time": "2025-09-02T14:19:22CEST"
               },
               {
                 "type": "file",
                 "name": "project_default_attachments.zip",
                 "size": 1125,
-                "time": "2023-12-22T16:14:45CET"
+                "time": "2025-09-02T14:19:22CEST"
               },
               {
                 "type": "file",
                 "name": "project_default.qgs",
                 "size": 80961,
-                "time": "2023-12-22T16:14:45CET"
+                "time": "2025-09-02T14:19:22CEST"
               },
               {
                 "type": "directory",
                 "name": "QGIS",
                 "size": 4096,
-                "time": "2023-12-22T16:14:45CET",
+                "time": "2025-09-02T14:19:22CEST",
                 "contents": [
                   {
                     "type": "file",
                     "name": "QGIS3.ini",
-                    "size": 119124,
-                    "time": "2023-12-22T16:14:45CET"
+                    "size": 119197,
+                    "time": "2025-09-02T14:19:22CEST"
                   },
                   {
                     "type": "file",
                     "name": "QGISCUSTOMIZATION3.ini",
                     "size": 144627,
-                    "time": "2023-12-22T16:14:45CET"
+                    "time": "2025-09-02T14:19:22CEST"
                   }
                 ]
               },
@@ -151,7 +201,7 @@
                 "type": "file",
                 "name": "startup_project.qgz",
                 "size": 13321,
-                "time": "2023-12-22T16:14:45CET"
+                "time": "2025-09-02T14:19:22CEST"
               }
             ]
           }
@@ -161,31 +211,31 @@
         "type": "file",
         "name": "qdt-files.json",
         "size": 0,
-        "time": "2023-12-29T11:05:41CET"
+        "time": "2026-05-23T15:34:14CEST"
       },
       {
         "type": "file",
         "name": "README.md",
-        "size": 1139,
-        "time": "2023-12-22T16:14:45CET"
+        "size": 1417,
+        "time": "2025-09-02T14:19:22CEST"
       },
       {
         "type": "directory",
         "name": "scenarios",
         "size": 4096,
-        "time": "2023-12-29T10:09:25CET",
+        "time": "2026-05-11T15:16:25CEST",
         "contents": [
           {
             "type": "file",
             "name": "demo-scenario-http.qdt.yml",
-            "size": 1441,
-            "time": "2023-12-29T11:04:38CET"
+            "size": 1856,
+            "time": "2025-09-02T14:19:22CEST"
           },
           {
             "type": "file",
             "name": "demo-scenario.qdt.yml",
-            "size": 1540,
-            "time": "2023-12-22T20:07:44CET"
+            "size": 1981,
+            "time": "2025-09-02T14:19:22CEST"
           }
         ]
       }
@@ -193,7 +243,7 @@
   },
   {
     "type": "report",
-    "directories": 8,
-    "files": 20
+    "directories": 10,
+    "files": 27
   }
 ]
