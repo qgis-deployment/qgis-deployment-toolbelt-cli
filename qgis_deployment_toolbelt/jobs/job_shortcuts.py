@@ -252,7 +252,7 @@ class JobShortcutsManager(GenericJob):
                 )
 
         except OSError as err:
-            logger.error(
+            logger.exception(
                 f"Looking for icon into profile subfolder failed. Trace: {err}"
             )
 
@@ -268,7 +268,7 @@ class JobShortcutsManager(GenericJob):
                 )
 
         except OSError as err:
-            logger.error(
+            logger.exception(
                 f"Looking for icon into profile subfolder failed. Trace: {err}"
             )
 

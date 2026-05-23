@@ -84,7 +84,7 @@ def ico2png(
 
             im.save(out_png_path, format="PNG")
     except UnidentifiedImageError as error:
-        logger.error(
+        logger.exception(
             f"Something went wrong converting icon image '{in_ico_path}' to .png with Pillow."
         )
         raise error
@@ -122,7 +122,7 @@ def png2ico(in_png_path: Path, out_ico_path: Path | None = None) -> Path:
                 im = im.convert("RGBA")
             im.save(out_ico_path, sizes=AUTO_RESIZE_OUTPUT_ICO_SIZES)
     except UnidentifiedImageError as error:
-        logger.error(
+        logger.exception(
             f"Something went wrong converting icon image '{in_png_path}' to .ico with Pillow,"
         )
         raise error
