@@ -335,7 +335,7 @@ class OSConfiguration:
                     )
                 ),
                 shortcut_extension=".desktop",
-                shortcut_icon_extensions=("ico", "svg", "png"),
+                shortcut_icon_extensions=("png", "svg"),
                 shortcut_icon_default_path="qgis",
             )
         elif operating_system_codename == "win32":

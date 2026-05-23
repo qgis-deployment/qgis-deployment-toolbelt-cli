@@ -13,6 +13,7 @@ Author: Julien Moura (https://github.com/guts)
 # Standard library
 import logging
 from pathlib import Path
+from sys import platform as opersys
 
 # package
 from qgis_deployment_toolbelt.__about__ import __title__, __version__
@@ -133,10 +134,10 @@ class JobShortcutsManager(GenericJob):
                     name=inc_shortcut.get("label"),
                     exec_path=self.os_config.get_qgis_bin_path(),
                     description=f"Created with {__title__} {__version__}",
-                    icon_path=self.get_icon_path(
+                    icon_path=self._get_icon_path(
                         profile=qdt_profile, icon_filename=inc_shortcut.get("profile")
                     ),
-                    exec_arguments=self.get_arguments_ready(
+                    exec_arguments=self._get_arguments_ready(
                         inc_shortcut.get("profile"),
                         inc_shortcut.get("additional_arguments"),
                     ),
@@ -154,7 +155,54 @@ class JobShortcutsManager(GenericJob):
             raise NotImplementedError
 
     # -- INTERNAL LOGIC ------------------------------------------------------
-    def get_icon_path(self, profile: QdtProfile, icon_filename: str) -> Path | None:
+    def _pick_compatible_icon_for_os(self, icon_path: Path) -> Path:
+        """Return the most suitable icon path for the current OS.
+
+        Strategy (in order):
+        1. If the icon's extension is already preferred for this OS, return it as-is.
+        2. Look for a sibling file with the same stem but a preferred extension.
+        3. Convert the icon on-the-fly to the top-priority format for this OS.
+
+        Args:
+            icon_path (Path): resolved path to the icon found on disk.
+
+        Returns:
+            Path: path to an icon in the OS-preferred format.
+        """
+        preferred_exts = tuple(
+            f".{e.lstrip('.')}" for e in (self.os_config.shortcut_icon_extensions or ())
+        )
+
+        current_ext = icon_path.suffix.lower()
+
+        # 1. Already the right format
+        if current_ext in preferred_exts:
+            logger.debug(
+                f"{current_ext} is already one of the accepter formats for OS '{opersys}'. "
+                f"Let's use {icon_path}."
+            )
+            return icon_path
+
+        # 2. Sibling file with a preferred extension
+        for ext in preferred_exts:
+            sibling = icon_path.with_suffix(ext)
+            if sibling.is_file():
+                logger.debug(
+                    f"OS-preferred icon sibling found ({ext}), using it instead of "
+                    f"{current_ext}: {sibling}"
+                )
+                return sibling
+
+        # not found, using original file
+        top_preferred = preferred_exts[0]
+        logger.debug(
+            f"No {top_preferred} icon found alongside {icon_path.name}. "
+            "Using original file."
+        )
+
+        return icon_path
+
+    def _get_icon_path(self, profile: QdtProfile, icon_filename: str) -> Path | None:
         """Get icon path to use with the shortcut. Looking for:
 
             1. checks if an icon key has been specified in the profile.json file and
@@ -180,7 +228,9 @@ class JobShortcutsManager(GenericJob):
                 logger.debug(
                     f"Icon set in profile.json exists so it will be used: {profile_icon_installed}"
                 )
-                return profile_icon_installed.resolve()
+                return self._pick_compatible_icon_for_os(
+                    profile_icon_installed.resolve()
+                )
 
         # if not specified in profile.json nor in scenario --> None
         if icon_filename is None:
@@ -197,9 +247,14 @@ class JobShortcutsManager(GenericJob):
                     "Icon found under the installed profile folder: "
                     f"{li_icons_sub_profile_folder[0].resolve()}"
                 )
-                return li_icons_sub_profile_folder[0].resolve()
+                return self._pick_compatible_icon_for_os(
+                    li_icons_sub_profile_folder[0].resolve()
+                )
+
         except OSError as err:
-            logger.error(f"Looking for icon into profile subfolder failed. {err}")
+            logger.exception(
+                f"Looking for icon into profile subfolder failed. Trace: {err}"
+            )
 
         # 3. check if icon specified in scenario exists under QDT
         try:
@@ -208,20 +263,26 @@ class JobShortcutsManager(GenericJob):
                 logger.debug(
                     f"Icon found under the QDT folder: {li_icons_sub_qdt_folder[0].resolve()}"
                 )
-                return li_icons_sub_qdt_folder[0].resolve()
+                return self._pick_compatible_icon_for_os(
+                    li_icons_sub_qdt_folder[0].resolve()
+                )
+
         except OSError as err:
-            logger.error(f"Looking for icon into profile subfolder failed. {err}")
+            logger.exception(
+                f"Looking for icon into profile subfolder failed. Trace: {err}"
+            )
 
         return profile_icon_installed
 
-    def get_arguments_ready(
+    def _get_arguments_ready(
         self, profile: str, in_arguments: list[str] | str | None = None
     ) -> list[str]:
         """Prepare arguments for the executable shortcut.
 
         Args:
             profile (str): profile's name
-            in_arguments (list[str] | str | None, optional): argument as defined in the scenario file. Defaults to None.
+            in_arguments (list[str] | str | None, optional): argument as defined in the
+                scenario file. Defaults to None.
 
         Raises:
             TypeError: if arguments are not str or list of str

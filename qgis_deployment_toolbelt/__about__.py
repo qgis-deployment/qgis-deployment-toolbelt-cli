@@ -57,11 +57,17 @@ __version_info__ = tuple(
 __all__ = [
     "__author__",
     "__copyright__",
+    "__executable_name__",
     "__license__",
     "__summary__",
     "__title__",
+    "__title_clean__",
     "__uri__",
+    "__uri_homepage__",
+    "__uri_repository__",
     "__version__",
+    "__version_clean__",
+    "__version_info__",
 ]
 
 # get latest git tag if possible, if not fallback to __version__

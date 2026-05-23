@@ -93,6 +93,42 @@ Add the image file to the profile folder and specify the relative filepath under
 }
 ```
 
+### Managing different icon format for every operating system
+
+Although Microsoft Windows is the primary focus, QDT aims to be cross-platform and must therefore handle the specific requirements of each operating system. For example, shortcuts created on the desktop or in the Start menu require icons in `.ico` format for Windows, whereas `.png` or `.svg` formats are accepted on Linux.
+
+Since its version 0.43, QDT includes an automatic selection of the most suitable appropriate icon format based on the target operating system.
+If you aim to deploy profiles with shortcuts to different operating systems, you should store your shortcut icons in different formats. Typically:
+
+```sh
+profiles/Oslandia/images/
+├── qgis_icon_oslandia.ico
+├── qgis_icon_oslandia.png
+└── splash.png
+```
+
+To convert icons in different formats, it is recommended to use an external service such as [Vert](https://vert.framatoolbox.org/convert/) or [Convertio](https://convertio.co/fr/svg-ico/). There is also a `icon_converter.py` tool in the scripts folder of QDT. It requires a `pip install pillow` and then it's usable as a CLI:
+
+```sh
+> python scripts/icon_converter.py --help
+usage: icon_converter.py [-h] {ico2png,png2ico} ...
+
+Convert between ICO and PNG formats.
+
+positional arguments:
+  {ico2png,png2ico}
+    ico2png          Convert ICO to PNG.
+    png2ico          Convert PNG to ICO.
+
+options:
+  -h, --help         show this help message and exit
+
+Examples:
+  icon_converter.py ico2png input.ico
+  icon_converter.py ico2png input.ico --output output.png --size 128
+  icon_converter.py png2ico input.png --output output.ico
+```
+
 ----
 
 ## Schema
