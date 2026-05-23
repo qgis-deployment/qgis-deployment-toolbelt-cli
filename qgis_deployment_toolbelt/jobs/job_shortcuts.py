@@ -19,9 +19,6 @@ from sys import platform as opersys
 from qgis_deployment_toolbelt.__about__ import __title__, __version__
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
-
-# package
-from qgis_deployment_toolbelt.shortcuts.icon_converter import ico2png, png2ico
 from qgis_deployment_toolbelt.shortcuts.shortcuts_handler import ApplicationShortcut
 
 
@@ -196,28 +193,12 @@ class JobShortcutsManager(GenericJob):
                 )
                 return sibling
 
-        # 3. Convert on-the-fly
+        # not found, using original file
         top_preferred = preferred_exts[0]
         logger.debug(
             f"No {top_preferred} icon found alongside {icon_path.name}. "
-            f"Converting on-the-fly to {top_preferred} for {opersys}."
+            "Using original file."
         )
-
-        try:
-            if top_preferred == ".png" and current_ext == ".ico":
-                return ico2png(icon_path)
-            elif top_preferred == ".ico" and current_ext == ".png":
-                return png2ico(icon_path)
-            else:
-                logger.warning(
-                    f"No automatic conversion available from {current_ext} to "
-                    f"{top_preferred}. Using original file."
-                )
-        except Exception as err:
-            logger.error(
-                f"Icon conversion from {current_ext} to {top_preferred} failed: {err}. "
-                "Using original file."
-            )
 
         return icon_path
 

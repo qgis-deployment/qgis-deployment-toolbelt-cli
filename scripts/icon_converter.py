@@ -1,6 +1,6 @@
 #! python3  # noqa: E265
 
-"""Convert PNGF file(s) to multisizes ico.
+"""Convert PNGF file(s) to multisizes ico. And vice-versa. Requires pillow (PIL).
 
 Widely inspired from:
 
@@ -13,14 +13,13 @@ Widely inspired from:
 # ##################################
 
 # standard library
+import argparse
 import logging
+import sys
 from pathlib import Path
 
 # 3rd party
 from PIL import Image, UnidentifiedImageError
-
-# package
-from qgis_deployment_toolbelt.utils.check_path import check_path
 
 
 # #############################################################################
@@ -64,13 +63,6 @@ def ico2png(
     Returns:
         Path: output PNG file path.
     """
-    check_path(
-        input_path=in_ico_path,
-        must_be_a_file=True,
-        must_be_a_folder=False,
-        must_be_readable=True,
-        must_exists=True,
-    )
 
     if not isinstance(out_png_path, Path):
         out_png_path = in_ico_path.with_suffix(".png")
@@ -114,14 +106,6 @@ def png2ico(in_png_path: Path, out_ico_path: Path | None = None) -> Path:
     Returns:
         Path: output ico file path
     """
-    # check if input file exists
-    check_path(
-        input_path=in_png_path,
-        must_be_a_file=True,
-        must_be_a_folder=False,
-        must_be_readable=True,
-        must_exists=True,
-    )
 
     # output path
     if not isinstance(out_ico_path, Path):
@@ -144,3 +128,91 @@ def png2ico(in_png_path: Path, out_ico_path: Path | None = None) -> Path:
         raise error
 
     return out_ico_path
+
+
+# #############################################################################
+# ########## CLI ###################
+# ##################################
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Convert between ICO and PNG formats.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""Examples:
+  icon_converter.py ico2png input.ico
+  icon_converter.py ico2png input.ico --output output.png --size 128
+  icon_converter.py png2ico input.png --output output.ico""",
+    )
+
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    # Subcommand: ico2png
+    ico2png_parser = subparsers.add_parser("ico2png", help="Convert ICO to PNG.")
+    ico2png_parser.add_argument(
+        "input",
+        type=Path,
+        help="Input ICO file path.",
+    )
+    ico2png_parser.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        default=None,
+        help="Output PNG file path (default: same as input with .png extension).",
+    )
+    ico2png_parser.add_argument(
+        "-s",
+        "--size",
+        type=int,
+        default=256,
+        help="Target size in pixels (default: 256).",
+    )
+
+    # Subcommand: png2ico
+    png2ico_parser = subparsers.add_parser("png2ico", help="Convert PNG to ICO.")
+    png2ico_parser.add_argument(
+        "input",
+        type=Path,
+        help="Input PNG file path.",
+    )
+    png2ico_parser.add_argument(
+        "-o",
+        "--output",
+        type=Path,
+        default=None,
+        help="Output ICO file path (default: same as input with .ico extension).",
+    )
+
+    return parser.parse_args()
+
+
+def main() -> int:
+    """Entry point for the CLI."""
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(levelname)s: %(message)s",
+    )
+
+    args = parse_args()
+
+    try:
+        if args.command == "ico2png":
+            output_path = ico2png(args.input, args.output, args.size)
+            print(f"Converted {args.input} to {output_path}")
+        elif args.command == "png2ico":
+            output_path = png2ico(args.input, args.output)
+            print(f"Converted {args.input} to {output_path}")
+    except UnidentifiedImageError as e:
+        logger.error(f"Error: {e}")
+        return 1
+    except Exception as e:
+        logger.error(f"Unexpected error: {e}")
+        return 1
+
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
