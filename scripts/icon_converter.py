@@ -204,11 +204,11 @@ def main() -> int:
         elif args.command == "png2ico":
             output_path = png2ico(args.input, args.output)
             print(f"Converted {args.input} to {output_path}")
-    except UnidentifiedImageError as e:
-        logger.error(f"Error: {e}")
+    except UnidentifiedImageError as err:
+        logger.exception(f"Error reading image: {err}")
         return 1
-    except Exception as e:
-        logger.error(f"Unexpected error: {e}")
+    except Exception as err:
+        logger.exception(f"Unexpected error: {err}")
         return 1
 
     return 0
