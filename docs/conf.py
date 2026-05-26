@@ -41,9 +41,9 @@ extensions = [
     "sphinx.ext.napoleon",
     # 3rd party
     "myst_parser",
-    "sphinx_argparse_cli",
     "sphinx_copybutton",
     "sphinx_design",
+    "sphinxarg.ext",
     "sphinxcontrib.mermaid",
     "sphinxext.opengraph",
     "sphinx_sitemap",
@@ -132,6 +132,11 @@ intersphinx_mapping = {
 
 # -- Extension configuration -------------------------------------------------
 
+# argparse
+sphinxarg_build_commands_index = True
+sphinxarg_commands_index_in_toctree = True
+
+# autodoc
 autodoc_default_options = {
     "special-members": "__init__",
 }

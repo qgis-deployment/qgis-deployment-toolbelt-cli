@@ -150,14 +150,11 @@ def set_default_subparser(
                 args.insert(0, default_subparser_name)
 
 
-# ############################################################################
-# ########## MAIN ################
-# ################################
-def main(in_args: list[str] | None = None):
-    """Main CLI entrypoint.
+def build_parser() -> argparse.ArgumentParser:
+    """Build and return the CLI argument parser.
 
-    Args:
-        in_args (List[str], optional): list of command-line arguments. Defaults to None.
+    Returns:
+        argparse.ArgumentParser: configured top-level parser
     """
     # create the top-level parser
     main_parser = argparse.ArgumentParser(
@@ -219,6 +216,22 @@ def main(in_args: list[str] | None = None):
     )
     add_common_arguments(subcmd_upgrade)
     parser_upgrade(subcmd_upgrade)
+
+    return main_parser
+
+
+# ############################################################################
+# ########## MAIN ################
+# ################################
+
+
+def main(in_args: list[str] | None = None):
+    """Main CLI entrypoint.
+
+    Args:
+        in_args (List[str], optional): list of command-line arguments. Defaults to None.
+    """
+    main_parser = build_parser()
 
     # -- PARSE ARGS --
     set_default_subparser(parser_to_update=main_parser, default_subparser_name="deploy")

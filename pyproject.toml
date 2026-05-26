@@ -56,7 +56,7 @@ doc = [
     "furo>=2024",
     "matplotlib>=3.8.2,<4",
     "myst-parser[linkify]>=2",
-    "sphinx-argparse-cli>=1.19",
+    "sphinx-argparse>=0.5.2,<1",
     "sphinx-autobuild>=2024",
     "sphinx-copybutton<1",
     "sphinx-design>=0.5,<1",
