@@ -1,4 +1,5 @@
 #! python3  # noqa: E265
+# PYTHON_ARGCOMPLETE_OK
 # Copyright 2023 Julien Moura (Oslandia)
 # SPDX-License-Identifier: Apache-2.0
 
@@ -27,6 +28,10 @@ from qgis_deployment_toolbelt.__about__ import (
     __uri_homepage__,
     __version__,
     __version_clean__,
+)
+from qgis_deployment_toolbelt.commands.cmd_completion import (
+    HAS_ARGCOMPLETE,
+    parser_completion,
 )
 from qgis_deployment_toolbelt.commands.cmd_rules_context import (
     parser_rules_context_export,
@@ -191,7 +196,8 @@ def build_parser() -> argparse.ArgumentParser:
     # Main logic
     subcmd_deployment = subparsers.add_parser(
         "deploy",
-        help="QDT's main logic: run the deployment's scenario.",
+        help="QDT's main logic: run the deployment's scenario. It's the default "
+        "subcommand. So `qdt deploy [...]` is equivalent to `qdt [...]`.",
         formatter_class=main_parser.formatter_class,
     )
     add_common_arguments(subcmd_deployment)
@@ -217,6 +223,17 @@ def build_parser() -> argparse.ArgumentParser:
     add_common_arguments(subcmd_upgrade)
     parser_upgrade(subcmd_upgrade)
 
+    # Shell completion
+    subcmd_completion = subparsers.add_parser(
+        "completion",
+        help=(
+            "Print shell completion script to stdout. "
+            "Requires argcomplete: `pip install 'qgis-deployment-toolbelt[completion]'`."
+        ),
+        formatter_class=main_parser.formatter_class,
+    )
+    parser_completion(subcmd_completion)
+
     return main_parser
 
 
@@ -232,6 +249,12 @@ def main(in_args: list[str] | None = None):
         in_args (List[str], optional): list of command-line arguments. Defaults to None.
     """
     main_parser = build_parser()
+
+    # autocompletion
+    if HAS_ARGCOMPLETE:
+        import argcomplete
+
+        argcomplete.autocomplete(main_parser)
 
     # -- PARSE ARGS --
     set_default_subparser(parser_to_update=main_parser, default_subparser_name="deploy")

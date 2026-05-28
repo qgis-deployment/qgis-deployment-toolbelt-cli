@@ -133,8 +133,10 @@ intersphinx_mapping = {
 # -- Extension configuration -------------------------------------------------
 
 # argparse
+sphinxarg_full_subcommand_name = True
 sphinxarg_build_commands_index = True
 sphinxarg_commands_index_in_toctree = True
+sphinxarg_build_commands_by_group_index = False
 
 # autodoc
 autodoc_default_options = {
