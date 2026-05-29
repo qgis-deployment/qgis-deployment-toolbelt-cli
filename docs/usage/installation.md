@@ -41,7 +41,7 @@ MacOS version is not tested and is just here to encourage beta-testing and feedb
 ```sh
 # bare
 pipx install qgis-deployment-toolbelt
-# to have completion commande
+# to have completion commands
 pipx install qgis-deployment-toolbelt[completion]
 ```
 
