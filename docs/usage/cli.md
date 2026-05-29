@@ -93,7 +93,7 @@ Look for the latest released version and compare it with the running one.
 > - Powershell 5+:
 >
 >   ```powershell
->   Register-PythonArgcomplete qdt | Out-String | Invoke-Expression
+>   register-python-argcomplete --shell powershell qdt | Out-String | Invoke-Expression
 >   ```
 
 :::{note}
