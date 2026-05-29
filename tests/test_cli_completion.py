@@ -22,20 +22,6 @@ from qgis_deployment_toolbelt.commands import cmd_completion
 
 
 # #############################################################################
-# ######## Globals #################
-# ##################################
-
-# Distinctive marker in each shell's generated output — executable-name-agnostic
-SHELL_MARKERS = {
-    "bash": '_ARGCOMPLETE_SHELL="bash"',
-    "zsh": "${ZSH_VERSION-}",
-    "fish": "_ARGCOMPLETE_SHELL fish",
-    "tcsh": "python-argcomplete-tcsh",
-    "powershell": "Register-ArgumentCompleter",
-}
-
-
-# #############################################################################
 # ######## Fixtures ################
 # ##################################
 
