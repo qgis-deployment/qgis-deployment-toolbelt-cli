@@ -96,7 +96,7 @@ Rules is a set of conditions that use logical operators to compare values with c
   :language: json
 ```
 
-To help you writing rules, QDT provides a [command to export rules context](../usage/cli.md#rules-context-export):
+To help you writing rules, QDT provides a [command to export rules context](../usage/cli.md#export-rules-context):
 
 ```sh
 qdt export-rules-context -o qdt_rules_context.json

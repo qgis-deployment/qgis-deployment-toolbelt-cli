@@ -37,7 +37,7 @@ Come, talk and ask, we're a friendly (small) group of persons behind:
 - GitHub [Issues](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/issues) and [Discussions](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/discussions)
 - Matrix channel: <https://matrix.to/#/#qdt:matrix.org>
 
-### 🚀 They use and trust QDT
+### 🤝 They use and trust QDT
 
 Here comes some of known organization which do use QDT to deploy QGIS profiles seamlessly:
 
