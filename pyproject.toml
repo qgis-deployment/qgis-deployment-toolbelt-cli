@@ -62,7 +62,7 @@ doc = [
     "sphinx-autobuild>=2024",
     "sphinx-copybutton<1",
     "sphinx-design>=0.5,<1",
-    "sphinx-sitemap>=2.4,<3",
+    "sphinx-sitemap>=2.9.0,<3",
     "sphinxcontrib-mermaid>=1",
     "sphinxext-opengraph>=0.10",
 ]

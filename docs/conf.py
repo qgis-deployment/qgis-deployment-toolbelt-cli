@@ -197,8 +197,19 @@ ogp_custom_meta_tags = [
     f'<meta property="twitter:title" content="{project}" />',
 ]
 
-# sitemap
-sitemap_url_scheme = "{link}"
+# sitemap and git log
+git_last_updated_timezone: str = "Europe/Paris"
+sitemap_excludes: list[str] = [
+    "genindex.html",
+    "py-modindex.html",
+    "search.html",
+    "_apidoc/*",
+    "_modules/*",
+]
+sitemap_indent: int = 2
+sitemap_show_lastmod: bool = True  # require local access to git log
+sitemap_url_scheme: str = "{link}"
+sitemap_locales: list[str | None] = [None]
 
 
 # -- Functions ------------------------------------------------------------------
