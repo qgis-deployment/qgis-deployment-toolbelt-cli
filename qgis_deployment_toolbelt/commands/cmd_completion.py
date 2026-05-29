@@ -74,7 +74,7 @@ fish:
         >~/.config/fish/completions/{__executable_name__}.fish
 
 powershell:
-    Register-PythonArgcomplete {__executable_name__} | Out-String | Invoke-Expression
+    register-python-argcomplete --shell powershell {__executable_name__} | Out-String | Invoke-Expression
 """
 ).strip()
 
