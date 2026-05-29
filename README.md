@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli">
-    <img alt="QDT logo" src="docs/static/logo_qdt.png" height="175">
+    <img alt="QDT logo" src="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/docs/static/logo_qdt.png?raw=true" height="175">
   </a>
 </div>
 
@@ -43,9 +43,9 @@ Here comes some of known organization which do use QDT to deploy QGIS profiles s
 
 <!-- markdownlint-disable MD033 -->
 
-| [ISL Ingénierie](https://isl.fr/) | [EP Loire](https://www.eptb-loire.fr/) | [Métropole Grand Lyon](https://www.grandlyon.com/) | [Département de la Loire](https://www.loire.fr/) | [Grenoble Alpes Métropole](https://www.grenoblealpesmetropole.fr/) | [LPO Auvergne Rhône Alpes](https://auvergne-rhone-alpes.lpo.fr/) | [ANFSI](https://www.linkedin.com/company/anfsi/about/) | [EP Eaux et Vilaine](https://www.eaux-et-vilaine.bzh/) | [Métropole Aix Marseille Provence](https://ampmetropole.fr/) | [Eurométropole de Strasbourg](https://strasbourg.eu/) | [Clermont Auvergne Métropole](https://www.clermontmetropole.eu/) | [Opale](https://www.opale-energies.fr/) |
-| :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: |  :----: |  :----: |  :----: |
-| <img src="./docs/static/logo_isl.png" max-width=100 alt="logo ISL" >  | <img src="./docs/static/logo_etablissement_public_loire.png" max-width=100 alt="logo EP Loire" > | <img src="./docs/static/logo_lyon.png" max-width=100 alt="logo" > | <img src="./docs/static/logo_cd-loire.png" max-width=100 alt="logo" > | <img src="./docs/static/logo_grenoble.png" max-width=100 alt="logo" > | <img src="./docs/static/logo_lpo.png" max-width=100 alt="logo" > | <img src="./docs/static/logo_anfsi.png" max-width=100 alt="logo" > | <img src="./docs/static/logo_eaux-et-vilaine.png" max-width=100 alt="logo" > | <img src="./docs/static/logo_amp.png" max-max-width=100 alt="logo" > | <img src="./docs/static/logo_strasbourg_eu_opensource.png" max-max-width=100 alt="logo Eurométropole de Strasbourg" > | <img src="./docs/static/logo_clermont_auvergne_metropole.svg" max-max-width=100 alt="logo Clermont Auvergne Métropole" > | <img src="./docs/static/logo_opale.png" max-max-width=100 alt="logo Opale énergies engagées" > |
+| [Oslandia](https://oslandia.com/) | [ISL Ingénierie](https://isl.fr/) | [EP Loire](https://www.eptb-loire.fr/) | [Métropole Grand Lyon](https://www.grandlyon.com/) | [Département de la Loire](https://www.loire.fr/) | [Grenoble Alpes Métropole](https://www.grenoblealpesmetropole.fr/) | [LPO Auvergne Rhône Alpes](https://auvergne-rhone-alpes.lpo.fr/) | [ANFSI](https://www.linkedin.com/company/anfsi/about/) | [EP Eaux et Vilaine](https://www.eaux-et-vilaine.bzh/) | [Métropole Aix Marseille Provence](https://ampmetropole.fr/) | [Eurométropole de Strasbourg](https://strasbourg.eu/) | [Clermont Auvergne Métropole](https://www.clermontmetropole.eu/) | [Opale](https://www.opale-energies.fr/) |
+| :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: | :----: |  :----: |  :----: |  :----: |
+| <img src="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/docs/static/logo_oslandia.png?raw=true" max-width=100 alt="logo Oslandia" > | <img src="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/docs/static/logo_isl.png?raw=true" max-width=100 alt="logo ISL" >  | <img src="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/docs/static/logo_etablissement_public_loire.png?raw=true" max-width=100 alt="logo EP Loire" > | <img src="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/docs/static/logo_lyon.png?raw=true" max-width=100 alt="logo" > | <img src="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/docs/static/logo_cd-loire.png?raw=true.png" max-width=100 alt="logo Département de la Loire" > | <img src="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/docs/static/logo_grenoble.png?raw=true" max-width=100 alt="logo" > | <img src="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/docs/static/logo_lpo.png?raw=true" max-width=100 alt="logo" > | <img src="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/docs/static/logo_anfsi.png?raw=true" max-width=100 alt="logo" > | <img src="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/docs/static/logo_eaux-et-vilaine.png?raw=true" max-width=100 alt="logo" > | <img src="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/docs/static/logo_amp.png?raw=true" max-max-width=100 alt="logo" > | <img src="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/docs/static/logo_strasbourg_eu_opensource.png?raw=true" max-max-width=100 alt="logo Eurométropole de Strasbourg" > | <img src="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/docs/static/logo_clermont_auvergne_metropole.svg?raw=true" max-max-width=100 alt="logo Clermont Auvergne Métropole" > | <img src="https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/docs/static/logo_opale.png?raw=true" max-max-width=100 alt="logo Opale énergies engagées" > |
 
 See [more in documentation](https://qgis-deployment.github.io/qgis-deployment-toolbelt-cli/misc/references.html).
 
@@ -89,15 +89,15 @@ Once completed, check:
 - The **Start menu** / **Desktop** for new shortcuts.
 - The **QGIS Profiles menu** for new profiles.
 
-![QGIS - List of profiles with ones added by QDT demonstration scenario](./docs/static/examples_qgis_profiles_menu.png)
+![QGIS - List of profiles with ones added by QDT demonstration scenario](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/docs/static/examples_qgis_profiles_menu.png?raw=true)
 
 Splash screen when launching the **Demo Profile**:
 
-![QGIS splash screen - QDT Demo Profile](./examples/profiles/demo/images/splash.png)
+![QGIS splash screen - QDT Demo Profile](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/examples/profiles/demo/images/splash.png?raw=true)
 
 Splash screen for the **Viewer Profile**:
 
-![QGIS splash screen - QDT Viewer Profile](./examples/profiles/Viewer%20Mode/images/splash.png)
+![QGIS splash screen - QDT Viewer Profile](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/blob/main/examples/profiles/Viewer%20Mode/images/splash.png?raw=true)
 
 Have you tried it on Linux? Well, you should find an additional profile simply named "QDT Only Linux".
 
