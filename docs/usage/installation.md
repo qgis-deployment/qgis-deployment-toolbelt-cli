@@ -36,7 +36,16 @@ MacOS version is not tested and is just here to encourage beta-testing and feedb
 
 - Python 3.10+
 
-### Step-by-step
+### Using [pipx](https://pipx.pypa.io/) (recommended)
+
+```sh
+# bare
+pipx install qgis-deployment-toolbelt
+# to have completion commands
+pipx install qgis-deployment-toolbelt[completion]
+```
+
+### Using pip
 
 The package is installable with pip:
 
