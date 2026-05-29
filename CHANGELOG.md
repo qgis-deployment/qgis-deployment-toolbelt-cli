@@ -16,6 +16,21 @@ Unreleased
 
 -->
 
+## 0.43.0 - 2026-05-29
+
+### Security 🔒
+
+* chore(deps): bump dulwich minimal version to 1.2.5 to cover a security issue in previous versions by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/841>
+
+### Features and enhancements 🎉
+
+* feature(shortcuts): pick icon format supported by current os by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/838>
+* feature(autocompletion): enable CLI autocompletion using argcomplete by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/839>
+
+### Documentation 📖
+
+* improve(docs): use sphinx-argparse instead of sphinx-argparse-cli by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/840>
+
 ## 0.42.0 - 2026-05-12
 
 ### Bugs fixes 🐛
