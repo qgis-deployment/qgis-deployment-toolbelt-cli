@@ -13,7 +13,7 @@ Here is a summary of the current functional scope of QDT.
 
 ## Configurable execution via environment variables
 
-🎯 Configure execution and deployment via variables defined at the IS level.
+🎯 Configure execution and deployment via variables defined at the IT level.
 
 For example, the path or URL of the deployment scenario to use can be defined with the `QDT_SCENARIO_PATH` variable.
 
