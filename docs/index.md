@@ -1,4 +1,4 @@
-# {{ title }} (QDT) - Documentation
+# {{ title }}
 
 > **Description:** {{ description }}  
 > **Author and contributors:** {{ author }}  
@@ -59,13 +59,51 @@
 ::::
 <!-- markdownlint-enable MD034 -->
 
-----
+**QGIS Deployment Toolbelt (QDT)** is a cross-platform (primarily Windows-focused) command-line tool that streamlines the deployment and management of **QGIS profiles**, **plugins**, and related settings within organizations.
+
+It helps **standardize** user environments, **simplify** updates, and **integrate** with IT deployment strategies like **GPO**, **SCCM**, or **InTune**.
 
 ![QGIS Deployment Toolbelt CLI](./static/qgis-deployment-toolbelt_cli_help.png)
 
-## They use QDT
+## ⭐ Why QDT?
+
+- Save hours of manual QGIS configuration and profile management
+- Reduce configuration errors and user friction
+- Scale QGIS deployments in professional environments easily
+- Reconciling GIS service expectations and IT constraints
+- Community driven development and developed by experienced QGIS teams
+
+## ✨ Features
+
+- **Manage QGIS profiles easily**: define, store, and deploy profiles with a simple `profile.json` file. You can also use the [Profile Manager plugin](https://plugins.qgis.org/plugins/profile_manager/) to export your existing profiles right from QGIS.
+- **Version control integration**: Git-powered backend for tracking changes and enabling collaborative profile management.
+- **IT-friendly**: designed to work with Active Directory, GPOs, SCCM, InTune, and other enterprise tools.
+- **Seamless user experience**: deliver a consistent QGIS experience across your organization with minimal friction.
+- **Advanced configuration handling**: use variabilized `QGIS3.ini` files to handle dynamic or environment-specific settings.
+- **Conditional deployments**: deploy specific profiles based on rules, environment variables, or user criteria.
+- **Optimized plugin management**: reduce bandwidth usage by rationalizing plugin downloads and installations.
+
+```{button-ref} qdt-features-page
+:ref-type: myst
+:color: info
+:outline:
+:align: center
+:tooltip: See QDT features
+{material-sharp}`settings;2em;sd-text-info` Check list of actual features
+```
+
+## 🤝 They use and trust QDT
 
 ```{include} misc/_references_carousel.md
+```
+
+```{button-ref} qdt-public-examples-page
+:ref-type: myst
+:color: info
+:outline:
+:align: center
+:tooltip: Find public QDT projects
+{material-sharp}`public;2em;sd-text-info` Find public examples
 ```
 
 ## What it is and the underlying philosophy
@@ -94,7 +132,15 @@ Development is leaded by the following principles and goals:
 
 ----
 
-## Quickstart
+## 🚀 Quickstart
+
+```{button-link} ./usage/installation.html
+:color: info
+:outline:
+:align: center
+:tooltip: Install QDT
+{material-sharp}`install_desktop;2em;sd-text-info` Need more details? Check the installation page
+```
 
 ### With Python
 
@@ -173,9 +219,10 @@ pipx run qgis-deployment-toolbelt -s https://github.com/qgis-deployment/qgis-dep
 ```{toctree}
 ---
 caption: How to use
-maxdepth: 1
+maxdepth: 2
 ---
 usage/installation
+usage/features
 usage/how_it_works
 usage/how_to_use
 usage/profile

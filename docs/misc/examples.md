@@ -1,5 +1,7 @@
 # Examples of QDT projects
 
+(qdt-public-examples-page)=
+
 Looking for inspiration? Want to see what others are doing with QDT?
 
 ::::{grid} 2
