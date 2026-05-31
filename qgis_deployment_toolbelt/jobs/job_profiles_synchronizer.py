@@ -206,12 +206,12 @@ class JobProfilesSynchronizer(GenericJob):
                 )
                 if len(compare_for_info[0]):
                     logger.info(
-                        f"{compare_for_info[0]} of installed plugins are outdated comparing with"
+                        f"{compare_for_info[0]} of installed profiles are outdated comparing with"
                         f" downloaded ones: {','.join([p.name for p in compare_for_info[0]])}."
                     )
                 elif len(compare_for_info[1]):
                     logger.info(
-                        f"{compare_for_info[1]} of installed plugins are outdated comparing with"
+                        f"{compare_for_info[1]} of installed profiles are outdated comparing with"
                         f" downloaded ones: {','.join([p.name for p in compare_for_info[1]])}."
                     )
                 else:

@@ -358,5 +358,5 @@ class OSConfiguration:
         else:
             raise ValueError(
                 f"Unsupported operating system specified: {operating_system_codename}. "
-                "Must be one of: {', '.join('darwin', 'linux', 'win32')}"
+                f"Must be one of: {', '.join(['darwin', 'linux', 'win32'])}"
             )
