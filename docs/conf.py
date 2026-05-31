@@ -122,7 +122,7 @@ html_css_files = [
 #   'da', 'de', 'en', 'es', 'fi', 'fr', 'hu', 'it', 'ja'
 #   'nl', 'no', 'pt', 'ro', 'ru', 'sv', 'tr'
 html_search_language = "en"
-
+templates_path: list[str] = ["_templates"]
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
