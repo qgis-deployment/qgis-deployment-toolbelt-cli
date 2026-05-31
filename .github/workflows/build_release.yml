@@ -31,7 +31,7 @@ concurrency:
 # Globals
 env:
   PROJECT_FOLDER: "qgis_deployment_toolbelt"
-  PYTHON_VERSION: "3.12"
+  PYTHON_VERSION: "3.14"
   PYINSTALLER_LOG_LEVEL: "DEBUG"
 
 # Jobs definition
