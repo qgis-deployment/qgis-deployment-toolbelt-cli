@@ -198,7 +198,7 @@ class JobProfilesSynchronizer(GenericJob):
 
             if not len(not_installed):
                 logger.info(
-                    f"Each of the {len(downloaded_profiles)} downloaded plugins are "
+                    f"Each of the {len(downloaded_profiles)} downloaded profiles are "
                     "already installed."
                 )
                 compare_for_info = self.compare_downloaded_with_installed_profiles(
