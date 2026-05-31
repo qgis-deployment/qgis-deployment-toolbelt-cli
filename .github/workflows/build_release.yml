@@ -31,7 +31,7 @@ concurrency:
 # Globals
 env:
   PROJECT_FOLDER: "qgis_deployment_toolbelt"
-  PYTHON_VERSION: "3.12"
+  PYTHON_VERSION: "3.14"
   PYINSTALLER_LOG_LEVEL: "DEBUG"
 
 # Jobs definition
@@ -40,7 +40,7 @@ jobs:
     name: "🐍 Python Wheel"
     permissions:
       contents: read
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
 
     steps:
       - name: Get source code
@@ -123,7 +123,7 @@ jobs:
     name: "🐧 Ubuntu LTS"
     permissions:
       contents: read
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
 
     steps:
       - name: Get source code
