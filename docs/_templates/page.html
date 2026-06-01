@@ -1,16 +1,14 @@
-{% extends "!layout.html" %}
+{% extends "!page.html" %}
 
 {% block extrahead %}
-
     {{ super() }}
     <!-- Matomo -->
     <script>
     var _paq = (window._paq = window._paq || []);
-    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
     _paq.push(["trackPageView"]);
     _paq.push(["enableLinkTracking"]);
     (function () {
-        var u = "//matomo.oslandia.io/";
+        var u = "https://matomo.oslandia.io/";
         _paq.push(["setTrackerUrl", u + "matomo.php"]);
         _paq.push(["setSiteId", "4"]);
         var d = document,
