@@ -79,6 +79,7 @@ jobs:
       - name: Build doc using Sphinx
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # required to avoid GH API rate limit
+          GOOGLE_SEARCH_CONSOLE_SITE_VERIFICATION: ${{ secrets.GOOGLE_SEARCH_CONSOLE_SITE_VERIFICATION }}
         run: sphinx-build -b html -j auto -d docs/_build/cache -q docs docs/_build/html
 
       - name: Save build doc as artifact
