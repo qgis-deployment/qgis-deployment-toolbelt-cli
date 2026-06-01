@@ -7,6 +7,7 @@ Configuration for project documentation using Sphinx.
 # standard
 import logging
 from datetime import datetime
+from os import getenv
 from pathlib import Path
 
 # project
@@ -91,6 +92,9 @@ suppress_warnings = ["myst.duplicate_def"]
 html_baseurl = __about__.__uri_homepage__
 
 # Theme
+html_context = {
+    "google_site_verification": getenv("GOOGLE_SEARCH_CONSOLE_SITE_VERIFICATION", "")
+}
 html_favicon = "static/logo_qdt.png"
 html_logo = "static/logo_qdt.png"
 html_theme = "furo"
