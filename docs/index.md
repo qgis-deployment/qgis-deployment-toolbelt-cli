@@ -149,7 +149,7 @@ Development is leaded by the following principles and goals:
     The best way to install it is using [pipx](https://pipx.pypa.io/stable/):
 
     ```sh
-    pipx install -U qgis-deployment-toolbelt
+    pipx install qgis-deployment-toolbelt
     ```
 
     If you don't have installed pipx, it's obviously still installable with pip but you'll have to deal with checking that the Python scripts folder is declared in your `PATH` (list of folders where executables are authorized to run).
