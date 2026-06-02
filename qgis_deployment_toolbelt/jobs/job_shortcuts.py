@@ -178,7 +178,7 @@ class JobShortcutsManager(GenericJob):
         # 1. Already the right format
         if current_ext in preferred_exts:
             logger.debug(
-                f"{current_ext} is already one of the accepter formats for OS '{opersys}'. "
+                f"{current_ext} is already one of the suitable formats for OS '{opersys}'. "
                 f"Let's use {icon_path}."
             )
             return icon_path
