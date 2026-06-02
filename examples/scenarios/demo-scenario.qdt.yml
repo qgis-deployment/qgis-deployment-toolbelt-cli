@@ -30,7 +30,10 @@ steps:
         - "3.36"
         - "3.32"
       search_paths:
-        - "%PROGRAMFILES%/QGIS"
+        - "%PROGRAMFILES%\\QGIS"
+        - "%PROGRAMFILES%"
+        - "C:\\OSGeo4W"
+        - "/usr/bin/qgis"
       if_not_found: warning
 
   - name: Download profiles from remote git repository
