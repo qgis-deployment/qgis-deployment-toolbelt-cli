@@ -16,6 +16,25 @@ Unreleased
 
 -->
 
+## 0.43.1 - 2026-06-02
+
+### Bugs fixes 🐛
+
+* fix(logs): bump pyad to 0.6.4 to get upstream fix of unwanted logs by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/846>
+
+### Tooling 🔧
+
+* update(packaging): use python 3.14 and Ubuntu 26.04 to build QDT releases by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/847>
+* fix(ci): ubuntu-26.04 has been temporarily removed from GH runners by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/851>
+
+### Documentation 📖
+
+* add(docs): use absolute images in README and list features by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/844>
+* add(docs): use git log to  populate sitemap lastmod attribute by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/845>
+* add(docs): include Matomo tracking by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/848>
+* fix(docs): furo theme does not support layout.html override but page.html override by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/849>
+* add(docs): meta tag to authenticate Google Search Console by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/850>
+
 ## 0.43.0 - 2026-05-29
 
 ### Security 🔒
