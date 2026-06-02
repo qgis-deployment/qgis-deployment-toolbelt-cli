@@ -269,6 +269,38 @@ class TestQgisIniHelper(unittest.TestCase):
             self.assertIn("Section", cfg_parser)
             self.assertEqual("new_value", cfg_parser["Section"]["value"])
 
+    def test_load_qgis_global_settings(self):
+        """Test qgis_global_settings.ini loader."""
+        new_config_file = Path("tests/fixtures/qgis_ini/qgis_global_settings.ini")
+
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            tmp_copy = Path(tmpdirname).joinpath(new_config_file.name)
+            tmp_copy.write_text(new_config_file.read_text())
+
+            # open temp copy
+            ini_config = QgisIniHelper(ini_filepath=tmp_copy)
+
+        self.assertEqual(ini_config.ini_type, "qgis_global_settings")
+        self.assertIsNone(ini_config.is_ui_customization_enabled())
+
+    def test_load_non_qgis_settings(self):
+        """Test non qgis .ini loader."""
+        new_config_file = Path("tests/fixtures/qgis_ini/test_ini_interpolated.ini")
+
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            tmp_copy = Path(tmpdirname).joinpath(new_config_file.name)
+            tmp_copy.write_text(new_config_file.read_text())
+
+            # open temp copy
+            ini_config = QgisIniHelper(ini_filepath=tmp_copy)
+
+        self.assertIsNone(ini_config.ini_type)
+        self.assertIsNone(ini_config.is_ui_customization_enabled())
+
 
 # ############################################################################
 # ####### Stand-alone run ########
