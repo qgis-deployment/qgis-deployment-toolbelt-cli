@@ -18,24 +18,42 @@
       },
       "uses": {
         "type": "string",
-        "description": "Which job to use.",
         "title": "Job identifier",
+        "description": "Which job to use.",
         "minLength": 1,
         "maxLength": 255,
-        "enum": [
-          "default-profile-setter",
-          "manage-env-vars",
-          "qgis-installation-finder",
-          "qplugins-downloader",
-          "qplugins-synchronizer",
-          "qprofiles-downloader",
-          "qprofiles-synchronizer",
-          "qprofiles-manager",
-          "shortcuts-manager",
-          "splash-screen-manager"
-        ],
-        "deprecated": [
-          "qprofiles-manager"
+        "oneOf": [
+          {
+            "const": "default-profile-setter"
+          },
+          {
+            "const": "manage-env-vars"
+          },
+          {
+            "const": "qgis-installation-finder"
+          },
+          {
+            "const": "qplugins-downloader"
+          },
+          {
+            "const": "qplugins-synchronizer"
+          },
+          {
+            "const": "qprofiles-downloader"
+          },
+          {
+            "const": "qprofiles-synchronizer"
+          },
+          {
+            "const": "qprofiles-manager",
+            "deprecated": true
+          },
+          {
+            "const": "shortcuts-manager"
+          },
+          {
+            "const": "splash-screen-manager"
+          }
         ]
       },
       "with": {
