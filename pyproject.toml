@@ -68,7 +68,7 @@ doc = [
 ]
 
 packaging = [
-    "pyinstaller>=6.20,<6.21",
+    "pyinstaller>=6.20,<6.22",
     "pyinstaller-hooks-contrib>=2025,<2027",
     "pypiwin32==223 ; sys_platform == 'win32'",
     "tzdata>=2026 ; sys_platform == 'win32'",
