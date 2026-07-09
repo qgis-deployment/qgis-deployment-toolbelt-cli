@@ -14,7 +14,7 @@
 
 <!-- markdownlint-disable MD034 -->
 
-::::{grid} 3
+::::{grid} 4
 :gutter: 2
 
 :::{grid-item}
@@ -38,7 +38,7 @@
 :shadow:
 :tooltip: Github discussions page
 
-{fab}`github` Discussions on GitHub
+{fab}`github` Discussions
 ```
 
 :::
@@ -50,10 +50,21 @@
 :expand:
 :shadow:
 :tooltip: mailto Oslandia about QDT
-{material-regular}`mail;1.5em` Contact us by email
+{material-regular}`mail;1.5em` Send an email
 ```
 
+:::
+
 :::{grid-item}
+
+```{button-link} https://discourse.osgeo.org/c/qgis/qdt/76
+:color: info
+:expand:
+:shadow:
+:tooltip: mailto Oslandia about QDT
+{material}`forum` Forum/mailing-list
+```
+
 :::
 
 ::::
