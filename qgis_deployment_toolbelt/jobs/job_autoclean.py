@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    QDT autocleaner.
+QDT autocleaner.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 
@@ -19,6 +19,7 @@ from pathlib import Path
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.utils.file_stats import is_file_older_than
 from qgis_deployment_toolbelt.utils.trash_or_delete import move_files_to_trash_or_delete
+
 
 # #############################################################################
 # ########## Globals ###############

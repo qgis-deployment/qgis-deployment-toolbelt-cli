@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    QDT autocleaner.
+QDT autocleaner.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 
@@ -17,6 +17,7 @@ from pathlib import Path
 
 # 3rd party library
 from send2trash import TrashPermissionError, send2trash
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -62,7 +63,7 @@ def move_files_to_trash_or_delete(
             move_files_to_trash_or_delete(files_to_trash=files_to_trash, attempt=2)
     else:
         logger.debug(
-            f"Moving (or deleting) {len(files_to_trash)} files to trash: " "attempt 2"
+            f"Moving (or deleting) {len(files_to_trash)} files to trash: attempt 2"
         )
         for file_to_trash in files_to_trash:
             try:

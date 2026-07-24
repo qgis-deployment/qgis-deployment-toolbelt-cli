@@ -2,7 +2,7 @@
 
 """Some helpers to work with file statistics (dates, etc.).
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 # ############################################################################
@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from sys import platform as opersys
 from typing import Literal
+
 
 # ############################################################################
 # ########## GLOBALS #############

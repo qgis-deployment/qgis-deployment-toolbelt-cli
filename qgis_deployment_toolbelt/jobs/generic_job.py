@@ -24,7 +24,6 @@ from python_rule_engine import RuleEngine
 # package
 from qgis_deployment_toolbelt.constants import (
     OSConfiguration,
-    get_qdt_logs_folder,
     get_qdt_working_directory,
 )
 from qgis_deployment_toolbelt.exceptions import (
@@ -35,6 +34,7 @@ from qgis_deployment_toolbelt.exceptions import (
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 from qgis_deployment_toolbelt.profiles.rules_context import QdtRulesContext
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
+
 
 # #############################################################################
 # ########## Globals ###############
