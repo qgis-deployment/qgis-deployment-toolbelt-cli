@@ -46,6 +46,7 @@ dependencies = [
     "pywin32==312 ; sys_platform == 'win32'",
     "pyyaml>=5.4,<7",
     "requests>=2.32.3,<3",
+    "send2trash[nativeLib]>=2.1.0,<2.2.0",
     "truststore>=0.10.1,<1",
 ]
 
