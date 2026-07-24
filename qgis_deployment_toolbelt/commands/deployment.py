@@ -23,6 +23,7 @@ from qgis_deployment_toolbelt.constants import (
     get_qdt_working_directory,
 )
 from qgis_deployment_toolbelt.jobs import JobsOrchestrator
+from qgis_deployment_toolbelt.jobs.job_autoclean import JobCleanupManager
 from qgis_deployment_toolbelt.scenarios import ScenarioReader
 from qgis_deployment_toolbelt.utils.bouncer import exit_cli_error, exit_cli_success
 from qgis_deployment_toolbelt.utils.check_path import check_path
@@ -227,6 +228,25 @@ def run(args: argparse.Namespace):
             job.run()
         except Exception as err:
             exit_cli_error(err)
+
+    # -- OPTIONAL CLEANUP AT THE END OF THE SCENARIO --
+    if isinstance(scenario.settings, dict) and str2bool(
+        scenario.settings.get("CLEANUP_AT_END", False)
+    ):
+        logger.info(
+            "CLEANUP_AT_END is enabled in scenario settings. Running cleanup..."
+        )
+        cleanup_options: dict = {}
+        if scenario.settings.get("CLEANUP_SCOPE"):
+            cleanup_options["scope"] = scenario.settings.get("CLEANUP_SCOPE")
+        if scenario.settings.get("CLEANUP_DRY_RUN") is not None:
+            cleanup_options["dry_run"] = str2bool(
+                scenario.settings.get("CLEANUP_DRY_RUN")
+            )
+        try:
+            JobCleanupManager(options=cleanup_options).run()
+        except Exception as err:
+            logger.error(f"Cleanup at the end of deployment failed. Trace: {err}")
 
     # exit nicely
     exit_cli_success("Deployment achieved!")
