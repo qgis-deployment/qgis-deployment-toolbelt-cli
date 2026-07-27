@@ -36,6 +36,7 @@
       "folder_name": "QuickOSM",
       "official_repository": true,
       "plugin_id": 579,
+      "upgrade_mode": "keep",
       "version": "2.2.3"
     },
     {
@@ -43,6 +44,7 @@
       "folder_name": "redLayer",
       "official_repository": true,
       "plugin_id": 752,
+      "upgrade_mode": "delete",
       "version": "2.2"
     },
     {
