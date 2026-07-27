@@ -16,7 +16,6 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from os import getenv
 from pathlib import Path
-from shutil import rmtree
 
 # 3rd party
 import requests
@@ -30,6 +29,7 @@ from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_
 from qgis_deployment_toolbelt.utils.formatters import url_ensure_trailing_slash
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
+from qgis_deployment_toolbelt.utils.trash_or_delete import move_files_to_trash_or_delete
 from qgis_deployment_toolbelt.utils.tree_files_reader import tree_to_download_list
 
 
@@ -107,7 +107,7 @@ class HttpHandler(RemoteProfilesHandlerBase):
             raise err
 
         # clean everything before downloading
-        rmtree(path=destination_local_path, ignore_errors=True)
+        move_files_to_trash_or_delete(files_to_trash=destination_local_path)
 
         # make sure destination path exists
         if not destination_local_path.exists():

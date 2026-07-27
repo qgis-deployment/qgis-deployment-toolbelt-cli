@@ -17,7 +17,6 @@ Inspired from: QGIS Resource Sharing
 import logging
 from os import getenv
 from pathlib import Path
-from shutil import rmtree
 from typing import Literal
 
 # 3rd party
@@ -29,6 +28,7 @@ from giturlparse import GitUrlParsed, parse as git_parse, validate as git_valida
 # project
 from qgis_deployment_toolbelt.utils import proxies
 from qgis_deployment_toolbelt.utils.check_path import check_folder_is_empty
+from qgis_deployment_toolbelt.utils.trash_or_delete import move_files_to_trash_or_delete
 
 
 # #############################################################################
@@ -531,12 +531,14 @@ class RemoteProfilesHandlerBase:
                     logger.error(
                         "Clone fail 1/2. Removing target folder and trying again..."
                     )
-                    rmtree(path=to_local_destination_path, ignore_errors=True)
+                    move_files_to_trash_or_delete(
+                        files_to_trash=to_local_destination_path
+                    )
                     return self.clone_or_pull(
                         to_local_destination_path=to_local_destination_path, attempt=2
                     )
                 logger.critical("Clone fail 2/2. Abort.")
-                rmtree(path=to_local_destination_path, ignore_errors=True)
+                move_files_to_trash_or_delete(files_to_trash=to_local_destination_path)
                 raise err
         elif to_local_destination_path.exists() and self.is_valid_git_repository(
             source_repository_path_or_url=to_local_destination_path,
@@ -553,7 +555,7 @@ class RemoteProfilesHandlerBase:
                     f"{self.SOURCE_REPOSITORY_PATH_OR_URL} "
                     f"to {to_local_destination_path.resolve()}. Trace: {error}."
                 )
-                rmtree(path=to_local_destination_path, ignore_errors=True)
+                move_files_to_trash_or_delete(files_to_trash=to_local_destination_path)
                 return self.clone_or_pull(
                     to_local_destination_path=to_local_destination_path
                 )
@@ -567,7 +569,7 @@ class RemoteProfilesHandlerBase:
                     f"repository to {to_local_destination_path.resolve()}. Trace: {error}."
                     "Trying to remove the local folder and cloning again..."
                 )
-                rmtree(path=to_local_destination_path, ignore_errors=True)
+                move_files_to_trash_or_delete(files_to_trash=to_local_destination_path)
                 return self.clone_or_pull(
                     to_local_destination_path=to_local_destination_path
                 )

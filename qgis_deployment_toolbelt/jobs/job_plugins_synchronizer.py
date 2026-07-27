@@ -14,12 +14,13 @@ Author: Julien Moura (https://github.com/guts)
 # Standard library
 import logging
 from pathlib import Path
-from shutil import ReadError, rmtree, unpack_archive
+from shutil import ReadError, unpack_archive
 
 # package
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
+from qgis_deployment_toolbelt.utils.trash_or_delete import move_files_to_trash_or_delete
 
 
 # #############################################################################
@@ -238,7 +239,9 @@ class JobPluginsSynchronizer(GenericJob):
                         f"Plugin {plugin.name} is already installed. It will be deleted before installing the new version."
                     )
                     try:
-                        rmtree(plugin_installed_folder)
+                        move_files_to_trash_or_delete(
+                            files_to_trash=plugin_installed_folder
+                        )
                     except OSError as err:
                         logger.error(
                             f"Profile {profile.name} - "
