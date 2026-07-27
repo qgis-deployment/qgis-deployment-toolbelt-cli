@@ -36,7 +36,7 @@ classifiers = [
 ]
 dependencies = [
     "distro==1.9.* ; sys_platform == 'linux'",
-    "dukpy<0.6.0",
+    "dukpy<0.7.0",
     "dulwich>=1.2.5,<2",
     "giturlparse>=0.12,<0.16",
     "imagesize>=2.0.0,<2.1",
