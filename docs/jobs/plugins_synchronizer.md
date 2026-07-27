@@ -61,3 +61,9 @@ Default: `~/.cache/qgis-deployment-toolbelt/plugins`
 1. If version plugin in installed profile is inferior, unzip the download plugin in installed profiles. Upgrade process can be controlled per plugin in `profile.json` using [`upgrade_mode`](../reference/qdt_profile.md#plugin-upgrade-mode):
    - `keep` (default): existing plugin folder is kept, newer version is unpacked on top of it,
    - `delete`: existing plugin folder is deleted before unpack.
+
+### QDT-managed plugins manifest
+
+Every time a plugin is installed or upgraded by this job, its folder name, version and installation date are recorded in a `.qdt-managed-plugins.json` file, stored directly under the profile's `python/plugins` folder (next to the plugin folders themselves).
+
+This manifest lets QDT keep track of which plugins it actually deployed, as opposed to plugins installed manually by the end-user within the same profile. It's meant to be fully managed by QDT and shouldn't be edited manually.

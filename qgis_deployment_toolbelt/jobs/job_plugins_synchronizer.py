@@ -12,11 +12,14 @@ Author: Julien Moura (https://github.com/guts)
 # ##################################
 
 # Standard library
+import json
 import logging
+from datetime import datetime, timezone
 from pathlib import Path
 from shutil import ReadError, rmtree, unpack_archive
 
 # package
+from qgis_deployment_toolbelt.__about__ import __version_clean__
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
@@ -64,6 +67,7 @@ class JobPluginsSynchronizer(GenericJob):
             "condition": None,
         },
     }
+    QDT_MANAGED_PLUGINS_MANIFEST_FILENAME: str = ".qdt-managed-plugins.json"
 
     def __init__(self, options: dict) -> None:
         """Instantiate the class.
@@ -99,7 +103,7 @@ class JobPluginsSynchronizer(GenericJob):
         # local vars
         profile_plugins_to_create: list[tuple[QdtProfile, QgisPlugin, Path]] = []
         profile_plugins_to_restore = []
-        profile_plugins_to_upgrade = []
+        profile_plugins_to_upgrade: list[tuple[QdtProfile, QgisPlugin, Path]] = []
 
         # get profiles, downloaded or installed
         qdt_profiles = self.filter_profiles_folder(
@@ -235,14 +239,16 @@ class JobPluginsSynchronizer(GenericJob):
                 if plugin_installed_folder.is_dir():
                     logger.debug(
                         f"Profile {profile.name} - "
-                        f"Plugin {plugin.name} is already installed. It will be deleted before installing the new version."
+                        f"Plugin {plugin.name} is already installed. It will be deleted "
+                        "before installing the new version."
                     )
                     try:
                         rmtree(plugin_installed_folder)
                     except OSError as err:
                         logger.error(
                             f"Profile {profile.name} - "
-                            f"Plugin {plugin.name} could not be deleted before installing the new version. Trace: {err}"
+                            f"Plugin {plugin.name} could not be deleted before "
+                            f"installing the new version. Trace: {err}"
                         )
                         continue
 
@@ -259,11 +265,56 @@ class JobPluginsSynchronizer(GenericJob):
                 )
                 continue
 
+            # keep track of plugins deployed
+            self._update_qdt_managed_plugins_manifest(
+                profile_plugins_folder=profile_plugins_folder, plugin=plugin
+            )
+
             logger.info(
                 f"Profile {profile.name} - "
                 f"Plugin {plugin.name} {plugin.version} has been unzipped from "
                 f"{source_path} to {profile_plugins_folder}"
             )
+
+    def _update_qdt_managed_plugins_manifest(
+        self, profile_plugins_folder: Path, plugin: QgisPlugin
+    ) -> None:
+        """Add/update an entry for the installed plugin in the profile's QDT-managed
+        plugins manifest.
+
+        Args:
+            profile_plugins_folder (Path): path to the profile's python/plugins folder
+            plugin (QgisPlugin): plugin that has just been installed
+        """
+        manifest_path: Path = (
+            profile_plugins_folder / self.QDT_MANAGED_PLUGINS_MANIFEST_FILENAME
+        )
+
+        manifest: dict[str, dict[str, str]] = {}
+        if manifest_path.is_file():
+            try:
+                manifest = json.loads(manifest_path.read_text(encoding="UTF-8"))
+            except json.JSONDecodeError as err:
+                logger.warning(
+                    f"QDT managed plugins manifest '{manifest_path}' is corrupted, it will be "
+                    f"recreated. Trace: {err}"
+                )
+                manifest = {}
+
+        manifest[plugin.installation_folder_name] = {
+            "installed_at": datetime.now(tz=timezone.utc).isoformat(),
+            "plg_id": f"{plugin.plugin_id}",
+            "plg_version": plugin.version,
+            "qdt_version": f"{__version_clean__}",
+        }
+
+        manifest_path.write_text(
+            json.dumps(manifest, indent=2, sort_keys=True), encoding="UTF-8"
+        )
+        logger.debug(
+            "QDT managed plugins manifest updated for "
+            f"'{plugin.installation_folder_name}' in {manifest_path}"
+        )
 
 
 # #############################################################################

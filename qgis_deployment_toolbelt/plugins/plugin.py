@@ -65,16 +65,16 @@ class QgisPlugin:
     OFFICIAL_REPOSITORY_XML = "https://plugins.qgis.org/plugins/plugins.xml"
 
     name: str
-    folder_name: str = None
-    location: QgisPluginLocation = "remote"
-    official_repository: bool = None
-    plugin_id: int = None
-    qgis_maximum_version: str = None
-    qgis_minimum_version: str = None
-    repository_url_xml: str = None
-    url: str = None
-    version: str = "latest"
+    folder_name: str | None = None
+    location: QgisPluginLocation = QgisPluginLocation.remote
+    official_repository: bool | None = None
+    plugin_id: int | None = None
+    qgis_maximum_version: str | None = None
+    qgis_minimum_version: str | None = None
+    repository_url_xml: str | None = None
     upgrade_mode: str = "keep"
+    url: str | None = None
+    version: str = "latest"
 
     @classmethod
     def from_dict(cls, input_dict: dict) -> QgisPlugin:

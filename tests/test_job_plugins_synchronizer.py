@@ -15,12 +15,14 @@
 # ##################################
 
 # Standard library
+import json
 import tempfile
 import unittest
 import zipfile
 from pathlib import Path
 
 # package
+from qgis_deployment_toolbelt.__about__ import __version_clean__
 from qgis_deployment_toolbelt.jobs.job_plugins_synchronizer import (
     JobPluginsSynchronizer,
 )
@@ -146,6 +148,184 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
             # and the new files should also be present
             self.assertTrue((plugin_folder / "metadata.txt").exists())
             self.assertTrue((plugin_folder / "__init__.py").exists())
+
+    def test_update_qdt_managed_plugins_manifest_creates_new(self):
+        """Test that the manifest is created when it doesn't exist yet."""
+        with tempfile.TemporaryDirectory(
+            prefix="QDT_test_plugins_sync_manifest_create_"
+        ) as tmp_dir:
+            options = {"action": "create_or_restore"}
+            job = JobPluginsSynchronizer(options=options)
+
+            plugins_folder = Path(tmp_dir) / "python/plugins"
+            plugins_folder.mkdir(parents=True, exist_ok=True)
+
+            plugin = QgisPlugin.from_dict(
+                {
+                    "name": "Test Plugin",
+                    "folder_name": "test_plugin",
+                    "version": "2.0.0",
+                }
+            )
+
+            manifest_path = plugins_folder / job.QDT_MANAGED_PLUGINS_MANIFEST_FILENAME
+            self.assertFalse(manifest_path.exists())
+
+            job._update_qdt_managed_plugins_manifest(
+                profile_plugins_folder=plugins_folder, plugin=plugin
+            )
+
+            self.assertTrue(manifest_path.is_file())
+            manifest = json.loads(manifest_path.read_text(encoding="UTF-8"))
+            self.assertIn("test_plugin", manifest)
+            self.assertEqual(manifest["test_plugin"]["plg_version"], "2.0.0")
+            self.assertEqual(
+                manifest["test_plugin"]["qdt_version"], f"{__version_clean__}"
+            )
+            self.assertIn("installed_at", manifest["test_plugin"])
+
+    def test_update_qdt_managed_plugins_manifest_adds_entry_preserving_existing(self):
+        """Test that adding a plugin entry preserves other existing entries."""
+        with tempfile.TemporaryDirectory(
+            prefix="QDT_test_plugins_sync_manifest_preserve_"
+        ) as tmp_dir:
+            options = {"action": "create_or_restore"}
+            job = JobPluginsSynchronizer(options=options)
+
+            plugins_folder = Path(tmp_dir) / "python/plugins"
+            plugins_folder.mkdir(parents=True, exist_ok=True)
+
+            plugin_one = QgisPlugin.from_dict(
+                {
+                    "name": "First Plugin",
+                    "folder_name": "first_plugin",
+                    "version": "1.0.0",
+                }
+            )
+            plugin_two = QgisPlugin.from_dict(
+                {
+                    "name": "Second Plugin",
+                    "folder_name": "second_plugin",
+                    "version": "3.1.0",
+                }
+            )
+
+            job._update_qdt_managed_plugins_manifest(
+                profile_plugins_folder=plugins_folder, plugin=plugin_one
+            )
+            job._update_qdt_managed_plugins_manifest(
+                profile_plugins_folder=plugins_folder, plugin=plugin_two
+            )
+
+            manifest_path = plugins_folder / job.QDT_MANAGED_PLUGINS_MANIFEST_FILENAME
+            manifest = json.loads(manifest_path.read_text(encoding="UTF-8"))
+
+            self.assertIn("first_plugin", manifest)
+            self.assertIn("second_plugin", manifest)
+            self.assertEqual(manifest["first_plugin"]["plg_version"], "1.0.0")
+            self.assertEqual(manifest["second_plugin"]["plg_version"], "3.1.0")
+
+    def test_update_qdt_managed_plugins_manifest_updates_existing_entry(self):
+        """Test that re-installing a plugin updates its manifest entry in place."""
+        with tempfile.TemporaryDirectory(
+            prefix="QDT_test_plugins_sync_manifest_update_"
+        ) as tmp_dir:
+            options = {"action": "create_or_restore"}
+            job = JobPluginsSynchronizer(options=options)
+
+            plugins_folder = Path(tmp_dir) / "python/plugins"
+            plugins_folder.mkdir(parents=True, exist_ok=True)
+
+            plugin_v1 = QgisPlugin.from_dict(
+                {
+                    "name": "Test Plugin",
+                    "folder_name": "test_plugin",
+                    "version": "1.0.0",
+                }
+            )
+            plugin_v2 = QgisPlugin.from_dict(
+                {
+                    "name": "Test Plugin",
+                    "folder_name": "test_plugin",
+                    "version": "2.0.0",
+                }
+            )
+
+            job._update_qdt_managed_plugins_manifest(
+                profile_plugins_folder=plugins_folder, plugin=plugin_v1
+            )
+            job._update_qdt_managed_plugins_manifest(
+                profile_plugins_folder=plugins_folder, plugin=plugin_v2
+            )
+
+            manifest_path = plugins_folder / job.QDT_MANAGED_PLUGINS_MANIFEST_FILENAME
+            manifest = json.loads(manifest_path.read_text(encoding="UTF-8"))
+
+            # only one entry, updated in place with the latest version
+            self.assertEqual(len(manifest), 1)
+            self.assertEqual(manifest["test_plugin"]["plg_version"], "2.0.0")
+
+    def test_update_qdt_managed_plugins_manifest_recreates_corrupted_file(self):
+        """Test that a corrupted manifest is logged and recreated instead of failing."""
+        with tempfile.TemporaryDirectory(
+            prefix="QDT_test_plugins_sync_manifest_corrupted_"
+        ) as tmp_dir:
+            options = {"action": "create_or_restore"}
+            job = JobPluginsSynchronizer(options=options)
+
+            plugins_folder = Path(tmp_dir) / "python/plugins"
+            plugins_folder.mkdir(parents=True, exist_ok=True)
+
+            manifest_path = plugins_folder / job.QDT_MANAGED_PLUGINS_MANIFEST_FILENAME
+            manifest_path.write_text("this is not valid json", encoding="UTF-8")
+
+            plugin = QgisPlugin.from_dict(
+                {
+                    "name": "Test Plugin",
+                    "folder_name": "test_plugin",
+                    "version": "2.0.0",
+                }
+            )
+
+            job._update_qdt_managed_plugins_manifest(
+                profile_plugins_folder=plugins_folder, plugin=plugin
+            )
+
+            manifest = json.loads(manifest_path.read_text(encoding="UTF-8"))
+            self.assertEqual(len(manifest), 1)
+            self.assertEqual(manifest["test_plugin"]["plg_version"], "2.0.0")
+
+    def test_install_plugin_into_profile_writes_manifest(self):
+        """Test that installing a plugin also records it into the QDT managed
+        plugins manifest."""
+        with tempfile.TemporaryDirectory(
+            prefix="QDT_test_plugins_sync_install_manifest_"
+        ) as tmp_dir:
+            options = {"action": "create_or_restore"}
+            job = JobPluginsSynchronizer(options=options)
+
+            profile = self._make_profile_in_tmpdir(Path(tmp_dir), "test_manifest")
+            plugins_folder = profile.path_in_qgis / "python/plugins"
+
+            zip_path = Path(tmp_dir) / "test_plugin_manifest.zip"
+            self._create_fake_plugin_zip(zip_path, "test_plugin")
+
+            plugin = QgisPlugin.from_dict(
+                {
+                    "name": "Test Plugin",
+                    "folder_name": "test_plugin",
+                    "version": "2.0.0",
+                }
+            )
+
+            job.install_plugin_into_profile([(profile, plugin, zip_path)])
+
+            manifest_path = plugins_folder / job.QDT_MANAGED_PLUGINS_MANIFEST_FILENAME
+            self.assertTrue(manifest_path.is_file())
+
+            manifest = json.loads(manifest_path.read_text(encoding="UTF-8"))
+            self.assertIn("test_plugin", manifest)
+            self.assertEqual(manifest["test_plugin"]["plg_version"], "2.0.0")
 
 
 # #############################################################################
