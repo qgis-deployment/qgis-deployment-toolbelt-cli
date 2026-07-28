@@ -12,11 +12,14 @@ Author: Julien Moura (https://github.com/guts)
 # ##################################
 
 # Standard library
+import json
 import logging
+from datetime import datetime, timezone
 from pathlib import Path
 from shutil import ReadError, unpack_archive
 
 # package
+from qgis_deployment_toolbelt.__about__ import __version_clean__
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
@@ -65,6 +68,7 @@ class JobPluginsSynchronizer(GenericJob):
             "condition": None,
         },
     }
+    QDT_MANAGED_PLUGINS_MANIFEST_FILENAME: str = ".qdt-managed-plugins.json"
 
     def __init__(self, options: dict) -> None:
         """Instantiate the class.
@@ -100,7 +104,7 @@ class JobPluginsSynchronizer(GenericJob):
         # local vars
         profile_plugins_to_create: list[tuple[QdtProfile, QgisPlugin, Path]] = []
         profile_plugins_to_restore = []
-        profile_plugins_to_upgrade = []
+        profile_plugins_to_upgrade: list[tuple[QdtProfile, QgisPlugin, Path]] = []
 
         # get profiles, downloaded or installed
         qdt_profiles = self.filter_profiles_folder(
@@ -201,8 +205,9 @@ class JobPluginsSynchronizer(GenericJob):
                 f"Every plugins are up to date in the {len(qdt_profiles)} profiles parsed."
             )
         else:
-            self.install_plugin_into_profile(profile_plugins_to_create)
-            self.install_plugin_into_profile(profile_plugins_to_upgrade)
+            self.install_plugin_into_profile(
+                profile_plugins_to_create + profile_plugins_to_upgrade
+            )
 
         logger.debug(f"Job {self.ID} ran successfully.")
 
@@ -216,6 +221,9 @@ class JobPluginsSynchronizer(GenericJob):
             list_plugins_to_profiles (List[Tuple[QdtProfile, QgisPlugin, Path]]): list \
                 of tuples containing the target profile, the plugin object and the ZIP path.
         """
+        # ùanifest to keep track of plugins managed by QDT
+        qdt_managed_plugins_manifests: dict[Path, dict[str, dict[str, str]]] = {}
+
         for profile, plugin, source_path in list_plugins_to_profiles:
             if self.options.get("profile_ref") == "installed":
                 profile_plugins_folder = profile.folder / "python/plugins"
@@ -236,7 +244,8 @@ class JobPluginsSynchronizer(GenericJob):
                 if plugin_installed_folder.is_dir():
                     logger.debug(
                         f"Profile {profile.name} - "
-                        f"Plugin {plugin.name} is already installed. It will be deleted before installing the new version."
+                        f"Plugin {plugin.name} is already installed. It will be deleted "
+                        "before installing the new version."
                     )
                     try:
                         move_files_to_trash_or_delete(
@@ -245,7 +254,8 @@ class JobPluginsSynchronizer(GenericJob):
                     except OSError as err:
                         logger.error(
                             f"Profile {profile.name} - "
-                            f"Plugin {plugin.name} could not be deleted before installing the new version. Trace: {err}"
+                            f"Plugin {plugin.name} could not be deleted before "
+                            f"installing the new version. Trace: {err}"
                         )
                         continue
 
@@ -262,11 +272,84 @@ class JobPluginsSynchronizer(GenericJob):
                 )
                 continue
 
+            # Manifest of profile's plugins managed by QDT
+            manifest_path = (
+                profile_plugins_folder / self.QDT_MANAGED_PLUGINS_MANIFEST_FILENAME
+            )
+            if manifest_path not in qdt_managed_plugins_manifests:
+                qdt_managed_plugins_manifests[manifest_path] = (
+                    self._read_qdt_managed_plugins_manifest(manifest_path=manifest_path)
+                )
+            self._add_plugin_to_manifest(
+                manifest=qdt_managed_plugins_manifests[manifest_path], plugin=plugin
+            )
+
             logger.info(
                 f"Profile {profile.name} - "
                 f"Plugin {plugin.name} {plugin.version} has been unzipped from "
                 f"{source_path} to {profile_plugins_folder}"
             )
+
+        # save manifests
+        for manifest_path, manifest in qdt_managed_plugins_manifests.items():
+            self._write_qdt_managed_plugins_manifest(
+                manifest_path=manifest_path, manifest=manifest
+            )
+
+    # manifest management
+    def _add_plugin_to_manifest(
+        self, manifest: dict[str, dict[str, str]], plugin: QgisPlugin
+    ) -> None:
+        """Add/update a plugin to the QDT profile manifest.
+
+        Args:
+            manifest (dict[str, dict[str, str]]): manifest dict to amend, in place
+            plugin (QgisPlugin): plugin that has just been installed
+        """
+        manifest[plugin.installation_folder_name] = {
+            "installed_at": datetime.now(tz=timezone.utc).isoformat(),
+            "plg_id": f"{plugin.plugin_id}",
+            "plg_version": plugin.version,
+            "qdt_version": f"{__version_clean__}",
+        }
+
+    def _read_qdt_managed_plugins_manifest(
+        self, manifest_path: Path
+    ) -> dict[str, dict[str, str]]:
+        """Read the QDT-managed plugins manifest from disk, if it exists.
+
+        Args:
+            manifest_path (Path): path to the manifest file
+
+        Returns:
+            dict[str, dict[str, str]]: manifest content, or an empty dict if the
+            file doesn't exist or is corrupted
+        """
+        if not manifest_path.is_file():
+            return {}
+
+        try:
+            return json.loads(manifest_path.read_text(encoding="UTF-8"))
+        except json.JSONDecodeError as err:
+            logger.warning(
+                f"QDT managed plugins manifest '{manifest_path}' is corrupted, it "
+                f"will be recreated. Trace: {err}"
+            )
+            return {}
+
+    def _write_qdt_managed_plugins_manifest(
+        self, manifest_path: Path, manifest: dict[str, dict[str, str]]
+    ) -> None:
+        """Write the QDT-managed plugins manifest to file.
+
+        Args:
+            manifest_path (Path): path to the manifest file
+            manifest (dict[str, dict[str, str]]): manifest content to write
+        """
+        manifest_path.write_text(
+            json.dumps(manifest, indent=2, sort_keys=True), encoding="UTF-8"
+        )
+        logger.debug(f"QDT managed plugins manifest written: {manifest_path}")
 
 
 # #############################################################################
