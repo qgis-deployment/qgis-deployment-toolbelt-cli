@@ -34,16 +34,16 @@ logger = logging.getLogger(__name__)
 
 def move_files_to_trash_or_delete(
     files_to_trash: list[Path] | Path,
-    attempt: int = 1,
+    delete_file_per_file: bool = False,
 ) -> None:
     """Move files to the trash or directly delete them if it's not possible.
 
     Args:
         files_to_trash (list[Path] | Path): file path or list of file paths to move to
             the trash
-        attempt (int, optional): attempt (int): attempt count. If attempt < 2, it
-            tries a single batch operation. If attempt == 2, it works file per file.
-            Defaults to 1.
+        delete_file_per_file (bool, optional): If False : it
+            tries a single batch operation; if True : it works file per file.
+            Defaults to False.
     """
     # make sure it's a list
     if isinstance(files_to_trash, Path):
@@ -52,7 +52,7 @@ def move_files_to_trash_or_delete(
         ]
 
     # first try a batch
-    if attempt < 2:
+    if not delete_file_per_file:
         try:
             send2trash(paths=files_to_trash)
             logger.debug(f"{len(files_to_trash)} files have been moved to the trash.")
@@ -61,7 +61,7 @@ def move_files_to_trash_or_delete(
                 f"Moving {len(files_to_trash)} files to the trash in a single batch "
                 f"operation failed. Let's try it file per file. Trace: {err}"
             )
-            move_files_to_trash_or_delete(files_to_trash=files_to_trash, attempt=2)
+            move_files_to_trash_or_delete(files_to_trash=files_to_trash, delete_file_per_file=True)
     else:
         logger.debug(
             f"Moving (or deleting) {len(files_to_trash)} files to trash: attempt 2"
