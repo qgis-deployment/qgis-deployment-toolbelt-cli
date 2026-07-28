@@ -221,7 +221,7 @@ class JobPluginsSynchronizer(GenericJob):
             list_plugins_to_profiles (List[Tuple[QdtProfile, QgisPlugin, Path]]): list \
                 of tuples containing the target profile, the plugin object and the ZIP path.
         """
-        # ùanifest to keep track of plugins managed by QDT
+        # Manifest to keep track of plugins managed by QDT
         qdt_managed_plugins_manifests: dict[Path, dict[str, dict[str, str]]] = {}
 
         for profile, plugin, source_path in list_plugins_to_profiles:
