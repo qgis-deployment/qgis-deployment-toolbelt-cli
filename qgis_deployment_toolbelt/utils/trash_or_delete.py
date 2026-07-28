@@ -61,7 +61,9 @@ def move_files_to_trash_or_delete(
                 f"Moving {len(files_to_trash)} files to the trash in a single batch "
                 f"operation failed. Let's try it file per file. Trace: {err}"
             )
-            move_files_to_trash_or_delete(files_to_trash=files_to_trash, delete_file_per_file=True)
+            move_files_to_trash_or_delete(
+                files_to_trash=files_to_trash, delete_file_per_file=True
+            )
     else:
         logger.debug(
             f"Moving (or deleting) {len(files_to_trash)} files to trash: attempt 2"
