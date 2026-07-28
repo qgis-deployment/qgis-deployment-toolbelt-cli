@@ -1,7 +1,7 @@
 name: "📚 Documentation"
 
 env:
-  PYTHON_VERSION: "3.11"
+  PYTHON_VERSION: "3.12"
 
 # Allow one concurrent deployment
 concurrency:
