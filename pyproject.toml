@@ -59,7 +59,7 @@ dev = ["ruff>=0.13.1", "pre-commit>=4,<5"]
 doc = [
     "furo>=2024",
     "matplotlib>=3.8.2,<4",
-    "myst-parser[linkify]>=2",
+    "myst-parser[linkify]>=5.1.0",
     "sphinx-argparse>=0.5.2,<0.6.0",
     "sphinx-autobuild>=2024",
     "sphinx-copybutton<1",
