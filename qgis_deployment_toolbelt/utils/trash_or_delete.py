@@ -117,7 +117,7 @@ def move_files_to_trash_or_delete(
                 _permanently_delete(path)
                 logger.debug(f"{path} has been permanently deleted (force_delete).")
             except OSError as err:
-                logger.error(f"Unable to permanently delete {path}. Trace: {err}")
+                logger.exception(f"Unable to permanently delete {path}. Trace: {err}")
         return
 
     # -- trash_only / trash_or_delete: first try a batch trash operation
@@ -126,7 +126,7 @@ def move_files_to_trash_or_delete(
             send2trash(paths=files_to_trash)
             logger.debug(f"{len(files_to_trash)} files have been moved to the trash.")
         except (TrashPermissionError, OSError) as err:
-            logger.error(
+            logger.exception(
                 f"Moving {len(files_to_trash)} files to the trash in a single batch "
                 f"operation failed. Let's try it file per file. Trace: {err}"
             )
@@ -158,7 +158,7 @@ def move_files_to_trash_or_delete(
                     _permanently_delete(file_to_trash)
                     logger.debug(f"Deleting directly {file_to_trash} succeeded.")
                 except OSError as err_delete:
-                    logger.error(
+                    logger.exception(
                         f"An error occurred trying to delete {file_to_trash}. "
                         f"Trace: {err_delete}"
                     )
