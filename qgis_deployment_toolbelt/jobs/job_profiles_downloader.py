@@ -13,8 +13,10 @@ Author: Julien Moura (https://github.com/guts)
 
 # Standard library
 import logging
+from typing import get_args
 
 # package
+from qgis_deployment_toolbelt.constants import DEFAULT_DELETION_POLICY, DeletionPolicy
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.profiles import LocalGitHandler, RemoteGitHandler
 from qgis_deployment_toolbelt.profiles.remote_http_handler import HttpHandler
@@ -46,6 +48,13 @@ class JobProfilesDownloader(GenericJob):
             "default": "master",
             "possible_values": None,
             "condition": None,
+        },
+        "deletion_mode": {
+            "type": str,
+            "required": False,
+            "default": DEFAULT_DELETION_POLICY,
+            "possible_values": get_args(DeletionPolicy),
+            "condition": "in",
         },
         "protocol": {
             "type": str,
@@ -96,6 +105,7 @@ class JobProfilesDownloader(GenericJob):
                 downloader = RemoteGitHandler(
                     source_repository_url=self.options.get("source"),
                     branch_to_use=self.options.get("branch", "master"),
+                    deletion_mode=self.options.get("deletion_mode"),
                 )
             elif self.options.get("source").startswith("file://"):
                 downloader = LocalGitHandler(
