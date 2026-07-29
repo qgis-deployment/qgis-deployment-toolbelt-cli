@@ -25,6 +25,7 @@ from qgis_deployment_toolbelt.__about__ import __title_clean__, __version__
 from qgis_deployment_toolbelt.utils.formatters import convert_octets
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
+from qgis_deployment_toolbelt.utils.trash_or_delete import move_files_to_trash_or_delete
 
 
 # ############################################################################
@@ -108,7 +109,7 @@ def download_remote_file_to_local(
     # check if file exists
     if local_file_path.exists():
         logger.info(f"{local_file_path} already exists. It's about to be replaced.")
-        local_file_path.unlink(missing_ok=True)
+        move_files_to_trash_or_delete(files_to_trash=local_file_path)
 
     # make sure parents folder exist
     local_file_path.parent.mkdir(parents=True, exist_ok=True)
