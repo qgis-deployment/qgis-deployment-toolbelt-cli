@@ -18,13 +18,11 @@ import logging
 from pathlib import Path
 
 # project
+from qgis_deployment_toolbelt.constants import DeletionPolicy
 from qgis_deployment_toolbelt.profiles.profiles_handler_base import (
     RemoteProfilesHandlerBase,
 )
 from qgis_deployment_toolbelt.utils.check_path import check_path, check_var_can_be_path
-
-
-# 3rd party
 
 
 # #############################################################################
@@ -46,6 +44,7 @@ class LocalGitHandler(RemoteProfilesHandlerBase):
         source_repository_path_or_uri: str | Path,
         source_repository_type: str = "git_local",
         branch_to_use: str | None = None,
+        deletion_mode: DeletionPolicy | None = None,
     ) -> None:
         """Constructor.
 
@@ -56,7 +55,9 @@ class LocalGitHandler(RemoteProfilesHandlerBase):
             NotGitRepository: if uri_or_path doesn't point to a valid Git repository
         """
         super().__init__(
-            source_repository_type=source_repository_type, branch_to_use=branch_to_use
+            source_repository_type=source_repository_type,
+            branch_to_use=branch_to_use,
+            deletion_mode=deletion_mode,
         )
 
         # clean up

@@ -26,6 +26,7 @@ from dulwich.repo import Repo
 from giturlparse import GitUrlParsed, parse as git_parse, validate as git_validate
 
 # project
+from qgis_deployment_toolbelt.constants import DeletionPolicy
 from qgis_deployment_toolbelt.utils import proxies
 from qgis_deployment_toolbelt.utils.check_path import check_folder_is_empty
 from qgis_deployment_toolbelt.utils.trash_or_delete import move_files_to_trash_or_delete
@@ -72,6 +73,7 @@ class RemoteProfilesHandlerBase:
             "git_local", "git_remote", "http", "local", "remote"
         ],
         branch_to_use: str | None = None,
+        deletion_mode: DeletionPolicy | None = None,
     ) -> None:
         """Object instanciation.
 
@@ -83,6 +85,8 @@ class RemoteProfilesHandlerBase:
         """
         self.DESTINATION_BRANCH_TO_USE = branch_to_use
         self.SOURCE_REPOSITORY_TYPE = source_repository_type
+
+        self.deletion_mode: DeletionPolicy | None = deletion_mode
 
         # set dulwich log level to avoid too much verbosity
         logging.getLogger("dulwich").setLevel(int(getenv("QDT_LOGS_DULWICH_LEVEL", 20)))
@@ -532,13 +536,16 @@ class RemoteProfilesHandlerBase:
                         "Clone fail 1/2. Removing target folder and trying again..."
                     )
                     move_files_to_trash_or_delete(
-                        files_to_trash=to_local_destination_path
+                        files_to_trash=to_local_destination_path,
+                        policy=self.deletion_mode,
                     )
                     return self.clone_or_pull(
                         to_local_destination_path=to_local_destination_path, attempt=2
                     )
                 logger.critical("Clone fail 2/2. Abort.")
-                move_files_to_trash_or_delete(files_to_trash=to_local_destination_path)
+                move_files_to_trash_or_delete(
+                    files_to_trash=to_local_destination_path, policy=self.deletion_mode
+                )
                 raise err
         elif to_local_destination_path.exists() and self.is_valid_git_repository(
             source_repository_path_or_url=to_local_destination_path,
@@ -555,7 +562,9 @@ class RemoteProfilesHandlerBase:
                     f"{self.SOURCE_REPOSITORY_PATH_OR_URL} "
                     f"to {to_local_destination_path.resolve()}. Trace: {error}."
                 )
-                move_files_to_trash_or_delete(files_to_trash=to_local_destination_path)
+                move_files_to_trash_or_delete(
+                    files_to_trash=to_local_destination_path, policy=self.deletion_mode
+                )
                 return self.clone_or_pull(
                     to_local_destination_path=to_local_destination_path
                 )
@@ -569,7 +578,9 @@ class RemoteProfilesHandlerBase:
                     f"repository to {to_local_destination_path.resolve()}. Trace: {error}."
                     "Trying to remove the local folder and cloning again..."
                 )
-                move_files_to_trash_or_delete(files_to_trash=to_local_destination_path)
+                move_files_to_trash_or_delete(
+                    files_to_trash=to_local_destination_path, policy=self.deletion_mode
+                )
                 return self.clone_or_pull(
                     to_local_destination_path=to_local_destination_path
                 )
