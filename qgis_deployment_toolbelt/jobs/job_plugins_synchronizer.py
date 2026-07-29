@@ -17,9 +17,11 @@ import logging
 from datetime import datetime, timezone
 from pathlib import Path
 from shutil import ReadError, unpack_archive
+from typing import get_args
 
 # package
 from qgis_deployment_toolbelt.__about__ import __version_clean__
+from qgis_deployment_toolbelt.constants import DEFAULT_DELETION_POLICY, DeletionPolicy
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
@@ -51,6 +53,13 @@ class JobPluginsSynchronizer(GenericJob):
             "required": False,
             "default": "create_or_restore",
             "possible_values": ("create", "create_or_restore", "remove"),
+            "condition": "in",
+        },
+        "deletion_mode": {
+            "type": str,
+            "required": False,
+            "default": DEFAULT_DELETION_POLICY,
+            "possible_values": get_args(DeletionPolicy),
             "condition": "in",
         },
         "profile_ref": {
@@ -249,7 +258,8 @@ class JobPluginsSynchronizer(GenericJob):
                     )
                     try:
                         move_files_to_trash_or_delete(
-                            files_to_trash=plugin_installed_folder
+                            files_to_trash=plugin_installed_folder,
+                            policy=self.options.get("deletion_mode"),
                         )
                     except OSError as err:
                         logger.error(

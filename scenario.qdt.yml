@@ -54,6 +54,7 @@ steps:
     uses: qplugins-synchronizer
     with:
       action: create_or_restore
+      deletion_mode: "force_delete"
       profile_ref: installed
 
   - name: Create shortcuts for profiles
