@@ -42,8 +42,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # defaults
-DELETION_POLICY = Literal["force_delete", "trash_only", "trash_or_delete"]
-DEFAULT_DELETION_POLICY: DELETION_POLICY = "trash_or_delete"
+DeletionPolicy = Literal["force_delete", "trash_only", "trash_or_delete"]
+DEFAULT_DELETION_POLICY: DeletionPolicy = "trash_or_delete"
 DEFAULT_QDT_WORKING_FOLDER = Path.home().joinpath(".cache/qgis-deployment-toolbelt")
 
 # files to ignore when copying profiles. TODO: make it configurable?

@@ -23,7 +23,7 @@ from typing import get_args
 from send2trash import send2trash
 
 # project
-from qgis_deployment_toolbelt.constants import DEFAULT_DELETION_POLICY, DELETION_POLICY
+from qgis_deployment_toolbelt.constants import DEFAULT_DELETION_POLICY, DeletionPolicy
 
 
 # #############################################################################
@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 # ##################################
 
 
-def get_deletion_policy() -> DELETION_POLICY:
+def get_deletion_policy() -> DeletionPolicy:
     """Resolve the deletion policy from the ``QDT_DELETION_POLICY`` environment
     variable, falling back to the default when unset or invalid.
 
@@ -49,11 +49,11 @@ def get_deletion_policy() -> DELETION_POLICY:
     deletion_policy_from_env = (
         getenv("QDT_DELETION_POLICY", DEFAULT_DELETION_POLICY).strip().lower()
     )
-    if deletion_policy_from_env not in get_args(DELETION_POLICY):
+    if deletion_policy_from_env not in get_args(DeletionPolicy):
         logger.warning(
             "Invalid value for 'QDT_DELETION_POLICY' environment variable: "
             f"'{deletion_policy_from_env}'. "
-            f"Valid values are: {', '.join(get_args(DELETION_POLICY))}. "
+            f"Valid values are: {', '.join(get_args(DeletionPolicy))}. "
             f"Falling back to the default: '{DEFAULT_DELETION_POLICY}'."
         )
         deletion_policy_from_env = DEFAULT_DELETION_POLICY
@@ -79,7 +79,7 @@ def _permanently_delete(path: Path) -> None:
 def move_files_to_trash_or_delete(
     files_to_trash: list[Path] | Path,
     delete_file_per_file: bool = False,
-    policy: DELETION_POLICY | None = None,
+    policy: DeletionPolicy | None = None,
 ) -> None:
     """Remove files or folders from disk, according to a deletion policy.
 
