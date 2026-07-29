@@ -22,6 +22,7 @@ import requests
 
 # project
 from qgis_deployment_toolbelt.__about__ import __title_clean__, __version__
+from qgis_deployment_toolbelt.constants import DeletionPolicy
 from qgis_deployment_toolbelt.profiles.profiles_handler_base import (
     RemoteProfilesHandlerBase,
 )
@@ -63,6 +64,7 @@ class HttpHandler(RemoteProfilesHandlerBase):
         self,
         source_repository_path_or_uri: str,
         source_repository_type: str = "http",
+        deletion_mode: DeletionPolicy | None = None,
     ) -> None:
         """Constructor.
 
@@ -72,7 +74,9 @@ class HttpHandler(RemoteProfilesHandlerBase):
         self.SOURCE_REPOSITORY_PATH_OR_URL = url_ensure_trailing_slash(
             source_repository_path_or_uri
         )
-        super().__init__(source_repository_type=source_repository_type)
+        super().__init__(
+            source_repository_type=source_repository_type, deletion_mode=deletion_mode
+        )
 
     def download(self, destination_local_path: Path):
         """Generic wrapper around the specific logic of this handler.

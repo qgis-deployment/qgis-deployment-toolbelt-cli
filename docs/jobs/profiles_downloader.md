@@ -76,6 +76,14 @@ With repository on [UNC path](https://en.wikipedia.org/wiki/Path_(computing)#Uni
 
 Name of the branch to use when working with a git repository.
 
+### deletion_mode
+
+[Deletion policy](../usage/settings.md#deletion-policy) to apply when it comes to removing files from the end-user disk.
+
+Possible_values: see [Deletion policy](../usage/settings.md#deletion-policy) section in configuration page.
+
+Default: `trash_or_delete`
+
 ### protocol
 
 Set which protocol to use.

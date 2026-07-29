@@ -38,6 +38,7 @@ steps:
       source: https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli.git
       protocol: git_remote
       branch: main
+      deletion_mode: "trash_or_delete"
 
   - name: Synchronize downloaded profiles with installed ones
     uses: qprofiles-synchronizer
