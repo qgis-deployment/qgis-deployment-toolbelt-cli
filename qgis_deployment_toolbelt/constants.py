@@ -24,7 +24,7 @@ from os.path import expanduser, expandvars
 from pathlib import Path
 from shutil import ignore_patterns, which
 from sys import platform as opersys
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 # package
 from qgis_deployment_toolbelt.utils.check_path import check_path
@@ -42,6 +42,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # defaults
+DeletionPolicy = Literal["force_delete", "trash_only", "trash_or_delete"]
+DEFAULT_DELETION_POLICY: DeletionPolicy = "trash_or_delete"
 DEFAULT_QDT_WORKING_FOLDER = Path.home().joinpath(".cache/qgis-deployment-toolbelt")
 
 # files to ignore when copying profiles. TODO: make it configurable?
