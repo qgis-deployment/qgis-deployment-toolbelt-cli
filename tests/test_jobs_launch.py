@@ -58,3 +58,22 @@ class TestJobsLaunch(unittest.TestCase):
                 job_id=step.get("uses"), options=step.get("with")
             )
             self.assertIsNotNone(job)
+
+    def test_cleanup_manager_full_scenario(self):
+        """Validate a full scenario fixture using cleanup-manager."""
+        scenario_path = Path(
+            "tests/fixtures/scenarios/scenario_cleanup_manager.qdt.yml"
+        )
+        scenario = ScenarioReader(in_yaml=scenario_path)
+
+        is_valid, errors = scenario.validate_scenario()
+        self.assertTrue(is_valid)
+        self.assertEqual(errors, [])
+
+        orchestrator = JobsOrchestrator()
+        for step in scenario.steps:
+            self.assertEqual(step.get("uses"), "cleanup-manager")
+            job = orchestrator.init_job_class_from_id(
+                job_id=step.get("uses"), options=step.get("with")
+            )
+            self.assertIsNotNone(job)
