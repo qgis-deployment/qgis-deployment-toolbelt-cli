@@ -30,6 +30,14 @@ Possible_values:
 - `create_or_restore`: add plugins if not present and replace eventual existing one
 - `remove`: remove plugins which are not listed
 
+### deletion_mode
+
+[Deletion policy](../usage/settings.md#deletion-policy) to apply when it comes to removing files from the end-user disk.
+
+Possible_values: see [Deletion policy](../usage/settings.md#deletion-policy) section in configuration page.
+
+Default: `trash_or_delete`
+
 ### profile_ref
 
 Which `profile.json` file to use as reference.
