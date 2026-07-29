@@ -20,7 +20,7 @@ from shutil import rmtree
 from typing import get_args
 
 # 3rd party library
-from send2trash import TrashPermissionError, send2trash
+from send2trash import send2trash
 
 # project
 from qgis_deployment_toolbelt.constants import DEFAULT_DELETION_POLICY, DELETION_POLICY
@@ -125,7 +125,7 @@ def move_files_to_trash_or_delete(
         try:
             send2trash(paths=files_to_trash)
             logger.debug(f"{len(files_to_trash)} files have been moved to the trash.")
-        except (TrashPermissionError, OSError) as err:
+        except OSError as err:
             logger.exception(
                 f"Moving {len(files_to_trash)} files to the trash in a single batch "
                 f"operation failed. Let's try it file per file. Trace: {err}"
@@ -143,7 +143,7 @@ def move_files_to_trash_or_delete(
             try:
                 send2trash(paths=file_to_trash)
                 logger.debug(f"{file_to_trash} has been moved to the trash.")
-            except (TrashPermissionError, OSError) as err:
+            except OSError as err:
                 if policy == "trash_only":
                     logger.warning(
                         f"Unable to move {file_to_trash} to the trash and policy is "
