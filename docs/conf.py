@@ -161,6 +161,7 @@ mermaid_version = "11.6.0"
 
 # MyST Parser
 myst_enable_extensions = [
+    "alert",
     "colon_fence",
     "deflist",
     "html_admonition",
