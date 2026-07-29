@@ -41,8 +41,8 @@ Some others parameters can be set using environment variables.
 Settable through the `QDT_DELETION_POLICY` environment variable.
 
 - `trash_only`: only try the system trash. If it fails, the item is left untouched on disk and a warning is logged.
-- `trash_or_delete` (default, historical QDT behavior): try the trash first, then permanently delete on failure.
-- `force_delete`: skip the trash entirely, always permanently delete.
+- `trash_or_delete` (default): try the trash first, then permanently delete on failure.
+- `force_delete` (QDT behavior before version 0.44.0): skip the trash entirely, always permanently delete.
 
 ----
 
