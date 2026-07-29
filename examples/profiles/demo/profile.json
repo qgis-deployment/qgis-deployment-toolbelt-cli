@@ -7,15 +7,15 @@
   "email": "infos+qdt@oslandia.com",
   "icon": "images/icon_shortcut_qdt_demo.ico",
   "qgisMinimumVersion": "3.28.0",
-  "qgisMaximumVersion": "3.99.10",
-  "version": "1.0.0",
+  "qgisMaximumVersion": "4.99.15",
+  "version": "1.1.0",
   "plugins": [
     {
+      "folder_name": "profile_manager",
       "name": "Profile Manager",
-      "folder_name": "profile-manager",
       "official_repository": true,
-      "plugin_id": 2515,
-      "version": "0.31"
+      "plugin_id": 3547,
+      "version": "0.7.4"
     }
   ]
 }
