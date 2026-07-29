@@ -46,6 +46,8 @@ DeletionPolicy = Literal["force_delete", "trash_only", "trash_or_delete"]
 DEFAULT_DELETION_POLICY: DeletionPolicy = "trash_or_delete"
 DEFAULT_QDT_WORKING_FOLDER = Path.home().joinpath(".cache/qgis-deployment-toolbelt")
 
+MANAGED_PLUGINS_MANIFEST_FILENAME: str = ".qdt-managed-plugins.json"
+
 # files to ignore when copying profiles. TODO: make it configurable?
 COPY_IGNORED_PATTERNS: Callable = ignore_patterns("*.lnk", "thumbs.db", ".DS_Store")
 
