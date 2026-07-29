@@ -24,6 +24,9 @@
         "maxLength": 255,
         "oneOf": [
           {
+            "const": "cleanup-manager"
+          },
+          {
             "const": "default-profile-setter"
           },
           {
@@ -65,6 +68,16 @@
       }
     },
     "oneOf": [
+      {
+        "properties": {
+          "uses": {
+            "const": "cleanup-manager"
+          },
+          "with": {
+            "$ref": "cleanup-manager.json"
+          }
+        }
+      },
       {
         "properties": {
           "uses": {

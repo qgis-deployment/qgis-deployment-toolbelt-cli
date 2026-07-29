@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/docs/schemas/scenario/jobs/cleanup-manager.json",
+  "description": "Job in charge of cleaning up stale resources related to previous QDT deployments.",
+  "title": "QDT Cleanup Manager",
+  "type": "object",
+  "properties": {
+    "deletion_mode": {
+      "default": "trash_or_delete",
+      "description": "Deletion policy to apply when it comes to removing files from the end-user disk.",
+      "enum": [
+        "force_delete",
+        "trash_only",
+        "trash_or_delete"
+      ],
+      "type": "string"
+    },
+    "dry_run": {
+      "default": false,
+      "description": "Only display what would be removed, without deleting anything.",
+      "type": "boolean"
+    },
+    "report": {
+      "default": false,
+      "description": "Generates a report of the cleanup operation. Automatically enabled in dry-run mode.",
+      "type": "boolean"
+    },
+    "scopes": {
+      "default": [
+        "plugins_cache"
+      ],
+      "description": "Scope(s) of the cleanup.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "plugins_cache",
+          "plugins_installed"
+        ]
+      }
+    }
+  }
+}

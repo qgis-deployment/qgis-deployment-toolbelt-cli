@@ -364,7 +364,7 @@ class GenericJob:
             option_possible_values: tuple[str, ...] | None = option_def.get(
                 "possible_values"
             )
-
+            # check if the value starts with a specific string
             if option_condition == "startswith" and not option_value.startswith(
                 option_possible_values
             ):
@@ -375,6 +375,7 @@ class GenericJob:
                     condition="startswith",
                     accepted_values=option_possible_values,
                 )
+            # check if the value is in a closed set of possible values
             elif (
                 option_condition == "in" and option_value not in option_possible_values
             ):
@@ -385,6 +386,16 @@ class GenericJob:
                     condition="in",
                     accepted_values=option_def.get("possible_values"),
                 )
+            # check if all values are in a closed set of possible values
+            elif option_condition == "all_in":
+                if not all(item in option_possible_values for item in option_value):
+                    raise JobOptionBadValueError(
+                        job_id=self.ID,
+                        bad_option_name=option_name,
+                        bad_option_value=option_value,
+                        condition="all_in",
+                        accepted_values=option_def.get("possible_values"),
+                    )
 
         return options
 
