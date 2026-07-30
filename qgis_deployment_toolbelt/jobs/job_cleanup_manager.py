@@ -117,6 +117,9 @@ class JobCleanupManager(GenericJob):
             logger.debug("Cleaning-up outdated plugins from installed QGIS profiles...")
             self.cleanup_plugins_installed()
 
+        # remove files/folders
+        self._remove_paths()
+
         logger.info(
             f"Job {self.ID} ran successfully. "
             f"{len(self.report.removed)} resource(s) removed"
@@ -164,9 +167,7 @@ class JobCleanupManager(GenericJob):
                 )
         return referenced
 
-    def cleanup_plugins_cache(
-        self,
-    ) -> None:
+    def cleanup_plugins_cache(self) -> None:
         """Remove plugin archives from the QDT plugins cache folder which are not
         referenced by any installed or downloaded profile anymore.
         """
@@ -185,7 +186,7 @@ class JobCleanupManager(GenericJob):
         for archive in sorted(self.qdt_plugins_folder.glob("*.zip")):
             if archive.stem in referenced_ids:
                 continue
-            self._remove_path(path_to_be_removed=archive)
+            self.report.removed.append(archive)
 
     def cleanup_plugins_installed(self) -> None:
         """Remove stale plugin folders from installed QGIS profiles.
@@ -228,7 +229,7 @@ class JobCleanupManager(GenericJob):
                 if not plugin_path.exists() or plugin_path in referenced_folders:
                     continue
 
-                self._remove_path(path_to_be_removed=plugin_path)
+                self.report.removed.append(plugin_path)
 
     @staticmethod
     def _read_qdt_managed_plugins_manifest(manifest_path: Path) -> dict[str, dict]:
@@ -256,23 +257,21 @@ class JobCleanupManager(GenericJob):
 
         return {}
 
-    def _remove_path(self, path_to_be_removed: Path) -> None:
-        """Remove a file or folder, updating the report accordingly.
+    def _remove_paths(self) -> None:
+        """Remove files and folders listed in the ``self.report.removed``."""
 
-        Args:
-            path_to_be_removed (Path): folder or file path to remove
-        """
+        # in dry mode, just log what would be removed, without actually removing anything
         if self.options.get("dry_run", False):
-            logger.info(f"[dry-run] Would remove: {path_to_be_removed}")
-            self.report.removed.append(path_to_be_removed)
+            for path_to_be_removed in self.report.removed:
+                logger.info(f"[dry-run] Would remove: {path_to_be_removed}")
             return
 
-        try:
-            move_files_to_trash_or_delete(
-                files_to_trash=[path_to_be_removed],
-                policy=self.options.get("deletion_mode"),
-            )
-            self.report.removed.append(path_to_be_removed)
-        except Exception as err:
-            logger.exception(f"Failed to remove {path_to_be_removed}. Trace: {err}")
-            self.report.failed.append((path_to_be_removed, str(err)))
+        # remove files/folders
+        logger.debug(
+            f"Removing {len(self.report.removed)} path(s) using "
+            f"'{self.options.get('deletion_mode')}' policy."
+        )
+        move_files_to_trash_or_delete(
+            files_to_trash=self.report.removed,
+            policy=self.options.get("deletion_mode"),
+        )
