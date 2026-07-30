@@ -23,6 +23,14 @@ Sample job configuration in your scenario file:
 
 ## Options
 
+### deletion_mode
+
+[Deletion policy](../usage/settings.md#deletion-policy) to apply when it comes to removing files from the end-user disk.
+
+Possible_values: see [Deletion policy](../usage/settings.md#deletion-policy) section in configuration page.
+
+Default: `trash_or_delete`
+
 ### dry_run
 
 If true, no file or folder is deleted. QDT only reports what would be removed.
