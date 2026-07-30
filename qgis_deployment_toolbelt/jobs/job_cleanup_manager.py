@@ -44,7 +44,7 @@ class CleanupReport:
     """Structure to summarize a cleanup."""
 
     removed: list[Path] = field(default_factory=list)
-    failed: list[tuple[Path, str]] = field(default_factory=list)
+    failed: list[Path] = field(default_factory=list)
 
     def __len__(self) -> int:
         """Number of resources actually removed (or that would be, in dry-run mode).
@@ -267,7 +267,7 @@ class JobCleanupManager(GenericJob):
 
         # remove files/folders
         logger.debug(f"Removing {len(self.report.removed)} path(s)")
-        move_files_to_trash_or_delete(
+        self.report.failed = move_files_to_trash_or_delete(
             files_to_trash=self.report.removed,
             policy=self.options.get("deletion_mode"),
         )

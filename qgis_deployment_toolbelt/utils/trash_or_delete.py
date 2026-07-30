@@ -80,7 +80,7 @@ def move_files_to_trash_or_delete(
     files_to_trash: list[Path] | Path,
     delete_file_per_file: bool = False,
     policy: DeletionPolicy | None = None,
-) -> None:
+) -> list[Path]:
     """Remove files or folders from disk, according to a deletion policy.
 
     Args:
@@ -93,7 +93,12 @@ def move_files_to_trash_or_delete(
         policy (DELETION_POLICY | None, optional): deletion policy to apply.
             If None, it's resolved from the ``QDT_DELETION_POLICY``
             environment variable. Defaults to None.
+
+    Returns:
+        list[Path]: list of paths that failed to be removed (empty if all succeeded).
     """
+    li_failed_to_remove: list[Path] = []
+
     # make sure it's a list
     if isinstance(files_to_trash, Path):
         files_to_trash = [
@@ -102,7 +107,7 @@ def move_files_to_trash_or_delete(
 
     if not len(files_to_trash):
         logger.debug("Nothing to remove: empty list of paths.")
-        return
+        return li_failed_to_remove
 
     # resolve policy with priority to the explicit argument over env var
     if policy is None:
@@ -117,14 +122,17 @@ def move_files_to_trash_or_delete(
                 _permanently_delete(path)
                 logger.debug(f"{path} has been permanently deleted (force_delete).")
             except OSError as err:
+                li_failed_to_remove.append(path)
                 logger.exception(f"Unable to permanently delete {path}. Trace: {err}")
-        return
+        return li_failed_to_remove
 
     # -- trash_only / trash_or_delete: first try a batch trash operation
     if not delete_file_per_file:
         try:
             send2trash(paths=files_to_trash)
-            logger.debug(f"{len(files_to_trash)} files have been moved to the trash.")
+            logger.debug(
+                f"{len(files_to_trash)} files have been moved to the trash: {','.join(str(p) for p in files_to_trash)}"
+            )
         except OSError as err:
             logger.exception(
                 f"Moving {len(files_to_trash)} files to the trash in a single batch "
@@ -137,7 +145,8 @@ def move_files_to_trash_or_delete(
             )
     else:
         logger.debug(
-            f"Moving (or deleting) {len(files_to_trash)} files to trash: attempt 2"
+            f"Moving (or deleting) {len(files_to_trash)} files to trash, using a file "
+            f"per file operation (policy: '{policy}')."
         )
         for file_to_trash in files_to_trash:
             try:
@@ -149,6 +158,7 @@ def move_files_to_trash_or_delete(
                         f"Unable to move {file_to_trash} to the trash and policy is "
                         f"'{policy}'. It's left untouched. Trace: {err}"
                     )
+                    li_failed_to_remove.append(file_to_trash)
                     continue
                 logger.warning(
                     f"Unable to move {file_to_trash} to the trash. Trace: {err}. "
@@ -162,3 +172,6 @@ def move_files_to_trash_or_delete(
                         f"An error occurred trying to delete {file_to_trash}. "
                         f"Trace: {err_delete}"
                     )
+                    li_failed_to_remove.append(file_to_trash)
+
+    return li_failed_to_remove
