@@ -151,20 +151,25 @@ class JobCleanupManager(GenericJob):
                 referenced.update(p.id_with_version for p in profile.plugins)
         return referenced
 
-    def _referenced_plugin_installation_folders(self) -> set[str]:
-        """Union of plugin installation folder names referenced by every installed
+    def _referenced_plugin_installation_folders(self) -> set[Path]:
+        """Union of plugin installation path referenced by every installed
         and downloaded profile currently known to QDT.
 
         Returns:
-            set[str]: plugin folder names as used in QGIS/{profile_name}/python/plugins/
+            set[Path]: plugin folder paths
         """
-        referenced: set[str] = set()
+        referenced: set[Path] = set()
         for lister in (self.list_installed_profiles, self.list_downloaded_profiles):
             profiles = lister()
             if not profiles:
                 continue
             for profile in profiles:
-                referenced.update(p.installation_folder_name for p in profile.plugins)
+                referenced.update(
+                    profile.path_in_qgis.joinpath(
+                        "python/plugins", p.installation_folder_name
+                    )
+                    for p in profile.plugins
+                )
         return referenced
 
     def cleanup_plugins_cache(
@@ -208,7 +213,7 @@ class JobCleanupManager(GenericJob):
         )
 
         for profile in installed_profiles:
-            profile_plugins_folder = profile.path_in_qgis / "python/plugins"
+            profile_plugins_folder = profile.path_in_qgis.joinpath("python/plugins")
             if not profile_plugins_folder.is_dir():
                 continue
 
@@ -219,7 +224,7 @@ class JobCleanupManager(GenericJob):
 
             for plugin_folder_name in sorted(managed_plugins):
                 plugin_path = profile_plugins_folder / plugin_folder_name
-                if not plugin_path.exists() or plugin_folder_name in referenced_folders:
+                if not plugin_path.exists() or plugin_path in referenced_folders:
                     continue
 
                 self._remove_path(path_to_be_removed=plugin_path)
