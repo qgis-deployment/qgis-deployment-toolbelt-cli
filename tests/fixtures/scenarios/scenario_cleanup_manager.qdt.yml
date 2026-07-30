@@ -15,15 +15,13 @@ steps:
     uses: cleanup-manager
     with:
       dry_run: true
-      report: true
       scopes:
         - plugins_installed
 
   - name: Cleanup plugins cache and installed plugins
     uses: cleanup-manager
     with:
-      dry_run: true
-      report: true
+      dry_run: false
       scopes:
         - plugins_cache
         - plugins_installed
