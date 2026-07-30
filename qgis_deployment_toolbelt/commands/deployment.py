@@ -214,8 +214,8 @@ def run(args: argparse.Namespace):
         if step.get("uses") not in orchestrator.jobs_ids:
             logger.warning(f"{step.get('uses')} not found in available jobs. Skipping.")
             continue
-        else:
-            steps_ok.append(step)
+
+        steps_ok.append(step)
 
     # run job
     for step in steps_ok:
