@@ -215,11 +215,20 @@ class JobCleanupManager(GenericJob):
         for profile in installed_profiles:
             profile_plugins_folder = profile.path_in_qgis.joinpath("python/plugins")
             if not profile_plugins_folder.is_dir():
+                logger.debug(
+                    f"No plugins folder found under profile '{profile.name}': {profile_plugins_folder}"
+                )
                 continue
 
-            manifest_path = profile_plugins_folder / MANAGED_PLUGINS_MANIFEST_FILENAME
+            manifest_path = profile_plugins_folder.joinpath(
+                MANAGED_PLUGINS_MANIFEST_FILENAME
+            )
             managed_plugins = self._read_qdt_managed_plugins_manifest(manifest_path)
             if not managed_plugins:
+                logger.debug(
+                    f"No plugins managed by QDT in profile '{profile.name}' "
+                    f"('{profile.path_in_qgis}'). Skipping cleanup of this profile."
+                )
                 continue
 
             for plugin_folder_name in sorted(managed_plugins):
