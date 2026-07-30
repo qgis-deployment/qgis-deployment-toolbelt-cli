@@ -92,7 +92,6 @@ steps:
     uses: cleanup-manager
     with:
       dry_run: false
-      report: true
       scopes:
         - plugins_cache
         - plugins_installed

@@ -37,12 +37,6 @@ If true, no file or folder is deleted. QDT only reports what would be removed.
 
 Default: `false`
 
-### report
-
-If true, the job returns a cleanup report with removed, failed and skipped entries.
-
-Default: `false`
-
 ### scopes
 
 Scope(s) of the cleanup.

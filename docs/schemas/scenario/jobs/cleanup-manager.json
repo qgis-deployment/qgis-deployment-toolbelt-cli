@@ -20,11 +20,6 @@
       "description": "Only display what would be removed, without deleting anything.",
       "type": "boolean"
     },
-    "report": {
-      "default": false,
-      "description": "Generates a report of the cleanup operation. Automatically enabled in dry-run mode.",
-      "type": "boolean"
-    },
     "scopes": {
       "default": [
         "plugins_cache"

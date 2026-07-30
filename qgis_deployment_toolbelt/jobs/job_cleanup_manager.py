@@ -77,13 +77,6 @@ class JobCleanupManager(GenericJob):
             "possible_values": None,
             "condition": None,
         },
-        "report": {
-            "type": bool,
-            "required": False,
-            "default": False,
-            "possible_values": None,
-            "condition": None,
-        },
         "scopes": {
             "type": list,
             "required": False,
@@ -103,6 +96,8 @@ class JobCleanupManager(GenericJob):
         """
         super().__init__()
         self.options: dict = self.validate_options(options)
+        # create report
+        self.report = CleanupReport()
 
     def run(self) -> CleanupReport:
         """Execute job logic.
@@ -112,8 +107,6 @@ class JobCleanupManager(GenericJob):
         """
         # options
         scopes = self.options.get("scopes", ["plugins_cache"])
-
-        self.report = CleanupReport()
 
         if "plugins_cache" in scopes:
             logger.debug(
