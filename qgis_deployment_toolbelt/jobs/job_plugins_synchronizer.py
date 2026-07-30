@@ -21,7 +21,11 @@ from typing import get_args
 
 # package
 from qgis_deployment_toolbelt.__about__ import __version_clean__
-from qgis_deployment_toolbelt.constants import DEFAULT_DELETION_POLICY, DeletionPolicy
+from qgis_deployment_toolbelt.constants import (
+    DEFAULT_DELETION_POLICY,
+    MANAGED_PLUGINS_MANIFEST_FILENAME,
+    DeletionPolicy,
+)
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
@@ -77,7 +81,6 @@ class JobPluginsSynchronizer(GenericJob):
             "condition": None,
         },
     }
-    QDT_MANAGED_PLUGINS_MANIFEST_FILENAME: str = ".qdt-managed-plugins.json"
 
     def __init__(self, options: dict) -> None:
         """Instantiate the class.
@@ -283,9 +286,7 @@ class JobPluginsSynchronizer(GenericJob):
                 continue
 
             # Manifest of profile's plugins managed by QDT
-            manifest_path = (
-                profile_plugins_folder / self.QDT_MANAGED_PLUGINS_MANIFEST_FILENAME
-            )
+            manifest_path = profile_plugins_folder / MANAGED_PLUGINS_MANIFEST_FILENAME
             if manifest_path not in qdt_managed_plugins_manifests:
                 qdt_managed_plugins_manifests[manifest_path] = (
                     self._read_qdt_managed_plugins_manifest(manifest_path=manifest_path)

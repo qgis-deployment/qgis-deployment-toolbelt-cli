@@ -64,6 +64,12 @@ class TestJobGeneric(unittest.TestCase):
                 "condition": None,
                 "possible_values": None,
             },
+            "option_four": {
+                "type": list,
+                "required": False,
+                "condition": "all_in",
+                "possible_values": ("plugins_cache", "plugins_installed"),
+            },
         }
 
     # -- TESTS ---------------------------------------------------------
@@ -174,3 +180,13 @@ class TestJobGeneric(unittest.TestCase):
 
         with self.assertRaises(JobOptionBadValueTypeError):
             self.generic_job.validate_options(bad_options)
+
+    def test_validate_options_bad_condition_all_in(self):
+        """Test validate_options method with list values bound to a closed set."""
+        bad_options_scope = {
+            "option_one": "https://blog.geotribu.net",
+            "option_four": ["plugins_cache", "wrong_scope"],
+        }
+
+        with self.assertRaises(JobOptionBadValueError):
+            self.generic_job.validate_options(bad_options_scope)

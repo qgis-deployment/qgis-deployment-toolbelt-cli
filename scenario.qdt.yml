@@ -87,3 +87,11 @@ steps:
     with:
       profile: qdt_demo
       force_profile_selection_policy: 0
+
+  - name: Cleanup staled resources
+    uses: cleanup-manager
+    with:
+      dry_run: false
+      scopes:
+        - plugins_cache
+        - plugins_installed

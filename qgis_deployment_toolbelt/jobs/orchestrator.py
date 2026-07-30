@@ -17,6 +17,7 @@ from os import environ
 
 # project
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
+from qgis_deployment_toolbelt.jobs.job_cleanup_manager import JobCleanupManager
 from qgis_deployment_toolbelt.jobs.job_default_profile_setter import (
     JobDefaultProfileSetter,
 )
@@ -54,6 +55,7 @@ class JobsOrchestrator:
     """Orchestrate jobs."""
 
     JOBS: tuple = (
+        JobCleanupManager,
         JobDefaultProfileSetter,
         JobEnvironmentVariables,
         JobPluginsDownloader,

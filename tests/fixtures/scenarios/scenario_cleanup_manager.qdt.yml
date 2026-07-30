@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=../../../docs/schemas/scenario/qdt_scenario.json
+
+metadata:
+  title: "Test scenario for cleanup manager"
+  id: test-cleanup-manager-good
+  description: >-
+    Scenario dedicated to validate cleanup-manager configuration options.
+
+settings:
+  DEBUG: false
+  SCENARIO_VALIDATION: true
+
+steps:
+  - name: Cleanup installed plugins only
+    uses: cleanup-manager
+    with:
+      dry_run: true
+      scopes:
+        - plugins_installed
+
+  - name: Cleanup plugins cache and installed plugins
+    uses: cleanup-manager
+    with:
+      dry_run: false
+      scopes:
+        - plugins_cache
+        - plugins_installed

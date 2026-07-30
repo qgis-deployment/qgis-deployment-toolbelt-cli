@@ -23,6 +23,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 # package
+from qgis_deployment_toolbelt.constants import MANAGED_PLUGINS_MANIFEST_FILENAME
 from qgis_deployment_toolbelt.jobs.job_plugins_synchronizer import (
     JobPluginsSynchronizer,
 )
@@ -157,7 +158,7 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
         ) as tmp_dir:
             job = JobPluginsSynchronizer(options={"action": "create_or_restore"})
 
-            manifest_path = Path(tmp_dir) / job.QDT_MANAGED_PLUGINS_MANIFEST_FILENAME
+            manifest_path = Path(tmp_dir) / MANAGED_PLUGINS_MANIFEST_FILENAME
             self.assertFalse(manifest_path.exists())
 
             manifest = job._read_qdt_managed_plugins_manifest(
@@ -173,7 +174,7 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
         ) as tmp_dir:
             job = JobPluginsSynchronizer(options={"action": "create_or_restore"})
 
-            manifest_path = Path(tmp_dir) / job.QDT_MANAGED_PLUGINS_MANIFEST_FILENAME
+            manifest_path = Path(tmp_dir) / MANAGED_PLUGINS_MANIFEST_FILENAME
             manifest_path.write_text("this is not valid json", encoding="UTF-8")
 
             manifest = job._read_qdt_managed_plugins_manifest(
@@ -188,7 +189,7 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
         ) as tmp_dir:
             job = JobPluginsSynchronizer(options={"action": "create_or_restore"})
 
-            manifest_path = Path(tmp_dir) / job.QDT_MANAGED_PLUGINS_MANIFEST_FILENAME
+            manifest_path = Path(tmp_dir) / MANAGED_PLUGINS_MANIFEST_FILENAME
             manifest_path.write_text(
                 json.dumps({"test_plugin": {"plg_version": "1.0.0"}}),
                 encoding="UTF-8",
@@ -252,7 +253,7 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
         ) as tmp_dir:
             job = JobPluginsSynchronizer(options={"action": "create_or_restore"})
 
-            manifest_path = Path(tmp_dir) / job.QDT_MANAGED_PLUGINS_MANIFEST_FILENAME
+            manifest_path = Path(tmp_dir) / MANAGED_PLUGINS_MANIFEST_FILENAME
             job._write_qdt_managed_plugins_manifest(
                 manifest_path=manifest_path,
                 manifest={"test_plugin": {"plg_version": "2.0.0"}},
@@ -288,7 +289,7 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
 
             job.install_plugin_into_profile([(profile, plugin, zip_path)])
 
-            manifest_path = plugins_folder / job.QDT_MANAGED_PLUGINS_MANIFEST_FILENAME
+            manifest_path = plugins_folder / MANAGED_PLUGINS_MANIFEST_FILENAME
             self.assertTrue(manifest_path.is_file())
 
             manifest = json.loads(manifest_path.read_text(encoding="UTF-8"))
@@ -337,7 +338,7 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
                 self.assertEqual(mock_write.call_count, 1)
 
             # both plugins must still be present in the resulting manifest
-            manifest_path = plugins_folder / job.QDT_MANAGED_PLUGINS_MANIFEST_FILENAME
+            manifest_path = plugins_folder / MANAGED_PLUGINS_MANIFEST_FILENAME
             manifest = json.loads(manifest_path.read_text(encoding="UTF-8"))
             self.assertIn("plugin_one", manifest)
             self.assertIn("plugin_two", manifest)
