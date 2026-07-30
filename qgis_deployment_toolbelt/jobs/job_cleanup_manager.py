@@ -19,7 +19,6 @@ from typing import get_args
 
 # package
 from qgis_deployment_toolbelt.constants import (
-    DEFAULT_DELETION_POLICY,
     MANAGED_PLUGINS_MANIFEST_FILENAME,
     DeletionPolicy,
 )
@@ -65,7 +64,7 @@ class JobCleanupManager(GenericJob):
         "deletion_mode": {
             "type": str,
             "required": False,
-            "default": DEFAULT_DELETION_POLICY,
+            "default": None,
             "possible_values": get_args(DeletionPolicy),
             "condition": "in",
         },
@@ -267,10 +266,7 @@ class JobCleanupManager(GenericJob):
             return
 
         # remove files/folders
-        logger.debug(
-            f"Removing {len(self.report.removed)} path(s) using "
-            f"'{self.options.get('deletion_mode')}' policy."
-        )
+        logger.debug(f"Removing {len(self.report.removed)} path(s)")
         move_files_to_trash_or_delete(
             files_to_trash=self.report.removed,
             policy=self.options.get("deletion_mode"),
