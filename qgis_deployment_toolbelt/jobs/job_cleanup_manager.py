@@ -46,7 +46,6 @@ class CleanupReport:
 
     removed: list[Path] = field(default_factory=list)
     failed: list[tuple[Path, str]] = field(default_factory=list)
-    skipped: list[Path] = field(default_factory=list)
 
     def __len__(self) -> int:
         """Number of resources actually removed (or that would be, in dry-run mode).
@@ -103,7 +102,7 @@ class JobCleanupManager(GenericJob):
         """Execute job logic.
 
         Returns:
-            CleanupReport: summary of removed/failed/skipped resources
+            CleanupReport: summary of removed/failed resources
         """
         # options
         scopes = self.options.get("scopes", ["plugins_cache"])
