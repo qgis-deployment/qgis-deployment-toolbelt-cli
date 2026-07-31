@@ -19,7 +19,9 @@ from typing import get_args
 
 # package
 from qgis_deployment_toolbelt.constants import (
+    DEFAULT_CLEANUP_SCOPES,
     MANAGED_PLUGINS_MANIFEST_FILENAME,
+    CleanupScopes,
     DeletionPolicy,
 )
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
@@ -78,11 +80,8 @@ class JobCleanupManager(GenericJob):
         "scopes": {
             "type": list,
             "required": False,
-            "default": ["plugins_cache"],
-            "possible_values": (
-                "plugins_cache",
-                "plugins_installed",
-            ),
+            "default": DEFAULT_CLEANUP_SCOPES,
+            "possible_values": get_args(CleanupScopes),
             "condition": "all_in",
         },
     }
@@ -138,7 +137,7 @@ class JobCleanupManager(GenericJob):
         """
         referenced: set[str] = set()
         for lister in (self.list_installed_profiles, self.list_downloaded_profiles):
-            profiles = lister()
+            profiles = lister(quiet=True)
             if not profiles:
                 continue
             for profile in profiles:
@@ -154,7 +153,7 @@ class JobCleanupManager(GenericJob):
         """
         referenced: set[Path] = set()
         for lister in (self.list_installed_profiles, self.list_downloaded_profiles):
-            profiles = lister()
+            profiles = lister(quiet=True)
             if not profiles:
                 continue
             for profile in profiles:
@@ -193,7 +192,7 @@ class JobCleanupManager(GenericJob):
         Only plugins listed in QDT managed plugins manifests are considered for
         cleanup. Third-party plugins manually installed by users are ignored.
         """
-        installed_profiles = self.list_installed_profiles()
+        installed_profiles = self.list_installed_profiles(quiet=True)
         if not installed_profiles:
             logger.debug("No installed profile found for plugins cleanup.")
             return

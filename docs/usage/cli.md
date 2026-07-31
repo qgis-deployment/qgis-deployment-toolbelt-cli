@@ -19,6 +19,19 @@ This subcommand is defined as default. So `qdt -s [...]` is equivalent to `qdt d
 
 ----
 
+## cleanup
+
+> Remove stale resources related to previous deployments. Also usable as [job](../jobs/cleanup_manager.md).
+
+```{argparse}
+  :module: qgis_deployment_toolbelt.cli
+  :func: build_parser
+  :path: cleanup
+  :prog: qdt
+```
+
+----
+
 ## export-rules-context
 
 > Export rules context in a JSON file.

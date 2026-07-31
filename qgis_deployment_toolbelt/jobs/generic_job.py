@@ -127,34 +127,50 @@ class GenericJob:
         return OSConfiguration.from_opersys()
 
     # -- Methods
-    def list_downloaded_profiles(self) -> tuple[QdtProfile, ...] | None:
+    def list_downloaded_profiles(
+        self, quiet: bool = False
+    ) -> tuple[QdtProfile, ...] | None:
         """List downloaded QGIS profiles, i.e. a profile's folder located into the QDT
             working folder.
             Typically: `~/.cache/qgis-deployment-toolbelt/repositories/geotribu` or
             `%USERPROFILE%/.cache/qgis-deployment-toolbelt/repositories/geotribu`).
+
+        Args:
+            quiet (bool, optional): if True, log the "no profile found" case as debug
+                instead of error. Useful for lookups where an empty result is an
+                expected outcome, not a failure. Defaults to False.
 
         Returns:
             tuple[QdtProfile, ...] | None: tuple of profiles objects or None if no profile
                 folder listed
         """
         return self.filter_profiles_folder(
-            start_parent_folder=self.qdt_downloaded_repositories
+            start_parent_folder=self.qdt_downloaded_repositories, quiet=quiet
         )
 
-    def list_installed_profiles(self) -> tuple[QdtProfile, ...] | None:
+    def list_installed_profiles(
+        self, quiet: bool = False
+    ) -> tuple[QdtProfile, ...] | None:
         """List installed QGIS profiles, i.e. a profile's folder located into the QGIS
             profiles path and so accessible to the end-user through the QGIS interface.
             Typically: `~/.local/share/QGIS/QGIS3/profiles/geotribu` or
             `%APPDATA%/QGIS/QGIS3/profiles/geotribu`).
 
+        Args:
+            quiet (bool, optional): if True, log the "no profile found" case as debug
+                instead of error. Useful for lookups where an empty result is an
+                expected outcome, not a failure. Defaults to False.
+
         Returns:
             tuple[QdtProfile, ...] | None: tuple of profiles objects or None if no profile is
                 installed in QGIS3/profiles
         """
-        return self.filter_profiles_folder(start_parent_folder=self.qgis_profiles_path)
+        return self.filter_profiles_folder(
+            start_parent_folder=self.qgis_profiles_path, quiet=quiet
+        )
 
     def filter_profiles_folder(
-        self, start_parent_folder: Path, cached: bool = True
+        self, start_parent_folder: Path, cached: bool = True, quiet: bool = False
     ) -> tuple[QdtProfile, ...] | None:
         """Parse a folder structure to filter on QGIS profiles folders.
 
@@ -162,6 +178,9 @@ class GenericJob:
             start_parent_folder (Path): root directory to scan for profile.json files.
             cached (bool, optional): return the previously computed result when available.
                 Defaults to True.
+            quiet (bool, optional): if True, log the "no profile found" case as debug
+                instead of error. Set this when an empty folder is an expected outcome
+                rather than a failure condition for the calling job. Defaults to False.
 
         Returns:
             tuple[QdtProfile, ...] | None: tuple of profiles objects matching criteria or
@@ -181,7 +200,10 @@ class GenericJob:
         ]
 
         if not len(li_qgis_qdt_profiles):
-            logger.error(f"No QGIS profile found in {start_parent_folder}.")
+            log_method = logger.debug if quiet else logger.error
+            log_method(
+                f"No QGIS profile managed by QDT found in {start_parent_folder}."
+            )
             self.PROFILES_FOLDER_CACHE[start_parent_folder] = None
             return
 
