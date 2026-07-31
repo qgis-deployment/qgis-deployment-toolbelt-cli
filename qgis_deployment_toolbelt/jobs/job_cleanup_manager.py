@@ -11,7 +11,6 @@ Author: Julien Moura (https://github.com/guts)
 # ##################################
 
 # Standard library
-import json
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -25,6 +24,7 @@ from qgis_deployment_toolbelt.constants import (
     DeletionPolicy,
 )
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
+from qgis_deployment_toolbelt.plugins.manifest import _read_qdt_managed_plugins_manifest
 from qgis_deployment_toolbelt.utils.trash_or_delete import move_files_to_trash_or_delete
 
 
@@ -214,7 +214,7 @@ class JobCleanupManager(GenericJob):
             manifest_path = profile_plugins_folder.joinpath(
                 MANAGED_PLUGINS_MANIFEST_FILENAME
             )
-            managed_plugins = self._read_qdt_managed_plugins_manifest(manifest_path)
+            managed_plugins = _read_qdt_managed_plugins_manifest(manifest_path)
             if not managed_plugins:
                 logger.debug(
                     f"No plugins managed by QDT in profile '{profile.name}' "
@@ -228,32 +228,6 @@ class JobCleanupManager(GenericJob):
                     continue
 
                 self.report.removed.append(plugin_path)
-
-    @staticmethod
-    def _read_qdt_managed_plugins_manifest(manifest_path: Path) -> dict[str, dict]:
-        """Read a QDT managed plugins manifest and return its content.
-
-        Args:
-            manifest_path (Path): profile manifest path
-
-        Returns:
-            dict[str, dict]: parsed manifest content, or an empty mapping
-        """
-        if not manifest_path.is_file():
-            return {}
-
-        try:
-            with manifest_path.open(mode="r", encoding="UTF-8") as in_manifest:
-                manifest = json.load(in_manifest)
-                if isinstance(manifest, dict):
-                    return manifest
-        except Exception as err:
-            logger.warning(
-                f"Unable to parse QDT managed plugins manifest {manifest_path}. "
-                f"Skipping it. Trace: {err}"
-            )
-
-        return {}
 
     def _remove_paths(self) -> None:
         """Remove files and folders listed in the ``self.report.removed``."""
