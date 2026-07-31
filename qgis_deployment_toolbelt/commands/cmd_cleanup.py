@@ -117,7 +117,27 @@ def run(args: argparse.Namespace) -> None:
 
     # report
     if cleanup_report.removed or cleanup_report.failed:
-        print(cleanup_report)  # noqa: T201
+        if cleanup_report.failed:
+            logger.warning(
+                f"Cleanup completed with {len(cleanup_report.failed)} failure(s)."
+            )
+
+        action_label = "Would have removed" if args.cleanup_dry_run else "Removed"
+        printable_report: list[str] = ["\nQDT Cleanup report", "=================="]
+
+        if cleanup_report.removed:
+            printable_report.append(f"{action_label} ({len(cleanup_report.removed)}):")
+            printable_report.extend(
+                f"  - {removed}" for removed in cleanup_report.removed
+            )
+
+        if cleanup_report.failed:
+            if cleanup_report.removed:
+                printable_report.append("")
+            printable_report.append(f"Failed ({len(cleanup_report.failed)}):")
+            printable_report.extend(f"  - {failed}" for failed in cleanup_report.failed)
+
+        print("\n".join(printable_report))  # noqa: T201
     else:
         print("Nothing to clean up.")  # noqa: T201
 
