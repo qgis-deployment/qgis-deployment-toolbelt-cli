@@ -12,21 +12,23 @@ Author: Julien Moura (https://github.com/guts)
 # ##################################
 
 # Standard library
-import json
 import logging
-from datetime import datetime, timezone
 from pathlib import Path
 from shutil import ReadError, unpack_archive
 from typing import get_args
 
 # package
-from qgis_deployment_toolbelt.__about__ import __version_clean__
 from qgis_deployment_toolbelt.constants import (
     DEFAULT_DELETION_POLICY,
     MANAGED_PLUGINS_MANIFEST_FILENAME,
     DeletionPolicy,
 )
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
+from qgis_deployment_toolbelt.plugins.manifest import (
+    _add_plugin_to_manifest,
+    _read_qdt_managed_plugins_manifest,
+    _write_qdt_managed_plugins_manifest,
+)
 from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 from qgis_deployment_toolbelt.utils.trash_or_delete import move_files_to_trash_or_delete
@@ -289,9 +291,9 @@ class JobPluginsSynchronizer(GenericJob):
             manifest_path = profile_plugins_folder / MANAGED_PLUGINS_MANIFEST_FILENAME
             if manifest_path not in qdt_managed_plugins_manifests:
                 qdt_managed_plugins_manifests[manifest_path] = (
-                    self._read_qdt_managed_plugins_manifest(manifest_path=manifest_path)
+                    _read_qdt_managed_plugins_manifest(manifest_path=manifest_path)
                 )
-            self._add_plugin_to_manifest(
+            _add_plugin_to_manifest(
                 manifest=qdt_managed_plugins_manifests[manifest_path], plugin=plugin
             )
 
@@ -303,64 +305,9 @@ class JobPluginsSynchronizer(GenericJob):
 
         # save manifests
         for manifest_path, manifest in qdt_managed_plugins_manifests.items():
-            self._write_qdt_managed_plugins_manifest(
+            _write_qdt_managed_plugins_manifest(
                 manifest_path=manifest_path, manifest=manifest
             )
-
-    # manifest management
-    def _add_plugin_to_manifest(
-        self, manifest: dict[str, dict[str, str]], plugin: QgisPlugin
-    ) -> None:
-        """Add/update a plugin to the QDT profile manifest.
-
-        Args:
-            manifest (dict[str, dict[str, str]]): manifest dict to amend, in place
-            plugin (QgisPlugin): plugin that has just been installed
-        """
-        manifest[plugin.installation_folder_name] = {
-            "installed_at": datetime.now(tz=timezone.utc).isoformat(),
-            "plg_id": f"{plugin.plugin_id}",
-            "plg_version": plugin.version,
-            "qdt_version": f"{__version_clean__}",
-        }
-
-    def _read_qdt_managed_plugins_manifest(
-        self, manifest_path: Path
-    ) -> dict[str, dict[str, str]]:
-        """Read the QDT-managed plugins manifest from disk, if it exists.
-
-        Args:
-            manifest_path (Path): path to the manifest file
-
-        Returns:
-            dict[str, dict[str, str]]: manifest content, or an empty dict if the
-            file doesn't exist or is corrupted
-        """
-        if not manifest_path.is_file():
-            return {}
-
-        try:
-            return json.loads(manifest_path.read_text(encoding="UTF-8"))
-        except json.JSONDecodeError as err:
-            logger.warning(
-                f"QDT managed plugins manifest '{manifest_path}' is corrupted, it "
-                f"will be recreated. Trace: {err}"
-            )
-            return {}
-
-    def _write_qdt_managed_plugins_manifest(
-        self, manifest_path: Path, manifest: dict[str, dict[str, str]]
-    ) -> None:
-        """Write the QDT-managed plugins manifest to file.
-
-        Args:
-            manifest_path (Path): path to the manifest file
-            manifest (dict[str, dict[str, str]]): manifest content to write
-        """
-        manifest_path.write_text(
-            json.dumps(manifest, indent=2, sort_keys=True), encoding="UTF-8"
-        )
-        logger.debug(f"QDT managed plugins manifest written: {manifest_path}")
 
 
 # #############################################################################

@@ -24,8 +24,14 @@ from unittest.mock import patch
 
 # package
 from qgis_deployment_toolbelt.constants import MANAGED_PLUGINS_MANIFEST_FILENAME
+from qgis_deployment_toolbelt.jobs import job_plugins_synchronizer
 from qgis_deployment_toolbelt.jobs.job_plugins_synchronizer import (
     JobPluginsSynchronizer,
+)
+from qgis_deployment_toolbelt.plugins.manifest import (
+    _add_plugin_to_manifest,
+    _read_qdt_managed_plugins_manifest,
+    _write_qdt_managed_plugins_manifest,
 )
 from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
@@ -156,14 +162,10 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
         with tempfile.TemporaryDirectory(
             prefix="QDT_test_plugins_sync_manifest_read_missing_"
         ) as tmp_dir:
-            job = JobPluginsSynchronizer(options={"action": "create_or_restore"})
-
             manifest_path = Path(tmp_dir) / MANAGED_PLUGINS_MANIFEST_FILENAME
             self.assertFalse(manifest_path.exists())
 
-            manifest = job._read_qdt_managed_plugins_manifest(
-                manifest_path=manifest_path
-            )
+            manifest = _read_qdt_managed_plugins_manifest(manifest_path=manifest_path)
             self.assertEqual(manifest, {})
 
     def test_read_qdt_managed_plugins_manifest_corrupted_file_returns_empty(self):
@@ -172,14 +174,10 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
         with tempfile.TemporaryDirectory(
             prefix="QDT_test_plugins_sync_manifest_read_corrupted_"
         ) as tmp_dir:
-            job = JobPluginsSynchronizer(options={"action": "create_or_restore"})
-
             manifest_path = Path(tmp_dir) / MANAGED_PLUGINS_MANIFEST_FILENAME
             manifest_path.write_text("this is not valid json", encoding="UTF-8")
 
-            manifest = job._read_qdt_managed_plugins_manifest(
-                manifest_path=manifest_path
-            )
+            manifest = _read_qdt_managed_plugins_manifest(manifest_path=manifest_path)
             self.assertEqual(manifest, {})
 
     def test_read_qdt_managed_plugins_manifest_existing_file(self):
@@ -187,22 +185,17 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
         with tempfile.TemporaryDirectory(
             prefix="QDT_test_plugins_sync_manifest_read_existing_"
         ) as tmp_dir:
-            job = JobPluginsSynchronizer(options={"action": "create_or_restore"})
-
             manifest_path = Path(tmp_dir) / MANAGED_PLUGINS_MANIFEST_FILENAME
             manifest_path.write_text(
                 json.dumps({"test_plugin": {"plg_version": "1.0.0"}}),
                 encoding="UTF-8",
             )
 
-            manifest = job._read_qdt_managed_plugins_manifest(
-                manifest_path=manifest_path
-            )
+            manifest = _read_qdt_managed_plugins_manifest(manifest_path=manifest_path)
             self.assertEqual(manifest["test_plugin"]["plg_version"], "1.0.0")
 
     def test_add_plugin_to_manifest_creates_entry(self):
         """Test that a plugin entry is added to an empty manifest dict, in memory."""
-        job = JobPluginsSynchronizer(options={"action": "create_or_restore"})
 
         plugin = QgisPlugin.from_dict(
             {
@@ -214,7 +207,7 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
         )
 
         manifest: dict = {}
-        job._add_plugin_to_manifest(manifest=manifest, plugin=plugin)
+        _add_plugin_to_manifest(manifest=manifest, plugin=plugin)
 
         self.assertIn("test_plugin", manifest)
         self.assertEqual(manifest["test_plugin"]["plg_version"], "2.0.0")
@@ -225,7 +218,6 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
     def test_add_plugin_to_manifest_updates_existing_entry_preserving_others(self):
         """Test that adding a plugin updates its own entry in place while
         preserving other existing entries in the same manifest dict."""
-        job = JobPluginsSynchronizer(options={"action": "create_or_restore"})
 
         other_plugin = QgisPlugin.from_dict(
             {"name": "Other Plugin", "folder_name": "other_plugin", "version": "1.0.0"}
@@ -238,9 +230,9 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
         )
 
         manifest: dict = {}
-        job._add_plugin_to_manifest(manifest=manifest, plugin=other_plugin)
-        job._add_plugin_to_manifest(manifest=manifest, plugin=plugin_v1)
-        job._add_plugin_to_manifest(manifest=manifest, plugin=plugin_v2)
+        _add_plugin_to_manifest(manifest=manifest, plugin=other_plugin)
+        _add_plugin_to_manifest(manifest=manifest, plugin=plugin_v1)
+        _add_plugin_to_manifest(manifest=manifest, plugin=plugin_v2)
 
         self.assertEqual(len(manifest), 2)
         self.assertEqual(manifest["other_plugin"]["plg_version"], "1.0.0")
@@ -251,10 +243,8 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
         with tempfile.TemporaryDirectory(
             prefix="QDT_test_plugins_sync_manifest_write_"
         ) as tmp_dir:
-            job = JobPluginsSynchronizer(options={"action": "create_or_restore"})
-
             manifest_path = Path(tmp_dir) / MANAGED_PLUGINS_MANIFEST_FILENAME
-            job._write_qdt_managed_plugins_manifest(
+            _write_qdt_managed_plugins_manifest(
                 manifest_path=manifest_path,
                 manifest={"test_plugin": {"plg_version": "2.0.0"}},
             )
@@ -324,9 +314,9 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
             )
 
             with patch.object(
-                job,
+                job_plugins_synchronizer,
                 "_write_qdt_managed_plugins_manifest",
-                wraps=job._write_qdt_managed_plugins_manifest,
+                wraps=_write_qdt_managed_plugins_manifest,
             ) as mock_write:
                 job.install_plugin_into_profile(
                     [
