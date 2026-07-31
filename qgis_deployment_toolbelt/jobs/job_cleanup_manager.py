@@ -137,7 +137,7 @@ class JobCleanupManager(GenericJob):
         """
         referenced: set[str] = set()
         for lister in (self.list_installed_profiles, self.list_downloaded_profiles):
-            profiles = lister()
+            profiles = lister(quiet=True)
             if not profiles:
                 continue
             for profile in profiles:
@@ -153,7 +153,7 @@ class JobCleanupManager(GenericJob):
         """
         referenced: set[Path] = set()
         for lister in (self.list_installed_profiles, self.list_downloaded_profiles):
-            profiles = lister()
+            profiles = lister(quiet=True)
             if not profiles:
                 continue
             for profile in profiles:
@@ -192,7 +192,7 @@ class JobCleanupManager(GenericJob):
         Only plugins listed in QDT managed plugins manifests are considered for
         cleanup. Third-party plugins manually installed by users are ignored.
         """
-        installed_profiles = self.list_installed_profiles()
+        installed_profiles = self.list_installed_profiles(quiet=True)
         if not installed_profiles:
             logger.debug("No installed profile found for plugins cleanup.")
             return
