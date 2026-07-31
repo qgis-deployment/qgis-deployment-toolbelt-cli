@@ -16,6 +16,33 @@ Unreleased
 
 -->
 
+## 0.44.0 - 2026-07-31
+
+> Version mainly funded by [la métropole du Grand Lyon](https://www.grandlyon.com/).
+
+### Bugs fixes 🐛
+
+* doc(schema): fixes job deprecated declaration by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/855>
+* update(chore): pin dukpy since version 0.6.0 broke pypac behavior by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/865>
+* fix(docs): pin sphinx-argparse to <0.6.0 and use Python 3.12 to fix documentation build by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/868>
+
+### Features and enhancements 🎉
+
+* improve(chore): move files to system trash instead of removing them by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/869>
+* feature(plugins): add a JSON manifest to track plugins managed by QDT by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/866>
+* feature(settings): make deletion policy configurable through a 'QDT_DELETION_POLICY' environment variable by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/870>
+* enhance(job/plugins-sync): add `deletion_mode` option by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/871>
+* feature(job/profiles-downloader): add deletion_mode option to Profiles Downloader job by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/872>
+* improve(util): make the file downloader using `move_files_to_trash_or_delete` by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/873>
+* improve(docs): enable GitHub (and GitLab) alert syntax for admonitions by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/874>
+* feature(jobs): new job Cleanup Manager to remove stale QDT resources by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/875>
+* feature:(cli): add subcommand `cleanup` by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/876>
+* refactoring(plugins): move code related to manifest of managed plugins to a dedicated module by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/877>
+
+### Documentation 📖
+
+* add(docs): button to discourse by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/862>
+
 ## 0.43.1 - 2026-06-02
 
 ### Bugs fixes 🐛
