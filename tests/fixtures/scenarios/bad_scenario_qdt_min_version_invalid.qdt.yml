@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=../../../docs/schemas/scenario/qdt_scenario.json
+
+# This scenario is used to test the `qdt_min_version` metadata option, with a
+# value that is not a valid version specifier.
+
+metadata:
+  title: "Test scenario of QDT with an invalid qdt_min_version"
+  id: test-scenario-bad-qdt-min-version-invalid
+  description: >-
+    This is an example a scenario YAML file for the QGIS Deployment Toolbelt to
+    check the qdt_min_version metadata option when it's not a valid version.
+  qdt_min_version: "not-a-version"
+
+settings:
+  DEBUG: false
+  LOCAL_WORK_DIR: ~/.cache/qgis-deployment-toolbelt/tests/
+  SCENARIO_VALIDATION: true
+
+steps:
+  - name: Download profiles from remote git repository
+    uses: qprofiles-downloader
+    with:
+      source: https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli.git
+      protocol: git_remote
+      branch: main

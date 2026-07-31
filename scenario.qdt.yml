@@ -5,6 +5,7 @@ metadata:
   id: qdt-demo-scenario
   description: >-
     Demonstration scenario of QGIS Deployment Toolbelt capabilities.
+  qdt_min_version: "0.44.0"
 
 # Toolbelt settings
 settings:

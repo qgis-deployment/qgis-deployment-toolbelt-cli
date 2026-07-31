@@ -8,7 +8,7 @@ In concrete terms, a scenario is a [YAML file](https://fr.wikipedia.org/wiki/YAM
 
 A scenario has 3 sections:
 
-- `metadata`: to describe the scenario (title, description, etc.)
+- `metadata`: to describe the scenario (title, description, etc.). It also accepts an optional `qdt_min_version` key to state the minimum QDT version required to run the scenario (following simple [SemVer](https://semver.org/)). If the running QDT is older than this, the scenario is considered invalid and won't run.
 - `settings`: to set execution parameters to be applied to QDT, in the form of keys/values
 - `steps`: the steps that the deployment scenario will successively take. Each step can call for a "job".
 
