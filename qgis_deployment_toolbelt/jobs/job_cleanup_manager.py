@@ -19,7 +19,9 @@ from typing import get_args
 
 # package
 from qgis_deployment_toolbelt.constants import (
+    DEFAULT_CLEANUP_SCOPES,
     MANAGED_PLUGINS_MANIFEST_FILENAME,
+    CleanupScopes,
     DeletionPolicy,
 )
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
@@ -78,11 +80,8 @@ class JobCleanupManager(GenericJob):
         "scopes": {
             "type": list,
             "required": False,
-            "default": ["plugins_cache"],
-            "possible_values": (
-                "plugins_cache",
-                "plugins_installed",
-            ),
+            "default": DEFAULT_CLEANUP_SCOPES,
+            "possible_values": get_args(CleanupScopes),
             "condition": "all_in",
         },
     }

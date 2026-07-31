@@ -42,8 +42,12 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # defaults
+CleanupScopes = Literal["plugins_cache", "plugins_installed"]
+DEFAULT_CLEANUP_SCOPES: list[CleanupScopes] = ["plugins_cache"]
+
 DeletionPolicy = Literal["force_delete", "trash_only", "trash_or_delete"]
 DEFAULT_DELETION_POLICY: DeletionPolicy = "trash_or_delete"
+
 DEFAULT_QDT_WORKING_FOLDER = Path.home().joinpath(".cache/qgis-deployment-toolbelt")
 
 MANAGED_PLUGINS_MANIFEST_FILENAME: str = ".qdt-managed-plugins.json"
