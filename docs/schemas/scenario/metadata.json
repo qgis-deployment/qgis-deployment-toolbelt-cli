@@ -17,6 +17,11 @@
     "description": {
       "description": "Short or long description of what this scenario does. Multilines accepted.",
       "type": "string"
+    },
+    "qdt_min_version": {
+      "description": "Minimum version of QGIS Deployment Toolbelt required to run this scenario. Must follow PEP 440 (Semver or Calver, an optional leading 'v' is tolerated). If the running QDT version is older, the scenario is considered invalid.",
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
     }
   },
   "required": [

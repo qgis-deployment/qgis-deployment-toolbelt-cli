@@ -9,6 +9,7 @@ metadata:
   description: >-
     This is an example a scenario YAML file for the QGIS Deployment Toolbelt to
     demonstrate capabilities.
+  qdt_min_version: "0.1.0"
 
 settings:
   DEBUG: false

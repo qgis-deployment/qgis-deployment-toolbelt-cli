@@ -18,8 +18,10 @@ from pathlib import Path
 
 # 3rd party
 import yaml
+from packaging.version import InvalidVersion, Version
 
 # package
+from qgis_deployment_toolbelt.__about__ import __version_clean__
 from qgis_deployment_toolbelt.utils.check_path import check_path
 
 
@@ -168,8 +170,58 @@ class ScenarioReader:
         if not isinstance(self.metadata, dict):
             report.append(f"Metadata is not a dict: {self.metadata}")
             valid = False
+        elif "qdt_min_version" in self.metadata:
+            is_compatible, compat_error = self.is_qdt_version_compatible()
+            if not is_compatible:
+                report.append(compat_error)
+                valid = False
 
         return valid, report
+
+    def is_qdt_version_compatible(self) -> tuple[bool | None, str | None]:
+        """Check if the running QDT version satisfies the scenario's
+        `qdt_min_version` metadata (if set).
+
+        Returns:
+            tuple[bool | None, str | None]: a tuple with a boolean (True if the
+                running QDT version is compatible, False if it's too old, None if
+                the comparison could not be performed) and an explicit message
+                (None if compatible).
+        """
+        if not isinstance(self.metadata, dict):
+            return None, "Metadata is not a dict, unable to check qdt_min_version."
+
+        qdt_min_version = self.metadata.get("qdt_min_version")
+        if not qdt_min_version:
+            return True, None
+
+        try:
+            required_version = Version(str(qdt_min_version))
+        except InvalidVersion as err:
+            return (
+                None,
+                "Scenario metadata 'qdt_min_version' is not a valid version: "
+                f"{qdt_min_version}. Trace: {err}",
+            )
+
+        try:
+            running_version = Version(__version_clean__)
+        except InvalidVersion as err:
+            logger.warning(
+                f"Unable to parse running QDT version ({__version_clean__}) to "
+                f"check compatibility with scenario's qdt_min_version. Trace: {err}"
+            )
+            return True, None
+
+        if running_version < required_version:
+            return (
+                False,
+                "This scenario requires QGIS Deployment Toolbelt "
+                f">= {required_version}, but the running version is "
+                f"{running_version}. Please upgrade QDT.",
+            )
+
+        return True, None
 
     @property
     def metadata(self) -> dict | None:
