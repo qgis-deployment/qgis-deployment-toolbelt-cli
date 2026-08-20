@@ -39,7 +39,7 @@ dependencies = [
     "dulwich>=1.2.5,<2",
     "giturlparse>=0.12,<0.16",
     "imagesize>=2.0.0,<2.1",
-    "packaging>=22,<27",
+    "packaging>=26.3,<27",
     "pypac>=0.19,<1",
     "python-rule-engine>=0.5,<1.1",
     "python-win-ad==0.6.4 ; sys_platform == 'win32'",
