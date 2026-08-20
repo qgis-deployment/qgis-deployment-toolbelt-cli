@@ -5,10 +5,9 @@
 .. code-block:: python
 
     # for whole test
-    python -m unittest tests.job_qgis_installation_finder
+    python -m unittest tests.test_job_qgis_installation_finder
     # for specific
-    python -m unittest tests.job_qgis_installation_finder
-        .TestJobQgisInstallationFinder.test_get_latest_version_from_list
+    python -m unittest tests.job_qgis_installation_finder.TestJobQgisInstallationFinder.test_get_latest_version_from_list
 """
 
 # #############################################################################
@@ -43,9 +42,9 @@ class TestJobQgisInstallationFinder(unittest.TestCase):
         """Test definition of latest version from a list of version"""
         self.assertEqual(
             JobQgisInstallationFinder._get_latest_version_from_list(
-                ["3.25.1", "4.0.1", "3.28.2"]
+                ["3.25.1", "4.0.1", "4.1.0", "3.28.2"]
             ),
-            "4.0.1",
+            "4.1.0",
         )
 
     def test_get_latest_matching_version_path(self):
@@ -74,6 +73,68 @@ class TestJobQgisInstallationFinder(unittest.TestCase):
                 },
                 "3.36",
             )
+        )
+
+    def test_get_latest_version_from_list_empty(self):
+        """No versions given returns None."""
+        self.assertIsNone(JobQgisInstallationFinder._get_latest_version_from_list([]))
+
+    def test_get_latest_version_from_list_minor_multidigit(self):
+        """Regression: a single-digit minor must not outrank a double-digit one.
+
+        A plain lexicographic string sort ranks "3.8.0" above "3.44.0" because '8'
+        sorts after '4' at the same character position, ignoring that "44" is a
+        larger number than "8".
+        """
+        self.assertEqual(
+            JobQgisInstallationFinder._get_latest_version_from_list(
+                [
+                    "2",
+                    "3.8.0",
+                    "4.2.1",
+                    "3.44.0",
+                ]
+            ),
+            "4.2.1",
+        )
+
+    def test_get_latest_version_from_list_patch_multidigit(self):
+        """Regression: same bug at the patch level, e.g. late in an LTR branch's life."""
+        self.assertEqual(
+            JobQgisInstallationFinder._get_latest_version_from_list(
+                ["3.34.9", "3.34.10"]
+            ),
+            "3.34.10",
+        )
+
+    def test_get_latest_version_from_list_does_not_mutate_input(self):
+        """The input list is no longer sorted in place as a side effect."""
+        versions = ["3.34.10", "3.34.9", "3.28.1"]
+        original_order = list(versions)
+        JobQgisInstallationFinder._get_latest_version_from_list(versions)
+        self.assertEqual(versions, original_order)
+
+    def test_get_latest_version_from_list_unparsable_is_ignored(self):
+        """An unparsable version string is never selected, and doesn't raise."""
+        self.assertEqual(
+            JobQgisInstallationFinder._get_latest_version_from_list(
+                ["3.40.11", "not-a-version"]
+            ),
+            "3.40.11",
+        )
+
+    def test_get_latest_matching_version_path_patch_multidigit(self):
+        """Regression: version_priority selection was affected by the same bug."""
+        self.assertEqual(
+            JobQgisInstallationFinder._get_latest_matching_version_path(
+                {
+                    "3.34.1": "/path/to/3_34_1",
+                    "3.34.9": "/path/to/3_34_9",
+                    "3.34.10": "/path/to/3_34_10",
+                },
+                "3.34",
+            ),
+            "/path/to/3_34_10",
         )
 
     def test_get_installed_qgis_version_and_path_no_priority(self):
