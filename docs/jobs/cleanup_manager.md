@@ -12,8 +12,8 @@ Sample job configuration in your scenario file:
 - name: Cleanup stale resources
   uses: cleanup-manager
   with:
+   deletion_policy: trash_or_delete
    dry_run: true
-   report: true
    scopes:
     - plugins_cache
     - plugins_installed
