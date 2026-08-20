@@ -69,7 +69,7 @@ def get_proxy_settings(url: str | None = None) -> dict:
             logger.warning(
                 f"Invalid PAC file from environment vars PAC file : {environ.get('QDT_PAC_FILE')}. No proxy use."
             )
-    elif pac := get_pac():
+    elif pac := get_pac_file_from_system():
         proxy_settings = get_proxy_settings_from_pac_file(url=url, pac=pac)
         logger.info(f"Proxies settings from system PAC file: {proxy_settings}")
     elif getproxies():
@@ -116,6 +116,23 @@ def get_proxy_settings(url: str | None = None) -> dict:
                 )
 
     return proxy_settings
+
+
+def get_pac_file_from_system() -> PACFile | None:
+    """Discover the PAC file configured at the operating system level.
+
+    Returns:
+        PACFile | None: parsed PAC file if one has been discovered, None otherwise.
+    """
+    try:
+        return get_pac()
+    except Exception as err:
+        logger.warning(
+            "Unable to discover a PAC file from the system settings or WPAD/DNS. "
+            "QDT keeps going with the other proxy detection mechanisms. "
+            f"Trace: {err}"
+        )
+        return None
 
 
 def load_pac_file_from_environment_variable(qdt_pac_file: str) -> PACFile | None:

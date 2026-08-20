@@ -14,9 +14,16 @@ Usage from the repo root folder:
 import unittest
 from os import environ
 from pathlib import Path
+from unittest.mock import patch
+
+# 3rd party
+from pypac.wpad import proxy_urls_from_dns
 
 # project
-from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
+from qgis_deployment_toolbelt.utils.proxies import (
+    get_pac_file_from_system,
+    get_proxy_settings,
+)
 
 
 # ############################################################################
@@ -26,6 +33,24 @@ from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 
 class TestUtilsNetworkProxies(unittest.TestCase):
     """Test network proxy utilities."""
+
+    def test_pac_discovery_from_system_is_safe(self):
+        """PAC auto-discovery must never raise, even without Public Suffix List data.
+
+        Since PyPAC 0.19, WPAD/DNS discovery reads the Public Suffix List shipped as
+        package data by `publicsuffixlist`. A frozen build missing this data file
+        would crash QDT at startup on any domain-joined workstation.
+        """
+        # WPAD/DNS candidate URLs must be computable: it guarantees that the Public
+        # Suffix List data file is packaged along the executable.
+        self.assertIsInstance(proxy_urls_from_dns("workstation.corp.example.com"), list)
+
+        # and the QDT helper must stay fault-tolerant anyway
+        with patch(
+            "qgis_deployment_toolbelt.utils.proxies.get_pac",
+            side_effect=FileNotFoundError("public_suffix_list.dat"),
+        ):
+            self.assertIsNone(get_pac_file_from_system())
 
     def test_proxy_settings(self):
         """Test proxy settings retriever."""
