@@ -20,6 +20,9 @@ from pathlib import Path
 from shutil import which
 from sys import platform as opersys
 
+# 3rd party
+from packaging.version import InvalidVersion, Version
+
 # package
 from qgis_deployment_toolbelt.constants import (
     ENV_VAR_QGIS_EXE_PATH,
@@ -232,7 +235,7 @@ class JobQgisInstallationFinder(GenericJob):
 
     @staticmethod
     def _get_latest_version_from_list(versions: list[str]) -> str | None:
-        """Get latest version from a list, OSGEO4W are last.
+        """Get latest version from a list.
 
         Args:
             versions (list[str]): list of found version
@@ -240,12 +243,28 @@ class JobQgisInstallationFinder(GenericJob):
         Returns:
             str | None: latest version, None if no version provided
         """
-        if len(versions):
-            used_version = versions
-            used_version.sort(reverse=True)
-            return used_version[0]
+        if not versions:
+            return None
+        return max(versions, key=JobQgisInstallationFinder._version_sort_key)
 
-        return None
+    @staticmethod
+    def _version_sort_key(version_str: str) -> Version:
+        """Transforn a version string into a sortable and comparable Version object.
+
+        Args:
+            version_str (str): version string to parse, typically `X.Y.Z`.
+
+        Returns:
+            Version: parsed version, or `Version("0")` if parsing failed.
+        """
+        try:
+            return Version(version_str)
+        except InvalidVersion:
+            logger.warning(
+                f"Unparsable QGIS version, ignored for latest-version comparison: "
+                f"{version_str}"
+            )
+            return Version("0")
 
     @staticmethod
     def _get_latest_matching_version_path(
