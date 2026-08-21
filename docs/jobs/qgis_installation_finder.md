@@ -1,11 +1,13 @@
 # QGIS installation finder
 
-Use this job to find installed QGIS version for automatic definition of QDT environnement variable `QDT_QGIS_EXE_PATH` (used for shortcut creation).
+Use this job to find installed QGIS version for automatic definition of QDT environnement variables `QDT_QGIS_EXE_PATH` (used for shortcut creation) and `QDT_QGIS_VERSION` (used by other jobs needing to know the detected QGIS version, for example to check compatibility).
 
 In certains conditions, the job is skipped:
 
 - if the environment variable `QDT_QGIS_EXE_PATH` is already defined (either a simple string or a stringified dictionary);
 - if the value points to an existing file.
+
+Even when the job itself is skipped, `QDT_QGIS_VERSION` is still exported if the version can be determined by running the executable pointed to by `QDT_QGIS_EXE_PATH`.
 
 Typically, if the scenario contains:
 
@@ -106,6 +108,8 @@ Possible_values:
 
 - `warning` (_default_): if no version found, a warning is displayed in QDT logs
 - `error`: if no version found, QDT stops and the other jobs are not run
+
+If QGIS is found but its version can't be determined (`qgis --version` failed to parse), `QDT_QGIS_VERSION` is not exported. Downstream jobs relying on it should handle its absence.
 
 ----
 

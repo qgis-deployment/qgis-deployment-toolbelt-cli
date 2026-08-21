@@ -22,6 +22,8 @@ from sys import platform as opersys
 
 # package
 from qgis_deployment_toolbelt.constants import (
+    ENV_VAR_QGIS_EXE_PATH,
+    ENV_VAR_QGIS_VERSION,
     RE_QGIS_FINDER_DIR,
     RE_QGIS_FINDER_VERSION,
 )
@@ -49,6 +51,10 @@ class JobQgisInstallationFinder(GenericJob):
     """
 
     ID: str = "qgis-installation-finder"
+
+    # -- CACHE --
+    CACHE_DETECTED_QGIS_VERSION: str | None = None
+
     OPTIONS_SCHEMA: dict = {
         "if_not_found": {
             "type": str,
@@ -89,27 +95,47 @@ class JobQgisInstallationFinder(GenericJob):
         self.options: dict = self.validate_options(options)
 
     def run(self) -> None:
-        """Define QDT_QGIS_EXE_PATH for shortcut creation"""
+        """Define QDT_QGIS_EXE_PATH and QDT_QGIS_VERSION for version-dependent jobs,
+        like Shortcuts manager.
+        """
         if not self.run_needed():
+            if self.CACHE_DETECTED_QGIS_VERSION:
+                self._export_qgis_version(self.CACHE_DETECTED_QGIS_VERSION)
             return
 
         if opersys not in ("linux", "win32"):
             logger.error(f"This job does not support your operating system: {opersys}")
             return
 
-        installed_qgis_path: str | None = self.get_installed_qgis_path()
+        installed_qgis_version_and_path = self.get_installed_qgis_version_and_path()
 
-        if installed_qgis_path:
-            logger.debug(f"{self.ID} : QDT_QGIS_EXE_PATH is now {installed_qgis_path}")
-            os.environ["QDT_QGIS_EXE_PATH"] = installed_qgis_path
+        if installed_qgis_version_and_path:
+            version_str, installed_qgis_path = installed_qgis_version_and_path
+            logger.debug(
+                f"{self.ID}: {ENV_VAR_QGIS_EXE_PATH} is now {installed_qgis_path}"
+            )
+            os.environ[ENV_VAR_QGIS_EXE_PATH] = installed_qgis_path
+            self._export_qgis_version(version_str)
         else:
             if self.options.get("if_not_found", "warning") == "error":
                 raise QgisInstallNotFoundError()
             else:
-                logger.warning("No QGIS installation found")
+                logger.warning(
+                    "No QGIS installation found in "
+                    f"{self._get_search_paths_with_environment_variable()}"
+                )
 
         # log
         logger.debug(f"Job {self.ID} ran successfully.")
+
+    def _export_qgis_version(self, version_str: str) -> None:
+        """Export the detected QGIS version as an environment variable.
+
+        Args:
+            version_str (str): QGIS version, typically a SemVer string like `3.40.1`.
+        """
+        logger.debug(f"{self.ID}: {ENV_VAR_QGIS_VERSION} is now {version_str}")
+        os.environ[ENV_VAR_QGIS_VERSION] = version_str
 
     # -- INTERNAL LOGIC ------------------------------------------------------
     def run_needed(self) -> bool:
@@ -121,15 +147,17 @@ class JobQgisInstallationFinder(GenericJob):
         if qgis_bin_path := self.os_config.get_qgis_bin_path(use_fallback=False):
             if check_path_exists(input_path=qgis_bin_path, raise_error=False):
                 logger.info(
-                    f"QDT_QGIS_EXE_PATH defined and path {qgis_bin_path} exists so it "
-                    f"gonna be used for QGIS executable. {self.ID} job is skipped. "
+                    f"{ENV_VAR_QGIS_EXE_PATH} defined and path {qgis_bin_path} "
+                    f"exists so it gonna be used for QGIS executable. {self.ID} job "
+                    "is skipped. "
                 )
                 version_str = self._get_qgis_bin_version(qgis_bin_path)
                 if version_str:
                     logger.info(
-                        f"QDT_QGIS_EXE_PATH defined and path {qgis_bin_path} exists for "
-                        f"QGIS {version_str}. {self.ID} job is skipped. "
+                        f"{ENV_VAR_QGIS_EXE_PATH} defined and path {qgis_bin_path} "
+                        f"exists for QGIS {version_str}. {self.ID} job is skipped. "
                     )
+                    self.CACHE_DETECTED_QGIS_VERSION = version_str
                     return False
                 else:
                     logger.warning(
@@ -138,20 +166,31 @@ class JobQgisInstallationFinder(GenericJob):
                     )
                     return False
         logger.debug(
-            "'QDT_QGIS_EXE_PATH' is not defined. Searching for QGIS executable is necessary."
+            f"'{ENV_VAR_QGIS_EXE_PATH}' is not defined. Searching for QGIS "
+            "executable is necessary."
         )
         return True
 
     def get_installed_qgis_path(self) -> str | None:
-        """Get list of installed QGIS executables.
+        """Get the path to the installed QGIS executable best matching job options.
 
         Returns:
             str | None : installed qgis path
         """
+        result = self.get_installed_qgis_version_and_path()
+        return result[1] if result else None
+
+    def get_installed_qgis_version_and_path(self) -> tuple[str, str] | None:
+        """Get the installed QGIS version and executable path best matching job
+        options.
+
+        Returns:
+            tuple[str, str] | None: (version, path) tuple, or None if no QGIS
+                installation is found.
+        """
         if opersys == "linux":
             found_versions = self._get_linux_installed_qgis_path()
         elif opersys == "win32":
-            # Check for installed version in the default install directory
             found_versions = self._get_windows_installed_qgis_path()
 
         if len(found_versions) == 0:
@@ -171,21 +210,25 @@ class JobQgisInstallationFinder(GenericJob):
         if "QDT_PREFERRED_QGIS_VERSION" in environ:
             version_priority.insert(0, environ["QDT_PREFERRED_QGIS_VERSION"])
 
+        # reverse lookup to retrieve the version string matching a given path
+        path_to_version = {path: version for version, path in found_versions.items()}
+
         for version in version_priority:
-            if latest_matching_version := self._get_latest_matching_version_path(
+            if latest_matching_path := self._get_latest_matching_version_path(
                 found_versions=found_versions, version=version
             ):
-                return latest_matching_version
+                return path_to_version[latest_matching_path], latest_matching_path
 
         latest_qgis = found_versions[latest_version]
         if len(version_priority) != 0:
             # No version found in version priority
             version_priority_str = ",".join(self.options["version_priority"])
             logger.info(
-                f"QGIS version(s) [{version_priority_str}] not found. Using most recent found version {latest_version} : {latest_qgis}"
+                f"QGIS version(s) [{version_priority_str}] not found. Using most "
+                f"recent found version {latest_version} : {latest_qgis}"
             )
 
-        return latest_qgis
+        return latest_version, latest_qgis
 
     @staticmethod
     def _get_latest_version_from_list(versions: list[str]) -> str | None:
@@ -255,7 +298,7 @@ class JobQgisInstallationFinder(GenericJob):
                 )
 
     def _get_search_paths_with_environment_variable(self) -> list[str]:
-        """Get search_paths option with environment variable update
+        """Get search_paths option with environment variable update.
 
         Returns:
             list[str]: search_paths
@@ -268,7 +311,7 @@ class JobQgisInstallationFinder(GenericJob):
         return search_paths
 
     def _get_windows_installed_qgis_path(self) -> dict[str, str]:
-        """Get dict of installed QGIS version in common install directory
+        """Get dict of installed QGIS version in common install directory.
 
         Returns:
             dict[str, str]: dict of QGIS version and QGIS bin path
@@ -298,8 +341,10 @@ class JobQgisInstallationFinder(GenericJob):
     def _get_qgis_found_version_dict_from_search_paths(
         search_paths: list[str], search_patterns: list[str]
     ) -> dict[str, str]:
-        """Define qgis found version dict from a list of search path
-        If identical version are found in multiple path, the first version found in search_path is used.
+        """Define qgis found version dict from a list of search path.
+
+        If identical version are found in multiple path, the first version found in
+        search_path is used.
 
         Args:
             search_paths (list[str]): list of search paths

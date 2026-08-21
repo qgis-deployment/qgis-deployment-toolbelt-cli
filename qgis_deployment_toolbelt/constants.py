@@ -55,6 +55,10 @@ MANAGED_PLUGINS_MANIFEST_FILENAME: str = ".qdt-managed-plugins.json"
 # files to ignore when copying profiles. TODO: make it configurable?
 COPY_IGNORED_PATTERNS: Callable = ignore_patterns("*.lnk", "thumbs.db", ".DS_Store")
 
+# environment variables
+ENV_VAR_QGIS_EXE_PATH: str = "QDT_QGIS_EXE_PATH"
+ENV_VAR_QGIS_VERSION: str = "QDT_QGIS_VERSION"
+
 # QGIS executable filenames
 QGIS_BIN_WINDOWS_FILENAME: str = "qgis-bin.exe"
 QGIS_LTR_BIN_WINDOWS_FILENAME: str = "qgis-ltr-bin.exe"
