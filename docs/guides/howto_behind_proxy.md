@@ -38,6 +38,14 @@ For proxy definition, QDT use this order of priority:
 
 [PyPac](https://pypac.readthedocs.io/en/latest/) is used for PAC file management. By default we are using the PAC file defined by system but a custom PAC file can be defined with `QDT_PAC_FILE` environment variable (local file or url).
 
+:::{note}
+When no `QDT_PAC_FILE` is set, QDT lets PyPAC auto-discover the PAC file: OS settings first (Windows registry, macOS preferences), then the [WPAD](https://developer.mozilla.org/en-US/docs/Web/HTTP/Proxy_servers_and_tunneling/Proxy_Auto-Configuration_PAC_file) protocol through DNS, using the workstation FQDN. On workstations without any PAC file, this discovery costs a few DNS lookups and HTTP requests: setting `QDT_PROXY_HTTP` (or `HTTP_PROXY`/`HTTPS_PROXY`) short-circuits it.
+:::
+
+:::{note}
+PAC files are downloaded by PyPAC with `trust_env=False`: the PAC URL itself is always reached directly, never through a proxy. It must be reachable without proxy from the workstation.
+:::
+
 ### Generic `HTTP_PROXY` and `HTTPS_PROXY`
 
 - it allows a specific URL by protocol (scheme)

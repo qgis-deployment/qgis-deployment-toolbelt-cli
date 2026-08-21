@@ -21,7 +21,6 @@ import PyInstaller.__main__
 
 # package
 sys.path.insert(0, str(Path().resolve()))
-from builder import tldextract_update
 from qgis_deployment_toolbelt import __about__  # noqa: E402
 
 
@@ -49,14 +48,11 @@ output_filename = (
 )
 package_folder = Path("qgis_deployment_toolbelt")
 
-tldextract_update.run()
-
 PyInstaller.__main__.run(
     [
         "--add-data=LICENSE:.",
         "--add-data=README.md:.",
-        f"--add-data={Path(__file__).parent / 'build' / 'tldextract_cache'/ '.suffix_cache'}:tldextract/.suffix_cache",
-        f"--add-data={Path(__file__).parent / 'build' / 'tldextract_cache'/'.tld_set_snapshot'}:tldextract/",
+        "--collect-data=publicsuffixlist",
         # "--clean",
         f"--icon={package_folder.parent.resolve()}/docs/static/logo_qdt.ico",
         f"--log-level={getenv('PYINSTALLER_LOG_LEVEL', 'WARN')}",
