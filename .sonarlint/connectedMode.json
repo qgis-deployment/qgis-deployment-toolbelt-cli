@@ -1,0 +1,5 @@
+{
+    "sonarCloudOrganization": "qgis-deployment",
+    "projectKey": "qgis-deployment_qgis-deployment-toolbelt-cli",
+    "region": "EU"
+}
