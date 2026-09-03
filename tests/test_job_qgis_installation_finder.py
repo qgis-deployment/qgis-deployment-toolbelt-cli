@@ -38,6 +38,44 @@ class TestJobQgisInstallationFinder(unittest.TestCase):
     """Test module."""
 
     # -- TESTS ---------------------------------------------------------
+    def test_get_windows_startupinfo_kwargs_non_windows(self):
+        """On non-Windows platforms, no startupinfo kwarg is built."""
+        with patch(
+            "qgis_deployment_toolbelt.jobs.job_qgis_installation_finder.opersys",
+            "linux",
+        ):
+            self.assertEqual(
+                JobQgisInstallationFinder._get_windows_hide_console_startupinfo(), {}
+            )
+
+    def test_get_windows_startupinfo_kwargs_windows(self):
+        """On win32, a startupinfo requesting a hidden window is built.
+
+        subprocess.STARTUPINFO and the STARTF_*/SW_* constants only exist on
+        win32, so they are faked here to exercise the branch on any platform.
+        """
+
+        class _FakeStartupInfo:
+            def __init__(self):
+                self.dwFlags = 0
+                self.wShowWindow = None
+
+        with (
+            patch(
+                "qgis_deployment_toolbelt.jobs.job_qgis_installation_finder.opersys",
+                "win32",
+            ),
+            patch("subprocess.STARTUPINFO", _FakeStartupInfo, create=True),
+            patch("subprocess.STARTF_USESHOWWINDOW", 1, create=True),
+            patch("subprocess.SW_HIDE", 0, create=True),
+            patch("subprocess.CREATE_NO_WINDOW", 0x08000000, create=True),
+        ):
+            kwargs = JobQgisInstallationFinder._get_windows_hide_console_startupinfo()
+
+        self.assertIn("startupinfo", kwargs)
+        self.assertEqual(kwargs["startupinfo"].dwFlags, 1)
+        self.assertEqual(kwargs["startupinfo"].wShowWindow, 0)
+
     def test_get_latest_version_from_list(self):
         """Test definition of latest version from a list of version"""
         self.assertEqual(

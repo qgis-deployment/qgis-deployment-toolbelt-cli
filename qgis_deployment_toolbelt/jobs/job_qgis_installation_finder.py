@@ -358,6 +358,25 @@ class JobQgisInstallationFinder(GenericJob):
         )
 
     @staticmethod
+    def _get_windows_hide_console_startupinfo() -> dict:
+        """Build extra kwargs to hide a console window newly created on Windows.
+
+        Returns:
+            dict: empty on non-Windows platforms, otherwise a single
+                ``startupinfo`` entry ready to unpack into ``subprocess.run``.
+        """
+        if opersys != "win32":
+            return {}
+
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        startupinfo.wShowWindow = subprocess.SW_HIDE
+        return {
+            "creationflags": subprocess.CREATE_NO_WINDOW,
+            "startupinfo": startupinfo,
+        }
+
+    @staticmethod
     def _get_qgis_found_version_dict_from_search_paths(
         search_paths: list[str], search_patterns: list[str]
     ) -> dict[str, str]:
@@ -447,13 +466,14 @@ class JobQgisInstallationFinder(GenericJob):
                 encoding="UTF-8",
                 errors="replace",
                 timeout=QGIS_VERSION_LOOKUP_TIMEOUT_SECONDS,
+                **JobQgisInstallationFinder._get_windows_hide_console_startupinfo(),
             )
         except subprocess.TimeoutExpired:
             logger.warning(
                 f"Getting QGIS version from '{qgis_bin}' timed out after "
                 f"{QGIS_VERSION_LOOKUP_TIMEOUT_SECONDS}s. If you think that because your"
                 " system is slow, you can adjust this delay using "
-                "'QGIS_VERSION_LOOKUP_TIMEOUT_SECONDS' environment variable."
+                "'QDT_QGIS_VERSION_LOOKUP_TIMEOUT_SECONDS' environment variable."
             )
             return None
         except (OSError, ValueError) as err:
