@@ -144,6 +144,7 @@ sphinxarg_build_commands_by_group_index = False
 
 # autodoc
 autodoc_default_options = {
+    "private-members": True,
     "special-members": "__init__",
 }
 
