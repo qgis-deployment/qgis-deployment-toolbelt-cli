@@ -50,6 +50,9 @@ DEFAULT_DELETION_POLICY: DeletionPolicy = "trash_or_delete"
 
 DEFAULT_QDT_WORKING_FOLDER = Path.home().joinpath(".cache/qgis-deployment-toolbelt")
 
+# QGIS major versions supported by QDT
+SupportedQgisMajorVersion = Literal[3, 4]
+
 MANAGED_PLUGINS_MANIFEST_FILENAME: str = ".qdt-managed-plugins.json"
 
 # files to ignore when copying profiles. TODO: make it configurable?
