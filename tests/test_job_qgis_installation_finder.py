@@ -15,6 +15,7 @@
 # ##################################
 
 # Standard library
+import subprocess
 import unittest
 from os import environ
 from unittest.mock import patch
@@ -75,6 +76,90 @@ class TestJobQgisInstallationFinder(unittest.TestCase):
         self.assertIn("startupinfo", kwargs)
         self.assertEqual(kwargs["startupinfo"].dwFlags, 1)
         self.assertEqual(kwargs["startupinfo"].wShowWindow, 0)
+
+    def test_get_qgis_bin_version_success(self):
+        """A successful run parses the version out of stdout."""
+        fake_process = subprocess.CompletedProcess(
+            args=["/usr/bin/qgis", "--version"],
+            returncode=0,
+            stdout="QGIS 3.40.11-Bratislava 'Bratislava' (exported)\n",
+            stderr="",
+        )
+        with patch(
+            "qgis_deployment_toolbelt.jobs.job_qgis_installation_finder.subprocess.run",
+            return_value=fake_process,
+        ):
+            self.assertEqual(
+                JobQgisInstallationFinder._get_qgis_bin_version("/usr/bin/qgis"),
+                "3.40.11",
+            )
+
+    def test_get_qgis_bin_version_unparsable_output(self):
+        """A successful run whose stdout doesn't match the expected pattern
+        returns None instead of raising."""
+        fake_process = subprocess.CompletedProcess(
+            args=["/usr/bin/qgis", "--version"],
+            returncode=0,
+            stdout="not a version string\n",
+            stderr="",
+        )
+        with patch(
+            "qgis_deployment_toolbelt.jobs.job_qgis_installation_finder.subprocess.run",
+            return_value=fake_process,
+        ):
+            self.assertIsNone(
+                JobQgisInstallationFinder._get_qgis_bin_version("/usr/bin/qgis")
+            )
+
+    def test_get_qgis_bin_version_nonzero_returncode_still_parses(self):
+        """A non-zero return code is logged but doesn't prevent parsing a version
+        that's still present in stdout."""
+        fake_process = subprocess.CompletedProcess(
+            args=["/usr/bin/qgis", "--version"],
+            returncode=1,
+            stdout="QGIS 3.34.10-Prizren 'Prizren' (exported)\n",
+            stderr="some warning on stderr",
+        )
+        with patch(
+            "qgis_deployment_toolbelt.jobs.job_qgis_installation_finder.subprocess.run",
+            return_value=fake_process,
+        ):
+            self.assertEqual(
+                JobQgisInstallationFinder._get_qgis_bin_version("/usr/bin/qgis"),
+                "3.34.10",
+            )
+
+    def test_get_qgis_bin_version_timeout(self):
+        """A timeout is caught, logged, and returns None instead of propagating."""
+        with patch(
+            "qgis_deployment_toolbelt.jobs.job_qgis_installation_finder.subprocess.run",
+            side_effect=subprocess.TimeoutExpired(cmd="qgis --version", timeout=20),
+        ):
+            self.assertIsNone(
+                JobQgisInstallationFinder._get_qgis_bin_version("/usr/bin/qgis")
+            )
+
+    def test_get_qgis_bin_version_oserror(self):
+        """An OSError (e.g. binary not found or not executable) is caught and
+        returns None instead of propagating."""
+        with patch(
+            "qgis_deployment_toolbelt.jobs.job_qgis_installation_finder.subprocess.run",
+            side_effect=OSError("No such file or directory"),
+        ):
+            self.assertIsNone(
+                JobQgisInstallationFinder._get_qgis_bin_version("/usr/bin/qgis")
+            )
+
+    def test_get_qgis_bin_version_valueerror(self):
+        """A ValueError (invalid subprocess arguments) is caught and returns None
+        instead of propagating."""
+        with patch(
+            "qgis_deployment_toolbelt.jobs.job_qgis_installation_finder.subprocess.run",
+            side_effect=ValueError("invalid arguments"),
+        ):
+            self.assertIsNone(
+                JobQgisInstallationFinder._get_qgis_bin_version("/usr/bin/qgis")
+            )
 
     def test_get_latest_version_from_list(self):
         """Test definition of latest version from a list of version"""
