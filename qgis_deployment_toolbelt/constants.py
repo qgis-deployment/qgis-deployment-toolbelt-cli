@@ -183,6 +183,7 @@ class OSConfiguration:
     names_alter: list[str]
     qgis_bin_exe_path: Path | None = None
     qgis_profiles_path: Path | None = None
+    qgis_user_data_path: Path | None = None
     shortcut_extension: str | None = None
     shortcut_forbidden_chars: tuple[str, ...] | None = None
     shortcut_icon_extensions: tuple[str, ...] | None = None
@@ -340,6 +341,7 @@ class OSConfiguration:
                         / "Library/Application Support/QGIS/QGIS3/profiles/",
                     )
                 ),
+                qgis_user_data_path=Path.home() / "Library/Application Support/QGIS",
                 shortcut_extension="app",
                 shortcut_icon_extensions=("icns",),
             )
@@ -354,6 +356,7 @@ class OSConfiguration:
                         Path.home() / ".local/share/QGIS/QGIS3/profiles/",
                     )
                 ),
+                qgis_user_data_path=Path.home() / ".local/share/QGIS",
                 shortcut_extension=".desktop",
                 shortcut_icon_extensions=("png", "svg"),
                 shortcut_icon_default_path="qgis",
@@ -371,6 +374,7 @@ class OSConfiguration:
                         expandvars("%APPDATA%/QGIS/QGIS3/profiles"),
                     )
                 ),
+                qgis_user_data_path=Path(expandvars("%APPDATA%/QGIS")),
                 shortcut_extension=".lnk",
                 shortcut_forbidden_chars=("<", ">", ":", '"', "/", "\\", "|", "?", "*"),
                 shortcut_icon_extensions=("ico",),
