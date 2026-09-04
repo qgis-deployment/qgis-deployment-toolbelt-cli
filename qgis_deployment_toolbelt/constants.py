@@ -63,6 +63,11 @@ ENV_VAR_QGIS_VERSION: str = "QDT_QGIS_VERSION"
 QGIS_BIN_WINDOWS_FILENAME: str = "qgis-bin.exe"
 QGIS_LTR_BIN_WINDOWS_FILENAME: str = "qgis-ltr-bin.exe"
 
+# maximum time (in seconds) allowed to a QGIS binary to answer to `--version`
+QGIS_VERSION_LOOKUP_TIMEOUT_SECONDS: int = int(
+    getenv("QDT_QGIS_VERSION_LOOKUP_TIMEOUT_SECONDS", 20)
+)
+
 # Operating systems
 SUPPORTED_OPERATING_SYSTEMS_CODENAMES: tuple[str, ...] = ("darwin", "linux", "win32")
 

@@ -27,6 +27,7 @@ from packaging.version import InvalidVersion, Version
 from qgis_deployment_toolbelt.constants import (
     ENV_VAR_QGIS_EXE_PATH,
     ENV_VAR_QGIS_VERSION,
+    QGIS_VERSION_LOOKUP_TIMEOUT_SECONDS,
     RE_QGIS_FINDER_DIR,
     RE_QGIS_FINDER_VERSION,
 )
@@ -357,6 +358,25 @@ class JobQgisInstallationFinder(GenericJob):
         )
 
     @staticmethod
+    def _get_windows_hide_console_startupinfo() -> dict:
+        """Build extra kwargs to hide a console window newly created on Windows.
+
+        Returns:
+            dict: empty on non-Windows platforms, otherwise a single
+                ``startupinfo`` entry ready to unpack into ``subprocess.run``.
+        """
+        if opersys != "win32":
+            return {}
+
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        startupinfo.wShowWindow = subprocess.SW_HIDE
+        return {
+            "creationflags": subprocess.CREATE_NO_WINDOW,
+            "startupinfo": startupinfo,
+        }
+
+    @staticmethod
     def _get_qgis_found_version_dict_from_search_paths(
         search_paths: list[str], search_patterns: list[str]
     ) -> dict[str, str]:
@@ -425,22 +445,48 @@ class JobQgisInstallationFinder(GenericJob):
 
     @staticmethod
     def _get_qgis_bin_version(qgis_bin: str) -> str | None:
-        """Get QGIS bin version with --version
+        """Get QGIS bin version with --version.
+
+        See:
+
+        - <https://runebook.dev/en/docs/python/library/subprocess/windows-popen-helpers>
+        - <https://docs.python.org/fr/3.14/library/subprocess.html>
 
         Args:
-            qgis_bin (str): QGIS bin path
+            qgis_bin (str): QGIS bin executable path
 
         Returns:
             str | None: SemVer version, None if version not found
         """
-        process = subprocess.Popen(  # noqa: S602
-            f'"{qgis_bin}" --version',
-            stdout=subprocess.PIPE,
-            shell=True,  # nosec B602
-        )
-        stdout_, _ = process.communicate()
-        version_str = stdout_.decode()
-        version_match = RE_QGIS_FINDER_VERSION.match(version_str)
+        try:
+            process = subprocess.run(  # noqa: S603  # nosec B603
+                [qgis_bin, "--version"],
+                capture_output=True,
+                check=False,
+                encoding="UTF-8",
+                errors="replace",
+                timeout=QGIS_VERSION_LOOKUP_TIMEOUT_SECONDS,
+                **JobQgisInstallationFinder._get_windows_hide_console_startupinfo(),
+            )
+        except subprocess.TimeoutExpired:
+            logger.warning(
+                f"Getting QGIS version from '{qgis_bin}' timed out after "
+                f"{QGIS_VERSION_LOOKUP_TIMEOUT_SECONDS}s. If you think that because your"
+                " system is slow, you can adjust this delay using "
+                "'QDT_QGIS_VERSION_LOOKUP_TIMEOUT_SECONDS' environment variable."
+            )
+            return None
+        except (OSError, ValueError) as err:
+            logger.error(f"Unable to run '{qgis_bin} --version'. Trace: {err}")
+            return None
+
+        if process.returncode != 0:
+            logger.debug(
+                f"'{qgis_bin} --version' exited with code {process.returncode}. "
+                f"stderr: {process.stderr.strip()}"
+            )
+
+        version_match = RE_QGIS_FINDER_VERSION.match(process.stdout)
         if version_match:
             return version_match.group(1)
         return None
