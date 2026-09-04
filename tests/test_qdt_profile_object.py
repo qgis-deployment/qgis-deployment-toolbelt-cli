@@ -100,6 +100,60 @@ class TestQdtProfile(unittest.TestCase):
         self.assertTrue(profile_v2.is_older_than(profile_v3))
         self.assertFalse(profile_v2.is_older_than(profile_v1))
 
+    # -- QGIS major version detection --------------------------------------------
+    def test_profile_qgis_version_major_from_installed_path(self):
+        """QGIS major version is deduced from the QGIS versioned parent folder."""
+        for qgis_version_major in (3, 4):
+            with self.subTest(qgis_version_major=qgis_version_major):
+                qdt_profile = QdtProfile(
+                    name="unit_test",
+                    folder=Path(
+                        f"/home/qdt/.local/share/QGIS/QGIS{qgis_version_major}"
+                        "/profiles/unit_test"
+                    ),
+                )
+                self.assertEqual(qdt_profile.qgis_version_major, qgis_version_major)
+
+    def test_profile_qgis_version_major_case_insensitive(self):
+        """QGIS versioned folder is matched whatever its case (Windows-friendly)."""
+        qdt_profile = QdtProfile(
+            name="unit_test",
+            folder=Path("/home/qdt/AppData/Roaming/QGIS/qgis3/profiles/unit_test"),
+        )
+        self.assertEqual(qdt_profile.qgis_version_major, 3)
+
+    def test_profile_qgis_version_major_nearest_parent_wins(self):
+        """The closest QGIS versioned parent folder takes precedence."""
+        qdt_profile = QdtProfile(
+            name="unit_test",
+            folder=Path("/data/QGIS4/backup/QGIS/QGIS3/profiles/unit_test"),
+        )
+        self.assertEqual(qdt_profile.qgis_version_major, 3)
+
+    def test_profile_qgis_version_major_unsupported_version(self):
+        """An out of range QGIS major version is ignored, not returned."""
+        qdt_profile = QdtProfile(
+            name="unit_test",
+            folder=Path("/home/qdt/.local/share/QGIS/QGIS2/profiles/unit_test"),
+        )
+        self.assertIsNone(qdt_profile.qgis_version_major)
+
+    def test_profile_qgis_version_major_no_versioned_parent(self):
+        """A downloaded or custom-located profile has no detectable version."""
+        for folder in (
+            Path("/home/qdt/.cache/qgis-deployment-toolbelt/profiles/unit_test"),
+            Path("/opt/qgis-custom-config/profiles/unit_test"),
+            Path("/data/QGIS3-backup/profiles/unit_test"),
+        ):
+            with self.subTest(folder=folder):
+                qdt_profile = QdtProfile(name="unit_test", folder=folder)
+                self.assertIsNone(qdt_profile.qgis_version_major)
+
+    def test_profile_qgis_version_major_without_folder(self):
+        """A profile without folder does not raise and returns None."""
+        qdt_profile = QdtProfile(name="unit_test", version="1.0.0")
+        self.assertIsNone(qdt_profile.qgis_version_major)
+
 
 # ############################################################################
 # ####### Stand-alone run ########
