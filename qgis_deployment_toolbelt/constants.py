@@ -50,6 +50,9 @@ DEFAULT_DELETION_POLICY: DeletionPolicy = "trash_or_delete"
 
 DEFAULT_QDT_WORKING_FOLDER = Path.home().joinpath(".cache/qgis-deployment-toolbelt")
 
+# QGIS major versions supported by QDT
+SupportedQgisMajorVersion = Literal[3, 4]
+
 MANAGED_PLUGINS_MANIFEST_FILENAME: str = ".qdt-managed-plugins.json"
 
 # files to ignore when copying profiles. TODO: make it configurable?
@@ -74,6 +77,7 @@ SUPPORTED_OPERATING_SYSTEMS_CODENAMES: tuple[str, ...] = ("darwin", "linux", "wi
 # regex
 RE_QGIS_FINDER_DIR = re.compile(r"QGIS (\d+)\.(\d+)\.(\d+)", re.IGNORECASE)
 RE_QGIS_FINDER_VERSION = re.compile(r"QGIS (\d+\.\d+\.\d+)-(\w+).*")
+RE_QGIS_VERSIONED_FOLDER = re.compile(r"^QGIS(\d+)$", re.IGNORECASE)
 
 # #############################################################################
 # ########## Functions #############
@@ -180,6 +184,7 @@ class OSConfiguration:
     names_alter: list[str]
     qgis_bin_exe_path: Path | None = None
     qgis_profiles_path: Path | None = None
+    qgis_user_data_path: Path | None = None
     shortcut_extension: str | None = None
     shortcut_forbidden_chars: tuple[str, ...] | None = None
     shortcut_icon_extensions: tuple[str, ...] | None = None
@@ -337,6 +342,7 @@ class OSConfiguration:
                         / "Library/Application Support/QGIS/QGIS3/profiles/",
                     )
                 ),
+                qgis_user_data_path=Path.home() / "Library/Application Support/QGIS",
                 shortcut_extension="app",
                 shortcut_icon_extensions=("icns",),
             )
@@ -351,6 +357,7 @@ class OSConfiguration:
                         Path.home() / ".local/share/QGIS/QGIS3/profiles/",
                     )
                 ),
+                qgis_user_data_path=Path.home() / ".local/share/QGIS",
                 shortcut_extension=".desktop",
                 shortcut_icon_extensions=("png", "svg"),
                 shortcut_icon_default_path="qgis",
@@ -368,6 +375,7 @@ class OSConfiguration:
                         expandvars("%APPDATA%/QGIS/QGIS3/profiles"),
                     )
                 ),
+                qgis_user_data_path=Path(expandvars("%APPDATA%/QGIS")),
                 shortcut_extension=".lnk",
                 shortcut_forbidden_chars=("<", ">", ":", '"', "/", "\\", "|", "?", "*"),
                 shortcut_icon_extensions=("ico",),

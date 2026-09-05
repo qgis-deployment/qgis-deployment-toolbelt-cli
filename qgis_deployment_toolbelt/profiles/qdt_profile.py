@@ -20,7 +20,7 @@ import logging
 import tempfile
 from pathlib import Path
 from shutil import copy2, copytree
-from typing import Any, Literal
+from typing import Any, Literal, cast, get_args
 
 # 3rd party
 from packaging.version import InvalidVersion, Version
@@ -28,7 +28,9 @@ from packaging.version import InvalidVersion, Version
 # Package
 from qgis_deployment_toolbelt.constants import (
     COPY_IGNORED_PATTERNS,
+    RE_QGIS_VERSIONED_FOLDER,
     OSConfiguration,
+    SupportedQgisMajorVersion,
     get_qdt_working_directory,
 )
 from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
@@ -277,6 +279,77 @@ class QdtProfile:
             return [QgisPlugin.from_dict(p) for p in self._plugins]
         else:
             return []
+
+    @property
+    def qgis_maximum_version(self) -> str | None:
+        """Maximum QGIS version the profile is compatible with.
+
+        Read from the `qgisMaximumVersion` key of the profile.json file.
+
+        Returns:
+            str | None: maximum QGIS version as string, None if the profile does not
+                declare any upper bound.
+        """
+        return self._qgis_maximum_version
+
+    @property
+    def qgis_minimum_version(self) -> str | None:
+        """Minimum QGIS version the profile is compatible with.
+
+        Read from the `qgisMinimumVersion` key of the profile.json file.
+
+        Returns:
+            str | None: minimum QGIS version as string, None if the profile does not
+                declare any lower bound.
+        """
+        return self._qgis_minimum_version
+
+    @property
+    def qgis_version_major(self) -> SupportedQgisMajorVersion | None:
+        """QGIS major version deduced from the profile folder's parent directories.
+
+        Works only for installed profiles and for folder structure following the
+        official QGIS one ('QGIS/QGISX/profiles'), in case of custom profiles folder path.
+
+        Returns:
+            SupportedQgisMajorVersion | None: QGIS major version supported by QDT if it
+                can be deduced from the profile path, None otherwise.
+        """
+        if not isinstance(self.folder, Path):
+            logger.debug(
+                f"Profile '{self._name}' has no folder set, so its QGIS major version "
+                "can't be deduced from the path."
+            )
+            return None
+
+        for parent_folder in self.folder.parents:
+            version_match = RE_QGIS_VERSIONED_FOLDER.match(parent_folder.name)
+            if version_match is None:
+                continue
+
+            qgis_version_major = int(version_match.group(1))
+            if qgis_version_major not in get_args(SupportedQgisMajorVersion):
+                logger.warning(
+                    f"Profile '{self.name}' is stored under '{parent_folder}' which "
+                    f"refers to QGIS {qgis_version_major}, not supported by QDT. "
+                    "Supported major versions: "
+                    f"{', '.join(map(str, get_args(SupportedQgisMajorVersion)))}. "
+                    "Ignoring it."
+                )
+                return None
+
+            logger.debug(
+                f"QGIS major version {qgis_version_major} deduced for profile "
+                f"'{self.name}' from its parent folder: {parent_folder}"
+            )
+            return cast("SupportedQgisMajorVersion", qgis_version_major)
+
+        logger.debug(
+            f"No QGIS versioned folder (QGIS3, QGIS4...) found in the parents of "
+            f"'{self.folder}', so the QGIS major version of the profile "
+            f"'{self.name}' can't be deduced from the path."
+        )
+        return None
 
     @property
     def rules(self) -> list[dict] | None:
