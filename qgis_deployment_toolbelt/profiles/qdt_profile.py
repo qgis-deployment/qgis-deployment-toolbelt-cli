@@ -281,6 +281,30 @@ class QdtProfile:
             return []
 
     @property
+    def qgis_maximum_version(self) -> str | None:
+        """Maximum QGIS version the profile is compatible with.
+
+        Read from the `qgisMaximumVersion` key of the profile.json file.
+
+        Returns:
+            str | None: maximum QGIS version as string, None if the profile does not
+                declare any upper bound.
+        """
+        return self._qgis_maximum_version
+
+    @property
+    def qgis_minimum_version(self) -> str | None:
+        """Minimum QGIS version the profile is compatible with.
+
+        Read from the `qgisMinimumVersion` key of the profile.json file.
+
+        Returns:
+            str | None: minimum QGIS version as string, None if the profile does not
+                declare any lower bound.
+        """
+        return self._qgis_minimum_version
+
+    @property
     def qgis_version_major(self) -> SupportedQgisMajorVersion | None:
         """QGIS major version deduced from the profile folder's parent directories.
 

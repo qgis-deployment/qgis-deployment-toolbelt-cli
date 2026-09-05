@@ -154,6 +154,18 @@ class TestQdtProfile(unittest.TestCase):
         qdt_profile = QdtProfile(name="unit_test", version="1.0.0")
         self.assertIsNone(qdt_profile.qgis_version_major)
 
+    def test_profile_qgis_version_bounds(self):
+        """QGIS version bounds declared in profile.json are readable."""
+        qdt_profile = QdtProfile.from_json(
+            profile_json_path=Path("tests/fixtures/profiles/good_profile_complete.json")
+        )
+        self.assertEqual(qdt_profile.qgis_minimum_version, "3.22")
+        self.assertEqual(qdt_profile.qgis_maximum_version, "3.30")
+
+        unbounded_profile = QdtProfile(name="unit_test", version="1.0.0")
+        self.assertIsNone(unbounded_profile.qgis_minimum_version)
+        self.assertIsNone(unbounded_profile.qgis_maximum_version)
+
 
 # ############################################################################
 # ####### Stand-alone run ########
