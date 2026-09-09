@@ -87,11 +87,13 @@ class JobSplashScreenManager(GenericJob):
             profile_installed = profile_downloaded.installed_profile
             # target QGIS configuration files
             if isinstance(profile_installed, QdtProfile):
-                qini_helper_installed = profile_installed.get_qgis3ini_helper()
+                qini_helper_installed = profile_installed.get_qgis_ini_helper()
             else:
                 qini_helper_installed = QgisIniHelper(
-                    ini_filepath=profile_downloaded.path_in_qgis / "QGIS/QGIS3.ini",
-                    ini_type="profile_qgis3",
+                    ini_filepath=profile_downloaded.path_in_qgis
+                    / "QGIS"
+                    / self.os_config.qgis_profile_ini_filename,
+                    ini_type="profile_settings",
                 )
 
             if self.options.get("action") == "remove":
