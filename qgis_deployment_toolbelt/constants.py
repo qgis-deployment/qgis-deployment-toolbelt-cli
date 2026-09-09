@@ -24,7 +24,10 @@ from os.path import expanduser, expandvars
 from pathlib import Path
 from shutil import ignore_patterns, which
 from sys import platform as opersys
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, cast, get_args
+
+# 3rd party
+from packaging.version import InvalidVersion, Version
 
 # package
 from qgis_deployment_toolbelt.utils.check_path import check_path
@@ -52,6 +55,8 @@ DEFAULT_QDT_WORKING_FOLDER = Path.home().joinpath(".cache/qgis-deployment-toolbe
 
 # QGIS major versions supported by QDT
 SupportedQgisMajorVersion = Literal[3, 4]
+# fallback used when the QGIS major version can't be determined
+DEFAULT_QGIS_MAJOR_VERSION: SupportedQgisMajorVersion = 3
 
 MANAGED_PLUGINS_MANIFEST_FILENAME: str = ".qdt-managed-plugins.json"
 
@@ -66,6 +71,13 @@ ENV_VAR_QGIS_VERSION: str = "QDT_QGIS_VERSION"
 QGIS_BIN_WINDOWS_FILENAME: str = "qgis-bin.exe"
 QGIS_LTR_BIN_WINDOWS_FILENAME: str = "qgis-ltr-bin.exe"
 
+# QGIS configuration files stored under `<profile>/QGIS/`.
+# the settings file is named after the QGIS major version: QGIS3.ini, QGIS4.ini...
+# TODO: QDT only handles the ini file so far, so customization changes it writes are
+# ignored by QGIS 4 as soon as QGIS 4 has written its own XML file.
+QGIS_PROFILE_CUSTOMIZATION_INI_FILENAME: str = "QGISCUSTOMIZATION3.ini"
+QGIS_PROFILE_CUSTOMIZATION_XML_FILENAME: str = "QGISCUSTOMIZATION.xml"
+
 # maximum time (in seconds) allowed to a QGIS binary to answer to `--version`
 QGIS_VERSION_LOOKUP_TIMEOUT_SECONDS: int = int(
     getenv("QDT_QGIS_VERSION_LOOKUP_TIMEOUT_SECONDS", 20)
@@ -77,6 +89,7 @@ SUPPORTED_OPERATING_SYSTEMS_CODENAMES: tuple[str, ...] = ("darwin", "linux", "wi
 # regex
 RE_QGIS_FINDER_DIR = re.compile(r"QGIS (\d+)\.(\d+)\.(\d+)", re.IGNORECASE)
 RE_QGIS_FINDER_VERSION = re.compile(r"QGIS (\d+\.\d+\.\d+)-(\w+).*")
+RE_QGIS_PROFILE_INI_STEM = re.compile(r"^QGIS(\d+)$", re.IGNORECASE)
 RE_QGIS_VERSIONED_FOLDER = re.compile(r"^QGIS(\d+)$", re.IGNORECASE)
 
 # #############################################################################
@@ -171,6 +184,55 @@ def get_qdt_working_directory(
             )
 
 
+def get_qgis_version_major(
+    qgis_version: str | int | None = None,
+) -> SupportedQgisMajorVersion:
+    """Determine the QGIS major version QDT has to work with .
+
+    Args:
+        qgis_version (str | int | None, optional): QGIS version to read the major \
+            version from. Anything `packaging` can parse is accepted. If None, the \
+            `QDT_QGIS_VERSION` environment variable (set by the job
+            `qgis-installation-finder`) is used. Defaults to None.
+
+    Returns:
+        SupportedQgisMajorVersion: QGIS major version supported by QDT. Fallback to
+            `DEFAULT_QGIS_MAJOR_VERSION` when it can't be determined.
+    """
+    if qgis_version is None:
+        qgis_version = getenv(ENV_VAR_QGIS_VERSION)
+
+    if qgis_version is None:
+        logger.debug(
+            f"'{ENV_VAR_QGIS_VERSION}' is not set and no QGIS version has been passed, "
+            f"so QDT considers it works with QGIS {DEFAULT_QGIS_MAJOR_VERSION}. Run the "
+            "'qgis-installation-finder' job before the others to make QDT aware of the "
+            "installed QGIS version."
+        )
+        return DEFAULT_QGIS_MAJOR_VERSION
+
+    try:
+        version_major = Version(str(qgis_version)).major
+    except InvalidVersion:
+        logger.warning(
+            f"Unable to extract a QGIS major version from '{qgis_version}': it uses an "
+            "incompatible versioning scheme. See https://peps.python.org/pep-0440/. "
+            f"Fallback to QGIS {DEFAULT_QGIS_MAJOR_VERSION}."
+        )
+        return DEFAULT_QGIS_MAJOR_VERSION
+
+    if version_major not in get_args(SupportedQgisMajorVersion):
+        logger.warning(
+            f"QGIS {version_major} (from '{qgis_version}') is not supported by QDT. "
+            "Supported major versions: "
+            f"{', '.join(map(str, get_args(SupportedQgisMajorVersion)))}. "
+            f"Fallback to QGIS {DEFAULT_QGIS_MAJOR_VERSION}."
+        )
+        return DEFAULT_QGIS_MAJOR_VERSION
+
+    return cast("SupportedQgisMajorVersion", version_major)
+
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################
@@ -185,10 +247,46 @@ class OSConfiguration:
     qgis_bin_exe_path: Path | None = None
     qgis_profiles_path: Path | None = None
     qgis_user_data_path: Path | None = None
+    qgis_version_major: SupportedQgisMajorVersion = DEFAULT_QGIS_MAJOR_VERSION
     shortcut_extension: str | None = None
     shortcut_forbidden_chars: tuple[str, ...] | None = None
-    shortcut_icon_extensions: tuple[str, ...] | None = None
     shortcut_icon_default_path: str | None = None
+    shortcut_icon_extensions: tuple[str, ...] | None = None
+
+    @property
+    def qgis_profile_ini_filename(self) -> str:
+        """Filename of the QGIS settings file stored in a profile `QGIS` subfolder.
+
+        Returns:
+            str: name of the profile settings ini file.
+        """
+        return f"QGIS{self.qgis_version_major}.ini"
+
+    def get_qgis_profiles_path(
+        self, qgis_version_major: SupportedQgisMajorVersion | None = None
+    ) -> Path:
+        """Get the folder where QGIS stores the user's profiles.
+
+        The `QGIS_CUSTOM_CONFIG_PATH` environment variable, used also by QGIS itself,
+        takes precedence and is used as is.
+
+        Args:
+            qgis_version_major (SupportedQgisMajorVersion | None, optional): QGIS major
+                version to build the path for. If None, the one stored on the object is
+                used. Defaults to None.
+
+        Returns:
+            Path: path to the QGIS profiles folder.
+        """
+        if custom_config_path := getenv("QGIS_CUSTOM_CONFIG_PATH"):
+            return Path(custom_config_path)
+
+        if qgis_version_major is None:
+            qgis_version_major = self.qgis_version_major
+
+        return self.qgis_user_data_path.joinpath(
+            f"QGIS{qgis_version_major}", "profiles"
+        )
 
     def _is_envvar_qgis_exe_path_a_dict(self) -> bool:
         """Check if the QDT_QGIS_EXE_PATH environment variable is a dictionary.
@@ -310,6 +408,7 @@ class OSConfiguration:
     def from_opersys(
         cls,
         operating_system_codename: str | None = None,
+        qgis_version_major: SupportedQgisMajorVersion | None = None,
     ) -> OSConfiguration:
         """Create configuration object with defaults values from a operating system
             code name.
@@ -318,6 +417,10 @@ class OSConfiguration:
             operating_system_codename: operating system code name as specified in \
                 sys.platform. If None, fallback to current operating system. \
                     Defaults to None.
+            qgis_version_major: QGIS major version to target, which determines the \
+                profiles folder path. If None, it's the `QDT_QGIS_VERSION` \
+                environment variable set by the `qgis-installation-finder` job. \
+                Defaults to None.
 
         Returns:
             Self: OSConfiguration object with defaults settings
@@ -329,53 +432,41 @@ class OSConfiguration:
                 f"Getting configuration for current operating system: {opersys}"
             )
 
+        # if not specified, deduce it from the installed QGIS found by QDT
+        if qgis_version_major is None:
+            qgis_version_major = get_qgis_version_major()
+
         # returning configuration for operating system
         if operating_system_codename == "darwin":
-            return cls(
+            os_config = cls(
                 name_python="darwin",
                 names_alter=["apple", "mac", "macos"],
                 qgis_bin_exe_path=Path("/usr/bin/qgis"),
-                qgis_profiles_path=Path(
-                    getenv(
-                        "QGIS_CUSTOM_CONFIG_PATH",
-                        Path.home()
-                        / "Library/Application Support/QGIS/QGIS3/profiles/",
-                    )
-                ),
                 qgis_user_data_path=Path.home() / "Library/Application Support/QGIS",
+                qgis_version_major=qgis_version_major,
                 shortcut_extension="app",
                 shortcut_icon_extensions=("icns",),
             )
         elif operating_system_codename == "linux":
-            return cls(
+            os_config = cls(
                 name_python="linux",
                 names_alter=["kubuntu", "ubuntu"],
                 qgis_bin_exe_path=Path("/usr/bin/qgis"),
-                qgis_profiles_path=Path(
-                    getenv(
-                        "QGIS_CUSTOM_CONFIG_PATH",
-                        Path.home() / ".local/share/QGIS/QGIS3/profiles/",
-                    )
-                ),
                 qgis_user_data_path=Path.home() / ".local/share/QGIS",
+                qgis_version_major=qgis_version_major,
                 shortcut_extension=".desktop",
                 shortcut_icon_extensions=("png", "svg"),
                 shortcut_icon_default_path="qgis",
             )
         elif operating_system_codename == "win32":
-            return cls(
+            os_config = cls(
                 name_python="win32",
                 names_alter=["win", "windows"],
                 qgis_bin_exe_path=Path(
                     expandvars("%PROGRAMFILES%/QGIS 3.40.11/bin/qgis-ltr-bin.exe")
                 ),
-                qgis_profiles_path=Path(
-                    getenv(
-                        "QGIS_CUSTOM_CONFIG_PATH",
-                        expandvars("%APPDATA%/QGIS/QGIS3/profiles"),
-                    )
-                ),
                 qgis_user_data_path=Path(expandvars("%APPDATA%/QGIS")),
+                qgis_version_major=qgis_version_major,
                 shortcut_extension=".lnk",
                 shortcut_forbidden_chars=("<", ">", ":", '"', "/", "\\", "|", "?", "*"),
                 shortcut_icon_extensions=("ico",),
@@ -385,3 +476,10 @@ class OSConfiguration:
                 f"Unsupported operating system specified: {operating_system_codename}. "
                 f"Must be one of: {', '.join(['darwin', 'linux', 'win32'])}"
             )
+
+        os_config.qgis_profiles_path = os_config.get_qgis_profiles_path()
+        logger.debug(
+            f"QGIS {qgis_version_major} profiles folder: {os_config.qgis_profiles_path}"
+        )
+
+        return os_config
