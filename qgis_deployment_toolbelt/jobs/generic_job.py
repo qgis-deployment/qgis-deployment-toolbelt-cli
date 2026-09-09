@@ -52,6 +52,7 @@ class GenericJob:
     """Generic base for QDT jobs."""
 
     ID: str = ""
+    ENSURE_QGIS_PROFILES_FOLDER: bool = True
     OPTIONS_SCHEMA: dict[str, dict[str, Any]] = {}
 
     # -- CACHE --
@@ -92,11 +93,15 @@ class GenericJob:
 
         # destination profiles folder
         self.qgis_profiles_path: Path = self.os_config.qgis_profiles_path
-        self._ensure_folder_exists(
-            folder_path=self.qgis_profiles_path,
-            log_label="Installed QGIS profiles folder",
+        if self.ENSURE_QGIS_PROFILES_FOLDER:
+            self._ensure_folder_exists(
+                folder_path=self.qgis_profiles_path,
+                log_label="Installed QGIS profiles folder",
+            )
+        logger.debug(
+            f"Installed QGIS {self.os_config.qgis_version_major} profiles folder: "
+            f"{self.qgis_profiles_path}"
         )
-        logger.debug(f"Installed QGIS profiles folder: {self.qgis_profiles_path}")
 
     # -- Cache management
     @classmethod
@@ -153,7 +158,7 @@ class GenericJob:
     ) -> tuple[QdtProfile, ...] | None:
         """List installed QGIS profiles, i.e. a profile's folder located into the QGIS
             profiles path and so accessible to the end-user through the QGIS interface.
-            Typically: `~/.local/share/QGIS/QGIS3/profiles/geotribu` or
+            Typically: `~/.local/share/QGIS/QGIS4/profiles/geotribu` or
             `%APPDATA%/QGIS/QGIS3/profiles/geotribu`).
 
         Args:
@@ -163,7 +168,7 @@ class GenericJob:
 
         Returns:
             tuple[QdtProfile, ...] | None: tuple of profiles objects or None if no profile is
-                installed in QGIS3/profiles
+                installed in the QGIS profiles folder
         """
         return self.filter_profiles_folder(
             start_parent_folder=self.qgis_profiles_path, quiet=quiet
