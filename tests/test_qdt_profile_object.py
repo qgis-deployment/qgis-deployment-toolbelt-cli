@@ -15,6 +15,7 @@ import unittest
 from pathlib import Path
 
 # project
+from qgis_deployment_toolbelt.__about__ import __version_clean__
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 
 
@@ -99,6 +100,52 @@ class TestQdtProfile(unittest.TestCase):
         self.assertTrue(profile_v2.is_older_than(profile_v3.version))
         self.assertTrue(profile_v2.is_older_than(profile_v3))
         self.assertFalse(profile_v2.is_older_than(profile_v1))
+
+    def test_qdt_min_version_satisfied(self):
+        """Test qdtMinVersion attribute when the running QDT version is recent
+        enough."""
+        qdt_profile = QdtProfile.from_json(
+            profile_json_path=Path(
+                "tests/fixtures/profiles/good_profile_qdt_min_version_satisfied.json"
+            )
+        )
+        is_compatible, error_message = qdt_profile.is_qdt_version_compatible()
+        self.assertTrue(is_compatible)
+        self.assertIsNone(error_message)
+
+    def test_qdt_min_version_too_high(self):
+        """Test qdtMinVersion attribute when it's higher than the running QDT
+        version."""
+        qdt_profile = QdtProfile.from_json(
+            profile_json_path=Path(
+                "tests/fixtures/profiles/bad_profile_qdt_min_version_too_high.json"
+            )
+        )
+        is_compatible, error_message = qdt_profile.is_qdt_version_compatible()
+        self.assertFalse(is_compatible)
+        self.assertIsNotNone(error_message)
+        self.assertIn(__version_clean__, error_message)
+
+    def test_qdt_min_version_invalid(self):
+        """Test qdtMinVersion attribute when it's not a valid version specifier."""
+        qdt_profile = QdtProfile.from_json(
+            profile_json_path=Path(
+                "tests/fixtures/profiles/bad_profile_qdt_min_version_invalid.json"
+            )
+        )
+        is_compatible, error_message = qdt_profile.is_qdt_version_compatible()
+        self.assertIsNone(is_compatible)
+        self.assertIsNotNone(error_message)
+
+    def test_qdt_min_version_absent(self):
+        """Test qdtMinVersion attribute when it's not set: profile should
+        remain compatible."""
+        for i in self.good_profiles_files:
+            qdt_profile = QdtProfile.from_json(profile_json_path=i)
+            if qdt_profile.qdt_min_version is None:
+                is_compatible, error_message = qdt_profile.is_qdt_version_compatible()
+                self.assertTrue(is_compatible)
+                self.assertIsNone(error_message)
 
 
 # ############################################################################

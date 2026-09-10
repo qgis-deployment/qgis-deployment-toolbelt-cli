@@ -1,0 +1,6 @@
+{
+  "$schema": "../../../docs/schemas/profile/qgis_profile.json",
+  "name": "qdt_test_profile_qdt_min_version_invalid",
+  "version": "1.0.0",
+  "qdtMinVersion": "not-a-version"
+}

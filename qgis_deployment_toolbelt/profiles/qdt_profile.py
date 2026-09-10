@@ -26,6 +26,7 @@ from typing import Any, Literal
 from packaging.version import InvalidVersion, Version
 
 # Package
+from qgis_deployment_toolbelt.__about__ import __version_clean__
 from qgis_deployment_toolbelt.constants import (
     COPY_IGNORED_PATTERNS,
     OSConfiguration,
@@ -53,11 +54,12 @@ class QdtProfile:
     # optional mapping on attributes names.
     # {attribute_name_in_output_object: attribute_name_from_input_file}  # noqa: ERA001
     ATTR_MAP = {
+        "qdt_min_version": "qdtMinVersion",
         "qgis_maximum_version": "qgisMaximumVersion",
         "qgis_minimum_version": "qgisMinimumVersion",
     }
 
-    def __init__(
+    def __init__(  # noqa: C901
         self,
         alias: str | None = None,
         author: str | None = None,
@@ -69,6 +71,7 @@ class QdtProfile:
         loaded_from_json: bool = False,
         name: str | None = None,
         plugins: list | None = None,
+        qdt_min_version: str | None = None,
         qgis_maximum_version: str | None = None,
         qgis_minimum_version: str | None = None,
         rules: list[dict] | None = None,
@@ -100,6 +103,7 @@ class QdtProfile:
         self._name = None
         self._splash = None
         self._plugins = None
+        self._qdt_min_version = None
         self._qgis_maximum_version = None
         self._qgis_minimum_version = None
         self._rules = None
@@ -125,6 +129,8 @@ class QdtProfile:
             self._name = name
         if plugins:
             self._plugins = plugins
+        if qdt_min_version:
+            self._qdt_min_version = qdt_min_version
         if qgis_maximum_version:
             self._qgis_maximum_version = qgis_maximum_version
         if qgis_minimum_version:
@@ -304,6 +310,15 @@ class QdtProfile:
             return self._splash
 
     @property
+    def qdt_min_version(self) -> str | None:
+        """Returns the minimum QDT version required to deploy this profile.
+
+        Returns:
+            str | None: minimum QDT version or None if not set.
+        """
+        return self._qdt_min_version
+
+    @property
     def version(self) -> str | None:
         """Returns the profile version as string.
 
@@ -311,6 +326,48 @@ class QdtProfile:
             str: version
         """
         return self._version
+
+    def is_qdt_version_compatible(self) -> tuple[bool | None, str | None]:
+        """Check if the running QDT version satisfies this profile's
+        `qdtMinVersion` attribute (if set).
+
+        Returns:
+            tuple[bool | None, str | None]: a tuple with a boolean (True if the
+                running QDT version is compatible, False if it's too old, None if
+                the comparison could not be performed) and an explicit message
+                (None if compatible).
+        """
+        if not self.qdt_min_version:
+            return True, None
+
+        try:
+            required_version = Version(str(self.qdt_min_version))
+        except InvalidVersion as err:
+            return (
+                None,
+                f"Profile '{self.name}' attribute 'qdtMinVersion' is not a valid "
+                f"version: {self.qdt_min_version}. Trace: {err}",
+            )
+
+        try:
+            running_version = Version(__version_clean__)
+        except InvalidVersion as err:
+            logger.warning(
+                f"Unable to parse running QDT version ({__version_clean__}) to "
+                f"check compatibility with profile '{self.name}' qdtMinVersion. "
+                f"Trace: {err}"
+            )
+            return True, None
+
+        if running_version < required_version:
+            return (
+                False,
+                f"Profile '{self.name}' requires QGIS Deployment Toolbelt "
+                f">= {required_version}, but the running version is "
+                f"{running_version}. Please upgrade QDT.",
+            )
+
+        return True, None
 
     def is_older_than(self, version_to_compare: str | QdtProfile) -> bool | None:
         """Determine if the actual object version is older than the given version to
