@@ -211,9 +211,22 @@ class GenericJob:
             f"{len(li_qgis_qdt_profiles)} profiles found within {start_parent_folder}"
         )
 
+        # filter out profiles incompatible with the running QDT version
+        profiles_version_ok, _ = self.filter_profiles_on_qdt_version(
+            tup_qdt_profiles=tuple(li_qgis_qdt_profiles)
+        )
+
+        if not len(profiles_version_ok):
+            logger.warning(
+                f"None of the {len(li_qgis_qdt_profiles)} profiles are compatible "
+                "with the running QDT version."
+            )
+            self.PROFILES_FOLDER_CACHE[start_parent_folder] = None
+            return
+
         # filter out profiles that do not match the rules
         profiles_matched, profiles_unmatched = self.filter_profiles_on_rules(
-            tup_qdt_profiles=tuple(li_qgis_qdt_profiles)
+            tup_qdt_profiles=tuple(profiles_version_ok)
         )
 
         if not len(profiles_matched):
@@ -264,6 +277,35 @@ class GenericJob:
             f"Downloaded profile matched: {qdt_profile.name} from {qdt_profile.folder}"
         )
         return qdt_profile
+
+    def filter_profiles_on_qdt_version(
+        self, tup_qdt_profiles: tuple[QdtProfile, ...]
+    ) -> tuple[list[QdtProfile], list[QdtProfile]]:
+        """Evaluate profiles against their optional `qdtMinVersion` attribute.
+
+        Args:
+            tup_qdt_profiles (tuple[QdtProfile, ...]): input tuple of QDT profiles
+
+        Returns:
+            tuple[list[QdtProfile], list[QdtProfile]]: tuple of profiles that are
+            compatible with the running QDT version and those which are not
+        """
+        li_profiles_compatible: list[QdtProfile] = []
+        li_profiles_incompatible: list[QdtProfile] = []
+
+        for profile in tup_qdt_profiles:
+            is_compatible, error_message = profile.is_qdt_version_compatible()
+            if is_compatible is False:
+                logger.error(error_message)
+                li_profiles_incompatible.append(profile)
+                continue
+
+            # is_compatible is None: qdtMinVersion could not be parsed
+            if is_compatible is None:
+                logger.warning(error_message)
+            li_profiles_compatible.append(profile)
+
+        return li_profiles_compatible, li_profiles_incompatible
 
     def filter_profiles_on_rules(
         self, tup_qdt_profiles: tuple[QdtProfile, ...], cached: bool = True

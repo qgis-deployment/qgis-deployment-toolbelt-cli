@@ -100,6 +100,31 @@ class TestJobGeneric(unittest.TestCase):
                 len(list(tmp_folder_path.glob("**/profile.json"))) - 1,
             )
 
+    def test_listing_profiles_folder_excludes_incompatible_qdt_version(self):
+        """Profiles whose qdtMinVersion is not satisfied must be filtered out."""
+        fixtures_profiles_folder = Path("tests/fixtures/profiles")
+        with tempfile.TemporaryDirectory(
+            prefix="QDT_test_profiles_qdt_min_version_",
+            ignore_cleanup_errors=True,
+        ) as tmpdirname:
+            tmp_folder_path = Path(tmpdirname).joinpath("profiles")
+            for p in fixtures_profiles_folder.glob("*_profile_qdt_min_version_*.json"):
+                dest_file = tmp_folder_path.joinpath(f"test_{p.stem}/profile.json")
+                dest_file.parent.mkdir(parents=True, exist_ok=True)
+                dest_file.write_text(p.read_text(encoding="UTF-8"), encoding="UTF-8")
+
+            filtered_profiles = self.generic_job.filter_profiles_folder(
+                start_parent_folder=tmp_folder_path
+            )
+
+            self.assertIsInstance(filtered_profiles, tuple)
+            filtered_names = [p.name for p in filtered_profiles]
+            self.assertIn("qdt_test_profile_qdt_min_version_satisfied", filtered_names)
+            self.assertNotIn(
+                "qdt_test_profile_qdt_min_version_too_high", filtered_names
+            )
+            self.assertIn("qdt_test_profile_qdt_min_version_invalid", filtered_names)
+
     def test_get_matching_profile_from_name(self):
         """Test get_matching_profile_from_name method."""
         fixtures_profiles_folder = Path("tests/fixtures/profiles")
