@@ -35,6 +35,14 @@
             "description": "Profile name without any special characters.",
             "type": "string"
         },
+        "qdtMinVersion": {
+            "description": "Minimum version of QGIS Deployment Toolbelt required to deploy this profile. Must follow Semver. If the running QDT version is older, the profile is not deployed.",
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+            "examples": [
+                "0.45.0"
+            ]
+        },
         "plugins": {
             "description": "Plugins installed with the profile.",
             "title": "QGIS Plugins",

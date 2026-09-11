@@ -6,6 +6,8 @@ In order to avoid unnecessary duplication of code (typically that of the various
 
 QDT expects to find this file in the folder of each profile stored in the source of synchronized profiles in the qprofiles-manager job.
 
+`profile.json` accepts an optional `qdtMinVersion` key to state the minimum QDT version required to deploy the profile (following simple [SemVer](https://semver.org/)). If the running QDT is older than this, the profile is skipped during synchronization.
+
 ## Publish them
 
 3 options:
