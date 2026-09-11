@@ -16,6 +16,30 @@ Unreleased
 
 -->
 
+## 0.45.0 - 2026-09-11
+
+> Version mainly funded by [la métropole du Grand Lyon](https://www.grandlyon.com/).
+
+### Features and enhancements 🎉
+
+* feature(scenario): add `metadata.qdt_min_version` support for scenarios and implement validation checks by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/880>
+* feature(profile): add `qdtMinVersion` attribute to profile.json and ignore incompatible profiles during deployment by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/895>
+* improve(installation-finder): expose detected QGIS version internally by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/883>
+* improve(qgis-finder): use packaging to compare qgis versions by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/884>
+* improve(qgis-finder): use subprocess.run instead of subprocess.Popen and add a configurable timeout by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/888>
+* improve(qgis-finder): set a startupinfo object as a best-effort to hide any window on Windows by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/890>
+* improve(qgis-finder): add unit tests against _get_qgis_bin_version by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/892>
+
+### Tooling 🔧
+
+* chore(network): bump pypac minimal version to 0.19 and make required changes by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/885>
+* update(docs): bump sphinx-argparse min version to 0.6.1 by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/886>
+
+### Documentation 📖
+
+* fix(docs): options of job Cleanup manager were wrong by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/882>
+* update(docs): expose docstrings for private members by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/889>
+
 ## 0.44.0 - 2026-07-31
 
 > Version mainly funded by [la métropole du Grand Lyon](https://www.grandlyon.com/).
