@@ -61,7 +61,7 @@
 :color: info
 :expand:
 :shadow:
-:tooltip: mailto Oslandia about QDT
+:tooltip: Modern forum of OSGeo
 {material}`forum` Forum/mailing-list
 ```
 
