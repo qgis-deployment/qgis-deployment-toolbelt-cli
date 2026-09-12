@@ -6,6 +6,7 @@
   "author": "Julien Moura",
   "email": "infos+qdt@oslandia.com",
   "icon": "images/icon_shortcut_qdt_viewer_mode.ico",
+  "qdtMinVersion": "0.35.0",
   "qgisMinimumVersion": "3.34.4",
   "qgisMaximumVersion": "4.99.15",
   "version": "1.1.2",

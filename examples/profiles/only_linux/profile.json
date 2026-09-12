@@ -5,8 +5,9 @@
   "description": "Demonstrating a QDT profile that's deployed only on Linux.",
   "author": "Julien Moura",
   "email": "infos+qdt@oslandia.com",
+  "qdtMinVersion": "0.41.0",
   "qgisMinimumVersion": "3.34.0",
-  "qgisMaximumVersion": "3.99.10",
+  "qgisMaximumVersion": "4.10.10",
   "version": "1.0.0",
   "rules": [
     {
