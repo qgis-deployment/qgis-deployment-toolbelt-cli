@@ -46,9 +46,11 @@ You can also define (non-exhaustive list):
         - "C:\\OSGeo4W"
         - "/usr/bin/qgis"
     - version_priority:
-      - 3.44
-      - 3.40
-      - 3.36
+      - "4.4.7"
+      - "3.44"
+      - "3.40"
+      - "4.2.4"
+      - "3.36"
 ```
 
 ---> 📖 [QGIS Installation Finder](../jobs/qgis_installation_finder.md)
@@ -77,7 +79,7 @@ You can also define (non-exhaustive list):
 
 - ✅ from a public Git project (internet or local network)
 - ✅ from an HTTP server
-- ❌ private project with authentication
+- ✔️ private project with authentication: [yes using a local proxy](../guides/howto_manage_private_git.md) but not directly (waiting to be funded)
 
 ---> 📖 [Profiles Downloader](../jobs/profiles_downloader) and [Profiles Synchronizer](../jobs/profiles_synchronizer.md)
 
@@ -90,9 +92,20 @@ You can also define (non-exhaustive list):
 - ✅ official repository
 - ✅ private repository accessible without authentication
 - ✅ plugin stored on a local or network file system without authentication
-- ❌ private plugin repository with authentication
+- ❌ private plugin repository with authentication - to be funded
 
 ---> 📖 [Plugins Downloader](../jobs/plugins_downloader) and [Plugins Synchronizer](../jobs/plugins_synchronizer.md)
+
+----
+
+## Remove staled resources
+
+🎯 Keep the QGIS deployment environment clean and avoid unnecessary disk usage:
+
+- ✅ remove unlisted plugins from installed profiles
+- ✅ remove unlisted plugins archives from local cache
+
+---> 📖 Usable as [a job](../jobs/cleanup_manager.md) and/or [command-line](./cli.md#cleanup)
 
 ----
 
