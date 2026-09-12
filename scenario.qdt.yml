@@ -22,15 +22,21 @@ steps:
     uses: qgis-installation-finder
     with:
       version_priority:
-        - "3.40"
         - "3.44"
+        - "4.4"
+        - "4.2"
+        - "3.40"
         - "3.34.9"
+        - "4.0"
         - "3.28"
         - "3.38"
         - "3.36"
         - "3.32"
       search_paths:
-        - "%PROGRAMFILES%/QGIS"
+        - "%PROGRAMFILES%\\QGIS"
+        - "%PROGRAMFILES%"
+        - "/usr/bin/qgis"
+        - "C:\\OSGeo4W"
       if_not_found: warning
 
   - name: Download profiles from remote git repository

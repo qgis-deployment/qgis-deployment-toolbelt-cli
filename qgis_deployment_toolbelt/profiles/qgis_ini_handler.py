@@ -19,6 +19,12 @@ from pathlib import Path
 from typing import Literal
 
 # package
+from qgis_deployment_toolbelt.constants import (
+    QGIS_PROFILE_CUSTOMIZATION_INI_FILENAME,
+    RE_QGIS_PROFILE_INI_STEM,
+    SupportedQgisMajorVersion,
+    get_qgis_version_major,
+)
 from qgis_deployment_toolbelt.utils.check_path import check_path
 from qgis_deployment_toolbelt.utils.ini_interpolation import (
     EnvironmentVariablesInterpolation,
@@ -44,8 +50,8 @@ class QgisIniHelper:
 
     SUPPORTED_INI_TYPES: tuple[str, str, str] = (
         "plugin_metadata",
-        "profile_qgis3",
-        "profile_qgis3customization",
+        "profile_settings",
+        "profile_customization",
     )
 
     ini_type: str | None = None
@@ -54,50 +60,63 @@ class QgisIniHelper:
         self,
         ini_filepath: Path,
         ini_type: Literal[
-            "profile_qgis3", "profile_qgis3customization", "plugin_metadata", None
+            "profile_settings", "profile_customization", "plugin_metadata", None
         ] = None,
         strict: bool = False,
         enable_environment_variables_interpolation: bool = True,
+        qgis_version_major: SupportedQgisMajorVersion | None = None,
     ) -> None:
         """Instanciation.
 
         Args:
-            ini_filepath (Path): path to the QGIS3.ini configuration file
-            ini_type (Literal['profile_qgis3', 'profile_qgis3customization',\
+            ini_filepath (Path): path to the QGIS settings file (`QGIS3.ini`,
+                `QGIS4.ini`...)
+            ini_type (Literal['profile_settings', 'profile_customization',\
                 'plugin_metadata', None ], optional): type of ini file.\
                 None enables autodetection. Defaults to None.
             strict (bool, optional): strict mode applied to ConfigParser. Defaults to
                 False.
             enable_environment_variables_interpolation (bool, optional): if enabled,
                 values matching environment variables are interepreted. Defaults to True.
+            qgis_version_major (SupportedQgisMajorVersion | None, optional): QGIS major
+                version, used to name the profile settings file. If None, it's deduced
+                from the input file name when possible, then from the installed QGIS.
+                Defaults to None.
 
         """
+        self.qgis_version_major = self._resolve_qgis_version_major(
+            ini_filepath=ini_filepath, qgis_version_major=qgis_version_major
+        )
+        profile_config_filename = f"QGIS{self.qgis_version_major}.ini"
+
         if (
             ini_filepath is not None
             and ini_type is not None
             and ini_type in self.SUPPORTED_INI_TYPES
         ):
             self.ini_type = ini_type
-            if self.ini_type == "profile_qgis3":
+            if self.ini_type == "profile_settings":
                 self.profile_config_path = ini_filepath
                 self.profile_customization_path = ini_filepath.with_name(
-                    "QGISCUSTOMIZATION3.ini"
+                    QGIS_PROFILE_CUSTOMIZATION_INI_FILENAME
                 )
-            elif self.ini_type == "profile_qgis3customization":
-                self.profile_config_path = ini_filepath.with_name("QGIS3.ini")
+            elif self.ini_type == "profile_customization":
+                self.profile_config_path = ini_filepath.with_name(
+                    profile_config_filename
+                )
                 self.profile_customization_path = ini_filepath
             else:
                 self.profile_config_path = None
                 self.profile_customization_path = None
-        elif ini_filepath.stem == "QGIS3":
-            self.ini_type = "profile_qgis3"
+        elif RE_QGIS_PROFILE_INI_STEM.match(ini_filepath.stem):
+            self.ini_type = "profile_settings"
             self.profile_config_path = ini_filepath
             self.profile_customization_path = ini_filepath.with_name(
-                "QGISCUSTOMIZATION3.ini"
+                QGIS_PROFILE_CUSTOMIZATION_INI_FILENAME
             )
-        elif ini_filepath.stem == "QGISCUSTOMIZATION3":
-            self.ini_type = "profile_qgis3customization"
-            self.profile_config_path = ini_filepath.with_name("QGIS3.ini")
+        elif ini_filepath.stem == Path(QGIS_PROFILE_CUSTOMIZATION_INI_FILENAME).stem:
+            self.ini_type = "profile_customization"
+            self.profile_config_path = ini_filepath.with_name(profile_config_filename)
             self.profile_customization_path = ini_filepath
         elif ini_filepath.name == "metadata.txt":
             self.ini_type = "plugin_metadata"
@@ -122,6 +141,31 @@ class QgisIniHelper:
         self.enable_environment_variables_interpolation = (
             enable_environment_variables_interpolation
         )
+
+    @staticmethod
+    def _resolve_qgis_version_major(
+        ini_filepath: Path,
+        qgis_version_major: SupportedQgisMajorVersion | None = None,
+    ) -> SupportedQgisMajorVersion:
+        """Determine which QGIS major version the handled ini file belongs to.
+
+        Args:
+            ini_filepath (Path): path to the handled ini file.
+            qgis_version_major (SupportedQgisMajorVersion | None, optional): explicitly
+                passed major version, which always wins. Defaults to None.
+
+        Returns:
+            SupportedQgisMajorVersion: QGIS major version to use.
+        """
+        if qgis_version_major is not None:
+            return qgis_version_major
+
+        if ini_filepath is not None and (
+            version_match := RE_QGIS_PROFILE_INI_STEM.match(ini_filepath.stem)
+        ):
+            return get_qgis_version_major(qgis_version=version_match.group(1))
+
+        return get_qgis_version_major()
 
     def cfg_parser(self) -> CustomConfigParser:
         """Return config parser with options for QGIS ini files.
@@ -148,7 +192,8 @@ class QgisIniHelper:
 
         Args:
             ini_file (Union[CustomConfigParser, Path]): input ini file to check.
-                A warning is raised if the filename is not QGIS3.ini.
+                A warning is raised if the filename is not a QGIS profile settings file
+                (QGIS3.ini, QGIS4.ini...).
                 If None, self.profile_config_path is used.
 
         Returns:
@@ -161,9 +206,11 @@ class QgisIniHelper:
             )
             return self.is_ui_customization_enabled(ini_file=self.profile_config_path)
 
-        if self.ini_type not in ("profile_qgis3", "profile_qgis3customization"):
+        if self.ini_type not in ("profile_settings", "profile_customization"):
             logger.debug(
-                f"Invalid ini type: {self.ini_type}. Must a QGIS3.ini or a QGIS3CUSTOMIZATION.ini"
+                f"Invalid ini type: {self.ini_type}. Must be a QGIS profile settings "
+                f"file (QGIS{self.qgis_version_major}.ini) or a "
+                f"{QGIS_PROFILE_CUSTOMIZATION_INI_FILENAME}"
             )
             return None
 
@@ -175,10 +222,10 @@ class QgisIniHelper:
             else:
                 return False
         elif isinstance(ini_file, Path):
-            if ini_file.stem == "QGIS3":
+            if not RE_QGIS_PROFILE_INI_STEM.match(ini_file.stem):
                 logger.warning(
                     "Input file does not seem to be a QGIS profile configuration file "
-                    f"(QGIS/QGIS3.ini): {ini_file}"
+                    f"(QGIS/QGIS{self.qgis_version_major}.ini): {ini_file}"
                 )
 
             cfg_parser = self.cfg_parser()
@@ -253,7 +300,7 @@ class QgisIniHelper:
             return False
 
     def set_ui_customization_enabled(self, switch: bool = True) -> bool:
-        """Enable/disable UI customization in the profile QGIS3.ini file.
+        """Enable/disable UI customization in the profile settings file (QGIS3.ini, QGIS4.ini...).
 
         Args:
             switch (bool, optional): True to enable, False to disable UI customization.

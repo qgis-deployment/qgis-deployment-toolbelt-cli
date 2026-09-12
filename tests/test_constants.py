@@ -21,9 +21,12 @@ from sys import platform as opersys
 
 # project
 from qgis_deployment_toolbelt.constants import (
+    DEFAULT_QGIS_MAJOR_VERSION,
+    ENV_VAR_QGIS_VERSION,
     OSConfiguration,
     get_qdt_logs_folder,
     get_qdt_working_directory,
+    get_qgis_version_major,
 )
 
 
@@ -177,6 +180,103 @@ class TestConstants(unittest.TestCase):
 
         environ.pop("QGIS_CUSTOM_CONFIG_PATH")
         unsetenv("QGIS_CUSTOM_CONFIG_PATH")
+
+    # -- QGIS major version ---------------------------------------------------
+    def test_get_qgis_version_major(self):
+        """QGIS major version is extracted from every version scheme `packaging`
+        supports."""
+        for qgis_version, expected_major in (
+            ("3.40.11", 3),
+            ("4.2.2", 4),
+            ("3.40", 3),
+            ("4", 4),
+            (4, 4),
+            # 'v' prefixed and padded versions are tolerated, as elsewhere in QDT
+            ("v4.2.2", 4),
+            (" 4.2.2 ", 4),
+        ):
+            with self.subTest(qgis_version=qgis_version):
+                self.assertEqual(
+                    get_qgis_version_major(qgis_version=qgis_version), expected_major
+                )
+
+    def test_get_qgis_version_major_fallbacks(self):
+        """Unsupported or unparsable versions fallback to the default major version."""
+        for unsupported_version in (
+            "2.18.28",  # supported scheme, unsupported major version
+            "5.0.0",
+            "not_a_version",  # unparsable
+            "",
+            "4.x",
+            "4.2.2-Belem",  # release name suffix is not PEP 440
+        ):
+            with self.subTest(qgis_version=unsupported_version):
+                self.assertEqual(
+                    get_qgis_version_major(qgis_version=unsupported_version),
+                    DEFAULT_QGIS_MAJOR_VERSION,
+                )
+
+    def test_get_qgis_version_major_from_environment_variable(self):
+        """QGIS major version is read from the environment variable set by the
+        qgis-installation-finder job."""
+        initial_value = getenv(ENV_VAR_QGIS_VERSION)
+        try:
+            environ[ENV_VAR_QGIS_VERSION] = "4.2.2"
+            self.assertEqual(get_qgis_version_major(), 4)
+
+            environ.pop(ENV_VAR_QGIS_VERSION)
+            self.assertEqual(get_qgis_version_major(), DEFAULT_QGIS_MAJOR_VERSION)
+        finally:
+            if initial_value is not None:
+                environ[ENV_VAR_QGIS_VERSION] = initial_value
+            else:
+                environ.pop(ENV_VAR_QGIS_VERSION, None)
+
+    def test_qgis_profiles_path_depends_on_qgis_major_version(self):
+        """Profiles folder and ini filename follow the targeted QGIS major version."""
+        if "QGIS_CUSTOM_CONFIG_PATH" in environ:
+            environ.pop("QGIS_CUSTOM_CONFIG_PATH")
+
+        for operating_system_codename in ("darwin", "linux", "win32"):
+            for qgis_version_major in (3, 4):
+                with self.subTest(
+                    operating_system_codename=operating_system_codename,
+                    qgis_version_major=qgis_version_major,
+                ):
+                    os_config = OSConfiguration.from_opersys(
+                        operating_system_codename=operating_system_codename,
+                        qgis_version_major=qgis_version_major,
+                    )
+
+                    self.assertEqual(os_config.qgis_version_major, qgis_version_major)
+                    self.assertEqual(
+                        os_config.qgis_profiles_path,
+                        os_config.qgis_user_data_path.joinpath(
+                            f"QGIS{qgis_version_major}", "profiles"
+                        ),
+                    )
+                    self.assertEqual(
+                        os_config.qgis_profile_ini_filename,
+                        f"QGIS{qgis_version_major}.ini",
+                    )
+
+    def test_qgis_profiles_path_custom_config_path_wins(self):
+        """QGIS_CUSTOM_CONFIG_PATH is used whatever the QGIS major version."""
+        custom_qgis_profiles_folder = Path("tests/fixtures/tmp/custom_qgis_config_path")
+        environ["QGIS_CUSTOM_CONFIG_PATH"] = f"{custom_qgis_profiles_folder}"
+
+        try:
+            for qgis_version_major in (3, 4):
+                with self.subTest(qgis_version_major=qgis_version_major):
+                    os_config = OSConfiguration.from_opersys(
+                        qgis_version_major=qgis_version_major
+                    )
+                    self.assertEqual(
+                        os_config.qgis_profiles_path, custom_qgis_profiles_folder
+                    )
+        finally:
+            environ.pop("QGIS_CUSTOM_CONFIG_PATH")
+            unsetenv("QGIS_CUSTOM_CONFIG_PATH")
 
 
 # ############################################################################

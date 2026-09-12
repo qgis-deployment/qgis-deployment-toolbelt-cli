@@ -55,6 +55,7 @@ class JobQgisInstallationFinder(GenericJob):
     """
 
     ID: str = "qgis-installation-finder"
+    ENSURE_QGIS_PROFILES_FOLDER: bool = False
 
     # -- CACHE --
     CACHE_DETECTED_QGIS_VERSION: str | None = None

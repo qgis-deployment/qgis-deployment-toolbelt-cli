@@ -50,8 +50,54 @@ class TestQgisIniHelper(unittest.TestCase):
             # open temp copy
             ini_config = QgisIniHelper(ini_filepath=tmp_copy)
 
-        self.assertEqual(ini_config.ini_type, "profile_qgis3")
+        self.assertEqual(ini_config.ini_type, "profile_settings")
         self.assertFalse(ini_config.is_ui_customization_enabled())
+
+    def test_load_profile_config_qgis4(self):
+        """A QGIS4.ini settings file is recognized as a profile configuration file."""
+        source_config_file = Path(
+            "tests/fixtures/qgis_ini/default_no_customization/QGIS3.ini"
+        )
+
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            tmp_copy = Path(tmpdirname).joinpath("QGIS4.ini")
+            tmp_copy.write_text(source_config_file.read_text())
+
+            ini_config = QgisIniHelper(ini_filepath=tmp_copy)
+
+            self.assertEqual(ini_config.ini_type, "profile_settings")
+            self.assertEqual(ini_config.qgis_version_major, 4)
+            self.assertEqual(ini_config.profile_config_path, tmp_copy)
+            # the customization file keeps its name whatever the QGIS major version
+            self.assertEqual(
+                ini_config.profile_customization_path.name,
+                "QGISCUSTOMIZATION3.ini",
+            )
+            self.assertFalse(ini_config.is_ui_customization_enabled())
+
+    def test_customization_file_points_to_matching_config_file(self):
+        """The settings file guessed from a customization file follows the QGIS major
+        version."""
+        fixture_ini_file = Path(
+            "tests/fixtures/qgis_ini/default_customization/QGISCUSTOMIZATION3.ini"
+        )
+
+        for qgis_version_major in (3, 4):
+            with self.subTest(qgis_version_major=qgis_version_major):
+                ini_config = QgisIniHelper(
+                    ini_filepath=fixture_ini_file,
+                    ini_type="profile_customization",
+                    qgis_version_major=qgis_version_major,
+                )
+                self.assertEqual(
+                    ini_config.profile_config_path.name,
+                    f"QGIS{qgis_version_major}.ini",
+                )
+                self.assertEqual(
+                    ini_config.profile_customization_path, fixture_ini_file
+                )
 
     def test_load_profile_customization_splash_screen(self):
         """Test profile QGIS/QGIS3.ini loader."""
@@ -67,9 +113,9 @@ class TestQgisIniHelper(unittest.TestCase):
 
             ini_customization = QgisIniHelper(ini_filepath=tmp_copy)
 
-        self.assertEqual(ini_customization.ini_type, "profile_qgis3customization")
+        self.assertEqual(ini_customization.ini_type, "profile_customization")
         ini_config = QgisIniHelper(ini_filepath=ini_customization.profile_config_path)
-        self.assertEqual(ini_config.ini_type, "profile_qgis3")
+        self.assertEqual(ini_config.ini_type, "profile_settings")
 
     def test_enable_customization(self):
         """Test profile QGIS/QGIS3.ini loader."""
@@ -102,7 +148,7 @@ class TestQgisIniHelper(unittest.TestCase):
             self.assertFalse(unexisting_config_file.exists())
 
             ini_config = QgisIniHelper(
-                ini_filepath=unexisting_config_file, ini_type="profile_qgis3"
+                ini_filepath=unexisting_config_file, ini_type="profile_settings"
             )
             self.assertFalse(ini_config.is_ui_customization_enabled())
             self.assertFalse(unexisting_config_file.exists())
@@ -130,7 +176,7 @@ class TestQgisIniHelper(unittest.TestCase):
 
             qini_helper = QgisIniHelper(
                 ini_filepath=tmp_ini_customization,
-                ini_type="profile_qgis3customization",
+                ini_type="profile_customization",
             )
             self.assertTrue(qini_helper.is_splash_screen_set())
 
@@ -148,7 +194,7 @@ class TestQgisIniHelper(unittest.TestCase):
 
             qini_helper = QgisIniHelper(
                 ini_filepath=tmp_ini_customization,
-                ini_type="profile_qgis3customization",
+                ini_type="profile_customization",
             )
             self.assertFalse(qini_helper.is_splash_screen_set())
 
@@ -165,7 +211,7 @@ class TestQgisIniHelper(unittest.TestCase):
 
             qini_helper = QgisIniHelper(
                 ini_filepath=tmp_ini_customization,
-                ini_type="profile_qgis3customization",
+                ini_type="profile_customization",
             )
             self.assertFalse(qini_helper.is_splash_screen_set())
 
@@ -182,7 +228,7 @@ class TestQgisIniHelper(unittest.TestCase):
 
             qini_helper = QgisIniHelper(
                 ini_filepath=tmp_ini_customization,
-                ini_type="profile_qgis3customization",
+                ini_type="profile_customization",
             )
             self.assertFalse(qini_helper.set_splash_screen(switch=False))
 
@@ -196,14 +242,14 @@ class TestQgisIniHelper(unittest.TestCase):
 
             qini_helper = QgisIniHelper(
                 ini_filepath=not_existing_ini_customization,
-                ini_type="profile_qgis3customization",
+                ini_type="profile_customization",
             )
             self.assertFalse(qini_helper.set_splash_screen(switch=False))
 
             not_existing_ini_config = Path("QGIS3.ini")
 
             qini_helper = QgisIniHelper(
-                ini_filepath=not_existing_ini_config, ini_type="profile_qgis3"
+                ini_filepath=not_existing_ini_config, ini_type="profile_settings"
             )
             self.assertFalse(qini_helper.set_splash_screen(switch=False))
 
@@ -220,7 +266,7 @@ class TestQgisIniHelper(unittest.TestCase):
 
             dst_ini = QgisIniHelper(
                 ini_filepath=dst_ini_path,
-                ini_type="profile_qgis3customization",
+                ini_type="profile_customization",
             )
 
             src_ini_path = Path(tmpdirname).joinpath("src.ini")
@@ -229,7 +275,7 @@ class TestQgisIniHelper(unittest.TestCase):
 
             src_ini = QgisIniHelper(
                 ini_filepath=src_ini_path,
-                ini_type="profile_qgis3customization",
+                ini_type="profile_customization",
             )
 
             src_ini.merge_to(dst_ini)
@@ -253,13 +299,13 @@ class TestQgisIniHelper(unittest.TestCase):
 
             src_ini = QgisIniHelper(
                 ini_filepath=src_ini_path,
-                ini_type="profile_qgis3customization",
+                ini_type="profile_customization",
             )
 
             empty_ini_path = Path(tmpdirname).joinpath("empty.ini")
             empty_ini = QgisIniHelper(
                 ini_filepath=empty_ini_path,
-                ini_type="profile_qgis3customization",
+                ini_type="profile_customization",
             )
             src_ini.merge_to(empty_ini)
 
