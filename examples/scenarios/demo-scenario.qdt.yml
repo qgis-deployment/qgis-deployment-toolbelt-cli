@@ -5,6 +5,7 @@ metadata:
   id: qdt-demo-scenario
   description: >-
     Demonstration scenario of QGIS Deployment Toolbelt capabilities.
+  qdt_min_version: 0.45.0
 
 # Toolbelt settings
 settings:
@@ -22,8 +23,10 @@ steps:
     with:
       version_priority:
         - "3.44"
+        - "4.4"
         - "3.40"
         - "3.34"
+        - "4.2"
         - "4.0"
         - "3.28"
         - "3.38"
@@ -78,3 +81,17 @@ steps:
     with:
       action: create_or_restore
       strict: false
+
+  - name: Set default profile to QDT Demonstration Profile
+    uses: default-profile-setter
+    with:
+      profile: qdt_demo
+      force_profile_selection_policy: 0
+
+  - name: Cleanup staled resources
+    uses: cleanup-manager
+    with:
+      dry_run: false
+      scopes:
+        - plugins_cache
+        - plugins_installed

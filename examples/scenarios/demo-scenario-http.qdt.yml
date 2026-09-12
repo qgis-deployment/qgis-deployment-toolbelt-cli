@@ -5,6 +5,7 @@ metadata:
   id: qdt-demo-scenario-http
   description: >-
     Demonstration scenario of QGIS Deployment Toolbelt that uses HTTP (without git) to download remote profiles.
+  qdt_min_version: 0.45.0
 
 # Toolbelt settings
 settings:
@@ -16,14 +17,21 @@ steps:
     uses: qgis-installation-finder
     with:
       version_priority:
+        - "3.44"
+        - "4.4"
         - "3.40"
         - "3.34"
+        - "4.2"
+        - "4.0"
         - "3.28"
         - "3.38"
         - "3.36"
         - "3.32"
       search_paths:
-        - "%PROGRAMFILES%/QGIS"
+        - "%PROGRAMFILES%\\QGIS"
+        - "%PROGRAMFILES%"
+        - "C:\\OSGeo4W"
+        - "/usr/bin/qgis"
       if_not_found: warning
 
   - name: Download profiles from remote git repository
@@ -35,7 +43,7 @@ steps:
   - name: Synchronize downloaded profiles with installed ones
     uses: qprofiles-synchronizer
     with:
-      sync_mode: only_new_version
+      sync_mode: overwrite
 
   - name: Download plugins
     uses: qplugins-downloader
@@ -67,3 +75,17 @@ steps:
     with:
       action: create_or_restore
       strict: false
+
+  - name: Set default profile to QDT Demonstration Profile
+    uses: default-profile-setter
+    with:
+      profile: qdt_demo
+      force_profile_selection_policy: 0
+
+  - name: Cleanup staled resources
+    uses: cleanup-manager
+    with:
+      dry_run: false
+      scopes:
+        - plugins_cache
+        - plugins_installed
