@@ -32,6 +32,7 @@ Some others parameters can be set using environment variables.
 | `QDT_RULES_ONLY_PREFIXED_VARIABLES` | If set to `true`, only environment variables prefixed with prefixes listed in RULES_VARIABLES_PREFIX are considered in rules for security concerns. If set to `false`, all environment variables are considered in rules. | `true` |
 | `QDT_RULES_VARIABLES_PREFIX` | List of prefixes of environment variables considered in rules. Only relevant if RULES_ONLY_PREFIXED_VARIABLES is set to `true`. The list is comma-separated. For example: `QDT_,QGIS_,MYPREFIX_`. | `QDT_,QGIS_` |
 | `QDT_QGIS_EXE_PATH` | Path to the QGIS executable to use. Used in shortcuts. | `/usr/bin/qgis` on Linux and MacOS, `%PROGRAMFILES%/QGIS 3.28/bin/qgis-ltr-bin.exe` on Windows. |
+| `QDT_PREFERRED_QGIS_VERSION` | QGIS version to use in priority when several ones are installed, for example `3.40` or `4`. Takes precedence over the `version_priority` option of the [`qgis-installation-finder`](../jobs/qgis_installation_finder.md) job. | Not set: the most recent installed version is used. |
 | `QGIS_VERSION_LOOKUP_TIMEOUT_SECONDS` | Maximum time in seconds allowed to a QGIS binary to answer to `--version` | `20` |
 | `QDT_STREAMED_DOWNLOADS` | If set to `false`, the content of remote files is fully downloaded before being written locally. | `true` |
 | `QDT_SSL_USE_SYSTEM_STORES` | By default, a bundle of SSL certificates is used, through [certifi](https://pypi.org/project/certifi/). If this environment variable is set to `true`, QDT tries to uses the system certificates store. Based on [truststore](https://truststore.readthedocs.io/). See also [How to use custom SSL certificates](../guides/howto_use_custom_ssl_certs.md). | `False` |
@@ -54,4 +55,4 @@ Some of the 3rd party environment variable applies to QDT:
 | Variable name | Description |
 | :------------------ | :----------------------: |
 | `REQUESTS_CA_BUNDLE` | Set the path to the bundle of SSL certificates to use for HTTPS requests. See also [How to use custom SSL certificates](../guides/howto_use_custom_ssl_certs.md). |
-| `QGIS_CUSTOM_CONFIG_PATH` | Used to customize the path to the folder where QGIS stores the user's profiles. See [upstream documentation](https://docs.qgis.org/3.34/en/docs/user_manual/introduction/qgis_configuration.html#profiles-path). |
+| `QGIS_CUSTOM_CONFIG_PATH` | Used to customize the path to the folder where QGIS stores the user's profiles. It takes precedence over the QGIS major version detected by QDT. See [upstream documentation](https://docs.qgis.org/3.44/en/docs/user_manual/introduction/qgis_configuration.html#profiles-path). |

@@ -119,10 +119,15 @@ On Linux, QDT locates installed QGIS with `which` command and will search for av
 
 On Windows QDT tries to locate installed versions in the directories in `search_paths` option. If the option is not defined, QDT will search in these directories:
 
-- `%PROGRAMFILES%\\QGIS x.y.z\` (by using a regexp to get available QGIS versions)
-- `%QDT_OSGEO4W_INSTALL_DIR%` (default value : `C:\\OSGeo4W`)
+- `%PROGRAMFILES%\\QGIS x.y.z\` (by using a regexp to get available QGIS versions): the default target of the MSI installer, one folder per version
+- `%QDT_OSGEO4W_INSTALL_DIR%` (default value : `C:\\OSGeo4W`): the default target of the OSGeo4W installer
+
+In other words, only the default locations of the two supported installation modes are searched. An installation made anywhere else, typically with a custom `INSTALLDIR` passed to the MSI, has to be declared through the `search_paths` option.
 
 By default, the most recent version found is used.
+
+> [!NOTE]
+> Since QGIS 3 and QGIS 4 can be installed side by side, the detected major version determines the profiles folder used by every subsequent job: `QGIS/QGIS3/profiles` or `QGIS/QGIS4/profiles`. Use `version_priority` (or the `QDT_PREFERRED_QGIS_VERSION` environment variable) to pin the QGIS version your deployment targets.
 
 ----
 

@@ -20,7 +20,7 @@ import logging
 import tempfile
 from pathlib import Path
 from shutil import copy2, copytree
-from typing import Any, Literal
+from typing import Any, Literal, cast, get_args
 
 # 3rd party
 from packaging.version import InvalidVersion, Version
@@ -29,12 +29,17 @@ from packaging.version import InvalidVersion, Version
 from qgis_deployment_toolbelt.__about__ import __version_clean__
 from qgis_deployment_toolbelt.constants import (
     COPY_IGNORED_PATTERNS,
+    QGIS_PROFILE_CUSTOMIZATION_INI_FILENAME,
+    RE_QGIS_PROFILE_INI_STEM,
+    RE_QGIS_VERSIONED_FOLDER,
     OSConfiguration,
+    SupportedQgisMajorVersion,
     get_qdt_working_directory,
 )
 from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qgis_ini_handler import QgisIniHelper
 from qgis_deployment_toolbelt.utils.check_path import check_path
+from qgis_deployment_toolbelt.utils.str2bool import str2bool
 
 
 # #############################################################################
@@ -63,6 +68,7 @@ class QdtProfile:
         self,
         alias: str | None = None,
         author: str | None = None,
+        deprecated: bool | str | None = None,
         description: str | None = None,
         email: str | None = None,
         folder: Path | None = None,
@@ -95,6 +101,7 @@ class QdtProfile:
         # default values for attributes/properties that can be get/set
         self._alias = None
         self._author = None
+        self._deprecated = False
         self._description = None
         self._email = None
         self._folder = None
@@ -115,6 +122,8 @@ class QdtProfile:
             self._alias = alias
         if author:
             self._author = author
+        if deprecated is not None:
+            self._deprecated = str2bool(input_var=deprecated) is True
         if description:
             self._description = description
         if email:
@@ -215,6 +224,15 @@ class QdtProfile:
             return self._folder
 
     @property
+    def is_deprecated(self) -> bool:
+        """Tells if the profile is flagged as deprecated in its profile.json.
+
+        Returns:
+            bool: True if the profile is flagged as deprecated. False by default.
+        """
+        return self._deprecated
+
+    @property
     def is_loaded_from_json(self) -> bool:
         """Tells if the profile has been loaded from a JSON file.
 
@@ -264,7 +282,7 @@ class QdtProfile:
 
     @property
     def path_in_qgis(self) -> Path:
-        """Returns the path to the folder where the profile is stored in QGIS 3
+        """Returns the path to the folder where the profile is stored in QGIS
             (= installed).
 
         Returns:
@@ -283,6 +301,77 @@ class QdtProfile:
             return [QgisPlugin.from_dict(p) for p in self._plugins]
         else:
             return []
+
+    @property
+    def qgis_maximum_version(self) -> str | None:
+        """Maximum QGIS version the profile is compatible with.
+
+        Read from the `qgisMaximumVersion` key of the profile.json file.
+
+        Returns:
+            str | None: maximum QGIS version as string, None if the profile does not
+                declare any upper bound.
+        """
+        return self._qgis_maximum_version
+
+    @property
+    def qgis_minimum_version(self) -> str | None:
+        """Minimum QGIS version the profile is compatible with.
+
+        Read from the `qgisMinimumVersion` key of the profile.json file.
+
+        Returns:
+            str | None: minimum QGIS version as string, None if the profile does not
+                declare any lower bound.
+        """
+        return self._qgis_minimum_version
+
+    @property
+    def qgis_version_major(self) -> SupportedQgisMajorVersion | None:
+        """QGIS major version deduced from the profile folder's parent directories.
+
+        Works only for installed profiles and for folder structure following the
+        official QGIS one ('QGIS/QGISX/profiles'), in case of custom profiles folder path.
+
+        Returns:
+            SupportedQgisMajorVersion | None: QGIS major version supported by QDT if it
+                can be deduced from the profile path, None otherwise.
+        """
+        if not isinstance(self.folder, Path):
+            logger.debug(
+                f"Profile '{self._name}' has no folder set, so its QGIS major version "
+                "can't be deduced from the path."
+            )
+            return None
+
+        for parent_folder in self.folder.parents:
+            version_match = RE_QGIS_VERSIONED_FOLDER.match(parent_folder.name)
+            if version_match is None:
+                continue
+
+            qgis_version_major = int(version_match.group(1))
+            if qgis_version_major not in get_args(SupportedQgisMajorVersion):
+                logger.warning(
+                    f"Profile '{self.name}' is stored under '{parent_folder}' which "
+                    f"refers to QGIS {qgis_version_major}, not supported by QDT. "
+                    "Supported major versions: "
+                    f"{', '.join(map(str, get_args(SupportedQgisMajorVersion)))}. "
+                    "Ignoring it."
+                )
+                return None
+
+            logger.debug(
+                f"QGIS major version {qgis_version_major} deduced for profile "
+                f"'{self.name}' from its parent folder: {parent_folder}"
+            )
+            return cast("SupportedQgisMajorVersion", qgis_version_major)
+
+        logger.debug(
+            f"No QGIS versioned folder (QGIS3, QGIS4...) found in the parents of "
+            f"'{self.folder}', so the QGIS major version of the profile "
+            f"'{self.name}' can't be deduced from the path."
+        )
+        return None
 
     @property
     def rules(self) -> list[dict] | None:
@@ -425,7 +514,7 @@ class QdtProfile:
 
     def status(self) -> Literal["downloaded", "installed", "unknown"]:
         """Determine current profile status: downloaded (in QDT working folder),
-        installed (in QGIS3/profiles) or unknown.
+        installed (in the QGIS profiles folder) or unknown.
 
         Returns:
             str: one of "downloaded", "installed", "unknown"
@@ -463,14 +552,49 @@ class QdtProfile:
         return None
 
     # -- QGIS*.ini files --
-    def has_qgis3_ini_file(self) -> bool:
-        """Determine if a QGIS/QGIS3.ini file exists in the profile folder.
+    @property
+    def qgis_ini_filename(self) -> str:
+        """Name of the QGIS settings file expected by the targeted QGIS installation.
+
+        QGIS names it after its own major version: `QGIS3.ini` for QGIS 3, `QGIS4.ini`
+        for QGIS 4.
 
         Returns:
-            bool: True if a QGIS/QGIS3.ini file exists in the profile folder.
+            str: name of the profile settings ini file.
+        """
+        return self.os_config.qgis_profile_ini_filename
+
+    @property
+    def qgis_ini_filepath(self) -> Path:
+        """Path to the QGIS settings file to work with in the profile folder.
+
+        Returns:
+            Path: path to the profile's QGIS settings file, which may not exist yet.
+        """
+        expected_ini_filepath = self.folder.joinpath("QGIS", self.qgis_ini_filename)
+        if expected_ini_filepath.is_file():
+            return expected_ini_filepath
+
+        for candidate in sorted(self.folder.joinpath("QGIS").glob("QGIS*.ini")):
+            if RE_QGIS_PROFILE_INI_STEM.match(candidate.stem):
+                logger.info(
+                    f"Profile '{self.name}' ships a '{candidate.name}' settings file "
+                    f"but the targeted QGIS expects '{self.qgis_ini_filename}'. "
+                    "The shipped file is used and will be renamed when installed."
+                )
+                return candidate
+
+        return expected_ini_filepath
+
+    def has_qgis_ini_file(self) -> bool:
+        """Determine if a QGIS settings file (QGIS3.ini, QGIS4.ini...) exists in the
+            profile folder.
+
+        Returns:
+            bool: True if a QGIS/QGIS*.ini file exists in the profile folder.
         """
         return check_path(
-            input_path=self.folder.joinpath("QGIS/QGIS3.ini"),
+            input_path=self.qgis_ini_filepath,
             must_be_a_file=True,
             must_be_a_folder=False,
             must_be_readable=True,
@@ -478,14 +602,16 @@ class QdtProfile:
             raise_error=False,
         )
 
-    def has_qgis3customization_ini_file(self) -> bool:
+    def has_qgis_customization_ini_file(self) -> bool:
         """Determine if a QGIS/QGISCUSTOMIZATION3.ini file exists in the profile folder.
 
         Returns:
             bool: True if a QGIS/QGISCUSTOMIZATION3.ini file exists in the profile folder.
         """
         return check_path(
-            input_path=self.folder.joinpath("QGIS/QGISCUSTOMIZATION3.ini"),
+            input_path=self.folder.joinpath(
+                "QGIS", QGIS_PROFILE_CUSTOMIZATION_INI_FILENAME
+            ),
             must_be_a_file=True,
             must_be_a_folder=False,
             must_be_readable=True,
@@ -493,35 +619,74 @@ class QdtProfile:
             raise_error=False,
         )
 
-    def get_qgis3ini_helper(self) -> QgisIniHelper:
-        """Return the QGIS3 ini helper for the profile configuration.
+    def get_qgis_ini_helper(self) -> QgisIniHelper:
+        """Return the ini helper for the profile configuration.
 
         Returns:
-            QgisIniHelper: Ini helper loaded with profile's QGIS/QGIS3.ini
+            QgisIniHelper: Ini helper loaded with profile's QGIS/QGIS*.ini
         """
+        ini_filepath = self.qgis_ini_filepath
         logger.debug(
-            f"Returning QGISCUSTOMIZATION3.ini helper for profile '{self.name}' using "
-            f"this file: {self.folder.joinpath('QGIS/QGISCUSTOMIZATION3.ini')}"
+            f"Returning {ini_filepath.name} helper for profile '{self.name}' using "
+            f"this file: {ini_filepath}"
         )
         return QgisIniHelper(
-            ini_filepath=self.folder.joinpath("QGIS/QGIS3.ini"),
-            ini_type="profile_qgis3",
+            ini_filepath=ini_filepath,
+            ini_type="profile_settings",
         )
 
-    def get_qgis3customizationini_helper(self) -> QgisIniHelper:
-        """Return the QGIS3 ini helper for the profile customization.
+    def get_qgis_customization_ini_helper(self) -> QgisIniHelper:
+        """Return the ini helper for the profile customization.
 
         Returns:
             QgisIniHelper: Ini helper loaded with profile's QGIS/QGISCUSTOMIZATION3.ini
         """
+        customization_ini_filepath = self.folder.joinpath(
+            "QGIS", QGIS_PROFILE_CUSTOMIZATION_INI_FILENAME
+        )
         logger.debug(
-            f"Returning QGISCUSTOMIZATION3.ini helper for profile '{self.name}' using "
-            f"this file: {self.folder.joinpath('QGIS/QGISCUSTOMIZATION3.ini')}"
+            f"Returning {QGIS_PROFILE_CUSTOMIZATION_INI_FILENAME} helper for profile "
+            f"'{self.name}' using this file: {customization_ini_filepath}"
         )
         return QgisIniHelper(
-            ini_filepath=self.folder.joinpath("QGIS/QGISCUSTOMIZATION3.ini"),
-            ini_type="profile_qgis3customization",
+            ini_filepath=customization_ini_filepath,
+            ini_type="profile_customization",
+            qgis_version_major=self.os_config.qgis_version_major,
         )
+
+    def rename_qgis_ini_file_to_target_version(self) -> Path | None:
+        """Rename the profile's QGIS settings file to match the targeted QGIS major
+            version.
+
+        A profile authored for QGIS 3 ships a `QGIS/QGIS3.ini` file, which QGIS 4
+        silently ignores since it reads `QGIS/QGIS4.ini`. Renaming it keeps the
+        settings shipped by the profile effective after an upgrade.
+
+        Returns:
+            Path | None: path to the renamed file, None if nothing has been renamed.
+        """
+        current_ini_filepath = self.qgis_ini_filepath
+        if current_ini_filepath.name == self.qgis_ini_filename:
+            return None
+
+        if not current_ini_filepath.is_file():
+            return None
+
+        target_ini_filepath = current_ini_filepath.with_name(self.qgis_ini_filename)
+        if target_ini_filepath.exists():
+            logger.debug(
+                f"Profile '{self.name}' ships both {current_ini_filepath.name} and "
+                f"{target_ini_filepath.name}. Keeping them as they are."
+            )
+            return None
+
+        current_ini_filepath.replace(target_ini_filepath)
+        logger.info(
+            f"Profile '{self.name}': {current_ini_filepath.name} renamed into "
+            f"{target_ini_filepath.name} to comply with the targeted QGIS "
+            f"{self.os_config.qgis_version_major}."
+        )
+        return target_ini_filepath
 
     def merge_to(self, dst: QdtProfile) -> None:
         """Merge QdtProfile to another profile.
@@ -545,30 +710,32 @@ class QdtProfile:
             )
             # Merge INI files
             tmp_profile = QdtProfile(folder=Path(tmpdirname))
+            tmp_profile.os_config = self.os_config
+            tmp_profile.rename_qgis_ini_file_to_target_version()
 
-            # QGIS3
-            if self.has_qgis3_ini_file() and dst.has_qgis3_ini_file():
+            # profile settings file: QGIS3.ini, QGIS4.ini...
+            if self.has_qgis_ini_file() and dst.has_qgis_ini_file():
                 # Copy current installed file
                 copy2(
-                    dst.get_qgis3ini_helper().ini_filepath,
-                    tmp_profile.get_qgis3ini_helper().ini_filepath,
+                    dst.get_qgis_ini_helper().ini_filepath,
+                    tmp_profile.get_qgis_ini_helper().ini_filepath,
                 )
                 # Merge
-                self.get_qgis3ini_helper().merge_to(tmp_profile.get_qgis3ini_helper())
+                self.get_qgis_ini_helper().merge_to(tmp_profile.get_qgis_ini_helper())
 
-            # QGISCUSTOMIZATION3
+            # profile customization file
             if (
-                self.has_qgis3customization_ini_file()
-                and dst.has_qgis3customization_ini_file()
+                self.has_qgis_customization_ini_file()
+                and dst.has_qgis_customization_ini_file()
             ):
                 # Copy current installed file
                 copy2(
-                    dst.get_qgis3customizationini_helper().ini_filepath,
-                    tmp_profile.get_qgis3customizationini_helper().ini_filepath,
+                    dst.get_qgis_customization_ini_helper().ini_filepath,
+                    tmp_profile.get_qgis_customization_ini_helper().ini_filepath,
                 )
                 # Merge
-                self.get_qgis3customizationini_helper().merge_to(
-                    tmp_profile.get_qgis3customizationini_helper()
+                self.get_qgis_customization_ini_helper().merge_to(
+                    tmp_profile.get_qgis_customization_ini_helper()
                 )
 
             logger.info(f"Copying {tmpdirname} to {dst.path_in_qgis}")
