@@ -79,64 +79,105 @@ class QgisPlugin:
     def from_dict(cls, input_dict: dict) -> QgisPlugin:
         """Create object from a dictionary.
 
+        The input dictionary is modified in place by the successive steps.
+
         Args:
             input_dict (dict): input dictionary
 
         Returns:
             QgisPlugin: instanciated object
         """
-        # map attributes names
-        for k, v in cls.ATTR_MAP.items():
-            if v.lower() in input_dict.keys():
-                input_dict[k] = input_dict.pop(v.lower(), None)
-
-        # location: normalize it and fallback to the default one if invalid, since
-        # a plugin with an unknown location would be silently skipped by the jobs
-        if "location" in input_dict:
-            location = str(input_dict["location"]).strip().lower()
-            if location not in get_args(QgisPluginLocation):
-                logger.warning(
-                    f"Plugin '{input_dict.get('name')}': invalid location "
-                    f"'{input_dict['location']}'. Must be one of: "
-                    f"{', '.join(get_args(QgisPluginLocation))}. Fallback to the "
-                    f"default one: {DEFAULT_QGIS_PLUGIN_LOCATION}."
-                )
-                location = DEFAULT_QGIS_PLUGIN_LOCATION
-            input_dict["location"] = location
-
-        # official repository autodetection
-        if input_dict.get("repository_url_xml") == cls.OFFICIAL_REPOSITORY_XML:
-            input_dict["official_repository"] = True
-        elif (
-            input_dict.get("url")
-            and isinstance(input_dict.get("url"), str)
-            and input_dict.get("url").startswith(cls.OFFICIAL_REPOSITORY_URL_BASE)
-        ):
-            input_dict["official_repository"] = True
-            input_dict["repository_url_xml"] = cls.OFFICIAL_REPOSITORY_XML
-        else:
-            pass
-
-        # URL auto build
-        if input_dict.get("official_repository") is True and not input_dict.get("url"):
-            input_dict["url"] = (
-                f"{cls.OFFICIAL_REPOSITORY_URL_BASE}"
-                f"plugins/{input_dict.get('folder_name') or input_dict.get('name')}/"
-                f"version/{input_dict.get('version')}/download/"
-            )
-            input_dict["repository_url_xml"] = cls.OFFICIAL_REPOSITORY_XML
-            input_dict["location"] = "remote"
-
-        # remove keys which are not in object attributes
-        attributes_names = [f.name for f in fields(cls)]
-        for k in list(input_dict):
-            if k not in attributes_names:
-                del input_dict[k]
+        cls._map_attributes_names(input_dict)
+        cls._normalize_location(input_dict)
+        cls._detect_official_repository(input_dict)
+        cls._build_official_repository_url(input_dict)
+        cls._remove_unknown_attributes(input_dict)
 
         # return new instance with loaded object
-        return cls(
-            **input_dict,
+        return cls(**input_dict)
+
+    @classmethod
+    def _map_attributes_names(cls, input_dict: dict) -> None:
+        """Rename input keys into object attributes names, following ATTR_MAP.
+
+        Args:
+            input_dict (dict): input dictionary, modified in place.
+        """
+        for attribute_name, input_name in cls.ATTR_MAP.items():
+            if input_name.lower() in input_dict:
+                input_dict[attribute_name] = input_dict.pop(input_name.lower())
+
+    @staticmethod
+    def _normalize_location(input_dict: dict) -> None:
+        """Normalize the plugin location and fallback to the default one if it's
+            invalid, since a plugin with an unknown location would be silently skipped
+            by the jobs.
+
+        Args:
+            input_dict (dict): input dictionary, modified in place.
+        """
+        if "location" not in input_dict:
+            return
+
+        location = str(input_dict["location"]).strip().lower()
+        if location not in get_args(QgisPluginLocation):
+            logger.warning(
+                f"Plugin '{input_dict.get('name')}': invalid location "
+                f"'{input_dict['location']}'. Must be one of: "
+                f"{', '.join(get_args(QgisPluginLocation))}. Fallback to the default "
+                f"one: {DEFAULT_QGIS_PLUGIN_LOCATION}."
+            )
+            location = DEFAULT_QGIS_PLUGIN_LOCATION
+
+        input_dict["location"] = location
+
+    @classmethod
+    def _detect_official_repository(cls, input_dict: dict) -> None:
+        """Flag the plugin as coming from the official repository if its repository
+            or its download URL points to it.
+
+        Args:
+            input_dict (dict): input dictionary, modified in place.
+        """
+        if input_dict.get("repository_url_xml") == cls.OFFICIAL_REPOSITORY_XML:
+            input_dict["official_repository"] = True
+            return
+
+        url = input_dict.get("url")
+        if isinstance(url, str) and url.startswith(cls.OFFICIAL_REPOSITORY_URL_BASE):
+            input_dict["official_repository"] = True
+            input_dict["repository_url_xml"] = cls.OFFICIAL_REPOSITORY_XML
+
+    @classmethod
+    def _build_official_repository_url(cls, input_dict: dict) -> None:
+        """Build the download URL of a plugin from the official repository when it's
+            not set, which makes it a remote plugin.
+
+        Args:
+            input_dict (dict): input dictionary, modified in place.
+        """
+        if input_dict.get("official_repository") is not True or input_dict.get("url"):
+            return
+
+        input_dict["url"] = (
+            f"{cls.OFFICIAL_REPOSITORY_URL_BASE}"
+            f"plugins/{input_dict.get('folder_name') or input_dict.get('name')}/"
+            f"version/{input_dict.get('version')}/download/"
         )
+        input_dict["repository_url_xml"] = cls.OFFICIAL_REPOSITORY_XML
+        input_dict["location"] = "remote"
+
+    @classmethod
+    def _remove_unknown_attributes(cls, input_dict: dict) -> None:
+        """Remove input keys which are not object attributes.
+
+        Args:
+            input_dict (dict): input dictionary, modified in place.
+        """
+        attributes_names = {f.name for f in fields(cls)}
+        # iterate over a new set, not the dict itself, since keys are deleted from it
+        for key in input_dict.keys() - attributes_names:
+            del input_dict[key]
 
     @classmethod
     def from_plugin_folder(cls, input_plugin_folder: Path) -> QgisPlugin:
