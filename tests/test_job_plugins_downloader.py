@@ -83,6 +83,24 @@ class TestJobPluginsDownloader(unittest.TestCase):
                 },
                 "download",
             ),
+            "location with another case": (
+                {
+                    "name": "Local plugin case",
+                    "version": "1.0.0",
+                    "url": "C:/plugins/local_case.zip",
+                    "location": "Local",
+                },
+                "copy",
+            ),
+            "invalid location": (
+                {
+                    "name": "Invalid location plugin",
+                    "version": "1.0.0",
+                    "url": "https://plugins.example.org/invalid.zip",
+                    "location": "distant",
+                },
+                "download",
+            ),
         }
 
         with tempfile.TemporaryDirectory(

@@ -21,6 +21,7 @@ import zipfile
 from dataclasses import dataclass, fields
 from os.path import expanduser, expandvars
 from pathlib import Path
+from typing import get_args
 from urllib.parse import urlsplit, urlunsplit
 
 # 3rd party
@@ -88,6 +89,20 @@ class QgisPlugin:
         for k, v in cls.ATTR_MAP.items():
             if v.lower() in input_dict.keys():
                 input_dict[k] = input_dict.pop(v.lower(), None)
+
+        # location: normalize it and fallback to the default one if invalid, since
+        # a plugin with an unknown location would be silently skipped by the jobs
+        if "location" in input_dict:
+            location = str(input_dict["location"]).strip().lower()
+            if location not in get_args(QgisPluginLocation):
+                logger.warning(
+                    f"Plugin '{input_dict.get('name')}': invalid location "
+                    f"'{input_dict['location']}'. Must be one of: "
+                    f"{', '.join(get_args(QgisPluginLocation))}. Fallback to the "
+                    f"default one: {DEFAULT_QGIS_PLUGIN_LOCATION}."
+                )
+                location = DEFAULT_QGIS_PLUGIN_LOCATION
+            input_dict["location"] = location
 
         # official repository autodetection
         if input_dict.get("repository_url_xml") == cls.OFFICIAL_REPOSITORY_XML:
