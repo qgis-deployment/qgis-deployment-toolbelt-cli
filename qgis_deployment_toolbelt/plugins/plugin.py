@@ -19,7 +19,6 @@ import configparser
 import logging
 import zipfile
 from dataclasses import dataclass, fields
-from enum import Enum
 from os.path import expanduser, expandvars
 from pathlib import Path
 from urllib.parse import urlsplit, urlunsplit
@@ -28,6 +27,10 @@ from urllib.parse import urlsplit, urlunsplit
 from packaging.version import InvalidVersion, Version
 
 # package
+from qgis_deployment_toolbelt.constants import (
+    DEFAULT_QGIS_PLUGIN_LOCATION,
+    QgisPluginLocation,
+)
 from qgis_deployment_toolbelt.utils.check_path import check_path
 from qgis_deployment_toolbelt.utils.slugger import sluggy
 
@@ -42,11 +45,6 @@ logger = logging.getLogger(__name__)
 # #############################################################################
 # ########## Classes ###############
 # ##################################
-
-
-class QgisPluginLocation(Enum):
-    local = 1
-    remote = 2
 
 
 @dataclass
@@ -66,7 +64,7 @@ class QgisPlugin:
 
     name: str
     folder_name: str | None = None
-    location: QgisPluginLocation = QgisPluginLocation.remote
+    location: QgisPluginLocation = DEFAULT_QGIS_PLUGIN_LOCATION
     official_repository: bool | None = None
     plugin_id: int | None = None
     qgis_maximum_version: str | None = None
