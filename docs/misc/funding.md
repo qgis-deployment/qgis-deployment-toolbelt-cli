@@ -71,7 +71,7 @@ Contact us by email {material-regular}`mail;1.5em`
 :link: https://www.linkedin.com/company/anfsi/about/
 
 * improved network proxy support
-* integration with the [Profile Manager plugin for QGIS Desktop](https://wheregroup.github.io/profile_manager/)
+* integration with the [Profile Manager plugin for QGIS Desktop](https://qgis-deployment.github.io/profile_manager/)
 * bug fixes and improvements regarding Linux shortcuts
 :::
 
