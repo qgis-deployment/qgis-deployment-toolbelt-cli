@@ -216,9 +216,9 @@ If the `ORG_QGIS_COMMONS` environment variable is defined in QDT's runtime envir
 
 🎯 Facilitate the editing of QGIS profiles for QDT with a graphical interface.
 
-Since 2024, the [Profile Manager plugin for QGIS](https://wheregroup.github.io/profile_manager/), initially created by WhereGroup, includes a QDT tab allowing the user to export a profile from QGIS in the QDT formalism:
+Since 2024, the [Profile Manager plugin for QGIS](https://qgis-deployment.github.io/profile_manager/), initially created by WhereGroup, includes a QDT tab allowing the user to export a profile from QGIS in the QDT formalism:
 
-![Profile Manager plugin](https://wheregroup.github.io/profile_manager/_images/profile_manager_ui_tab_QDT-export.png)
+![Profile Manager plugin](https://qgis-deployment.github.io/profile_manager/_images/profile_manager_ui_tab_QDT-export.png)
 
 ----
 
