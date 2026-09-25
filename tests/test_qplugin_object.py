@@ -117,6 +117,25 @@ class TestQgisPluginObject(unittest.TestCase):
         plugin_dict_local["url"] = f"file://{self.sample_plugin_downloaded}"
         plugin_obj: QgisPlugin = QgisPlugin.from_dict(plugin_dict_local)
 
+    def test_qplugin_load_from_dict_location_case_insensitive(self):
+        """Test that the location read from a dict is normalized."""
+        plugin_obj: QgisPlugin = QgisPlugin.from_dict(
+            {"name": "QTribu", "version": "0.14.2", "location": " Local "}
+        )
+        self.assertEqual(plugin_obj.location, "local")
+
+    def test_qplugin_load_from_dict_invalid_location(self):
+        """Test that an invalid location is logged and replaced by the default one."""
+        with self.assertLogs(
+            logger="qgis_deployment_toolbelt.plugins.plugin", level="WARNING"
+        ) as logs:
+            plugin_obj: QgisPlugin = QgisPlugin.from_dict(
+                {"name": "QTribu", "version": "0.14.2", "location": "distant"}
+            )
+
+        self.assertEqual(plugin_obj.location, "remote")
+        self.assertIn("distant", logs.output[0])
+
     def test_qplugin_load_from_zip(self):
         """Test plugin object loading from a ZIP archive downloaded."""
         # plugin as dict

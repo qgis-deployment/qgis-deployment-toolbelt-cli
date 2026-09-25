@@ -51,6 +51,9 @@ DEFAULT_CLEANUP_SCOPES: list[CleanupScopes] = ["plugins_cache"]
 DeletionPolicy = Literal["force_delete", "trash_only", "trash_or_delete"]
 DEFAULT_DELETION_POLICY: DeletionPolicy = "trash_or_delete"
 
+QgisPluginLocation = Literal["local", "remote"]
+DEFAULT_QGIS_PLUGIN_LOCATION: QgisPluginLocation = "remote"
+
 DEFAULT_QDT_WORKING_FOLDER = Path.home().joinpath(".cache/qgis-deployment-toolbelt")
 
 # QGIS major versions supported by QDT
