@@ -103,7 +103,7 @@ def run(args: argparse.Namespace) -> None:
 
     # map job optins from CLI args
     options: dict = {
-        "deletion_mode": args.cleanup_deletion_policy,
+        "deletion_policy": args.cleanup_deletion_policy,
         "dry_run": args.cleanup_dry_run,
         "scopes": args.cleanup_scope,
     }

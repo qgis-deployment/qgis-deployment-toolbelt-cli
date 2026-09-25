@@ -46,6 +46,8 @@ Settable through the `QDT_DELETION_POLICY` environment variable.
 - `trash_or_delete` (default): try the trash first, then permanently delete on failure.
 - `force_delete` (QDT behavior before version 0.44.0): skip the trash entirely, always permanently delete.
 
+It can be overridden per job with the `deletion_policy` option (see the [Cleanup Manager](../jobs/cleanup_manager.md#deletion_policy), [Profiles Downloader](../jobs/profiles_downloader.md#deletion_policy) and [Plugins Synchronizer](../jobs/plugins_synchronizer.md#deletion_policy) jobs) or, for the `qgis-deployment-toolbelt cleanup` sub-command, with the `--deletion-policy` argument.
+
 ----
 
 ## 3rd party environment variables

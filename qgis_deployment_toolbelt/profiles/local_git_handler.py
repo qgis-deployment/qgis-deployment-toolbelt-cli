@@ -44,7 +44,7 @@ class LocalGitHandler(RemoteProfilesHandlerBase):
         source_repository_path_or_uri: str | Path,
         source_repository_type: str = "git_local",
         branch_to_use: str | None = None,
-        deletion_mode: DeletionPolicy | None = None,
+        deletion_policy: DeletionPolicy | None = None,
     ) -> None:
         """Constructor.
 
@@ -57,7 +57,7 @@ class LocalGitHandler(RemoteProfilesHandlerBase):
         super().__init__(
             source_repository_type=source_repository_type,
             branch_to_use=branch_to_use,
-            deletion_mode=deletion_mode,
+            deletion_policy=deletion_policy,
         )
 
         # clean up
