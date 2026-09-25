@@ -90,22 +90,19 @@ class QgisPlugin:
             if v.lower() in input_dict.keys():
                 input_dict[k] = input_dict.pop(v.lower(), None)
 
-        # normalize location, fallback to the default one if invalid since a plugin
-        # with an unknown location would be silently skipped by the jobs
-        location = (
-            str(input_dict.get("location", DEFAULT_QGIS_PLUGIN_LOCATION))
-            .strip()
-            .lower()
-        )
-        if location not in get_args(QgisPluginLocation):
+        # normalize location
+        if "location" in input_dict:
+            input_dict["location"] = str(input_dict["location"]).strip().lower()
+        if "location" in input_dict and input_dict["location"] not in get_args(
+            QgisPluginLocation
+        ):
             logger.warning(
                 f"Plugin '{input_dict.get('name')}': invalid location "
                 f"'{input_dict['location']}'. Must be one of: "
-                f"{', '.join(get_args(QgisPluginLocation))}. Fallback to the "
-                f"default one: {DEFAULT_QGIS_PLUGIN_LOCATION}."
+                f"{', '.join(get_args(QgisPluginLocation))}. Fallback to the default "
+                f"one: {DEFAULT_QGIS_PLUGIN_LOCATION}."
             )
-            location = DEFAULT_QGIS_PLUGIN_LOCATION
-        input_dict["location"] = location
+            input_dict["location"] = DEFAULT_QGIS_PLUGIN_LOCATION
 
         # official repository autodetection
         if input_dict.get("repository_url_xml") == cls.OFFICIAL_REPOSITORY_XML:
