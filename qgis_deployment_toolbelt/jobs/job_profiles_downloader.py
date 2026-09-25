@@ -49,7 +49,7 @@ class JobProfilesDownloader(GenericJob):
             "possible_values": None,
             "condition": None,
         },
-        "deletion_mode": {
+        "deletion_policy": {
             "type": str,
             "required": False,
             "default": DEFAULT_DELETION_POLICY,
@@ -105,7 +105,7 @@ class JobProfilesDownloader(GenericJob):
                 downloader = RemoteGitHandler(
                     source_repository_url=self.options.get("source"),
                     branch_to_use=self.options.get("branch", "master"),
-                    deletion_mode=self.options.get("deletion_mode"),
+                    deletion_policy=self.options.get("deletion_policy"),
                 )
             elif self.options.get("source").startswith("file://"):
                 downloader = LocalGitHandler(

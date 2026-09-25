@@ -7,6 +7,17 @@
   "properties": {
     "deletion_mode": {
       "default": "trash_or_delete",
+      "deprecated": true,
+      "description": "Deprecated: use 'deletion_policy' instead.",
+      "enum": [
+        "force_delete",
+        "trash_only",
+        "trash_or_delete"
+      ],
+      "type": "string"
+    },
+    "deletion_policy": {
+      "default": "trash_or_delete",
       "description": "Deletion policy to apply when it comes to removing files from the end-user disk.",
       "enum": [
         "force_delete",
