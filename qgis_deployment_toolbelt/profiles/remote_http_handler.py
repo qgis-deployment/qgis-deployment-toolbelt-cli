@@ -64,7 +64,7 @@ class HttpHandler(RemoteProfilesHandlerBase):
         self,
         source_repository_path_or_uri: str,
         source_repository_type: str = "http",
-        deletion_mode: DeletionPolicy | None = None,
+        deletion_policy: DeletionPolicy | None = None,
     ) -> None:
         """Constructor.
 
@@ -75,7 +75,8 @@ class HttpHandler(RemoteProfilesHandlerBase):
             source_repository_path_or_uri
         )
         super().__init__(
-            source_repository_type=source_repository_type, deletion_mode=deletion_mode
+            source_repository_type=source_repository_type,
+            deletion_policy=deletion_policy,
         )
 
     def download(self, destination_local_path: Path):

@@ -63,7 +63,7 @@ class JobCleanupManager(GenericJob):
     ID: str = "cleanup-manager"
 
     OPTIONS_SCHEMA: dict = {
-        "deletion_mode": {
+        "deletion_policy": {
             "type": str,
             "required": False,
             "default": None,
@@ -242,5 +242,5 @@ class JobCleanupManager(GenericJob):
         logger.debug(f"Removing {len(self.report.removed)} path(s)")
         self.report.failed = move_files_to_trash_or_delete(
             files_to_trash=self.report.removed,
-            policy=self.options.get("deletion_mode"),
+            policy=self.options.get("deletion_policy"),
         )

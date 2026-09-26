@@ -61,7 +61,7 @@ class JobPluginsSynchronizer(GenericJob):
             "possible_values": ("create", "create_or_restore", "remove"),
             "condition": "in",
         },
-        "deletion_mode": {
+        "deletion_policy": {
             "type": str,
             "required": False,
             "default": DEFAULT_DELETION_POLICY,
@@ -264,7 +264,7 @@ class JobPluginsSynchronizer(GenericJob):
                     try:
                         move_files_to_trash_or_delete(
                             files_to_trash=plugin_installed_folder,
-                            policy=self.options.get("deletion_mode"),
+                            policy=self.options.get("deletion_policy"),
                         )
                     except OSError as err:
                         logger.error(
