@@ -27,11 +27,38 @@ flowchart LR
 
 To execute the intermediate git pull, the approach depends on the organization and GIS team habits. This can be done manually through the command-line, with a GUI like the excellent [GitHub Desktop](https://github.com/apps/desktop) or with a script. Below is an example PowerShell script for Windows.
 
-:::{attention}
-This script is provided as a sample and may not fully comply with your environment or IT policies. Before implementing in production, take time to review and test it in your environment. If you make improvements or fixes, please share them.
-:::
+## Sample script to synchronize a remote private Git project to a local server
+
+> [!WARNING]
+> This script is provided as a sample and may not fully comply with your environment or IT policies. Before implementing in production, take time to review and test it in your environment. If you make improvements or fixes, please share them.
+
+### Requirements
+
+- a service account
+- [Git](https://git-scm.com/) >= 2.51 in the `PATH`
+- [Git Credential Manager](https://microsoft.github.io/Git-Credential-Manager-for-Windows/Docs/CredentialManager.html) (usually shipped with Git for Windows)
+
+### Configuration
+
+It is configured through environment variables, typically set on the scheduled task running it:
+
+| Key | Default value / example | Scope |
+| :-- | :---------------------- | :---- |
+| `QDT_GIT_USERNAME` | `gitlab+deploy-token-85` | Service account |
+| `QDT_GIT_TOKEN` | `gldt-xxxxxxxxxxxxxxxxxxxx` | Service account |
+| `QDT_LOCAL_CLONE_PROFILES_PATH` | `\\APPSGIS\QGIS\profiles\qdt-qgis-profiles` | Service account |
+| `QDT_PROFILES_GIT_BRANCH` | `main` | Service account |
+| `QDT_REMOTE_PROFILES_GIT` | `https://gitlab.myorg.com/gis/qdt-qgis-profiles.git` | Service account |
+
+On GitLab, create a [deploy token](https://docs.gitlab.com/user/project/deploy_tokens/) on the project (*Settings* > *Repository* > *Deploy tokens*) with the `read_repository` scope only, and use its user name (`gitlab+deploy-token-{n}` unless customized) as `QDT_GIT_USERNAME`.
+
+> [!IMPORTANT]
+> Putting the token in the repository URL makess git store it in `<clone>\.git\config`, which every workstation of the fleet can read. The script sends it as a transient HTTP header instead.
 
 ```{eval-rst}
 .. literalinclude:: ../../scripts/qdt_clone_pull_profiles.ps1
   :language: powershell
 ```
+
+> [!TIP]
+> The script exits with code `1` on any failure. Monitor it: an expired deploy token makes the synchronization fail silently otherwise, and the fleet keeps deploying the profiles frozen on that day.
