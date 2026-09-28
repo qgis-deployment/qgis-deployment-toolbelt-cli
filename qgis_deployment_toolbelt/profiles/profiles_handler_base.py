@@ -73,7 +73,7 @@ class RemoteProfilesHandlerBase:
             "git_local", "git_remote", "http", "local", "remote"
         ],
         branch_to_use: str | None = None,
-        deletion_mode: DeletionPolicy | None = None,
+        deletion_policy: DeletionPolicy | None = None,
     ) -> None:
         """Object instanciation.
 
@@ -82,11 +82,14 @@ class RemoteProfilesHandlerBase:
                 repository
             branch_to_use (str | None, optional): branch to clone or checkout. If None,
                 the source active branch will be used. Defaults to None.
+            deletion_policy (DeletionPolicy | None, optional): deletion policy to apply
+                when removing files from the end-user disk. If None, it's resolved from
+                the ``QDT_DELETION_POLICY`` environment variable. Defaults to None.
         """
         self.DESTINATION_BRANCH_TO_USE = branch_to_use
         self.SOURCE_REPOSITORY_TYPE = source_repository_type
 
-        self.deletion_mode: DeletionPolicy | None = deletion_mode
+        self.deletion_policy: DeletionPolicy | None = deletion_policy
 
         # set dulwich log level to avoid too much verbosity
         logging.getLogger("dulwich").setLevel(int(getenv("QDT_LOGS_DULWICH_LEVEL", 20)))
@@ -537,14 +540,15 @@ class RemoteProfilesHandlerBase:
                     )
                     move_files_to_trash_or_delete(
                         files_to_trash=to_local_destination_path,
-                        policy=self.deletion_mode,
+                        policy=self.deletion_policy,
                     )
                     return self.clone_or_pull(
                         to_local_destination_path=to_local_destination_path, attempt=2
                     )
                 logger.critical("Clone fail 2/2. Abort.")
                 move_files_to_trash_or_delete(
-                    files_to_trash=to_local_destination_path, policy=self.deletion_mode
+                    files_to_trash=to_local_destination_path,
+                    policy=self.deletion_policy,
                 )
                 raise err
         elif to_local_destination_path.exists() and self.is_valid_git_repository(
@@ -563,7 +567,8 @@ class RemoteProfilesHandlerBase:
                     f"to {to_local_destination_path.resolve()}. Trace: {error}."
                 )
                 move_files_to_trash_or_delete(
-                    files_to_trash=to_local_destination_path, policy=self.deletion_mode
+                    files_to_trash=to_local_destination_path,
+                    policy=self.deletion_policy,
                 )
                 return self.clone_or_pull(
                     to_local_destination_path=to_local_destination_path
@@ -579,7 +584,8 @@ class RemoteProfilesHandlerBase:
                     "Trying to remove the local folder and cloning again..."
                 )
                 move_files_to_trash_or_delete(
-                    files_to_trash=to_local_destination_path, policy=self.deletion_mode
+                    files_to_trash=to_local_destination_path,
+                    policy=self.deletion_policy,
                 )
                 return self.clone_or_pull(
                     to_local_destination_path=to_local_destination_path
