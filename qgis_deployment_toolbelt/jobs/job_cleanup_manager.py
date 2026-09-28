@@ -99,6 +99,10 @@ class JobCleanupManager(GenericJob):
             logger.debug("Cleaning-up outdated plugins from installed QGIS profiles...")
             self.cleanup_plugins_installed()
 
+        if "profiles_deprecated" in scopes:
+            logger.debug("Cleaning-up installed QGIS profiles flagged as deprecated...")
+            self.cleanup_profiles_deprecated()
+
         # remove files/folders
         self._remove_paths()
 
@@ -212,6 +216,92 @@ class JobCleanupManager(GenericJob):
                     continue
 
                 self.report.removed.append(plugin_path)
+
+    def cleanup_profiles_deprecated(self) -> None:
+        """Remove installed QGIS profiles which are flagged as deprecated."""
+        qgis_profiles_path = self.qgis_profiles_path.resolve()
+        if not qgis_profiles_path.is_dir():
+            logger.debug(f"QGIS profiles folder does not exist: {qgis_profiles_path}")
+            return
+
+        already_listed: set[Path] = set()
+
+        for profile in (
+            *self.scan_profiles_folder(start_parent_folder=qgis_profiles_path),
+            *self.scan_profiles_folder(
+                start_parent_folder=self.qdt_downloaded_repositories
+            ),
+        ):
+            if not profile.is_deprecated:
+                continue
+
+            installed_profile_folder = self._get_installed_profile_folder(
+                profile=profile
+            )
+            if (
+                installed_profile_folder is None
+                or installed_profile_folder in already_listed
+            ):
+                continue
+
+            logger.info(
+                f"Profile '{profile.name}' is flagged as deprecated: its installed "
+                f"folder is going to be removed: {installed_profile_folder}"
+            )
+            already_listed.add(installed_profile_folder)
+            self.report.removed.append(installed_profile_folder)
+
+    def _get_installed_profile_folder(self, profile: QdtProfile) -> Path | None:
+        """Determine the installed folder of a profile, whether it has been loaded
+            from the QGIS profiles folder or from the QDT downloaded repositories,
+            making sure it's safe to remove it.
+
+        Args:
+            profile (QdtProfile): profile to get the installed folder for
+
+        Returns:
+            Path | None: path to the profile folder within the QGIS profiles
+                folder. None if it can't be determined, if it's located out of the
+                QGIS profiles folder or if the profile is not installed.
+        """
+        qgis_profiles_path = self.qgis_profiles_path.resolve()
+
+        if isinstance(profile.folder, Path) and profile.folder.is_relative_to(
+            qgis_profiles_path
+        ):
+            installed_profile_folder = profile.folder
+        elif isinstance(profile.name, str) and len(profile.name):
+            # resolved to neutralize a name which would escape the profiles folder
+            installed_profile_folder = qgis_profiles_path.joinpath(
+                profile.name
+            ).resolve()
+        else:
+            logger.error(
+                "Unable to determine the installed folder of the profile stored "
+                f"in {profile.folder}: it has no usable name."
+            )
+            return None
+
+        # safety net: never remove anything out of the QGIS profiles folder, nor
+        # the QGIS profiles folder itself
+        if installed_profile_folder == qgis_profiles_path or not (
+            installed_profile_folder.is_relative_to(qgis_profiles_path)
+        ):
+            logger.error(
+                f"Folder of the profile '{profile.name}' is not located within the "
+                f"QGIS profiles folder ({qgis_profiles_path}), so it's ignored: "
+                f"{installed_profile_folder}"
+            )
+            return None
+
+        if not installed_profile_folder.is_dir():
+            logger.debug(
+                f"Profile '{profile.name}' is flagged as deprecated but it's not "
+                f"installed: {installed_profile_folder}"
+            )
+            return None
+
+        return installed_profile_folder
 
     def _remove_paths(self) -> None:
         """Remove files and folders listed in the ``self.report.removed``."""
