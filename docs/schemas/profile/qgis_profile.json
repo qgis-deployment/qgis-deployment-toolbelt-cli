@@ -12,6 +12,11 @@
             "description": "Name of profile auhor and maintener.",
             "type": "string"
         },
+        "deprecated": {
+            "default": false,
+            "description": "If true, the profile is not deployed anymore. Its installed folder can also be removed from the end-user machine by the cleanup-manager job, through its 'profiles_deprecated' scope.",
+            "type": "boolean"
+        },
         "description": {
             "description": "Profile description.",
             "type": "string"

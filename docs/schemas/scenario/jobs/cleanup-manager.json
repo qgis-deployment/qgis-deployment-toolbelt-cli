@@ -41,7 +41,8 @@
         "type": "string",
         "enum": [
           "plugins_cache",
-          "plugins_installed"
+          "plugins_installed",
+          "profiles_deprecated"
         ]
       }
     }
