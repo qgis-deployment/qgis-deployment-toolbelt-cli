@@ -42,6 +42,20 @@ Profile's name in a human readable form, allowing special characters. Informativ
 
 Name of profile author and maintainer.
 
+## deprecated
+
+> Added in version 0.46
+
+| Optional  | Default |
+| :-------: | :-----: |
+| `yes`     | `false` |
+
+When it's set to `true`, the profile is not deployed anymore: it's excluded from every job dealing with profiles.
+
+Its installed folder can also be removed from the end-user machine by [the cleanup-manager job](../jobs/cleanup_manager.md), through its `profiles_deprecated` scope.
+
+It's the recommended way to retire a profile: keep it in your repository with the flag, so QDT can clean up the machines where it has been deployed, instead of removing it from the repository and leaving it installed everywhere.
+
 ### description
 
 | Optional  | Default |
