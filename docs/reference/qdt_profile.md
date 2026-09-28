@@ -1,6 +1,88 @@
+---
+tags:
+    - plugin
+    - profile
+    - QDT
+    - QGIS
+    - QGIS Deployment Toolbelt
+    - rule
+---
+
 # QDT Profile
 
-## Rules
+(qdt-reference-profiles-page)=
+
+> [!TIP]
+> Since writing a JSON file from scratch is not recomended for mental health, it's better to:
+>
+> - start from [project's examples](https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/tree/main/examples)
+> - get inspired by [public projects](https://github.com/qgis-deployment/qdt-examples-qgis-profiles)
+> - use the [Profile Manager plugin for QGIS](https://qgis-deployment.github.io/profile_manager/usage/export_qdt.html)
+
+## deprecated
+
+> Added in version 0.46
+
+| Optional  | Default |
+| :-------: | :-----: |
+| `yes`     | `false` |
+
+When it's set to `true`, the profile is not deployed anymore: it's excluded from every job dealing with profiles.
+
+Its installed folder can also be removed from the end-user machine by [the cleanup-manager job](../jobs/cleanup_manager.md), through its `profiles_deprecated` scope.
+
+It's the recommended way to retire a profile: keep it in your repository with the flag, so QDT can clean up the machines where it has been deployed, instead of removing it from the repository and leaving it installed everywhere.
+
+## qdtMinVersion
+
+> Added in version 0.45
+
+| Optional  | Default |
+| :-------: | :-----: |
+| `yes`     |         |
+
+Optional attribute to state the minimum QDT version required to deploy the profile (following simple [SemVer](https://semver.org/)). If the running QDT is older than this, the profile is skipped during synchronization.
+
+## plugins
+
+List of plugins to be installed in the profile.
+
+> [!TIP]
+> To retrieve the ID of a plugin see [this page](../guides/howto_qgis_get_plugin_id.md).
+
+### upgrade_mode
+
+> Added in version 0.41
+
+| Optional  | Default |
+| :-------: | :-----: |
+| `yes`     | `keep`  |
+
+By default, when upgrading a plugin, the new version is unpacked on top of the existing folder (`keep` mode). This works well in most cases but can cause issues when a plugin removes or renames files between versions: leftover files from the old version may remain and cause conflicts or unexpected behavior.
+
+Setting `upgrade_mode` to `delete` on a plugin ensures a clean installation by removing the existing plugin folder before unpacking the new version. This is recommended for plugins that are known to have breaking changes between versions or that do not handle leftover files gracefully.
+
+Example in `profile.json`:
+
+```json
+{
+  "plugins": [
+    {
+      "name": "my_plugin",
+      "version": "2.0.0",
+      "official_repository": true,
+      "upgrade_mode": "delete"
+    }
+  ]
+}
+```
+
+Possible values:
+
+- `keep` (default): existing plugin folder is kept, newer version is unpacked on top of it.
+- `delete`: existing plugin folder is deleted before unpacking the new version.
+
+## rules
 
 > Added in version 0.34
 
@@ -83,9 +165,8 @@ settings:
 
 You can by-pass prefix check by setting `RULES_ONLY_PREFIXED_VARIABLES` to `false` in scenario settings.
 
-:::{warning}
-Be careful if you allow all variables, as it could cause security issues.
-:::
+> [!WARNING]
+> Be careful if you allow all variables, as it could cause security issues.
 
 ### Conditions and rules context
 
@@ -104,36 +185,6 @@ qdt export-rules-context -o qdt_rules_context.json
 
 ----
 
-## Plugin upgrade mode
-
-> Added in version 0.41
-
-By default, when upgrading a plugin, the new version is unpacked on top of the existing folder (`keep` mode). This works well in most cases but can cause issues when a plugin removes or renames files between versions: leftover files from the old version may remain and cause conflicts or unexpected behavior.
-
-Setting `upgrade_mode` to `delete` on a plugin ensures a clean installation by removing the existing plugin folder before unpacking the new version. This is recommended for plugins that are known to have breaking changes between versions or that do not handle leftover files gracefully.
-
-Example in `profile.json`:
-
-```json
-{
-  "plugins": [
-    {
-      "name": "my_plugin",
-      "version": "2.0.0",
-      "official_repository": true,
-      "upgrade_mode": "delete"
-    }
-  ]
-}
-```
-
-Possible values:
-
-- `keep` (default): existing plugin folder is kept, newer version is unpacked on top of it.
-- `delete`: existing plugin folder is deleted before unpacking the new version.
-
-----
-
 ## Model definition
 
 The project comes with a [JSON schema](https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/docs/schemas/profile/qgis_profile.json) describing the model of a profile:
@@ -149,10 +200,6 @@ With a submodel for plugin object:
 .. literalinclude:: ../schemas/profile/qgis_plugin.json
   :language: json
 ```
-
-:::{tip}
-To retrieve the ID of a plugin see [this page](../guides/howto_qgis_get_plugin_id.md).
-:::
 
 ----
 
