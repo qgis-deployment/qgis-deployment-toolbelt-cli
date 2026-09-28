@@ -19,15 +19,19 @@ import configparser
 import logging
 import zipfile
 from dataclasses import dataclass, fields
-from enum import Enum
 from os.path import expanduser, expandvars
 from pathlib import Path
+from typing import get_args
 from urllib.parse import urlsplit, urlunsplit
 
 # 3rd party
 from packaging.version import InvalidVersion, Version
 
 # package
+from qgis_deployment_toolbelt.constants import (
+    DEFAULT_QGIS_PLUGIN_LOCATION,
+    QgisPluginLocation,
+)
 from qgis_deployment_toolbelt.utils.check_path import check_path
 from qgis_deployment_toolbelt.utils.slugger import sluggy
 
@@ -42,11 +46,6 @@ logger = logging.getLogger(__name__)
 # #############################################################################
 # ########## Classes ###############
 # ##################################
-
-
-class QgisPluginLocation(Enum):
-    local = 1
-    remote = 2
 
 
 @dataclass
@@ -66,7 +65,7 @@ class QgisPlugin:
 
     name: str
     folder_name: str | None = None
-    location: QgisPluginLocation = QgisPluginLocation.remote
+    location: QgisPluginLocation = DEFAULT_QGIS_PLUGIN_LOCATION
     official_repository: bool | None = None
     plugin_id: int | None = None
     qgis_maximum_version: str | None = None
@@ -90,6 +89,20 @@ class QgisPlugin:
         for k, v in cls.ATTR_MAP.items():
             if v.lower() in input_dict.keys():
                 input_dict[k] = input_dict.pop(v.lower(), None)
+
+        # normalize location
+        if "location" in input_dict:
+            input_dict["location"] = str(input_dict["location"]).strip().lower()
+        if "location" in input_dict and input_dict["location"] not in get_args(
+            QgisPluginLocation
+        ):
+            logger.warning(
+                f"Plugin '{input_dict.get('name')}': invalid location "
+                f"'{input_dict['location']}'. Must be one of: "
+                f"{', '.join(get_args(QgisPluginLocation))}. Fallback to the default "
+                f"one: {DEFAULT_QGIS_PLUGIN_LOCATION}."
+            )
+            input_dict["location"] = DEFAULT_QGIS_PLUGIN_LOCATION
 
         # official repository autodetection
         if input_dict.get("repository_url_xml") == cls.OFFICIAL_REPOSITORY_XML:
@@ -115,10 +128,9 @@ class QgisPlugin:
             input_dict["location"] = "remote"
 
         # remove keys which are not in object attributes
-        attributes_names = [f.name for f in fields(cls)]
-        for k in list(input_dict):
-            if k not in attributes_names:
-                del input_dict[k]
+        attributes_names = {f.name for f in fields(cls)}
+        for k in input_dict.keys() - attributes_names:
+            del input_dict[k]
 
         # return new instance with loaded object
         return cls(
