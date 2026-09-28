@@ -174,6 +174,31 @@ class GenericJob:
             start_parent_folder=self.qgis_profiles_path, quiet=quiet
         )
 
+    def scan_profiles_folder(self, start_parent_folder: Path) -> tuple[QdtProfile, ...]:
+        """Parse a folder structure to list every QGIS profile handled by QDT,
+            without applying any of the deployment filters (QDT version,
+            deprecation, deployment rules).
+
+        Useful for jobs which precisely need to know about profiles excluded from
+        deployment, typically the cleanup ones.
+
+        Args:
+            start_parent_folder (Path): root directory to scan for profile.json
+                files.
+
+        Returns:
+            tuple[QdtProfile, ...]: tuple of profiles objects found under the
+                folder. Empty if the folder does not exist or contains no profile.
+        """
+        if not start_parent_folder.is_dir():
+            logger.debug(f"Folder to scan does not exist: {start_parent_folder}")
+            return ()
+
+        return tuple(
+            QdtProfile.from_json(profile_json_path=f, profile_folder=f.parent)
+            for f in start_parent_folder.glob("**/profile.json")
+        )
+
     def filter_profiles_folder(
         self, start_parent_folder: Path, cached: bool = True, quiet: bool = False
     ) -> tuple[QdtProfile, ...] | None:
@@ -199,10 +224,9 @@ class GenericJob:
             return self.PROFILES_FOLDER_CACHE[start_parent_folder]
 
         # first, try to get folders containing a profile.json
-        li_qgis_qdt_profiles: list[QdtProfile] = [
-            QdtProfile.from_json(profile_json_path=f, profile_folder=f.parent)
-            for f in start_parent_folder.glob("**/profile.json")
-        ]
+        li_qgis_qdt_profiles: list[QdtProfile] = list(
+            self.scan_profiles_folder(start_parent_folder=start_parent_folder)
+        )
 
         if not len(li_qgis_qdt_profiles):
             log_method = logger.debug if quiet else logger.error
@@ -229,9 +253,29 @@ class GenericJob:
             self.PROFILES_FOLDER_CACHE[start_parent_folder] = None
             return
 
+        # filter out profiles flagged as deprecated
+        profiles_active, profiles_deprecated = self.filter_profiles_on_deprecation(
+            tup_qdt_profiles=tuple(profiles_version_ok)
+        )
+
+        if len(profiles_deprecated):
+            logger.info(
+                f"{len(profiles_deprecated)}/{len(li_qgis_qdt_profiles)} profiles "
+                "are flagged as deprecated, so they won't be deployed: "
+                f"{', '.join([p.name for p in profiles_deprecated])}"
+            )
+
+        if not len(profiles_active):
+            logger.warning(
+                f"All the {len(li_qgis_qdt_profiles)} profiles are flagged as "
+                "deprecated, so none of them is deployed."
+            )
+            self.PROFILES_FOLDER_CACHE[start_parent_folder] = None
+            return
+
         # filter out profiles that do not match the rules
         profiles_matched, profiles_unmatched = self.filter_profiles_on_rules(
-            tup_qdt_profiles=tuple(profiles_version_ok)
+            tup_qdt_profiles=tuple(profiles_active)
         )
 
         if not len(profiles_matched):
@@ -311,6 +355,34 @@ class GenericJob:
             li_profiles_compatible.append(profile)
 
         return li_profiles_compatible, li_profiles_incompatible
+
+    def filter_profiles_on_deprecation(
+        self, tup_qdt_profiles: tuple[QdtProfile, ...]
+    ) -> tuple[list[QdtProfile], list[QdtProfile]]:
+        """Evaluate profiles against their `deprecated` attribute.
+
+        Args:
+            tup_qdt_profiles (tuple[QdtProfile, ...]): input tuple of QDT profiles
+
+        Returns:
+            tuple[list[QdtProfile], list[QdtProfile]]: tuple of profiles which are
+            still active and those which are flagged as deprecated
+        """
+        li_profiles_active: list[QdtProfile] = []
+        li_profiles_deprecated: list[QdtProfile] = []
+
+        for profile in tup_qdt_profiles:
+            if profile.is_deprecated:
+                logger.debug(
+                    f"Profile '{profile.name}' is flagged as deprecated in its "
+                    "profile.json, so it's excluded from deployment."
+                )
+                li_profiles_deprecated.append(profile)
+                continue
+
+            li_profiles_active.append(profile)
+
+        return li_profiles_active, li_profiles_deprecated
 
     def filter_profiles_on_rules(
         self, tup_qdt_profiles: tuple[QdtProfile, ...], cached: bool = True
