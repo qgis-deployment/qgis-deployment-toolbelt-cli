@@ -16,6 +16,24 @@ Unreleased
 
 -->
 
+## 0.46.0 - 2026-09-28
+
+> Version mainly funded by [la métropole du Grand Lyon](https://www.grandlyon.com/).
+
+### Bugs fixes 🐛
+
+* fix(plugins-downloader): plugins declared with an explicit url were never downloaded by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/901>
+
+### Features and enhancements 🎉
+
+* feature(qgis): first steps to QGIS 4 support by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/893>
+* change(quality): rename deletion_mode into deletion_policy to make the option consistent and avoid confusion by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/903>
+
+### Documentation 📖
+
+* update(docs): use new URL for Profile Manager by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/904>
+* improve(docs): fix local endless rebuild and watch source code by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/900>
+
 ## 0.45.0 - 2026-09-11
 
 > Version mainly funded by [la métropole du Grand Lyon](https://www.grandlyon.com/).
