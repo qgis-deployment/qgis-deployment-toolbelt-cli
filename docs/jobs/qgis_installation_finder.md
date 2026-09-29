@@ -127,7 +127,7 @@ In other words, only the default locations of the two supported installation mod
 By default, the most recent version found is used.
 
 > [!NOTE]
-> Since QGIS 3 and QGIS 4 can be installed side by side, the detected major version determines the profiles folder used by every subsequent job: `QGIS/QGIS3/profiles` or `QGIS/QGIS4/profiles`. Use `version_priority` (or the `QDT_PREFERRED_QGIS_VERSION` environment variable) to pin the QGIS version your deployment targets.
+> The detected major version determines the files and folders used by every subsequent job. See [how QDT supports different QGIS major versions](../guides/howto_qdt_handle_qgis_major_versions.md).
 
 ----
 
