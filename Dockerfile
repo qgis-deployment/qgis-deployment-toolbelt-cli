@@ -35,8 +35,9 @@ WORKDIR /home/qdt-srv/
 
 COPY . .
 
+# dulwich without its Rust extensions (pure Python)
 RUN --mount=type=bind,source=.git,target=.git \
-    python -m pip install --no-cache-dir -e . \
+    PIP_NO_BINARY=dulwich PURE=1 python -m pip install --no-cache-dir -e . \
     && rm -rf /root/.cache
 
 # as non-root user to avoid permission issues with mounted volumes

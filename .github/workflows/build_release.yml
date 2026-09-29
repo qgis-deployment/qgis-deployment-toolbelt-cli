@@ -33,6 +33,10 @@ env:
   PROJECT_FOLDER: "qgis_deployment_toolbelt"
   PYTHON_VERSION: "3.14"
   PYINSTALLER_LOG_LEVEL: "DEBUG"
+  # dulwich: install in pure Python version, without any bin (= Rust extensions)
+  PIP_NO_BINARY: "dulwich"
+  # see: https://github.com/jelmer/dulwich/blob/5786051031e14774b9e90eec95cd89b183a05297/setup.py#L21
+  PURE: "1"
 
 # Jobs definition
 jobs:
