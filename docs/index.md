@@ -248,8 +248,8 @@ usage/settings
 caption: Guides
 maxdepth: 1
 ---
-guides/qgis_4_support
-guides/howto_download_latest_qdt_exe.md
+guides/howto_qdt_handle_qgis_major_versions
+guides/howto_download_latest_qdt_exe
 guides/howto_check_qdt_binary_certificate
 guides/howto_validate_profiles_scenarios
 guides/howto_behind_proxy

@@ -1,6 +1,12 @@
-# QGIS 4 support
+---
+tags:
+  - migration
+  - QGIS
+---
 
-QDT works on machines where QGIS 4 is installed, alongside QGIS 3 or not.
+# How QDT support different QGIS major versions (QGIS 4 support)
+
+Since its version 0.46, QDT works on machines where QGIS 4 is installed, alongside QGIS 3 or not.
 
 ## What changes between QGIS 3 and QGIS 4
 
@@ -15,11 +21,8 @@ QGIS stores the user's settings in folders and files named after its own **major
 | Profile customization file | `<profile>/QGIS/QGISCUSTOMIZATION3.ini` | `<profile>/QGIS/QGISCUSTOMIZATION.xml` |
 
 > [!WARNING]
-> **UI customization is not supported on QGIS 4 yet.** QGIS 4 stores it as XML and reads
-`QGISCUSTOMIZATION3.ini` only once, as a legacy import, while its `QGISCUSTOMIZATION.xml`
-does not exist. QDT still writes the ini file only: as soon as QGIS 4 has written its
-own XML file for a profile, what QDT writes there, including the splash screen set by
-the `splash-screen-manager` job, is ignored by QGIS.  
+> **UI customization is not supported on QGIS 4 yet**  
+> QGIS 4 stores it as XML and reads `QGISCUSTOMIZATION3.ini` only once, as a legacy import, while its `QGISCUSTOMIZATION.xml` does not exist. QDT still writes the ini file only: as soon as QGIS 4 has written its own XML file for a profile, what QDT writes there, including the splash screen set by the `splash-screen-manager` job, is ignored by QGIS.  
 > Profiles that rely on UI customization should stay on QGIS 3 for now.
 
 In your IT follows the good practices on Windows, different QGIS versions should be deployed side by side under a common folder, by passing a custom `INSTALLDIR` to the MSI: `%PROGRAMFILES%\QGIS\3_44` or `%PROGRAMFILES%\QGIS\4_02` for example, instead of the installer's default `%PROGRAMFILES%\QGIS 3.34.15`. The [QGIS installation finder job](../jobs/qgis_installation_finder.md) searches the default locations of the MSI and OSGeo4W installers only, so declare such a custom location through its `search_paths` option:
