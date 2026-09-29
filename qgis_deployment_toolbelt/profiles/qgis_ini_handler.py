@@ -299,6 +299,36 @@ class QgisIniHelper:
         else:
             return False
 
+    def has_other_customizations_than_splash_screen(
+        self, ini_file: Path | None = None
+    ) -> bool:
+        """Determine if the customization file defines more than the splash screen.
+
+        Args:
+            ini_file (Path | None, optional): customization file to check. If None,
+                self.profile_customization_path is used. Defaults to None.
+
+        Returns:
+            bool: True if any option other than the splash screen path is set.
+        """
+        ini_file = ini_file or self.profile_customization_path
+        if ini_file is None or not ini_file.is_file():
+            return False
+
+        cfg_parser = self.cfg_parser()
+        cfg_parser.read(ini_file, encoding="UTF8")
+
+        # list all options set in the file, as (section, option) pairs
+        customizations = {
+            (section, option)
+            for section in cfg_parser.sections()
+            for option in cfg_parser.options(section)
+        }
+        # the splash screen path is not a customization to preserve
+        customizations.discard(("Customization", "splashpath"))
+
+        return len(customizations) > 0
+
     def set_ui_customization_enabled(self, switch: bool = True) -> bool:
         """Enable/disable UI customization in the profile settings file (QGIS3.ini, QGIS4.ini...).
 
