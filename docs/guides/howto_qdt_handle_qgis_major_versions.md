@@ -68,9 +68,9 @@ If a profile ships both files, both are copied as they are and QDT does not rena
 
 > [!WARNING]
 > **UI customization is only partially supported on QGIS 4**  
-> Since the ini --> XML conversion is not unexposed in the API and undocumented, QDT handles the splash screen in the QGIS 4 format only. Other customizations shipped in `QGISCUSTOMIZATION3.ini` (menus, toolbars...) still rely on the legacy import described below.
+> Since the ini --> XML conversion is unexposed in the API and undocumented, QDT handles the splash screen in the QGIS 4 format only. Other customizations shipped in `QGISCUSTOMIZATION3.ini` (menus, toolbars...) still rely on the legacy import described below.
 
-### Splash screen
+#### Splash screen
 
 QGIS 4 stores the UI customization in `QGIS/QGISCUSTOMIZATION.xml` and reads the splash screen from its `splashPath` attribute, only if its `enabled` attribute is `true`. It imports `QGIS/QGISCUSTOMIZATION3.ini` only once, as a legacy import, while the XML file does not exist (see [related code in QGIS](https://github.com/qgis/QGIS/blob/final-4_2_3/src/app/qgscustomization.cpp)).
 
