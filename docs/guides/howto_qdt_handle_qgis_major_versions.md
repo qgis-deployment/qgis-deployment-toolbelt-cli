@@ -20,11 +20,6 @@ QGIS stores the user's settings in folders and files named after its own **major
 | Profile settings file | `<profile>/QGIS/QGIS3.ini` | `<profile>/QGIS/QGIS4.ini` |
 | Profile customization file | `<profile>/QGIS/QGISCUSTOMIZATION3.ini` | `<profile>/QGIS/QGISCUSTOMIZATION.xml` |
 
-> [!WARNING]
-> **UI customization is not supported on QGIS 4 yet**  
-> QGIS 4 stores it as XML and reads `QGISCUSTOMIZATION3.ini` only once, as a legacy import, while its `QGISCUSTOMIZATION.xml` does not exist. QDT still writes the ini file only: as soon as QGIS 4 has written its own XML file for a profile, what QDT writes there, including the splash screen set by the `splash-screen-manager` job, is ignored by QGIS.  
-> Profiles that rely on UI customization should stay on QGIS 3 for now.
-
 In your IT follows the good practices on Windows, different QGIS versions should be deployed side by side under a common folder, by passing a custom `INSTALLDIR` to the MSI: `%PROGRAMFILES%\QGIS\3_44` or `%PROGRAMFILES%\QGIS\4_02` for example, instead of the installer's default `%PROGRAMFILES%\QGIS 3.34.15`. The [QGIS installation finder job](../jobs/qgis_installation_finder.md) searches the default locations of the MSI and OSGeo4W installers only, so declare such a custom location through its `search_paths` option:
 
 ```yaml
@@ -68,3 +63,21 @@ If a profile ships both files, both are copied as they are and QDT does not rena
 
 > [!NOTE]
 > QGIS 3 and QGIS 4 profiles live in two distinct folders, so deploying to QGIS 4 does not modify the QGIS 3 profiles already installed on the machine.
+
+## UI customization
+
+> [!WARNING]
+> **UI customization is only partially supported on QGIS 4**  
+> Since the ini --> XML conversion is unexposed in the API and undocumented, QDT handles the splash screen in the QGIS 4 format only. Other customizations shipped in `QGISCUSTOMIZATION3.ini` (menus, toolbars...) still rely on the legacy import described below.
+
+#### Splash screen
+
+QGIS 4 stores the UI customization in `QGIS/QGISCUSTOMIZATION.xml` and reads the splash screen from its `splashPath` attribute, only if its `enabled` attribute is `true`. It imports `QGIS/QGISCUSTOMIZATION3.ini` only once, as a legacy import, while the XML file does not exist (see [related code in QGIS](https://github.com/qgis/QGIS/blob/final-4_2_3/src/app/qgscustomization.cpp)).
+
+So, for a profile installed for QGIS 4, the [`splash-screen-manager`](../jobs/splash_screen_manager.md) job:
+
+- updates `QGISCUSTOMIZATION.xml` if it exists, preserving the items customized with QGIS, and enables the customization;
+- creates it if it does not exist, unless `QGISCUSTOMIZATION3.ini` holds other customizations than the splash screen (menus, toolbars...): the splash screen is then set in the ini file, to let QGIS import all of them at once;
+- with `action: remove`, removes the splash screen from both files, leaving the customization state unchanged.
+
+A `QGISCUSTOMIZATION.xml` file which is malformed or whose root tag is not `Customization` is left untouched and an error is logged.

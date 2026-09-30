@@ -1,0 +1,12 @@
+<!DOCTYPE Customization>
+<Customization enabled="false" splashPath="/old/images/" version="1">
+  <BrowserItems name="BrowserItems" visible="true">
+    <BrowserItem name="special:Home" visible="false"/>
+  </BrowserItems>
+  <Docks name="Docks" visible="true"/>
+  <Menus name="Menus" visible="true">
+    <Menu name="mProjectMenu" visible="false"/>
+  </Menus>
+  <StatusBarWidgets name="StatusBarWidgets" visible="true"/>
+  <ToolBars name="ToolBars" visible="true"/>
+</Customization>

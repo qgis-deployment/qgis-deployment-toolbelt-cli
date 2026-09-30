@@ -16,9 +16,13 @@ import logging
 from pathlib import Path
 
 # package
+from qgis_deployment_toolbelt.constants import QGIS_PROFILE_CUSTOMIZATION_XML_FILENAME
 from qgis_deployment_toolbelt.exceptions import SplashScreenBadDimensionsError
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
+from qgis_deployment_toolbelt.profiles.qgis_customization_xml_handler import (
+    QgisCustomizationXmlHelper,
+)
 from qgis_deployment_toolbelt.profiles.qgis_ini_handler import QgisIniHelper
 from qgis_deployment_toolbelt.utils.check_image_size import check_image_dimensions
 
@@ -97,7 +101,9 @@ class JobSplashScreenManager(GenericJob):
                 )
 
             if self.options.get("action") == "remove":
-                qini_helper_installed.set_splash_screen(switch=False)
+                self.set_customization_splash_screen(
+                    qini_helper=qini_helper_installed, switch=False
+                )
             elif self.options.get("action") in ("create", "create_or_restore"):
                 # default absolute splash screen path
                 installed_splash_screen_filepath = (
@@ -178,17 +184,68 @@ class JobSplashScreenManager(GenericJob):
                 )
 
                 # set the splash screen into the customization file
-                qini_helper_installed.set_splash_screen(
-                    ini_file=qini_helper_installed.profile_customization_path,
+                if self.set_customization_splash_screen(
+                    qini_helper=qini_helper_installed,
                     splash_screen_filepath=installed_splash_screen_filepath.resolve(),
                     switch=True,
-                )
-                logger.info(
-                    f"Profile {profile_installed.name}: splash screen set "
-                    f"in {qini_helper_installed.profile_customization_path}"
-                )
+                ):
+                    logger.info(f"Profile {profile_installed.name}: splash screen set")
 
             else:
                 raise NotImplementedError
 
         logger.debug(f"Job {self.ID} ran successfully.")
+
+    @staticmethod
+    def set_customization_splash_screen(
+        qini_helper: QgisIniHelper,
+        splash_screen_filepath: Path | None = None,
+        switch: bool = True,
+    ) -> bool:
+        """Add/remove the splash screen in the customization file read by QGIS.
+
+        Args:
+            qini_helper (QgisIniHelper): helper of the profile settings file
+            splash_screen_filepath (Path | None, optional): path to the splash screen
+                image. Required if switch is True. Defaults to None.
+            switch (bool, optional): True to add, False to remove. Defaults to True.
+
+        Returns:
+            bool: True if the customization files are in the expected state.
+        """
+        ini_filepath = qini_helper.profile_customization_path
+        if qini_helper.qgis_version_major < 4:
+            return qini_helper.set_splash_screen(
+                ini_file=ini_filepath,
+                splash_screen_filepath=splash_screen_filepath,
+                switch=switch,
+            )
+
+        xml_helper = QgisCustomizationXmlHelper(
+            xml_filepath=ini_filepath.with_name(QGIS_PROFILE_CUSTOMIZATION_XML_FILENAME)
+        )
+
+        if not switch:
+            # also clean the legacy file, imported again if the XML file is deleted
+            qini_helper.set_splash_screen(ini_file=ini_filepath, switch=False)
+            return xml_helper.set_splash_screen(switch=False)
+
+        if (
+            not xml_helper.xml_filepath.exists()
+            and qini_helper.has_other_customizations_than_splash_screen(ini_filepath)
+        ):
+            logger.warning(
+                f"{ini_filepath} holds UI customizations that QGIS "
+                f"{qini_helper.qgis_version_major} imports only while "
+                f"{xml_helper.xml_filepath.name} does not exist: splash screen set in "
+                "the legacy file to preserve them."
+            )
+            return qini_helper.set_splash_screen(
+                ini_file=ini_filepath,
+                splash_screen_filepath=splash_screen_filepath,
+                switch=True,
+            )
+
+        return xml_helper.set_splash_screen(
+            splash_screen_filepath=splash_screen_filepath, switch=True
+        )

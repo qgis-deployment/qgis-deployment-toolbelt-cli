@@ -113,3 +113,17 @@ class QgisInstallNotFoundError(Exception):
         """Initialization method."""
         self.message = "No QGIS installation found."
         super().__init__(self.message)
+
+
+class QgisCustomizationXmlError(ValueError):
+    """When an existing QGIS customization XML file can't be edited."""
+
+    def __init__(self, xml_filepath: Path, reason: str):
+        """Initialization method.
+
+        Args:
+            xml_filepath (Path): path to the QGISCUSTOMIZATION.xml file
+            reason (str): why the file can't be edited
+        """
+        self.message = f"{xml_filepath}: {reason}"
+        super().__init__(self.message)
