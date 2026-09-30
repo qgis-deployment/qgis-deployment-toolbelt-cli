@@ -6,12 +6,21 @@ The project takes advantage of [PyInstaller](https://pyinstaller.readthedocs.io/
 
 The output binary and all embedded dependencies is located into a subfolder named `dist`: `dist/{operating_system}_QGISDeploymentToolbelt_{version}`, where operating system is one of `MacOS`, `Ubuntu`or `Windows`. A file named `build_environment_report.txt` containing build environment information is generated at the project's root.
 
+> [!NOTE]
+> Since version 0.47, official executables ship [dulwich](https://pypi.org/project/dulwich/) without its optional Rust extensions to prefer pure Python implementation to avoid unsigned native binary.
+>
+> Memo:
+>
+> - `PIP_NO_BINARY` makes pip build dulwich from source
+> - `PURE` tells its build to skip the Rust extensions, which would otherwise be compiled if a Rust toolchain is available.
+
 ### Windows
 
 > Comply with [Windows development requirements](../development/windows.md) before to run following commands in your virtual environment:
 
 ```powershell
-# Install packaging dependencies
+# Install packaging dependencies (dulwich without its Rust extensions, as in CI)
+$env:PIP_NO_BINARY = "dulwich"; $env:PURE = "1"
 python -m pip install -U -e .[packaging]
 
 # Generates MS Version Info
@@ -30,8 +39,8 @@ To run it, double-click on the executable file (*.exe) located into `dist` folde
 > Comply with [Ubuntu development requirements](../development/ubuntu.md) before to run following commands in your virtual environment:
 
 ```sh
-# Install packaging dependencies
-python -m pip install -U -e .[packaging]
+# Install packaging dependencies (dulwich without its Rust extensions, as in CI)
+PIP_NO_BINARY=dulwich PURE=1 python -m pip install -U -e .[packaging]
 
 # Generates binary executable
 python -O ./builder/pyinstaller_build_ubuntu.py
