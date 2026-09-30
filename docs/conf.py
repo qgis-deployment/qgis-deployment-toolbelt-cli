@@ -95,21 +95,33 @@ html_baseurl = __about__.__uri_homepage__
 html_context = {
     "google_site_verification": getenv("GOOGLE_SEARCH_CONSOLE_SITE_VERIFICATION", "")
 }
+html_css_files = [
+    "css/custom.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css",
+]
+html_extra_path = ["robots.txt"]
 html_favicon = "static/logo_qdt.png"
 html_logo = "static/logo_qdt.png"
+html_static_path = ["static/extra"]
 html_theme = "furo"
 html_theme_options = {
-    "source_repository": __about__.__uri__,
+    # colors from the QDT logo: blue #6d97c4, green #a0bf2e, orange #f1903c
+    "light_css_variables": {
+        "color-brand-primary": "#4474a8",
+        "color-brand-content": "#a0bf2e",
+        "color-brand-visited": "#6d97c4",
+    },
+    "dark_css_variables": {
+        "color-brand-primary": "#6d97c4",
+        "color-brand-content": "#b9d25f",
+        "color-brand-visited": "#9574cd",
+    },
     "source_branch": "main",
     "source_directory": "docs/",
+    "source_repository": __about__.__uri__,
 }
+html_title = project
 
-
-html_extra_path = ["robots.txt"]
-html_static_path = ["static/extra"]
-html_css_files = [
-    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
-]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -158,7 +170,7 @@ mermaid_params = [
     "--backgroundColor",
     "transparent",
 ]
-mermaid_version = "11.6.0"
+mermaid_version = "11.17.2"
 
 # MyST Parser
 myst_enable_extensions = [

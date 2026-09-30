@@ -1,0 +1,55 @@
+/* Widen furo's content column by ~50% (46em -> 69em).
+
+   Adapted from pipx (MIT) for QDT: https://github.com/pypa/pipx/blob/main/docs/_static/custom.css
+
+   Furo fixes the readable width with the SASS variable $content-width (variables/_layout.scss), compiled into
+   `.content { width: 46em }`, and derives $full-width = $content-width + 2*$content-padding + 2*$sidebar-width = 82em,
+   which centers the layout via the .sidebar-drawer calc and drives the responsive breakpoints. None of these are CSS
+   custom properties, so the only override is to re-set the compiled rules here with the new widths:
+   content-width 69em, content-padded-width 75em, sidebar-width 15em, full-width 105em.
+
+   */
+
+.main {
+    min-width: 0
+}
+
+.content {
+    width: 56em;
+}
+
+/* keep the block centered: .sidebar-drawer eats the left margin around the new full width (92em) */
+.sidebar-drawer {
+    width: calc((100% - 92em) / 2 + 15em);
+}
+
+/* below the new full width, fold the table of contents into its icon and re-centre (furo did this at 82em) */
+@media (max-width: 92em) {
+    .toc-content-icon {
+        display: flex;
+    }
+
+    .toc-drawer {
+        position: fixed;
+        height: 100vh;
+        top: 0;
+        right: -15em;
+        border-left: 1px solid var(--color-background-muted);
+    }
+
+    .toc-tree {
+        border-left: none;
+        font-size: var(--toc-font-size--mobile);
+    }
+
+    .sidebar-drawer {
+        width: calc((100% - 77em) / 2 + 15em);
+    }
+}
+
+/* furo enlarges the root font by 10% from $full-width + $sidebar-width (97em): postpone it to the new 107em */
+@media (max-width: 107em) {
+    html {
+        font-size: 100%;
+    }
+}
