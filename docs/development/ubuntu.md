@@ -1,9 +1,9 @@
 # Develop on Ubuntu
 
-Tested on:
+Commands tested on:
 
-- Ubuntu 20.04
-- Ubuntu 22.04
+- Ubuntu 24.04
+- Ubuntu 26.04
 
 ## Install Python and Git
 
@@ -32,8 +32,12 @@ source .venv/bin/activate
 
 ```sh
 python -m pip install -U pip setuptools wheel
-python -m pip install -U -e .[dev]
+# dulwich without binary extensions, like official executables
+PIP_NO_BINARY=dulwich PURE=1 python -m pip install -U -e .[dev]
 ```
+
+> [!NOTE]
+> As in CI and official executables, [dulwich](https://pypi.org/project/dulwich/) is installed without its Rust extensions: `PIP_NO_BINARY` makes pip build it from source, `PURE` skips the extensions.
 
 ## Install git hooks
 

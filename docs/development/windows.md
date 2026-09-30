@@ -1,13 +1,12 @@
 # Develop on Windows
 
-Tested on:
+Commands tested on:
 
-- Windows 10 Professional - build 19041 (= version 2004)
 - Windows 11 Professional
 
 ## Requirements
 
-- [Python 3.10+ installed with the Windows MSI installer](https://www.python.org/downloads/windows/) (version from the Windows store is not working with virtual environments)
+- [Python 3.10+](https://www.python.org/downloads/windows/)
 - [Git](https://git-scm.com/download/win) and/or [GitHub Desktop](https://desktop.github.com/)
 
 ## Enable remote scripts (for virtual environment)
@@ -43,9 +42,13 @@ py -3 -m venv .venv
 # upgrade basic tooling
 python -m pip install -U pip setuptools wheel
 
-# install dependencies
+# dulwich without binary extensions, like official executables
+$env:PIP_NO_BINARY = "dulwich"; $env:PURE = "1"
 python -m pip install -U -e .[dev]
 ```
+
+> [!NOTE]
+> As in CI and official executables, [dulwich](https://pypi.org/project/dulwich/) is installed without its Rust extensions: `PIP_NO_BINARY` makes pip build it from source, `PURE` skips the extensions.
 
 ## Install git hooks
 
