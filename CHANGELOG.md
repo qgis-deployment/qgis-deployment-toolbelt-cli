@@ -16,6 +16,18 @@ Unreleased
 
 -->
 
+## 0.47.0 - 2026-10-02
+
+> Version mainly funded by [la métropole du Grand Lyon](https://www.grandlyon.com/).
+
+### Features and enhancements 🎉
+
+* feature(job/splash-screen-manager): make splash screen manager QGIS 4 friendly by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/907>
+
+### Documentation 📖
+
+* update(docs): customize furo theme to get a wider content by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/909>
+
 ## 0.46.0 - 2026-09-28
 
 > Version mainly funded by [la métropole du Grand Lyon](https://www.grandlyon.com/).
