@@ -87,6 +87,58 @@ You can by-pass prefix check by setting `RULES_ONLY_PREFIXED_VARIABLES` to `fals
 Be careful if you allow all variables, as it could cause security issues.
 :::
 
+### Nested conditions
+
+`all` and `any` can contain other `all` / `any` groups, so that you can combine conditions with both logical operators. In the following example, the profile is deployed from September 2026 to September 2027, or whenever `QDT_ATTENDEE` is set to `true`:
+
+```json
+{
+  "rules": [
+    {
+      "name": "Event window or attendee",
+      "description": "Deploy during the event period or if the attendee flag is set.",
+      "conditions": {
+        "any": [
+          {
+            "all": [
+              {
+                "path": "$.date.current_year",
+                "operator": "equal",
+                "value": 2026
+              },
+              {
+                "path": "$.date.current_month",
+                "operator": "greater_than_inclusive",
+                "value": 9
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "path": "$.date.current_year",
+                "operator": "equal",
+                "value": 2027
+              },
+              {
+                "path": "$.date.current_month",
+                "operator": "less_than_inclusive",
+                "value": 9
+              }
+            ]
+          },
+          {
+            "path": "$.env.QDT_ATTENDEE",
+            "operator": "equal",
+            "value": "true"
+          }
+        ]
+      }
+    }
+  ]
+}
+```
+
 ### Conditions and rules context
 
 Rules is a set of conditions that use logical operators to compare values with context (a set of facts) which is exposed as a JSON object. Here comes the context for a Linux environment:

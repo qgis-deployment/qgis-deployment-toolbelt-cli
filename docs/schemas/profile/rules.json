@@ -70,10 +70,52 @@
                         "$ref": "#/defs/condition"
                     },
                     {
-                        "$ref": "#/defs/condition"
+                        "$ref": "#/defs/multiCondition"
                     }
                 ]
             }
+        },
+        "multiCondition": {
+            "type": "object",
+            "title": "Multi condition",
+            "description": "A nested group of conditions, combined with either an all or an any operator. It can contain simple conditions and other multi conditions.",
+            "examples": [
+                {
+                    "all": [
+                        {
+                            "path": "$.date.current_year",
+                            "operator": "equal",
+                            "value": 2026
+                        },
+                        {
+                            "path": "$.date.current_month",
+                            "operator": "greater_than_inclusive",
+                            "value": 9
+                        }
+                    ]
+                }
+            ],
+            "oneOf": [
+                {
+                    "required": [
+                        "any"
+                    ]
+                },
+                {
+                    "required": [
+                        "all"
+                    ]
+                }
+            ],
+            "properties": {
+                "any": {
+                    "$ref": "#/defs/conditionArray"
+                },
+                "all": {
+                    "$ref": "#/defs/conditionArray"
+                }
+            },
+            "additionalProperties": false
         },
         "condition": {
             "type": "object",
