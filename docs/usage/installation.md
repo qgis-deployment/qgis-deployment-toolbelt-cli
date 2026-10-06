@@ -51,9 +51,36 @@ The package is installable with pip:
 
 ```sh
 pip install qgis-deployment-toolbelt
+# to have completion commands
+pip install qgis-deployment-toolbelt[completion]
 ```
 
 It's then available as a CLI: see [the relevant section](./cli.md)
+
+### Without native extensions
+
+To match the released executables, install [dulwich](https://pypi.org/project/dulwich/) (Git implementation used by QDT) without its Rust extensions. Useful on workstations enforcing application allowlisting on DLLs or lacking prebuilt wheels (e.g. Windows ARM64). Consequence: Git operations are slightly slower.
+
+```sh
+PIP_NO_BINARY=dulwich PURE=1 pip install qgis-deployment-toolbelt
+# with pipx, force its pip backend (recent versions default to uv when available)
+PIPX_DEFAULT_BACKEND=pip PIP_NO_BINARY=dulwich PURE=1 pipx install qgis-deployment-toolbelt
+```
+
+On Windows (PowerShell):
+
+```powershell
+$env:PIP_NO_BINARY = "dulwich"; $env:PURE = "1"
+pip install qgis-deployment-toolbelt
+# with pipx
+$env:PIPX_DEFAULT_BACKEND = "pip"
+pipx install qgis-deployment-toolbelt
+```
+
+Memo:
+
+- `PIP_NO_BINARY` makes pip build dulwich from source
+- `PURE` make pip skip the Rust extensions, which would otherwise be compiled if a Rust toolchain is available.
 
 ----
 
