@@ -450,6 +450,8 @@ Put this line at the top of the `profile.json` to get completion and validation 
 }
 ```
 
+Here is the schema:
+
 ```{eval-rst}
 .. literalinclude:: ../schemas/profile/qgis_profile.json
   :language: json
