@@ -22,6 +22,8 @@ A QDT profile is a regular QGIS profile folder with a `profile.json` file at its
 > - use the [Profile Manager plugin for QGIS](https://qgis-deployment.github.io/profile_manager/usage/export_qdt.html)
 > - add the `$schema` key pointing to the [JSON schema](#model-definition) to get completion and validation in your code editor.
 
+## Attributes details
+
 The _Optional_ column reflects the JSON schema, used for validation in code editors. QDT itself does not validate `profile.json` at runtime: missing attributes are ignored and unknown ones are silently dropped.
 
 ## alias
@@ -32,7 +34,7 @@ The _Optional_ column reflects the JSON schema, used for validation in code edit
 
 Profile's name in a human readable form, allowing special characters. Informative only: not used by QDT jobs.
 
-## author
+### author
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -40,7 +42,7 @@ Profile's name in a human readable form, allowing special characters. Informativ
 
 Name of profile author and maintainer.
 
-## description
+### description
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -48,7 +50,7 @@ Name of profile author and maintainer.
 
 Profile description. Informative only: not used by QDT jobs.
 
-## email
+### email
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -56,7 +58,7 @@ Profile description. Informative only: not used by QDT jobs.
 
 Contact email.
 
-## folder_name
+### folder_name
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -64,7 +66,7 @@ Contact email.
 
 Name of the profile's directory in QGIS.
 
-## icon
+### icon
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -74,7 +76,7 @@ Path to the icon used by the [shortcuts manager job](../jobs/shortcuts_manager.m
 
 If a file with the same stem and the extension preferred by the operating system exists alongside (`.ico` on Windows, `.png` or `.svg` on Linux, `.icns` on macOS), it is used instead. Otherwise, the original file is used as is.
 
-## name
+### name
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -85,7 +87,7 @@ Profile name without any special characters. It's used:
 - as the folder name of the installed profile (`QGIS/QGIS3/profiles/{name}`),
 - to match the `profile` value used in scenario jobs (shortcuts, splash screen...), along with the name of the profile's folder in the source.
 
-## qdtMinVersion
+### qdtMinVersion
 
 > Added in version 0.45
 
@@ -95,7 +97,7 @@ Profile name without any special characters. It's used:
 
 Optional attribute to state the minimum QDT version required to deploy the profile (following simple [SemVer](https://semver.org/)). If the running QDT is older than this, the profile is skipped during synchronization.
 
-## qgisMaximumVersion
+### qgisMaximumVersion
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -106,7 +108,7 @@ Maximum QGIS version where the profile can be deployed. It should comply with Se
 > [!IMPORTANT]
 > Informative only for now: QDT reads it but does not filter profiles on it. Use [rules](#rules) to condition deployment.
 
-## qgisMinimumVersion
+### qgisMinimumVersion
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -117,7 +119,7 @@ Minimum QGIS version where the profile can be deployed. It should comply with Se
 > [!IMPORTANT]
 > Informative only for now: QDT reads it but does not filter profiles on it. Use [rules](#rules) to condition deployment.
 
-## splash
+### splash
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -125,7 +127,7 @@ Minimum QGIS version where the profile can be deployed. It should comply with Se
 
 Path to the image used as QGIS splash screen, relative to the profile's root folder. Used by the [splash screen manager job](../jobs/splash_screen_manager.md).
 
-## version
+### version
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -135,7 +137,7 @@ Profile version. Must comply with SemVer (`X.Y.Z`).
 
 Used by the [profiles synchronizer job](../jobs/profiles_synchronizer.md) to compare downloaded and installed profiles, depending on its `sync_mode`. If missing on either side, versions can't be compared.
 
-## plugins
+### plugins
 
 List of plugins to be installed in the profile.
 
@@ -155,7 +157,7 @@ Example for a plugin from the official repository:
 }
 ```
 
-### folder_name
+#### folder_name
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -165,7 +167,7 @@ Name of the plugin folder once installed (`python/plugins/{folder_name}`). If no
 
 Also used to build the download URL for the official repository.
 
-### location
+#### location
 
 | Optional  | Default  |
 | :-------: | :------: |
@@ -173,7 +175,7 @@ Also used to build the download URL for the official repository.
 
 Where the plugin archive is located: `remote` or `local`. Also accepted under the `type` key. Invalid values fall back to `remote`.
 
-### name
+#### name
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -181,7 +183,7 @@ Where the plugin archive is located: `remote` or `local`. Also accepted under th
 
 Plugin name, as referenced in the source plugins repository.
 
-### official_repository
+#### official_repository
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -191,7 +193,7 @@ Plugin name, as referenced in the source plugins repository.
 
 When `true` and `url` is not set, the download URL is built from `folder_name` (or `name`) and `version`.
 
-### plugin_id
+#### plugin_id
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -202,7 +204,7 @@ Plugin ID in the repository. Used to name the downloaded archive in QDT's cache.
 > [!TIP]
 > To retrieve the ID of a plugin see [this page](../guides/howto_qgis_get_plugin_id.md).
 
-### qgisMaximumVersion
+#### qgisMaximumVersion
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -213,7 +215,7 @@ Maximum QGIS version where the plugin can be installed.
 > [!WARNING]
 > Informative only: not yet used by QDT.
 
-### qgisMinimumVersion
+#### qgisMinimumVersion
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -224,7 +226,7 @@ Minimum QGIS version where the plugin can be installed.
 > [!WARNING]
 > Informative only: not yet used by QDT.
 
-### repository_url_xml
+#### repository_url_xml
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -232,7 +234,7 @@ Minimum QGIS version where the plugin can be installed.
 
 URL to the plugins repository XML file. Used with `folder_name` (or `name`) and `version` to build the download URL when `url` is not set.
 
-### upgrade_mode
+#### upgrade_mode
 
 > Added in version 0.41
 
@@ -264,7 +266,7 @@ Possible values:
 - `keep` (default): existing plugin folder is kept, newer version is unpacked on top of it.
 - `delete`: existing plugin folder is deleted before unpacking the new version.
 
-### url
+#### url
 
 | Optional  | Default |
 | :-------: | :-----: |
@@ -272,7 +274,7 @@ Possible values:
 
 Direct URI (URL, `file://` or local path) to the plugin archive (`.zip`). Takes precedence over the other ways to build the download URL.
 
-### version
+#### version
 
 | Optional  | Default  |
 | :-------: | :------: |
@@ -280,7 +282,7 @@ Direct URI (URL, `file://` or local path) to the plugin archive (`.zip`). Takes 
 
 Version of the plugin to install. Used to build the download URL and to compare with the installed version. Set it explicitly.
 
-## rules
+### rules
 
 > Added in version 0.34
 
@@ -366,7 +368,7 @@ You can by-pass prefix check by setting `RULES_ONLY_PREFIXED_VARIABLES` to `fals
 > [!WARNING]
 > Be careful if you allow all variables, as it could cause security issues.
 
-### Nested conditions
+#### Nested conditions
 
 `all` and `any` can contain other `all` / `any` groups, so that you can combine conditions with both logical operators. In the following example, the profile is deployed from September 2026 to September 2027, or whenever `QDT_ATTENDEE` is set to `true`:
 
@@ -418,7 +420,7 @@ You can by-pass prefix check by setting `RULES_ONLY_PREFIXED_VARIABLES` to `fals
 }
 ```
 
-### Conditions and rules context
+#### Conditions and rules context
 
 Rules is a set of conditions that use logical operators to compare values with context (a set of facts) which is exposed as a JSON object. Here comes the context for a Linux environment:
 
