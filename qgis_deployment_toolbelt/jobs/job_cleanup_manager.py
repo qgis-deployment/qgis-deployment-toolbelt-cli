@@ -12,7 +12,6 @@ Author: Julien Moura (https://github.com/guts)
 
 # Standard library
 import logging
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import get_args
 
@@ -25,6 +24,7 @@ from qgis_deployment_toolbelt.constants import (
 )
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.plugins.manifest import _read_qdt_managed_plugins_manifest
+from qgis_deployment_toolbelt.reports import CleanupReport
 from qgis_deployment_toolbelt.utils.trash_or_delete import move_files_to_trash_or_delete
 
 
@@ -39,22 +39,6 @@ logger = logging.getLogger(__name__)
 # #############################################################################
 # ########## Classes ###############
 # ##################################
-
-
-@dataclass
-class CleanupReport:
-    """Structure to summarize a cleanup."""
-
-    removed: list[Path] = field(default_factory=list)
-    failed: list[Path] = field(default_factory=list)
-
-    def __len__(self) -> int:
-        """Number of resources actually removed (or that would be, in dry-run mode).
-
-        Returns:
-            int: count of removed resources
-        """
-        return len(self.removed)
 
 
 class JobCleanupManager(GenericJob):
