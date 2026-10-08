@@ -132,3 +132,69 @@ class TestScenarioReader(unittest.TestCase):
                 is_compatible, error_message = reader.is_qdt_version_compatible()
                 self.assertTrue(is_compatible)
                 self.assertIsNone(error_message)
+
+    def test_summary_with_description(self):
+        """Summary includes title, id and description when the latter is set."""
+        reader = ScenarioReader(
+            in_yaml=Path("tests/fixtures/scenarios/good_scenario_sample.qdt.yml")
+        )
+        summary = reader.summary
+        self.assertTrue(summary.startswith(f"{reader.metadata['title']} "))
+        self.assertIn(f"({reader.metadata['id']}).", summary)
+        self.assertIn(reader.metadata["description"].strip()[:20], summary)
+
+    def test_summary_without_description(self):
+        """`metadata.description` is optional: no KeyError, no trailing text."""
+        reader = ScenarioReader(
+            in_yaml=Path(
+                "tests/fixtures/scenarios/scenario_metadata_without_description.qdt.yml"
+            )
+        )
+        self.assertNotIn("description", reader.metadata)
+        valid, _ = reader.validate_scenario()
+        self.assertTrue(valid)
+        self.assertEqual(
+            reader.summary,
+            "Test scenario of QDT without description "
+            "(test-scenario-without-description).",
+        )
+
+    def test_summary_with_empty_description(self):
+        """An empty or null description is handled like a missing one."""
+        reader = ScenarioReader(
+            in_yaml=Path(
+                "tests/fixtures/scenarios/scenario_metadata_without_description.qdt.yml"
+            )
+        )
+        for empty in (None, "", "  \n"):
+            reader.scenario["metadata"]["description"] = empty
+            self.assertTrue(
+                reader.summary.endswith("(test-scenario-without-description).")
+            )
+
+    def test_summary_without_metadata(self):
+        """No metadata dict, no summary."""
+        reader = ScenarioReader(
+            in_yaml=Path(
+                "tests/fixtures/scenarios/scenario_metadata_without_description.qdt.yml"
+            )
+        )
+        reader.scenario["metadata"] = None
+        self.assertIsNone(reader.summary)
+
+    def test_validate_missing_required_metadata(self):
+        """`metadata.id` and `metadata.title` are required by the schema."""
+        path = Path(
+            "tests/fixtures/scenarios/scenario_metadata_without_description.qdt.yml"
+        )
+        for key in ("id", "title"):
+            for value in ("absent", None, "  "):
+                reader = ScenarioReader(in_yaml=path)
+                if value == "absent":
+                    del reader.scenario["metadata"][key]
+                else:
+                    reader.scenario["metadata"][key] = value
+                valid, report = reader.validate_scenario()
+                self.assertFalse(valid, f"{key}={value!r}")
+                self.assertEqual(len(report), 1)
+                self.assertIn(key, report[0])
