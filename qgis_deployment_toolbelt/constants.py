@@ -95,6 +95,9 @@ RE_QGIS_FINDER_VERSION = re.compile(r"QGIS (\d+\.\d+\.\d+)-(\w+).*")
 RE_QGIS_PROFILE_INI_STEM = re.compile(r"^QGIS(\d+)$", re.IGNORECASE)
 RE_QGIS_VERSIONED_FOLDER = re.compile(r"^QGIS(\d+)$", re.IGNORECASE)
 
+# scenario
+SCENARIO_REQUIRED_METADATA_KEYS: tuple[str, ...] = ("id", "title")
+
 # #############################################################################
 # ########## Functions #############
 # ##################################

@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=../../../docs/schemas/scenario/qdt_scenario.json
+
+# This scenario is used to test that `metadata.description` is optional, as stated
+# by the JSON schema (only `id` and `title` are required).
+
+metadata:
+  title: "Test scenario of QDT without description"
+  id: test-scenario-without-description
+
+settings:
+  DEBUG: false
+  LOCAL_WORK_DIR: ~/.cache/qgis-deployment-toolbelt/tests/
+  SCENARIO_VALIDATION: true
+
+steps:
+  - name: Download profiles from remote git repository
+    uses: qprofiles-downloader
+    with:
+      source: https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli.git
+      protocol: git_remote
+      branch: main

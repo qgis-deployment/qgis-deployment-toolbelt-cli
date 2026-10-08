@@ -160,12 +160,8 @@ def run(args: argparse.Namespace):
     # -- Run --
 
     # Use metadata to inform which scenario is running
-    if isinstance(scenario.metadata, dict):
-        logger.info(
-            "Running scenario: {title} ({id}). {description}".format(
-                **scenario.metadata
-            )
-        )
+    if scenario_summary := scenario.summary:
+        logger.info(f"Running scenario: {scenario_summary}")
 
     # Set environment vars for the scenario
     if isinstance(scenario.settings, dict):
@@ -217,7 +213,8 @@ def run(args: argparse.Namespace):
 
         steps_ok.append(step)
 
-    # run job
+    # run jobs
+    logger.info(f"{len(steps_ok)} jobs about to run in this scenario")
     for step in steps_ok:
         logger.info(f"Running step: {step.get('uses')}")
         try:

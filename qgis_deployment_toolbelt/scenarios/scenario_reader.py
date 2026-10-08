@@ -22,6 +22,7 @@ from packaging.version import InvalidVersion, Version
 
 # package
 from qgis_deployment_toolbelt.__about__ import __version_clean__
+from qgis_deployment_toolbelt.constants import SCENARIO_REQUIRED_METADATA_KEYS
 from qgis_deployment_toolbelt.utils.check_path import check_path
 
 
@@ -170,11 +171,26 @@ class ScenarioReader:
         if not isinstance(self.metadata, dict):
             report.append(f"Metadata is not a dict: {self.metadata}")
             valid = False
-        elif "qdt_min_version" in self.metadata:
-            is_compatible, compat_error = self.is_qdt_version_compatible()
-            if not is_compatible:
-                report.append(compat_error)
+        else:
+            # keys required by docs/schemas/scenario/metadata.json
+            missing_keys = [
+                key
+                for key in SCENARIO_REQUIRED_METADATA_KEYS
+                if not isinstance(self.metadata.get(key), str)
+                or not self.metadata[key].strip()
+            ]
+            if missing_keys:
+                report.append(
+                    "Some of required metadata keys are missing or empty: "
+                    f"{', '.join(missing_keys)}"
+                )
                 valid = False
+
+            if "qdt_min_version" in self.metadata:
+                is_compatible, compat_error = self.is_qdt_version_compatible()
+                if not is_compatible:
+                    report.append(compat_error)
+                    valid = False
 
         return valid, report
 
@@ -232,6 +248,24 @@ class ScenarioReader:
         """
         if isinstance(self.scenario, dict):
             return self.scenario.get("metadata")
+
+    @property
+    def summary(self) -> str | None:
+        """Build a one-line summary of the scenario from its metadata.
+
+        Returns:
+            Summary like `"<title> (<id>). <description>"`, or None if the scenario
+            has no metadata dict.
+        """
+        metadata = self.metadata
+        if not isinstance(metadata, dict):
+            return None
+
+        summary = f"{metadata.get('title', '')} ({metadata.get('id', '')})."
+        description = metadata.get("description")
+        if isinstance(description, str) and description.strip():
+            summary = f"{summary} {description.strip()}"
+        return summary
 
     @property
     def settings(self) -> dict | None:
