@@ -9,7 +9,7 @@
             "type": "string"
         },
         "author": {
-            "description": "Name of profile auhor and maintener.",
+            "description": "Name of profile author and maintainer.",
             "type": "string"
         },
         "description": {
@@ -17,7 +17,7 @@
             "type": "string"
         },
         "email": {
-            "description": "Email of profile's auhor and maintener.",
+            "description": "Email of profile's author and maintainer.",
             "format": "email",
             "maxLength": 127,
             "minLength": 6,
