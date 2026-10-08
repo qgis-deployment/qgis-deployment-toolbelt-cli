@@ -49,6 +49,15 @@
         "https://oslandia.gitlab.io/qgis/ngp-connect/plugins.xml"
       ]
     },
+    "upgrade_mode": {
+      "description": "Indicates whether the existing plugin folder should be deleted or not when upgrading.",
+      "default": "keep",
+      "enum": [
+        "delete",
+        "keep"
+      ],
+      "type": "string"
+    },
     "url": {
       "description": "Direct URI (URL or local path) to download the plugin archive (.zip).",
       "type": "string",
@@ -60,15 +69,6 @@
     },
     "version": {
       "description": "Version of the plugin to be installed.",
-      "type": "string"
-    },
-    "upgrade_mode": {
-      "description": "Indicates whether the existing plugin folder should be deleted or not when upgrading.",
-      "default": "keep",
-      "enum": [
-        "delete",
-        "keep"
-      ],
       "type": "string"
     }
   }
