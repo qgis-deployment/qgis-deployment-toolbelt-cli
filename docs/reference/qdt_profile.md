@@ -448,6 +448,7 @@ Put this line at the top of the `profile.json` to get completion and validation 
   "$schema": "https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/docs/schemas/profile/qgis_profile.json",
 [...]
 }
+```
 
 ```{eval-rst}
 .. literalinclude:: ../schemas/profile/qgis_profile.json
