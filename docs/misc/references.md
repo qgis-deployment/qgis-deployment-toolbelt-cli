@@ -8,6 +8,10 @@
 - Geotribu: <https://geotribu.fr/articles/2023/2023-03-12_conference-qgis-fr-2023-profil-qdt-qgis-deployment-toolbelt/> 🇫🇷
 - North River Geographic: <https://www.northrivergeographic.com/qgis-deployment-cli/> 🇬🇧
 
+## Deploying QGIS in large IT systems - QGIS User COnference 2026 in Laax 🇬🇧
+
+📑 [slides](https://gitlab.com/Oslandia/documentation/presentations/-/blob/master/2026/QGISUC26/Deploying-QGIS-in-large-IT-with-QDT_QGIS-UC-Laax_2026-10-05.pdf?ref_type=heads)
+
 ## Mentioned in WhereGroup talk to QGIS user conference 2024 🇬🇧
 
 📑 [slides](https://talks.osgeo.org/media/qgis-uc2024/submissions/9SBFRD/resources/Delivering_the_perfect_QGIS_installation_and_en_1Npsdlx.pdf#%5B%7B%22num%22%3A717%2C%22gen%22%3A0%7D%2C%7B%22name%22%3A%22XYZ%22%7D%2C0%2C446.4%2C0%5D)
