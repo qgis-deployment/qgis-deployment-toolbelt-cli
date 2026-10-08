@@ -13,6 +13,7 @@ Author: Julien Moura (https://github.com/guts)
 
 # Standard library
 import logging
+from abc import ABC, abstractmethod
 from functools import cached_property
 from os import getenv
 from pathlib import Path
@@ -33,6 +34,7 @@ from qgis_deployment_toolbelt.exceptions import (
 )
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 from qgis_deployment_toolbelt.profiles.rules_context import QdtRulesContext
+from qgis_deployment_toolbelt.reports import CleanupReport
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
 
 
@@ -48,8 +50,37 @@ logger = logging.getLogger(__name__)
 # ##################################
 
 
-class GenericJob:
-    """Generic base for QDT jobs."""
+class GenericJob(ABC):
+    """Abstract base for QDT jobs.
+
+    It provides the shared context (QDT working folders, QGIS profiles folder,
+    operating system configuration, rules context) and helpers to list profiles and
+    validate options. A concrete job must:
+
+    - set ``ID``, the identifier used in the ``uses`` key of a scenario step;
+    - set ``OPTIONS_SCHEMA``, the options accepted in the ``with`` key, checked by
+      :meth:`validate_options`;
+    - implement :meth:`run`, called by the deployment command once the job is
+      instantiated.
+
+    Example:
+        .. code-block:: python
+
+            class JobExample(GenericJob):
+                ID: str = "example-job"
+                OPTIONS_SCHEMA: dict = {}
+
+                def __init__(self, options: dict) -> None:
+                    super().__init__()
+                    self.options: dict = self.validate_options(options)
+
+                def run(self) -> None: ...
+
+    Note:
+        Instantiating a subclass which does not implement :meth:`run` raises a
+        ``TypeError`` before ``__init__`` is executed, so no folder is created on
+        the workstation.
+    """
 
     ID: str = ""
     ENSURE_QGIS_PROFILES_FOLDER: bool = True
@@ -131,7 +162,12 @@ class GenericJob:
         """
         return OSConfiguration.from_opersys()
 
-    # -- Methods
+    # -- Methods to be implemented by concrete jobs
+    @abstractmethod
+    def run(self) -> CleanupReport | None:
+        """Execute the job logic. Must be implemented by every concrete job."""
+
+    # -- Shared methods
     def list_downloaded_profiles(
         self, quiet: bool = False
     ) -> tuple[QdtProfile, ...] | None:
