@@ -34,6 +34,15 @@ from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 # ##################################
 
 
+class JobFixture(GenericJob):
+    """Minimal concrete job used to test the abstract base class."""
+
+    ID: str = "job-test-fixture"
+
+    def run(self) -> None:
+        """No-op implementation of the abstract method."""
+
+
 class TestJobGeneric(unittest.TestCase):
     """Test generic job."""
 
@@ -41,9 +50,8 @@ class TestJobGeneric(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
-        cls.generic_job = GenericJob()
+        cls.generic_job = JobFixture()
 
-        cls.generic_job.ID = "job-test-fixture"
         cls.generic_job.OPTIONS_SCHEMA = {
             "option_one": {
                 "type": str,
@@ -73,6 +81,16 @@ class TestJobGeneric(unittest.TestCase):
         }
 
     # -- TESTS ---------------------------------------------------------
+    def test_generic_job_is_abstract(self):
+        """GenericJob and subclasses without run cannot be instantiated."""
+
+        class JobWithoutRun(GenericJob):
+            ID: str = "job-without-run"
+
+        for job_class in (GenericJob, JobWithoutRun):
+            with self.subTest(job=job_class.__name__), self.assertRaises(TypeError):
+                job_class()
+
     def test_listing_profiles_folder(self):
         """Test profiles listing."""
         fixtures_profiles_folder = Path("tests/fixtures/profiles")

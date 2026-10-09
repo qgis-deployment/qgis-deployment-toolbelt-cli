@@ -29,7 +29,7 @@ from qgis_deployment_toolbelt.utils.bouncer import exit_cli_error, exit_cli_succ
 
 
 if TYPE_CHECKING:
-    from qgis_deployment_toolbelt.jobs.job_cleanup_manager import CleanupReport
+    from qgis_deployment_toolbelt.reports import CleanupReport
 
 # ############################################################################
 # ########## GLOBALS #############
