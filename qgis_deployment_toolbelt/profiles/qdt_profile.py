@@ -39,6 +39,7 @@ from qgis_deployment_toolbelt.constants import (
 from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qgis_ini_handler import QgisIniHelper
 from qgis_deployment_toolbelt.utils.check_path import check_path
+from qgis_deployment_toolbelt.utils.str2bool import str2bool
 
 
 # #############################################################################
@@ -67,6 +68,7 @@ class QdtProfile:
         self,
         alias: str | None = None,
         author: str | None = None,
+        deprecated: bool | str | None = None,
         description: str | None = None,
         email: str | None = None,
         folder: Path | None = None,
@@ -99,6 +101,7 @@ class QdtProfile:
         # default values for attributes/properties that can be get/set
         self._alias = None
         self._author = None
+        self._deprecated = False
         self._description = None
         self._email = None
         self._folder = None
@@ -119,6 +122,8 @@ class QdtProfile:
             self._alias = alias
         if author:
             self._author = author
+        if deprecated is not None:
+            self._deprecated = str2bool(input_var=deprecated) is True
         if description:
             self._description = description
         if email:
@@ -217,6 +222,15 @@ class QdtProfile:
             return self._folder.resolve()
         else:
             return self._folder
+
+    @property
+    def is_deprecated(self) -> bool:
+        """Tells if the profile is flagged as deprecated in its profile.json.
+
+        Returns:
+            bool: True if the profile is flagged as deprecated. False by default.
+        """
+        return self._deprecated
 
     @property
     def is_loaded_from_json(self) -> bool:

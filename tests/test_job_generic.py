@@ -112,10 +112,11 @@ class TestJobGeneric(unittest.TestCase):
             self.assertIsInstance(filtered_profiles, tuple)
             self.assertGreater(len(filtered_profiles), 0)
 
-            # length must be -1 because of a profile which is excluded by a rule
+            # length must be -2 because of a profile which is excluded by a rule
+            # and another one which is flagged as deprecated
             self.assertEqual(
                 len(filtered_profiles),
-                len(list(tmp_folder_path.glob("**/profile.json"))) - 1,
+                len(list(tmp_folder_path.glob("**/profile.json"))) - 2,
             )
 
     def test_listing_profiles_folder_excludes_incompatible_qdt_version(self):
@@ -142,6 +143,42 @@ class TestJobGeneric(unittest.TestCase):
                 "qdt_test_profile_qdt_min_version_too_high", filtered_names
             )
             self.assertIn("qdt_test_profile_qdt_min_version_invalid", filtered_names)
+
+    def test_listing_profiles_folder_excludes_deprecated(self):
+        """Profiles flagged as deprecated must be filtered out of the deployment,
+        but still listed by a raw scan."""
+        fixtures_profiles_folder = Path("tests/fixtures/profiles")
+        with tempfile.TemporaryDirectory(
+            prefix="QDT_test_profiles_deprecated_",
+            ignore_cleanup_errors=True,
+        ) as tmpdirname:
+            tmp_folder_path = Path(tmpdirname).joinpath("profiles")
+            for p in (
+                fixtures_profiles_folder.joinpath("good_profile_minimal.json"),
+                fixtures_profiles_folder.joinpath("good_profile_deprecated.json"),
+            ):
+                dest_file = tmp_folder_path.joinpath(f"test_{p.stem}/profile.json")
+                dest_file.parent.mkdir(parents=True, exist_ok=True)
+                dest_file.write_text(p.read_text(encoding="UTF-8"), encoding="UTF-8")
+
+            filtered_profiles = self.generic_job.filter_profiles_folder(
+                start_parent_folder=tmp_folder_path
+            )
+
+            self.assertIsInstance(filtered_profiles, tuple)
+            filtered_names = [p.name for p in filtered_profiles]
+            self.assertIn("qdt_test_profile_minimal", filtered_names)
+            self.assertNotIn("qdt_test_profile_deprecated", filtered_names)
+
+            # a raw scan must still list them, so cleanup jobs can handle them
+            scanned_names = [
+                p.name
+                for p in self.generic_job.scan_profiles_folder(
+                    start_parent_folder=tmp_folder_path
+                )
+            ]
+            self.assertIn("qdt_test_profile_minimal", scanned_names)
+            self.assertIn("qdt_test_profile_deprecated", scanned_names)
 
     def test_get_matching_profile_from_name(self):
         """Test get_matching_profile_from_name method."""
