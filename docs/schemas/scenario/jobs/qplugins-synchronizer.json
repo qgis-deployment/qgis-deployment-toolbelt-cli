@@ -7,7 +7,8 @@
     "properties": {
         "action": {
             "default": "create_or_restore",
-            "description": "Tell the job what to do with plugins in installed profiles.",
+            "deprecated": true,
+            "description": "Deprecated: has no effect and will be removed in QDT 0.50. To remove plugins no longer listed in profiles, use the 'cleanup-manager' job with the 'plugins_installed' scope.",
             "enum": [
                 "create",
                 "create_or_restore",

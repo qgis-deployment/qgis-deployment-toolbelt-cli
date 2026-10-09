@@ -12,7 +12,6 @@ Sample job configuration in your scenario file:
   - name: Synchronize plugins
     uses: qplugins-synchronizer
     with:
-      action: create_or_restore
       profile_ref: downloaded
 ```
 
@@ -22,13 +21,11 @@ Sample job configuration in your scenario file:
 
 ### action
 
-Tell the job what to do with plugins in **installed profiles**:
+> [!WARNING]
+> Deprecated since 0.48: this option has no effect and will be removed in QDT 0.50. Using it logs a deprecation warning. Remove it from your scenarios.
+> To remove plugins no longer listed in profiles, use the [Cleanup manager job](./cleanup_manager.md) with the `plugins_installed` scope, after this job.
 
-Possible_values:
-
-- `create`: add plugins if they are not present
-- `create_or_restore`: add plugins if not present and replace eventual existing one
-- `remove`: remove plugins which are not listed
+Possible_values: `create`, `create_or_restore`, `remove`.
 
 ### deletion_policy
 
