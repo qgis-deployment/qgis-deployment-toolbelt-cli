@@ -55,13 +55,15 @@ class GenericJob(ABC):
 
     It provides the shared context (QDT working folders, QGIS profiles folder,
     operating system configuration, rules context) and helpers to list profiles and
-    validate options. A concrete job must:
+    validate options. A concrete job must define:
 
-    - set ``ID``, the identifier used in the ``uses`` key of a scenario step;
-    - set ``OPTIONS_SCHEMA``, the options accepted in the ``with`` key, checked by
+    - ``ID``, the identifier used in the ``uses`` key of a scenario step;
+    - ``OPTIONS_SCHEMA``, the options accepted in the ``with`` key, checked by
       :meth:`validate_options`;
-    - implement :meth:`run`, called by the deployment command once the job is
-      instantiated.
+    - :meth:`run`, called by the deployment command once the job is instantiated.
+
+    ``ID`` and ``OPTIONS_SCHEMA`` are declared as abstract properties so that a
+    plain class attribute in the subclass implements them.
 
     Example:
         .. code-block:: python
@@ -76,15 +78,9 @@ class GenericJob(ABC):
 
                 def run(self) -> None: ...
 
-    Note:
-        Instantiating a subclass which does not implement :meth:`run` raises a
-        ``TypeError`` before ``__init__`` is executed, so no folder is created on
-        the workstation.
     """
 
-    ID: str = ""
     ENSURE_QGIS_PROFILES_FOLDER: bool = True
-    OPTIONS_SCHEMA: dict[str, dict[str, Any]] = {}
 
     # -- CACHE --
     PROFILES_FOLDER_CACHE: dict[Path, tuple[QdtProfile, ...] | None] = {}
@@ -162,10 +158,23 @@ class GenericJob(ABC):
         """
         return OSConfiguration.from_opersys()
 
-    # -- Methods to be implemented by concrete jobs
+    # -- Members to be implemented by concrete jobs
+    @property
+    @abstractmethod
+    def ID(self) -> str:  # noqa: N802
+        """Job identifier, used in the ``uses`` key of a scenario step."""
+        raise NotImplementedError(f"{type(self).__name__} must define ID.")
+
+    @property
+    @abstractmethod
+    def OPTIONS_SCHEMA(self) -> dict[str, dict[str, Any]]:  # noqa: N802
+        """Options accepted in the ``with`` key of a scenario step."""
+        raise NotImplementedError(f"{type(self).__name__} must define OPTIONS_SCHEMA.")
+
     @abstractmethod
     def run(self) -> CleanupReport | None:
         """Execute the job logic. Must be implemented by every concrete job."""
+        raise NotImplementedError(f"{type(self).__name__} must define run.")
 
     # -- Shared methods
     def list_downloaded_profiles(

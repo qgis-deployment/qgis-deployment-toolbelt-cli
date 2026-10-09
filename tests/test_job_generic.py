@@ -38,6 +38,33 @@ class JobFixture(GenericJob):
     """Minimal concrete job used to test the abstract base class."""
 
     ID: str = "job-test-fixture"
+    OPTIONS_SCHEMA: dict = {
+        "option_one": {
+            "type": str,
+            "required": True,
+            "default": "git",
+            "condition": "startswith",
+            "possible_values": ("git", "http"),
+        },
+        "option_two": {
+            "type": (bool, int, str),
+            "required": False,
+            "condition": "in",
+            "possible_values": ("test", "fixture"),
+        },
+        "option_three": {
+            "type": (bool, int, str),
+            "required": False,
+            "condition": None,
+            "possible_values": None,
+        },
+        "option_four": {
+            "type": list,
+            "required": False,
+            "condition": "all_in",
+            "possible_values": ("plugins_cache", "plugins_installed"),
+        },
+    }
 
     def run(self) -> None:
         """No-op implementation of the abstract method."""
@@ -52,44 +79,41 @@ class TestJobGeneric(unittest.TestCase):
         """Executed when module is loaded before any test."""
         cls.generic_job = JobFixture()
 
-        cls.generic_job.OPTIONS_SCHEMA = {
-            "option_one": {
-                "type": str,
-                "required": True,
-                "default": "git",
-                "condition": "startswith",
-                "possible_values": ("git", "http"),
-            },
-            "option_two": {
-                "type": (bool, int, str),
-                "required": False,
-                "condition": "in",
-                "possible_values": ("test", "fixture"),
-            },
-            "option_three": {
-                "type": (bool, int, str),
-                "required": False,
-                "condition": None,
-                "possible_values": None,
-            },
-            "option_four": {
-                "type": list,
-                "required": False,
-                "condition": "all_in",
-                "possible_values": ("plugins_cache", "plugins_installed"),
-            },
-        }
-
     # -- TESTS ---------------------------------------------------------
     def test_generic_job_is_abstract(self):
-        """GenericJob and subclasses without run cannot be instantiated."""
+        """GenericJob and incomplete subclasses cannot be instantiated."""
 
-        class JobWithoutRun(GenericJob):
-            ID: str = "job-without-run"
+        # rebinding the abstract member drops the implementation from JobFixture
+        class JobWithoutId(JobFixture):
+            ID = GenericJob.ID
 
-        for job_class in (GenericJob, JobWithoutRun):
+        class JobWithoutOptionsSchema(JobFixture):
+            OPTIONS_SCHEMA = GenericJob.OPTIONS_SCHEMA
+
+        class JobWithoutRun(JobFixture):
+            run = GenericJob.run
+
+        for job_class in (
+            GenericJob,
+            JobWithoutId,
+            JobWithoutOptionsSchema,
+            JobWithoutRun,
+        ):
             with self.subTest(job=job_class.__name__), self.assertRaises(TypeError):
                 job_class()
+
+    def test_abstract_members_raise_when_called(self):
+        """Abstract members fail loudly when reached through super()."""
+        for member in (
+            GenericJob.ID.fget,
+            GenericJob.OPTIONS_SCHEMA.fget,
+            GenericJob.run,
+        ):
+            with (
+                self.subTest(member=member.__name__),
+                self.assertRaises(NotImplementedError),
+            ):
+                member(self.generic_job)
 
     def test_listing_profiles_folder(self):
         """Test profiles listing."""
