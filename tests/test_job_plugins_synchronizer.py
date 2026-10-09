@@ -116,6 +116,22 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
             self.assertTrue((plugin_folder / "metadata.txt").exists())
             self.assertTrue((plugin_folder / "__init__.py").exists())
 
+    def test_action_option_is_deprecated(self):
+        """Using the deprecated 'action' option must log a deprecation warning,
+        whatever its value, without failing."""
+        for action in ("create", "create_or_restore", "remove"):
+            with (
+                self.subTest(action=action),
+                self.assertLogs(job_plugins_synchronizer.logger, "WARNING") as logs,
+            ):
+                JobPluginsSynchronizer(options={"action": action})
+            self.assertTrue(any("DEPRECATED" in line for line in logs.output))
+
+    def test_action_option_absent_no_deprecation_warning(self):
+        """No deprecation warning when the 'action' option is not used."""
+        with self.assertNoLogs(job_plugins_synchronizer.logger, "WARNING"):
+            JobPluginsSynchronizer(options={"profile_ref": "installed"})
+
     def test_install_plugin_upgrade_mode_keep(self):
         """Test that upgrade_mode=keep preserves existing files in the plugin folder."""
         with tempfile.TemporaryDirectory(

@@ -92,6 +92,15 @@ class JobPluginsSynchronizer(GenericJob):
         super().__init__()
         self.options: dict = self.validate_options(options)
 
+        # TODO: log as error (non-blocking) in 0.49, remove the option in 0.50
+        if "action" in self.options:
+            logger.warning(
+                f"[DEPRECATED] the 'action' option of job '{self.ID}' has no effect and "
+                "will be removed in QDT 0.50. Remove it from your scenario. To remove "
+                "plugins no longer listed in profiles, use the 'cleanup-manager' job "
+                "with the 'plugins_installed' scope."
+            )
+
         # where QDT downloads plugins
         self._ensure_folder_exists(
             folder_path=self.qdt_plugins_folder, log_label="QDT plugins folder"
