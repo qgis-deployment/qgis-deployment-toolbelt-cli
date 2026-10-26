@@ -115,6 +115,9 @@ jobs:
       - name: Generates Executable
         run: python -O ./builder/pyinstaller_build_macos.py
 
+      - name: Smoke test the executable
+        run: python ./builder/smoke_test_executable.py
+
       - uses: actions/upload-artifact@v7
         with:
           name: macos_executable
@@ -152,6 +155,9 @@ jobs:
 
       - name: Generates Executable
         run: python -O ./builder/pyinstaller_build_ubuntu.py
+
+      - name: Smoke test the executable
+        run: python ./builder/smoke_test_executable.py
 
       - uses: actions/upload-artifact@v7
         with:
@@ -193,6 +199,9 @@ jobs:
 
       - name: Generates MS Executable
         run: python -O .\builder\pyinstaller_build_windows.py
+
+      - name: Smoke test the executable
+        run: python .\builder\smoke_test_executable.py
 
       - name: Find executable filename
         id: find_exe
