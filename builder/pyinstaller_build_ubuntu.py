@@ -60,6 +60,9 @@ PyInstaller.__main__.run(
         "--add-data=LICENSE:.",
         "--add-data=README.md:.",
         "--collect-data=publicsuffixlist",
+        # jsonpath-ng (used by the rules engine) loads its pre-generated parsing tables
+        # from a module name given as a string, which PyInstaller cannot detect
+        "--collect-submodules=jsonpath_ng",
         f"--add-data={package_folder.joinpath('shortcuts/shortcut_freedesktop.template').resolve()}:shortcuts/",
         f"--log-level={getenv('PYINSTALLER_LOG_LEVEL', 'WARN')}",
         f"--name={output_filename}",

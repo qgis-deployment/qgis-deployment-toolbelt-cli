@@ -53,6 +53,9 @@ PyInstaller.__main__.run(
         "--add-data=LICENSE:.",
         "--add-data=README.md:.",
         "--collect-data=publicsuffixlist",
+        # jsonpath-ng (used by the rules engine) loads its pre-generated parsing tables
+        # from a module name given as a string, which PyInstaller cannot detect
+        "--collect-submodules=jsonpath_ng",
         # "--clean",
         f"--icon={package_folder.parent.resolve()}/docs/static/logo_qdt.ico",
         f"--log-level={getenv('PYINSTALLER_LOG_LEVEL', 'WARN')}",
