@@ -41,7 +41,7 @@ dependencies = [
     "giturlparse>=0.12,<0.16",
     "imagesize>=2.0.0,<2.1",
     # required by python-rule-engine: 1.10 to 1.13 break the executables (#932)
-    "jsonpath-ng>=1.5.3,!=1.10.*,!=1.11.*,!=1.12.*,!=1.13.*,<2",
+    "jsonpath-ng>=1.8.0,!=1.10.*,!=1.11.*,!=1.12.*,!=1.13.*,<2",
     "packaging>=26.3,<27",
     "pypac>=0.19,<1",
     "python-rule-engine>=0.5,<1.1",
