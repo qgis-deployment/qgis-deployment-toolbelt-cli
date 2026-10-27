@@ -16,6 +16,12 @@ Unreleased
 
 -->
 
+## 0.48.1 - 2026-10-27
+
+### Bugs fixes 🐛
+
+- fix(packaging): ship jsonpath-ng tables in PyInstaller executables by @nicogodet in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/935>
+
 ## 0.48.0 - 2026-10-23
 
 > [!IMPORTANT]
