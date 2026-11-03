@@ -309,10 +309,10 @@ class OSConfiguration:
                             f"'QDT_QGIS_EXE_PATH' is a valid dictionary: {envvar}"
                         )
                         return True
-                except Exception as err:
-                    logger.info(
-                        f"Failed to interpret 'QDT_QGIS_EXE_PATH' value: {envvar}. "
-                        f"Trace: {err}"
+                except (ValueError, TypeError, SyntaxError, MemoryError) as err:
+                    logger.warning(
+                        f"Failed to interpret 'QDT_QGIS_EXE_PATH' value as a "
+                        f"dictionary: {envvar}. {type(err).__name__}: {err}"
                     )
         return False
 
@@ -347,10 +347,10 @@ class OSConfiguration:
                                 f"QGIS path found in 'QDT_QGIS_EXE_PATH' dictionary: {v}"
                             )
                             return Path(expandvars(expanduser(v)))  # noqa: PTH111
-                except Exception as err:
+                except (TypeError, ValueError) as err:
                     logger.error(
                         f"Failed to use 'QDT_QGIS_EXE_PATH' dict value: {envvar}. "
-                        f"Trace: {err}"
+                        f"{type(err).__name__}: {err}"
                     )
             elif self._is_envvar_qgis_exe_path_a_string():
                 logger.debug(
