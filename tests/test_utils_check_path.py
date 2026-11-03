@@ -82,7 +82,7 @@ class TestUtilsCheckPath(unittest.TestCase):
             check_path_exists(input_path=1000)
         self.assertFalse(check_path_exists(input_path=1000, raise_error=False))
         # str is valid but not an existing file
-        with self.assertRaises(FileExistsError):
+        with self.assertRaises(FileNotFoundError):
             check_path_exists(input_path="/this/is/an/imaginary/file.imaginary")
         # no exception but False
         self.assertFalse(
@@ -206,7 +206,7 @@ class TestUtilsCheckPath(unittest.TestCase):
         self.assertFalse(
             check_path(input_path="imaginary/path", raise_error=False, must_exists=True)
         )
-        with self.assertRaises(FileExistsError):
+        with self.assertRaises(FileNotFoundError):
             check_path(input_path="imaginary/path", must_exists=True)
 
         # must be readable

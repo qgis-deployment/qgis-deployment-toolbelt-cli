@@ -236,13 +236,20 @@ def test_main_run_unexising_jobs(capsys):
     assert err == ""
 
 
-def test_main_run_failed(capsys):
-    """Test main cli command"""
-    with pytest.raises(FileExistsError):
+def test_main_run_failed(caplog):
+    """Test that an error escaping a command ends with a clean exit, and that its
+    traceback is logged (so it reaches the log file)."""
+    with pytest.raises(SystemExit) as exc_info:
         cli.main(["deploy", f"--scenario={str(sample_scenario_false.resolve())}"])
 
-    _, err = capsys.readouterr()
-    assert err == ""
+    # exit message is the error message, not a raw traceback
+    assert "doesn't exist" in str(exc_info.value.code)
+    assert any(
+        record.levelname == "ERROR"
+        and record.exc_info is not None
+        and isinstance(record.exc_info[1], FileNotFoundError)
+        for record in caplog.records
+    )
 
 
 def test_main_run_removing_splash(capsys):
