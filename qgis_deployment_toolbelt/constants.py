@@ -70,6 +70,9 @@ COPY_IGNORED_PATTERNS: Callable = ignore_patterns("*.lnk", "thumbs.db", ".DS_Sto
 ENV_VAR_QGIS_EXE_PATH: str = "QDT_QGIS_EXE_PATH"
 ENV_VAR_QGIS_VERSION: str = "QDT_QGIS_VERSION"
 
+# max size of an HTTP error response body written to logs
+HTTP_ERROR_BODY_MAX_LOGGED_BYTES: int = 500
+
 # QGIS executable filenames
 QGIS_BIN_WINDOWS_FILENAME: str = "qgis-bin.exe"
 QGIS_LTR_BIN_WINDOWS_FILENAME: str = "qgis-ltr-bin.exe"
