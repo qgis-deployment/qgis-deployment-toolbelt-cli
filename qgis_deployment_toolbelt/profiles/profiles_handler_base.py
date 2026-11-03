@@ -527,7 +527,7 @@ class RemoteProfilesHandlerBase:
                     )
                 return cloned_repo
             except Exception as err:
-                # first fail lead lead to a retry so only the last one is an error
+                # first fail leads to a retry so only the last fail is an error
                 logger.log(
                     logging.WARNING if attempt < 2 else logging.ERROR,
                     "Error cloning the source repository "
