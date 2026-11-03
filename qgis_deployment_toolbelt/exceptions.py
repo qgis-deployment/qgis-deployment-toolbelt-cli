@@ -10,7 +10,19 @@ from pathlib import Path
 from qgis_deployment_toolbelt.utils.check_image_size import get_image_size
 
 
-class JobOptionBadNameError(KeyError):
+class QdtError(Exception):
+    """Base class for QDT errors."""
+
+    def __str__(self) -> str:
+        """Return the human-readable message.
+
+        Returns:
+            str: the message attribute if set, the default representation if not.
+        """
+        return getattr(self, "message", None) or super().__str__()
+
+
+class JobOptionBadNameError(QdtError, KeyError):
     """When a job reveives an option which is not part of accepted ones."""
 
     def __init__(
@@ -31,7 +43,7 @@ class JobOptionBadNameError(KeyError):
         super().__init__(self.message)
 
 
-class JobOptionBadValueError(ValueError):
+class JobOptionBadValueError(QdtError, ValueError):
     """When a job's option reveives a value which does not complies with condition."""
 
     def __init__(
@@ -60,7 +72,7 @@ class JobOptionBadValueError(ValueError):
         super().__init__(self.message)
 
 
-class JobOptionBadValueTypeError(TypeError):
+class JobOptionBadValueTypeError(QdtError, TypeError):
     """When a job reveives an option which is not of the expected type."""
 
     def __init__(
@@ -87,7 +99,7 @@ class JobOptionBadValueTypeError(TypeError):
         super().__init__(self.message)
 
 
-class SplashScreenBadDimensionsError(Exception):
+class SplashScreenBadDimensionsError(QdtError):
     """When splash screen image does not comply with recomended dimensions."""
 
     def __init__(self, image_filepath: Path, profile_name: str | None = None):
@@ -106,7 +118,7 @@ class SplashScreenBadDimensionsError(Exception):
         super().__init__(self.message)
 
 
-class QgisInstallNotFoundError(Exception):
+class QgisInstallNotFoundError(QdtError):
     """When no QGIS installation are found."""
 
     def __init__(self):
@@ -115,7 +127,7 @@ class QgisInstallNotFoundError(Exception):
         super().__init__(self.message)
 
 
-class QgisCustomizationXmlError(ValueError):
+class QgisCustomizationXmlError(QdtError, ValueError):
     """When an existing QGIS customization XML file can't be edited."""
 
     def __init__(self, xml_filepath: Path, reason: str):
