@@ -527,15 +527,17 @@ class RemoteProfilesHandlerBase:
                     )
                 return cloned_repo
             except Exception as err:
-                logger.error(
+                # first fail lead lead to a retry so only the last one is an error
+                logger.log(
+                    logging.WARNING if attempt < 2 else logging.ERROR,
                     "Error cloning the source repository "
                     f"{self.SOURCE_REPOSITORY_PATH_OR_URL} "
                     f"(branch {self.SOURCE_REPOSITORY_ACTIVE_BRANCH}) "
                     f"to {to_local_destination_path}. "
-                    f"Trace: {err}."
+                    f"Trace: {err}.",
                 )
                 if attempt < 2:
-                    logger.error(
+                    logger.warning(
                         "Clone fail 1/2. Removing target folder and trying again..."
                     )
                     move_files_to_trash_or_delete(
@@ -545,7 +547,7 @@ class RemoteProfilesHandlerBase:
                     return self.clone_or_pull(
                         to_local_destination_path=to_local_destination_path, attempt=2
                     )
-                logger.critical("Clone fail 2/2. Abort.")
+                logger.error("Clone fail 2/2. Abort.")
                 move_files_to_trash_or_delete(
                     files_to_trash=to_local_destination_path,
                     policy=self.deletion_policy,
