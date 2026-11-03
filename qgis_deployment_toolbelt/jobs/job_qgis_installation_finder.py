@@ -109,7 +109,9 @@ class JobQgisInstallationFinder(GenericJob):
             return
 
         if opersys not in ("linux", "win32"):
-            logger.error(f"This job does not support your operating system: {opersys}")
+            logger.error(
+                f"This job does not support your operating system: {opersys}. Skipped."
+            )
             return
 
         installed_qgis_version_and_path = self.get_installed_qgis_version_and_path()
