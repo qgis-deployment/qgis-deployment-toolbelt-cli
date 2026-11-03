@@ -36,7 +36,13 @@ class InvalidScenarioError(QdtError, ValueError):
             scenario_path (Path | str): path or name of the scenario
             reason (str): why the scenario can't be parsed
         """
-        self.message = f"Invalid scenario file '{scenario_path.resolve()}': {reason}"
+        # a buffer has no path, only a name so do not resolve
+        location = (
+            scenario_path.resolve()
+            if isinstance(scenario_path, Path)
+            else scenario_path
+        )
+        self.message = f"Invalid scenario file '{location}': {reason}"
         super().__init__(self.message)
 
 
