@@ -185,5 +185,5 @@ def get_logger_filepath() -> Path | None:
             if hasattr(handler, "baseFilename"):
                 return Path(handler.baseFilename)
 
-    logger.warning("No file found in any log handlers.")
+    logger.debug("No file found in any log handlers.")
     return None
