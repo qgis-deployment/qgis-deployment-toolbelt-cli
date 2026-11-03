@@ -11,10 +11,13 @@ Usage from the repo root folder:
 """
 
 # standard library
+import logging
 import unittest
 from sys import platform as opersys
+from unittest.mock import MagicMock, patch
 
 # project
+from qgis_deployment_toolbelt.utils import win32utils
 from qgis_deployment_toolbelt.utils.os_utils_router import get_environment_variable
 
 
@@ -34,6 +37,38 @@ class TestUtilsWin32(unittest.TestCase):
 
         # KO
         self.assertIsNone(get_environment_variable("YOUPI"))
+
+
+class TestUtilsWin32MissingEnvVar(unittest.TestCase):
+    """Test registry helpers with a mocked `winreg` (runs on any OS)."""
+
+    def setUp(self) -> None:
+        """Mock the registry module so that every variable is missing."""
+        winreg = MagicMock()
+        winreg.OpenKey.return_value.__enter__.return_value = "key"
+        winreg.QueryValueEx.side_effect = FileNotFoundError
+        winreg.DeleteValue.side_effect = FileNotFoundError
+        self.winreg = winreg
+        for name, value in (
+            ("winreg", winreg),
+            ("user_hkey", ("HKCU", "Environment")),
+            ("system_hkey", ("HKLM", "Environment")),
+        ):
+            patcher = patch.object(win32utils, name, value, create=True)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+
+    def test_delete_missing_does_not_log_error(self) -> None:
+        """Deleting a missing variable is silent above DEBUG (issue #938)."""
+        with self.assertNoLogs(win32utils.logger, level=logging.INFO):
+            self.assertFalse(win32utils.delete_environment_variable("MISSING"))
+        self.winreg.DeleteValue.assert_not_called()
+
+    def test_access_denied_still_logs_error(self) -> None:
+        """Registry errors other than 'missing' are never downgraded."""
+        self.winreg.QueryValueEx.side_effect = PermissionError
+        with self.assertLogs(win32utils.logger, level=logging.ERROR):
+            self.assertFalse(win32utils.delete_environment_variable("DENIED"))
 
 
 # ############################################################################

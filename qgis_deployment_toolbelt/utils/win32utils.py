@@ -119,13 +119,19 @@ def delete_environment_variable(envvar_name: str, scope: str = "user") -> bool:
     else:
         hkey = system_hkey
 
-    # get it to check if variable exits
-    try:
-        get_environment_variable(envvar_name=envvar_name, scope=scope)
-    except Exception:
+    # check that the variable exists
+    if (
+        get_environment_variable(
+            envvar_name=envvar_name, scope=scope, log_level_if_missing=logging.DEBUG
+        )
+        is None
+    ):
+        logger.debug(
+            f"Variable '{envvar_name}' not found in scope '{scope}': nothing to delete."
+        )
         return False
 
-    # try to delete the variable
+    # if it does exist, try to delete the variable
     try:
         with winreg.OpenKey(*hkey, access=winreg.KEY_ALL_ACCESS) as key:
             winreg.DeleteValue(key, envvar_name)
@@ -137,13 +143,20 @@ def delete_environment_variable(envvar_name: str, scope: str = "user") -> bool:
         return False
 
 
-def get_environment_variable(envvar_name: str, scope: str = "user") -> str | None:
+def get_environment_variable(
+    envvar_name: str,
+    scope: str = "user",
+    *,
+    log_level_if_missing: int = logging.ERROR,
+) -> str | None:
     """Get environment variable from Windows registry.
 
     Args:
         envvar_name (str): environment variable name (= key) to retrieve
         scope (str, optional): environment variable scope. Must be "user" or "system",
             defaults to "user". Defaults to "user".
+        log_level_if_missing (int, optional): logging level used when the variable
+            does not exist. Defaults to logging.ERROR.
 
     Returns:
         Optional[str]: environment variable value or None if not found
@@ -159,9 +172,17 @@ def get_environment_variable(envvar_name: str, scope: str = "user") -> str | Non
         with winreg.OpenKey(*hkey, access=winreg.KEY_READ) as key:
             value, _ = winreg.QueryValueEx(key, envvar_name)
         return value
-    except OSError:
+    except FileNotFoundError:
+        logger.log(
+            log_level_if_missing,
+            f"Environment variable {envvar_name} not found in registry "
+            f"(scope: {scope}).",
+        )
+        return None
+    except OSError as err:
         logger.error(
-            f"Environment variable {envvar_name} not found in registry (scope: {scope}"
+            f"Environment variable {envvar_name} could not be read from registry "
+            f"(scope: {scope}). Trace: {err}"
         )
         return None
 
