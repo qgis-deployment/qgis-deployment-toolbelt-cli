@@ -60,8 +60,8 @@ def check_var_can_be_path(
         raise_error (bool, optional): if True, it raises an exception. Defaults to True.
 
     Raises:
-        TypeError: if input path can't be converted and raise_error is False
-        ValueError: if input path is an empty string
+        TypeError: if input path can't be converted and raise_error is True
+        ValueError: if input path is an empty string and raise_error is True
 
     Returns:
         bool: True if the input can be converted to pathlib.Path
@@ -71,7 +71,7 @@ def check_var_can_be_path(
         if raise_error:
             raise ValueError(error_message)
         else:
-            logger.error(error_message)
+            logger.debug(error_message)
             return False
 
     try:
@@ -84,7 +84,7 @@ def check_var_can_be_path(
         error_message = f"Converting {input_var} into Path failed. Trace: {exc}"
         if attempt != 2:
             error_message += " Attempt 1/2. Try again with user and vars expansion."
-            logger.info(error_message)
+            logger.debug(error_message)
             return check_var_can_be_path(
                 input_var=input_var, attempt=2, raise_error=raise_error
             )
@@ -93,7 +93,7 @@ def check_var_can_be_path(
         if raise_error:
             raise TypeError(error_message) from exc
         else:
-            logger.error(error_message)
+            logger.debug(error_message)
             return False
 
 
@@ -108,7 +108,7 @@ def check_path_exists(
         raise_error (bool, optional): if True, it raises an exception. Defaults to True.
 
     Raises:
-        FileExistsError: if the path doesn't exist and raise_error is False
+        FileNotFoundError: if the path doesn't exist and raise_error is True
 
     Returns:
         bool: True if the path exists.
@@ -129,10 +129,14 @@ def check_path_exists(
         input_path = Path(input_path)
 
     if not input_path.exists():
-        error_message = f"{input_path.resolve()} doesn't exist."
+        error_message = (
+            f"{input_path} doesn't exist."
+            if attempt != 2
+            else f"{input_path.resolve()} doesn't exist."
+        )
         if attempt != 2:
             error_message += " Attempt 1/2. Try again with user and vars expansion."
-            logger.info(error_message)
+            logger.debug(error_message)
             return check_path_exists(
                 input_path=input_path, attempt=2, raise_error=raise_error
             )
@@ -140,9 +144,9 @@ def check_path_exists(
         error_message += " Attempt 2/2. Game over."
 
         if raise_error:
-            raise FileExistsError(error_message)
+            raise FileNotFoundError(error_message)
         else:
-            logger.error(error_message)
+            logger.debug(error_message)
             return False
     else:
         return True
@@ -156,7 +160,7 @@ def check_path_is_readable(input_path: Path, raise_error: bool = True) -> bool:
         raise_error (bool, optional): if True, it raises an exception. Defaults to True.
 
     Raises:
-        FileExistsError: if the path is not readable and raise_error is False
+        PermissionError: if the path is not readable and raise_error is True
 
     Returns:
         bool: True if the path is readable.
@@ -174,9 +178,9 @@ def check_path_is_readable(input_path: Path, raise_error: bool = True) -> bool:
     if not access(input_path, R_OK):
         error_message = f"{input_path.resolve()} isn't readable."
         if raise_error:
-            raise OSError(error_message)
+            raise PermissionError(error_message)
         else:
-            logger.error(f"{input_path.resolve()} isn't readable.")
+            logger.debug(error_message)
             return False
     else:
         return True
@@ -190,7 +194,7 @@ def check_path_is_writable(input_path: Path, raise_error: bool = True) -> bool:
         raise_error (bool, optional): if True, it raises an exception. Defaults to True.
 
     Raises:
-        FileExistsError: if the path is not writable and raise_error is False
+        PermissionError: if the path is not writable and raise_error is True
 
     Returns:
         bool: True if the path is writable.
@@ -208,9 +212,9 @@ def check_path_is_writable(input_path: Path, raise_error: bool = True) -> bool:
     if not access(input_path, W_OK):
         error_message = f"{input_path.resolve()} isn't writable."
         if raise_error:
-            raise OSError(error_message)
+            raise PermissionError(error_message)
         else:
-            logger.error(error_message)
+            logger.debug(error_message)
             return False
     else:
         return True
@@ -238,10 +242,15 @@ def check_path(
             must_be_a_folder. Defaults to False.
         raise_error (bool, optional): if True, it raises an exception. Defaults to True.
 
+
+
     Raises:
         ValueError: if must_be_a_file and must_be_a_folder are both set to True
-        FileNotFoundError: if the path is not a file and must_be_a_file is set to True
+        FileNotFoundError: if the path doesn't exist and must_exists is set to True, \
+            or is not a file and must_be_a_file is set to True
         NotADirectoryError: if the path is not a folder and must_be_a_folder is set to True
+        PermissionError: if the path is not readable (resp. writable) and \
+            must_be_readable (resp. must_be_writable) is set to True
 
     Returns:
         bool:  True if the path complies with constraints.
@@ -271,14 +280,14 @@ def check_path(
         if raise_error:
             raise FileNotFoundError(error_message)
         else:
-            logger.error(error_message)
+            logger.debug(error_message)
             return False
     if must_be_a_folder and not input_path.is_dir():
         error_message = f"{input_path.resolve()} is not a folder."
         if raise_error:
             raise NotADirectoryError(error_message)
         else:
-            logger.error(error_message)
+            logger.debug(error_message)
             return False
 
     # check chmod
