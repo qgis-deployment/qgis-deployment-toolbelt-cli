@@ -14,7 +14,6 @@ Author: Julien M. (https://github.com/guts)
 import argparse
 import logging
 import sys
-from collections.abc import Iterable
 from os import getenv
 from pathlib import Path
 from sys import platform as opersys
@@ -104,9 +103,7 @@ def get_latest_release(api_repo_url: str) -> dict | None:
         "User-Agent": f"{__title_clean__}/{actual_version}",
     }
     if getenv("GITHUB_TOKEN"):
-        logger.debug(
-            f"Using authenticated request to GH API: {getenv('GITHUB_TOKEN')[:9]}****"
-        )
+        logger.debug("Using authenticated request to GH API (GITHUB_TOKEN).")
         headers["Authorization"] = f"Bearer {getenv('GITHUB_TOKEN')}"
 
     try:
@@ -120,14 +117,24 @@ def get_latest_release(api_repo_url: str) -> dict | None:
         req.raise_for_status()
         release_info = req.json()
         return release_info
-    except Exception as err:
-        logger.error(err)
-        if isinstance(err, Iterable) and "rate limit exceeded" in str(err):
+    except requests.HTTPError as err:
+        logger.error(f"Unable to retrieve latest release from GitHub API. {err}")
+        if (
+            err.response is not None
+            and err.response.status_code in (403, 429)
+            and err.response.headers.get("x-ratelimit-remaining") == "0"
+        ):
             logger.error(
-                "Rate limit of GitHub API exeeded. Try again later (generally "
-                "in 15 minutes) or set GITHUB_TOKEN as environment variable with a "
+                "Rate limit of GitHub API exceeded. Try again later (generally "
+                "in 30 minutes) or set GITHUB_TOKEN as environment variable with a "
                 "personal token."
             )
+        return None
+    except (requests.RequestException, ValueError) as err:
+        logger.error(
+            "Unable to retrieve latest release from GitHub API. "
+            f"{type(err).__name__}: {err}"
+        )
         return None
 
 
