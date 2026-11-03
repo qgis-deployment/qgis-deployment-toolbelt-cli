@@ -47,6 +47,23 @@ class TestUtilsBouncer(unittest.TestCase):
             exit_cli_error(error)
         self.assertIsNone(exit_cli_error(error, abort=False))
 
+    def test_bouncer_error_exc_info(self):
+        """Test that the traceback is logged only if exc_info is enabled."""
+        try:
+            raise TypeError("fake type error")
+        except TypeError as error:
+            with self.assertLogs(
+                logger="qgis_deployment_toolbelt.utils.bouncer", level="ERROR"
+            ) as logs:
+                exit_cli_error(error, abort=False)
+            self.assertFalse(logs.records[0].exc_info)
+
+            with self.assertLogs(
+                logger="qgis_deployment_toolbelt.utils.bouncer", level="ERROR"
+            ) as logs:
+                exit_cli_error(error, abort=False, exc_info=True)
+            self.assertIs(logs.records[0].exc_info[1], error)
+
     def test_bouncer_normal(self):
         """Test bouncer normal."""
         # test with simple string
