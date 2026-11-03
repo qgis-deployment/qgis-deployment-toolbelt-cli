@@ -22,6 +22,24 @@ class QdtError(Exception):
         return getattr(self, "message", None) or super().__str__()
 
 
+class InvalidScenarioError(QdtError, ValueError):
+    """When a scenario file can't be parsed: YAML syntax or text encoding.
+
+    Structure checks (required keys, steps...) are handled by
+    ScenarioReader.validate_scenario().
+    """
+
+    def __init__(self, scenario_path: Path | str, reason: str):
+        """Initialization method.
+
+        Args:
+            scenario_path (Path | str): path or name of the scenario
+            reason (str): why the scenario can't be parsed
+        """
+        self.message = f"Invalid scenario file '{scenario_path.resolve()}': {reason}"
+        super().__init__(self.message)
+
+
 class JobOptionBadNameError(QdtError, KeyError):
     """When a job reveives an option which is not part of accepted ones."""
 
