@@ -188,12 +188,11 @@ def download_remote_file_to_local(
             f"Cause: ConnectionError. Trace: {error}"
         )
         raise error
-    except Exception as error:
-        logger.error(
+    except Exception:
+        logger.exception(
             f"Downloading {remote_url_to_download} to {local_file_path} failed. "
-            f"Cause: Unknown error. Trace: {error}",
-            stack_info=True,
+            "Cause: Unknown error."
         )
-        raise error
+        raise
 
     return local_file_path
