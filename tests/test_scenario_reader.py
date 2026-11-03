@@ -18,9 +18,11 @@
 import unittest
 from io import BytesIO
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 # module target
 from qgis_deployment_toolbelt.__about__ import __version_clean__
+from qgis_deployment_toolbelt.exceptions import InvalidScenarioError
 from qgis_deployment_toolbelt.scenarios.scenario_reader import ScenarioReader
 
 
@@ -81,6 +83,45 @@ class TestScenarioReader(unittest.TestCase):
         with self.assertRaises(TypeError):
             yaml_as_dict = {"metadata": {"name": "test"}}
             ScenarioReader(yaml_as_dict)
+
+    def test_invalid_yaml_syntax(self):
+        """Test that a YAML syntax error raises InvalidScenarioError with its
+        location, from a file and from a buffer."""
+        bad_yaml = "metadata:\n  title: [unclosed\nsteps: []\n"
+
+        with TemporaryDirectory(prefix="qdt_test_scenario_") as tmp_dir:
+            scenario_path = Path(tmp_dir, "bad_syntax.qdt.yml")
+            scenario_path.write_text(bad_yaml, encoding="UTF-8")
+
+            with self.assertRaises(InvalidScenarioError) as ctx:
+                ScenarioReader(in_yaml=scenario_path)
+
+        self.assertIn("line", str(ctx.exception))
+        self.assertIsInstance(ctx.exception, ValueError)
+        self.assertIsNotNone(ctx.exception.__cause__)
+
+        with self.assertRaises(InvalidScenarioError):
+            ScenarioReader(in_yaml=BytesIO(bad_yaml.encode("UTF-8")))
+
+    def test_invalid_scenario_encoding(self):
+        """Test that a scenario file not encoded in UTF-8 raises InvalidScenarioError."""
+        with TemporaryDirectory(prefix="qdt_test_scenario_") as tmp_dir:
+            scenario_path = Path(tmp_dir, "cp1252.qdt.yml")
+            scenario_path.write_bytes(
+                "metadata:\n  title: Déploiement\n".encode("cp1252")
+            )
+
+            with self.assertRaises(InvalidScenarioError) as ctx:
+                ScenarioReader(in_yaml=scenario_path)
+
+        self.assertIn("UTF-8", str(ctx.exception))
+        self.assertIsInstance(ctx.exception.__cause__, UnicodeDecodeError)
+
+    def test_empty_scenario_left_to_validation(self):
+        """Test that an empty scenario is parsed and reported by validate_scenario."""
+        reader = ScenarioReader(in_yaml=BytesIO(b""))
+        self.assertIsNone(reader.scenario)
+        self.assertFalse(reader.validate_scenario()[0])
 
     def test_qdt_min_version_satisfied(self):
         """Test qdt_min_version metadata when the running QDT version is recent
