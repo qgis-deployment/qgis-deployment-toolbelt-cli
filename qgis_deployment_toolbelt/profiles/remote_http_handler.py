@@ -13,7 +13,7 @@ Author: Julien Moura (https://github.com/guts).
 
 # Standard library
 import logging
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from os import getenv
 from pathlib import Path
 
@@ -148,30 +148,32 @@ class HttpHandler(RemoteProfilesHandlerBase):
             (list of success download, list of failed download)
         """
         base_url = self.SOURCE_REPOSITORY_PATH_OR_URL
+        use_stream = str2bool(getenv("QDT_STREAMED_DOWNLOADS", True))
         downloaded_files: list[tuple[str, Path]] = []
         failed_files: list[tuple[str, str]] = []
 
         with ThreadPoolExecutor(
             thread_name_prefix=f"{__title_clean__}_profile_dl_http_"
         ) as executor:
-            for file_to_download in li_files_to_download:
-                # submit download to pool
+            futures: dict[Future[Path], str] = {
+                executor.submit(
+                    download_remote_file_to_local,
+                    local_file_path=target_folder.joinpath(file_to_download),
+                    remote_url_to_download=f"{base_url}{file_to_download}",
+                    use_stream=use_stream,
+                ): file_to_download
+                for file_to_download in li_files_to_download
+            }
+
+            # exceptions raised in workers are only re-raised by Future.result()
+            for future in as_completed(futures):
+                file_to_download = futures[future]
                 try:
-                    executor.submit(
-                        # func to execute
-                        download_remote_file_to_local,
-                        # func parameters
-                        local_file_path=target_folder.joinpath(file_to_download),
-                        remote_url_to_download=f"{base_url}{file_to_download}",
-                        use_stream=str2bool(getenv("QDT_STREAMED_DOWNLOADS", True)),
-                    )
-                    downloaded_files.append(
-                        (
-                            f"{base_url}{file_to_download}",
-                            target_folder.joinpath(file_to_download),
-                        )
-                    )
-                except Exception as err:
+                    local_path = future.result()
+                except OSError as err:
+                    # requests.RequestException is an OSError subclass
                     failed_files.append((file_to_download, f"{err}"))
+                    continue
+                downloaded_files.append((f"{base_url}{file_to_download}", local_path))
 
         return downloaded_files, failed_files
