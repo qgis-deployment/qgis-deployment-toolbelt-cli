@@ -22,6 +22,7 @@ from qgis_deployment_toolbelt.constants import (
     SUPPORTED_OPERATING_SYSTEMS_CODENAMES,
     get_qdt_working_directory,
 )
+from qgis_deployment_toolbelt.exceptions import QdtError
 from qgis_deployment_toolbelt.jobs import JobsOrchestrator
 from qgis_deployment_toolbelt.scenarios import ScenarioReader
 from qgis_deployment_toolbelt.utils.bouncer import exit_cli_error, exit_cli_success
@@ -223,7 +224,7 @@ def run(args: argparse.Namespace):
             )
             job.run()
         except Exception as err:
-            exit_cli_error(err)
+            exit_cli_error(err, exc_info=not isinstance(err, QdtError))
 
     # exit nicely
     exit_cli_success("Deployment achieved!")
