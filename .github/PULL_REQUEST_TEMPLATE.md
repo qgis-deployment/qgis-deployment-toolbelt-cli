@@ -1,4 +1,4 @@
-<!-- Thanks for your contribution to QGIS! Please make sure you read the following guidelines before opening a pull request. -->
+<!-- Thanks for your contribution! Please make sure you read the following guidelines before opening a pull request. -->
 
 ## Description
 
