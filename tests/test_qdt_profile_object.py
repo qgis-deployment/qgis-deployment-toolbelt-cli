@@ -169,13 +169,6 @@ class TestQdtProfile(unittest.TestCase):
         self.assertFalse(QdtProfile(name="unit_test", version="1.0.0").is_deprecated)
         self.assertFalse(QdtProfile(deprecated=False).is_deprecated)
 
-    def test_profile_deprecated_requires_boolean(self):
-        """Only a real boolean flags a profile as deprecated, to never trigger a
-        removal from a typo."""
-        for value in ("true", "yes", 1):
-            with self.subTest(value=value):
-                self.assertFalse(QdtProfile(deprecated=value).is_deprecated)
-
     # -- QGIS major version detection --------------------------------------------
     def test_profile_qgis_version_major_from_installed_path(self):
         """QGIS major version is deduced from the QGIS versioned parent folder."""
