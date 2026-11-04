@@ -99,6 +99,10 @@ class JobCleanupManager(GenericJob):
             logger.debug("Cleaning-up outdated plugins from installed QGIS profiles...")
             self.cleanup_plugins_installed()
 
+        if "profiles_deprecated" in scopes:
+            logger.debug("Cleaning-up installed QGIS profiles flagged as deprecated...")
+            self.cleanup_profiles_deprecated()
+
         # remove files/folders
         self._remove_paths()
 
@@ -212,6 +216,39 @@ class JobCleanupManager(GenericJob):
                     continue
 
                 self.report.removed.append(plugin_path)
+
+    def cleanup_profiles_deprecated(self) -> None:
+        """Remove installed QGIS profiles flagged as deprecated in the downloaded
+        repositories.
+
+        The downloaded repositories are the source of truth: deprecated profiles are
+        not synchronized, so the flag never reaches the installed profile.json. A
+        profile still provided as active by another repository is kept.
+        """
+        # list downloaded profiles and filter on deprecated ones
+        downloaded = self.read_profiles_folder(
+            start_parent_folder=self.qdt_downloaded_repositories
+        )
+        active, deprecated = self.filter_profiles_on_deprecated_flag(
+            tup_qdt_profiles=downloaded
+        )
+        deprecated_names = {p.name for p in deprecated} - {p.name for p in active}
+        if not deprecated_names or not self.qgis_profiles_path.is_dir():
+            logger.debug(
+                "No profiles are marked as deprecated, so there is no profile to clean "
+                "up."
+            )
+            return
+
+        # matching on folder names
+        for folder in self.qgis_profiles_path.iterdir():
+            if (
+                folder.is_dir()
+                and folder.name in deprecated_names
+                and folder.joinpath("profile.json").is_file()
+            ):
+                logger.info(f"Profile '{folder.name}' is deprecated, removing {folder}")
+                self.report.removed.append(folder)
 
     def _remove_paths(self) -> None:
         """Remove files and folders listed in the ``self.report.removed``."""
