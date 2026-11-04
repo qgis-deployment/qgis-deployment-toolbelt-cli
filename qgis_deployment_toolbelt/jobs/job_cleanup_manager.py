@@ -233,11 +233,11 @@ class JobCleanupManager(GenericJob):
             tup_qdt_profiles=downloaded
         )
         deprecated_names = {p.name for p in deprecated} - {p.name for p in active}
-        if not deprecated_names or not self.qgis_profiles_path.is_dir():
-            logger.debug(
-                "No profiles are marked as deprecated, so there is no profile to clean "
-                "up."
-            )
+        if not deprecated_names:
+            logger.debug("No profile flagged as deprecated: nothing to clean up.")
+            return
+        if not self.qgis_profiles_path.is_dir():
+            logger.debug(f"QGIS profiles folder not found: {self.qgis_profiles_path}")
             return
 
         # matching on folder names
