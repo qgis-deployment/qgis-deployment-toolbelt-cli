@@ -70,6 +70,9 @@ COPY_IGNORED_PATTERNS: Callable = ignore_patterns("*.lnk", "thumbs.db", ".DS_Sto
 ENV_VAR_QGIS_EXE_PATH: str = "QDT_QGIS_EXE_PATH"
 ENV_VAR_QGIS_VERSION: str = "QDT_QGIS_VERSION"
 
+# max size of an HTTP error response body written to logs
+HTTP_ERROR_BODY_MAX_LOGGED_BYTES: int = 500
+
 # QGIS executable filenames
 QGIS_BIN_WINDOWS_FILENAME: str = "qgis-bin.exe"
 QGIS_LTR_BIN_WINDOWS_FILENAME: str = "qgis-ltr-bin.exe"
@@ -309,10 +312,10 @@ class OSConfiguration:
                             f"'QDT_QGIS_EXE_PATH' is a valid dictionary: {envvar}"
                         )
                         return True
-                except Exception as err:
-                    logger.info(
-                        f"Failed to interpret 'QDT_QGIS_EXE_PATH' value: {envvar}. "
-                        f"Trace: {err}"
+                except (ValueError, TypeError, SyntaxError, MemoryError) as err:
+                    logger.warning(
+                        f"Failed to interpret 'QDT_QGIS_EXE_PATH' value as a "
+                        f"dictionary: {envvar}. {type(err).__name__}: {err}"
                     )
         return False
 
@@ -347,10 +350,10 @@ class OSConfiguration:
                                 f"QGIS path found in 'QDT_QGIS_EXE_PATH' dictionary: {v}"
                             )
                             return Path(expandvars(expanduser(v)))  # noqa: PTH111
-                except Exception as err:
+                except (TypeError, ValueError) as err:
                     logger.error(
                         f"Failed to use 'QDT_QGIS_EXE_PATH' dict value: {envvar}. "
-                        f"Trace: {err}"
+                        f"{type(err).__name__}: {err}"
                     )
             elif self._is_envvar_qgis_exe_path_a_string():
                 logger.debug(

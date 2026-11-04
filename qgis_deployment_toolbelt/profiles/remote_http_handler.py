@@ -104,12 +104,12 @@ class HttpHandler(RemoteProfilesHandlerBase):
             )
             req.raise_for_status()
             qdt_tree = req.json()
-        except Exception as err:
-            logger.critical(
+        except (requests.RequestException, ValueError) as err:
+            logger.error(
                 f"Downloading {self.SOURCE_REPOSITORY_PATH_OR_URL} to "
-                f"{destination_local_path} failed. Trace: {err}"
+                f"{destination_local_path} failed. {type(err).__name__}: {err}"
             )
-            raise err
+            raise
 
         # clean everything before downloading
         move_files_to_trash_or_delete(files_to_trash=destination_local_path)

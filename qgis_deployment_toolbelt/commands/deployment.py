@@ -22,6 +22,7 @@ from qgis_deployment_toolbelt.constants import (
     SUPPORTED_OPERATING_SYSTEMS_CODENAMES,
     get_qdt_working_directory,
 )
+from qgis_deployment_toolbelt.exceptions import InvalidScenarioError, QdtError
 from qgis_deployment_toolbelt.jobs import JobsOrchestrator
 from qgis_deployment_toolbelt.scenarios import ScenarioReader
 from qgis_deployment_toolbelt.utils.bouncer import exit_cli_error, exit_cli_success
@@ -135,11 +136,8 @@ def run(args: argparse.Namespace):
     # -- Load and validate scenario --
     try:
         scenario: ScenarioReader = ScenarioReader(in_yaml=Path(args.scenario_filepath))
-    except Exception as err:
-        exit_cli_error(
-            f"Unable to read the scenario: {args.scenario_filepath}. Trace: {err}",
-            abort=True,
-        )
+    except (OSError, InvalidScenarioError) as err:
+        exit_cli_error(f"Unable to read the scenario. {err}", abort=True)
 
     # Check the validity of the scenario
     scenario_validity = scenario.validate_scenario()
@@ -223,7 +221,7 @@ def run(args: argparse.Namespace):
             )
             job.run()
         except Exception as err:
-            exit_cli_error(err)
+            exit_cli_error(err, exc_info=not isinstance(err, QdtError))
 
     # exit nicely
     exit_cli_success("Deployment achieved!")

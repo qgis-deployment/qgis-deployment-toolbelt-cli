@@ -30,19 +30,24 @@ logger = logging.getLogger(__name__)
 # ##################################
 
 
-def exit_cli_error(message: str | Exception, abort: bool = True):
+def exit_cli_error(
+    message: str | Exception, abort: bool = True, exc_info: bool = False
+):
     """Display error message and stop execution.
 
     Args:
         message (Union[str, Exception]): message to log and display in terminal.
         abort (bool, optional): option to abort after displaying. Defaults to True.
+        exc_info (bool, optional): log the traceback of the exception being
+            handled. Use it for unexpected errors only. Defaults to False.
 
     Raises:
         SystemExit: when abort is True
     """
     # log
-    logger.error(message)
-    logger.error(f"Please, read the full detailed log: {get_logger_filepath()}")
+    logger.error(message, exc_info=exc_info)
+    if logfile := get_logger_filepath():
+        logger.error(f"Please, read the full detailed log: {logfile}")
 
     # handle cases when the full exception is passed
     if isinstance(message, Exception):

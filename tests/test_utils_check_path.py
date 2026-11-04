@@ -82,7 +82,7 @@ class TestUtilsCheckPath(unittest.TestCase):
             check_path_exists(input_path=1000)
         self.assertFalse(check_path_exists(input_path=1000, raise_error=False))
         # str is valid but not an existing file
-        with self.assertRaises(FileExistsError):
+        with self.assertRaises(FileNotFoundError):
             check_path_exists(input_path="/this/is/an/imaginary/file.imaginary")
         # no exception but False
         self.assertFalse(
@@ -90,6 +90,37 @@ class TestUtilsCheckPath(unittest.TestCase):
                 input_path="/this/is/an/imaginary/file.imaginary", raise_error=False
             )
         )
+
+    def test_check_path_predicate_logs_debug_only(self):
+        """Test that a negative answer with raise_error=False is not logged above
+        DEBUG: the caller decides how serious it is."""
+        with self.assertNoLogs(
+            logger="qgis_deployment_toolbelt.utils.check_path", level="INFO"
+        ):
+            self.assertFalse(
+                check_path_exists(
+                    input_path="/this/is/an/imaginary/file.imaginary",
+                    raise_error=False,
+                )
+            )
+            self.assertFalse(
+                check_path(
+                    input_path="imaginary/path", must_exists=True, raise_error=False
+                )
+            )
+            self.assertFalse(check_var_can_be_path(input_var="", raise_error=False))
+
+    def test_check_path_exists_first_attempt_message(self):
+        """Test that the first attempt message shows the path as given, not
+        resolved against the current directory (misleading for '~')."""
+        input_path = Path("~", "qdt_imaginary_folder")
+        with self.assertLogs(
+            logger="qgis_deployment_toolbelt.utils.check_path", level="DEBUG"
+        ) as logs:
+            check_path_exists(input_path=input_path, raise_error=False)
+
+        self.assertIn(f"{input_path} doesn't exist. Attempt 1/2", logs.output[0])
+        self.assertNotIn(f"{Path.cwd() / '~'}", logs.output[0])
 
     def test_check_path_readable_ok(self):
         """Test path is readable."""
@@ -206,7 +237,7 @@ class TestUtilsCheckPath(unittest.TestCase):
         self.assertFalse(
             check_path(input_path="imaginary/path", raise_error=False, must_exists=True)
         )
-        with self.assertRaises(FileExistsError):
+        with self.assertRaises(FileNotFoundError):
             check_path(input_path="imaginary/path", must_exists=True)
 
         # must be readable

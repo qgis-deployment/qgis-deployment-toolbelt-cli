@@ -243,11 +243,11 @@ def _is_computer_in_domain_win32() -> bool:
     try:
         wmi = win32com.client.GetObject("winmgmts://./root/cimv2")
     except Exception as err:
-        logger.info(
+        logger.debug(
             "Unable to load WMI (Windows Management Instrumentation) from "
-            f"win32com.client. Other options will be used. Trace: {err}"
+            f"win32com.client. Trace: {err}"
         )
-        raise err
+        raise
 
     try:
         # Execute a query to retrieve information about the domain
@@ -261,7 +261,7 @@ def _is_computer_in_domain_win32() -> bool:
                 return True
 
     except Exception as err:
-        logger.error(f"Getting domain from WMI through win32com failed. Trace: {err}")
+        logger.debug(f"Getting domain from WMI through win32com failed. Trace: {err}")
         raise err
 
     return False
@@ -291,7 +291,7 @@ def is_computer_attached_to_a_domain() -> bool:
             )
             return _is_computer_in_domain_win32()
         except Exception as err:
-            logger.error(
+            logger.warning(
                 f"Something went wrong using WMI through win32com. Trace: {err}. "
                 "Trying with other methods..."
             )
@@ -300,7 +300,7 @@ def is_computer_attached_to_a_domain() -> bool:
             logger.debug("Determine if computer joined to a domain using PyAD.")
             return _is_computer_in_domain_pyad()
         except Exception as err:
-            logger.error(
+            logger.warning(
                 f"Something went wrong using PyAD. Trace: {err}. Fallback to PowerShell..."
             )
         # fallback with PowerShell

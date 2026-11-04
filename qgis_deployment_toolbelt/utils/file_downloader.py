@@ -22,6 +22,7 @@ from urllib3.exceptions import InsecureRequestWarning
 
 # package
 from qgis_deployment_toolbelt.__about__ import __title_clean__, __version__
+from qgis_deployment_toolbelt.constants import HTTP_ERROR_BODY_MAX_LOGGED_BYTES
 from qgis_deployment_toolbelt.utils.formatters import convert_octets
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
@@ -171,29 +172,57 @@ def download_remote_file_to_local(
             f"Downloading {remote_url_to_download} to {local_file_path} failed. "
             f"Cause: HTTPError. Trace: {error}."
         )
-        if isinstance(req, Response):
-            http_error_details = {
-                "status": req.status_code,
-                "headers": req.headers,
-                "body": req.content,
-            }
+        if isinstance(response := error.response, Response):
+            # body can be a whole HTML page: truncate it
             logger.error(
-                f"Addtional details grabbed from HTTP response: {http_error_details}"
+                "Additional details grabbed from HTTP response: "
+                f"status={response.status_code} {response.reason}, "
+                f"content-type={response.headers.get('Content-Type')}, "
+                f"body (first {HTTP_ERROR_BODY_MAX_LOGGED_BYTES} bytes)="
+                f"{response.content[:HTTP_ERROR_BODY_MAX_LOGGED_BYTES]!r}"
+            )
+            # cookies can hold session tokens
+            logger.debug(
+                "HTTP response headers: "
+                f"{ {k: v for k, v in response.headers.items() if k.lower() != 'set-cookie'} }"
             )
 
-        raise error
+        raise
+    except requests_exceptions.SSLError as error:
+        # subclass of ConnectionError: must be caught before it
+        logger.error(
+            f"Downloading {remote_url_to_download} to {local_file_path} failed. "
+            f"Cause: SSL/TLS error. Trace: {error}. Hint: behind a TLS-inspecting "
+            "proxy, set QDT_SSL_USE_SYSTEM_STORES=true to rely on the operating "
+            "system certificates stores, or REQUESTS_CA_BUNDLE to a CA bundle "
+            "including the organization root certificate."
+        )
+        raise
+    except requests_exceptions.ProxyError as error:
+        # subclass of ConnectionError: must be caught before it
+        logger.error(
+            f"Downloading {remote_url_to_download} to {local_file_path} failed. "
+            f"Cause: proxy error. Trace: {error}. Hint: check QDT_PROXY_HTTP, "
+            "QDT_PAC_FILE or the system proxy settings, including credentials."
+        )
+        raise
+    except requests_exceptions.Timeout as error:
+        logger.error(
+            f"Downloading {remote_url_to_download} to {local_file_path} failed. "
+            f"Cause: timeout ({timeout=}). Trace: {error}"
+        )
+        raise
     except requests_exceptions.ConnectionError as error:
         logger.error(
             f"Downloading {remote_url_to_download} to {local_file_path} failed. "
             f"Cause: ConnectionError. Trace: {error}"
         )
         raise error
-    except Exception as error:
-        logger.error(
+    except Exception:
+        logger.exception(
             f"Downloading {remote_url_to_download} to {local_file_path} failed. "
-            f"Cause: Unknown error. Trace: {error}",
-            stack_info=True,
+            "Cause: Unknown error."
         )
-        raise error
+        raise
 
     return local_file_path

@@ -40,6 +40,7 @@ from qgis_deployment_toolbelt.commands.cmd_rules_context import (
 from qgis_deployment_toolbelt.commands.deployment import parser_main_deployment
 from qgis_deployment_toolbelt.commands.upgrade import parser_upgrade
 from qgis_deployment_toolbelt.constants import get_qdt_logs_folder
+from qgis_deployment_toolbelt.utils.bouncer import exit_cli_error
 from qgis_deployment_toolbelt.utils.journalizer import configure_logger
 
 
@@ -293,7 +294,10 @@ def main(in_args: list[str] | None = None):
 
     # -- RUN LOGIC --
     if hasattr(args, "func"):
-        args.func(args)
+        try:
+            args.func(args)
+        except Exception as err:
+            exit_cli_error(err, exc_info=True)
 
 
 # #############################################################################

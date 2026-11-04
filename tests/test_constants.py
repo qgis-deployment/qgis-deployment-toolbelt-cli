@@ -18,6 +18,7 @@ from os import environ, getenv, unsetenv
 from os.path import expandvars
 from pathlib import Path
 from sys import platform as opersys
+from unittest.mock import patch
 
 # project
 from qgis_deployment_toolbelt.constants import (
@@ -159,6 +160,22 @@ class TestConstants(unittest.TestCase):
         )
 
         environ.pop("QDT_QGIS_EXE_PATH")
+
+    def test_get_qgis_bin_path_with_env_var_malformed_dict(self):
+        """Test that a malformed dictionary in QDT_QGIS_EXE_PATH is reported as a
+        warning (likely an admin typo) and not interpreted as a dictionary."""
+        os_config = OSConfiguration.from_opersys()
+        # unquoted value: SyntaxError; function call: ValueError
+        for malformed in ("{'linux': /usr/bin/qgis}", "{'linux': f(1)}"):
+            with (
+                self.subTest(value=malformed),
+                patch.dict(environ, {"QDT_QGIS_EXE_PATH": malformed}),
+                self.assertLogs(
+                    logger="qgis_deployment_toolbelt.constants", level="WARNING"
+                ) as logs,
+            ):
+                self.assertFalse(os_config._is_envvar_qgis_exe_path_a_dict())
+            self.assertIn("QDT_QGIS_EXE_PATH", logs.output[0])
 
     def test_get_qgis_profiles_folder_custom(self):
         """Test QGIS profiles path folder."""
