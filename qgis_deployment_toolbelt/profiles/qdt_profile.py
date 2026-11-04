@@ -67,6 +67,7 @@ class QdtProfile:
         self,
         alias: str | None = None,
         author: str | None = None,
+        deprecated: bool = False,
         description: str | None = None,
         email: str | None = None,
         folder: Path | None = None,
@@ -99,6 +100,7 @@ class QdtProfile:
         # default values for attributes/properties that can be get/set
         self._alias = None
         self._author = None
+        self._deprecated = False
         self._description = None
         self._email = None
         self._folder = None
@@ -119,6 +121,7 @@ class QdtProfile:
             self._alias = alias
         if author:
             self._author = author
+        self._deprecated = deprecated
         if description:
             self._description = description
         if email:
@@ -217,6 +220,15 @@ class QdtProfile:
             return self._folder.resolve()
         else:
             return self._folder
+
+    @property
+    def is_deprecated(self) -> bool:
+        """Tells if the profile is flagged as deprecated in its profile.json.
+
+        Returns:
+            bool: True if the profile is flagged as deprecated. False by default.
+        """
+        return self._deprecated
 
     @property
     def is_loaded_from_json(self) -> bool:

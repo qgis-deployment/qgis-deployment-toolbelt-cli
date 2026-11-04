@@ -12,6 +12,11 @@
             "description": "Name of profile author and maintainer.",
             "type": "string"
         },
+        "deprecated": {
+            "default": false,
+            "description": "If true, the profile is not deployed anymore. A profile already installed on the end-user machines is not removed by QDT.",
+            "type": "boolean"
+        },
         "description": {
             "description": "Profile description.",
             "type": "string"

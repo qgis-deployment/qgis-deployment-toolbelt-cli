@@ -218,6 +218,28 @@ class GenericJob(ABC):
             start_parent_folder=self.qgis_profiles_path, quiet=quiet
         )
 
+    def read_profiles_folder(self, start_parent_folder: Path) -> tuple[QdtProfile, ...]:
+        """Read a folder structure to list every QGIS profile handled by QDT,
+            without applying any of the deployment filters (QDT version,
+            deprecation, deployment rules).
+
+        Args:
+            start_parent_folder (Path): root directory to scan for profile.json
+                files.
+
+        Returns:
+            tuple[QdtProfile, ...]: tuple of profiles objects found under the
+                folder. Empty if the folder does not exist or contains no profile.
+        """
+        if not start_parent_folder.is_dir():
+            logger.debug(f"Folder to scan does not exist: {start_parent_folder}")
+            return ()
+
+        return tuple(
+            QdtProfile.from_json(profile_json_path=f, profile_folder=f.parent)
+            for f in start_parent_folder.glob("**/profile.json")
+        )
+
     def filter_profiles_folder(
         self, start_parent_folder: Path, cached: bool = True, quiet: bool = False
     ) -> tuple[QdtProfile, ...] | None:
@@ -243,10 +265,9 @@ class GenericJob(ABC):
             return self.PROFILES_FOLDER_CACHE[start_parent_folder]
 
         # first, try to get folders containing a profile.json
-        li_qgis_qdt_profiles: list[QdtProfile] = [
-            QdtProfile.from_json(profile_json_path=f, profile_folder=f.parent)
-            for f in start_parent_folder.glob("**/profile.json")
-        ]
+        li_qgis_qdt_profiles: list[QdtProfile] = list(
+            self.read_profiles_folder(start_parent_folder=start_parent_folder)
+        )
 
         if not len(li_qgis_qdt_profiles):
             log_method = logger.debug if quiet else logger.error
@@ -273,9 +294,24 @@ class GenericJob(ABC):
             self.PROFILES_FOLDER_CACHE[start_parent_folder] = None
             return
 
+        # filter out profiles flagged as deprecated
+        profiles_active, profiles_deprecated = self.filter_profiles_on_deprecated_flag(
+            tup_qdt_profiles=tuple(profiles_version_ok)
+        )
+        if profiles_deprecated:
+            logger.info(
+                f"{len(profiles_deprecated)} profile(s) flagged as deprecated won't "
+                f"be deployed: {', '.join(p.name for p in profiles_deprecated)}"
+            )
+
+        if not profiles_active:
+            logger.warning("No profile left to deploy once deprecated ones excluded.")
+            self.PROFILES_FOLDER_CACHE[start_parent_folder] = None
+            return
+
         # filter out profiles that do not match the rules
         profiles_matched, profiles_unmatched = self.filter_profiles_on_rules(
-            tup_qdt_profiles=tuple(profiles_version_ok)
+            tup_qdt_profiles=tuple(profiles_active)
         )
 
         if not len(profiles_matched):
@@ -326,6 +362,30 @@ class GenericJob(ABC):
             f"Downloaded profile matched: {qdt_profile.name} from {qdt_profile.folder}"
         )
         return qdt_profile
+
+    # -- Filtering profiles lists --
+    def filter_profiles_on_deprecated_flag(
+        self, tup_qdt_profiles: tuple[QdtProfile, ...]
+    ) -> tuple[list[QdtProfile], list[QdtProfile]]:
+        """Evaluate profiles against their optional `deprecated` attribute.
+
+        Args:
+            tup_qdt_profiles (tuple[QdtProfile, ...]): input tuple of QDT profiles
+
+        Returns:
+            tuple[list[QdtProfile], list[QdtProfile]]: tuple of profiles that are
+            active (not deprecated) and those which are deprecated
+        """
+        li_profiles_active: list[QdtProfile] = []
+        li_profiles_deprecated: list[QdtProfile] = []
+
+        for profile in tup_qdt_profiles:
+            if profile.is_deprecated:
+                li_profiles_deprecated.append(profile)
+            else:
+                li_profiles_active.append(profile)
+
+        return li_profiles_active, li_profiles_deprecated
 
     def filter_profiles_on_qdt_version(
         self, tup_qdt_profiles: tuple[QdtProfile, ...]

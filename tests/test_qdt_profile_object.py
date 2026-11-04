@@ -149,6 +149,33 @@ class TestQdtProfile(unittest.TestCase):
                 self.assertTrue(is_compatible)
                 self.assertIsNone(error_message)
 
+    # -- Deprecation -------------------------------------------------------------
+    def test_profile_deprecated_from_json(self):
+        """Test deprecated attribute when set to true in the profile.json."""
+        qdt_profile = QdtProfile.from_json(
+            profile_json_path=Path(
+                "tests/fixtures/profiles/good_profile_deprecated.json"
+            )
+        )
+        self.assertTrue(qdt_profile.is_deprecated)
+
+    def test_profile_deprecated_absent(self):
+        """Test deprecated attribute when it's not set: profile is not
+        deprecated."""
+        qdt_profile = QdtProfile.from_json(
+            profile_json_path=Path("tests/fixtures/profiles/good_profile_minimal.json")
+        )
+        self.assertFalse(qdt_profile.is_deprecated)
+        self.assertFalse(QdtProfile(name="unit_test", version="1.0.0").is_deprecated)
+        self.assertFalse(QdtProfile(deprecated=False).is_deprecated)
+
+    def test_profile_deprecated_requires_boolean(self):
+        """Only a real boolean flags a profile as deprecated, to never trigger a
+        removal from a typo."""
+        for value in ("true", "yes", 1):
+            with self.subTest(value=value):
+                self.assertFalse(QdtProfile(deprecated=value).is_deprecated)
+
     # -- QGIS major version detection --------------------------------------------
     def test_profile_qgis_version_major_from_installed_path(self):
         """QGIS major version is deduced from the QGIS versioned parent folder."""
