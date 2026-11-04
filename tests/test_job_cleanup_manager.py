@@ -169,6 +169,19 @@ class TestJobCleanupManager(unittest.TestCase):
 
             self.assertEqual(self._run_profiles_deprecated(tmp_dir), [])
 
+    def test_cleanup_profiles_deprecated_ignores_profile_not_deployed_by_qdt(self):
+        """An installed folder without profile.json (typically created from QGIS) is kept,
+        even if its name matches a deprecated profile."""
+        with tempfile.TemporaryDirectory(prefix="QDT_test_cleanup_") as tmp_dir:
+            self._make_installed_profile(
+                Path(tmp_dir, "downloaded/repo/old"), "old", True
+            )
+            manual = Path(tmp_dir, "profiles/old")
+            manual.mkdir(parents=True)
+
+            self.assertEqual(self._run_profiles_deprecated(tmp_dir), [])
+            self.assertTrue(manual.is_dir())
+
     def test_cleanup_profiles_deprecated_stays_within_profiles_folder(self):
         """A profile name escaping the QGIS profiles folder must be ignored."""
         with tempfile.TemporaryDirectory(prefix="QDT_test_cleanup_") as tmp_dir:
