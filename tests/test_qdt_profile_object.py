@@ -235,6 +235,85 @@ class TestQdtProfile(unittest.TestCase):
         self.assertIsNone(unbounded_profile.qgis_minimum_version)
         self.assertIsNone(unbounded_profile.qgis_maximum_version)
 
+    def test_profile_qgis_version_compatible(self):
+        """Inclusive bounds, a missing bound means no limit on this side."""
+        cases = (
+            # (qgisMinimumVersion, qgisMaximumVersion, targeted version, expected)
+            (None, None, "3.40.5", True),
+            ("3.34.0", "3.44.99", "3.34.0", True),
+            ("3.34.0", "3.44.99", "3.44.99", True),
+            ("3.34.0", "3.44.99", "3.28.15", False),
+            ("3.34.0", "3.44.99", "4.0.0", False),
+            ("3.34.0", None, "4.2.1", True),
+            (None, "4.22.99", "3.10.0", True),
+            (None, "3.44.99", "4.0.0", False),
+            ("3.40", None, "3.40.0", True),
+        )
+        for min_version, max_version, target, expected in cases:
+            with self.subTest(min=min_version, max=max_version, target=target):
+                qdt_profile = QdtProfile(
+                    name="unit_test",
+                    qgis_minimum_version=min_version,
+                    qgis_maximum_version=max_version,
+                )
+                is_compatible, message = qdt_profile.is_qgis_version_compatible(
+                    qgis_version=target
+                )
+                self.assertIs(is_compatible, expected)
+                if expected:
+                    self.assertIsNone(message)
+                else:
+                    self.assertIn(target, message)
+
+    def test_profile_qgis_version_compatible_short_max_bound_hint(self):
+        """A 'X.Y' upper bound is read as 'X.Y.0': strict but with a corrective hint
+        only when it is the cause of the exclusion."""
+        logger_name = "qgis_deployment_toolbelt.profiles.qdt_profile"
+        for max_version, target, expected_hint in (
+            ("3.30", "3.30.2", "'3.30.99'"),
+            ("4", "4.2.0", "'4.99.99'"),
+        ):
+            with self.subTest(max=max_version, target=target):
+                qdt_profile = QdtProfile(
+                    name="unit_test", qgis_maximum_version=max_version
+                )
+                with self.assertLogs(logger_name, level="WARNING") as logs:
+                    is_compatible, _ = qdt_profile.is_qgis_version_compatible(
+                        qgis_version=target
+                    )
+                self.assertIs(is_compatible, False)
+                self.assertIn(expected_hint, logs.output[0])
+
+        # no hint when the short bound is not the cause, or when the bound is X.Y.Z
+        for max_version, target in (("3.30", "3.40.5"), ("3.30.0", "3.30.2")):
+            with self.subTest(max=max_version, target=target):
+                qdt_profile = QdtProfile(
+                    name="unit_test", qgis_maximum_version=max_version
+                )
+                with self.assertNoLogs(logger_name, level="WARNING"):
+                    is_compatible, _ = qdt_profile.is_qgis_version_compatible(
+                        qgis_version=target
+                    )
+                self.assertIs(is_compatible, False)
+
+    def test_profile_qgis_version_compatible_invalid(self):
+        """Unparsable bound or targeted version: comparison is not performed."""
+        cases = (
+            # (qgisMinimumVersion, targeted version)
+            ("3.x", "3.40.5"),
+            ("3.34.0", "unknown"),
+        )
+        for min_version, target in cases:
+            with self.subTest(min=min_version, target=target):
+                qdt_profile = QdtProfile(
+                    name="unit_test", qgis_minimum_version=min_version
+                )
+                is_compatible, message = qdt_profile.is_qgis_version_compatible(
+                    qgis_version=target
+                )
+                self.assertIsNone(is_compatible)
+                self.assertIn("unit_test", message)
+
     # -- QGIS settings file (QGIS3.ini, QGIS4.ini...) -----------------------------
     @staticmethod
     def _make_profile_with_ini(
