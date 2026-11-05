@@ -1,68 +1,148 @@
 bug:
-    - head-branch:
-          - ^fix
-          - fix
-          - ^hotfix
-          - hotfix
+  - head-branch:
+      - ^fix
+      - fix
+      - ^hotfix
+      - hotfix
 
 ci-cd:
-    - changed-files:
-          - any-glob-to-any-file:
-                - .github/**
-
-dependencies:
-    - changed-files:
-          - any-glob-to-any-file:
-                - pyproject.toml
+  - changed-files:
+      - any-glob-to-any-file:
+          - .github/**
 
 documentation:
-    - changed-files:
-          - any-glob-to-any-file:
-                - "*.md"
-                - docs/**
-                - examples/**
-                - scripts/*.ps1
-    - head-branch:
-          - ^docs
-          - documentation
+  - changed-files:
+      - any-glob-to-any-file:
+          - "*.md"
+          - docs/**
+          - examples/**
+          - scripts/*.ps1
+  - head-branch:
+      - ^docs
+      - documentation
 
 enhancement:
-    - head-branch:
-          - ^feature
-          - feature
-          - ^improve
-          - improve
-
-jobs:
-    - changed-files:
-          - any-glob-to-any-file:
-                - qgis_deployment_toolbelt/jobs/**/*
+  - head-branch:
+      - ^feature
+      - feature
+      - ^improve
+      - improve
 
 packaging:
-    - changed-files:
-          - any-glob-to-any-file:
-                - .dockerignore
-                - builder/**/*
-                - Dockerfile
-                - pyproject.toml
-                - .dockerignore
-    - head-branch:
-          - ^packaging
-          - packaging
+  - changed-files:
+      - any-glob-to-any-file:
+          - .dockerignore
+          - builder/**/*
+          - Dockerfile
+          - .dockerignore
+          - qgis_deployment_toolbelt/utils/frozen_app.py
+  - head-branch:
+      - ^packaging
+      - packaging
 
 quality:
-    - changed-files:
-          - any-glob-to-any-file:
-                - tests/**/*
+  - changed-files:
+      - any-glob-to-any-file:
+          - tests/**/*
 
 tooling:
-    - changed-files:
-          - any-glob-to-any-file:
-                - ".*"
-                - codecov.yml
-                - pyproject.toml
-                - sonar-project.properties
-                - .vscode/**/*
-    - head-branch:
-          - ^tooling
-          - tooling
+  - changed-files:
+      - any-glob-to-any-file:
+          - ".*"
+          - codecov.yml
+          - pyproject.toml
+          - sonar-project.properties
+          - .vscode/**/*
+  - head-branch:
+      - ^tooling
+      - tooling
+
+# Scopes
+"scope: logging":
+  - changed-files:
+      - any-glob-to-any-file:
+          - qgis_deployment_toolbelt/utils/journalizer.py
+
+"scope: jobs":
+  - changed-files:
+      - any-glob-to-any-file:
+          - qgis_deployment_toolbelt/jobs/generic_job.py
+          - qgis_deployment_toolbelt/jobs/orchestrator.py
+
+"scope:job: cleanup-manager":
+  - changed-files:
+      - any-glob-to-any-file:
+          - qgis_deployment_toolbelt/reports.py
+          - qgis_deployment_toolbelt/commands/cmd_cleanup.py
+          - qgis_deployment_toolbelt/jobs/job_cleanup_manager.py
+          - qgis_deployment_toolbelt/utils/trash_or_delete.py
+
+"scope:job: default-profile-setter":
+  - changed-files:
+      - any-glob-to-any-file:
+          - qgis_deployment_toolbelt/jobs/job_default_profile_setter.py
+
+"scope:job: environment-variables-manager":
+  - changed-files:
+      - any-glob-to-any-file:
+          - qgis_deployment_toolbelt/jobs/job_environment_variables.py
+          - qgis_deployment_toolbelt/utils/os_utils_router.py
+
+"scope:job: plugins-downloader":
+  - changed-files:
+      - any-glob-to-any-file:
+          - qgis_deployment_toolbelt/jobs/job_plugins_downloader.py
+
+"scope:job: plugins-synchronizer":
+  - changed-files:
+      - any-glob-to-any-file:
+          - qgis_deployment_toolbelt/jobs/job_plugins_synchronizer.py
+          - qgis_deployment_toolbelt/plugins/manifest.py
+
+"scope:job: profiles-downloader":
+  - changed-files:
+      - any-glob-to-any-file:
+          - qgis_deployment_toolbelt/jobs/job_profiles_downloader.py
+          - qgis_deployment_toolbelt/profiles/local_git_handler.py
+          - qgis_deployment_toolbelt/profiles/profiles_handler_base.py
+          - qgis_deployment_toolbelt/profiles/remote_git_handler.py
+          - qgis_deployment_toolbelt/profiles/remote_http_handler.py
+          - qgis_deployment_toolbelt/utils/tree_files_reader.py
+
+"scope:job: profiles-synchronizer":
+  - changed-files:
+      - any-glob-to-any-file:
+          - qgis_deployment_toolbelt/jobs/job_profiles_synchronizer.py
+          - qgis_deployment_toolbelt/profiles/qdt_profile.py
+          - qgis_deployment_toolbelt/profiles/qgis_customization_xml_handler.py
+          - qgis_deployment_toolbelt/profiles/qgis_ini_handler.py
+          - qgis_deployment_toolbelt/profiles/rules_context.py
+
+"scope:job: qgis-installation-finder":
+  - changed-files:
+      - any-glob-to-any-file:
+          - qgis_deployment_toolbelt/jobs/job_qgis_installation_finder.py
+
+"scope:job: shortcuts-manager":
+  - changed-files:
+      - any-glob-to-any-file:
+          - qgis_deployment_toolbelt/jobs/job_shortcuts.py
+          - qgis_deployment_toolbelt/shortcuts/*
+
+"scope:job: splash-screen-manager":
+  - changed-files:
+      - any-glob-to-any-file:
+          - qgis_deployment_toolbelt/jobs/job_splash_screen.py
+          - qgis_deployment_toolbelt/shortcuts/*
+          - qgis_deployment_toolbelt/utils/check_image_size.py
+
+"scope: rules":
+  - changed-files:
+      - any-glob-to-any-file:
+          - qgis_deployment_toolbelt/commands/cmd_rules_context.py
+          - qgis_deployment_toolbelt/profiles/rules_context.py
+
+"scope: scenario":
+  - changed-files:
+      - any-glob-to-any-file:
+          - qgis_deployment_toolbelt/scenarios/*
