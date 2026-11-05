@@ -146,7 +146,7 @@ class JobQgisInstallationFinder(GenericJob):
                 f"The detected QGIS version '{version_str}' is different from the one "
                 "defined before in the environment variable "
                 f"{ENV_VAR_QGIS_VERSION}={getenv(ENV_VAR_QGIS_VERSION)}. "
-                "clearing the cache of profiles."
+                "Clearing the cache of profiles."
             )
             self.clear_profiles_cache()
 

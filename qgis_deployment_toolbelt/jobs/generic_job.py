@@ -317,7 +317,7 @@ class GenericJob(ABC):
         if not profiles_compatible_qgis:
             logger.warning(
                 f"None of the {len(profiles_active)} profiles are compatible "
-                "with the taregted QGIS version."
+                "with the targeted QGIS version."
             )
             self.PROFILES_FOLDER_CACHE[start_parent_folder] = None
             return
