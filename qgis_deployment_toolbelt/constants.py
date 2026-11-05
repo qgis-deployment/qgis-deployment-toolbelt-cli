@@ -45,7 +45,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # defaults
-CleanupScopes = Literal["plugins_cache", "plugins_installed"]
+CleanupScopes = Literal["plugins_cache", "plugins_installed", "profiles_deprecated"]
 DEFAULT_CLEANUP_SCOPES: list[CleanupScopes] = ["plugins_cache"]
 
 DeletionPolicy = Literal["force_delete", "trash_only", "trash_or_delete"]

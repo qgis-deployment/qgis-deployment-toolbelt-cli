@@ -42,6 +42,20 @@ class TestJobCleanupManager(unittest.TestCase):
         profile.os_config.qgis_profiles_path = qgis_profiles_path
         return profile
 
+    @staticmethod
+    def _make_installed_profile(
+        profile_folder: Path, name: str, deprecated: bool | None = None
+    ) -> Path:
+        """Create a profile folder with a profile.json in it."""
+        profile_folder.mkdir(parents=True, exist_ok=True)
+        profile_data: dict = {"name": name, "version": "1.0.0"}
+        if deprecated is not None:
+            profile_data["deprecated"] = deprecated
+        profile_folder.joinpath("profile.json").write_text(
+            json.dumps(profile_data), encoding="UTF-8"
+        )
+        return profile_folder
+
     def test_run_dispatches_scopes(self):
         """Run must dispatch cleanup methods according to requested scopes."""
         with patch.object(JobCleanupManager, "cleanup_plugins_cache") as mock_cache:
@@ -118,3 +132,65 @@ class TestJobCleanupManager(unittest.TestCase):
 
             self.assertIn(stale_plugin_folder, report.removed)
             self.assertNotIn(keep_plugin_folder, report.removed)
+
+    def _run_profiles_deprecated(self, tmp_dir: str) -> list[Path]:
+        """Run the job in dry-run mode on the 'profiles_deprecated' scope only."""
+        job = JobCleanupManager(
+            options={"dry_run": True, "scopes": ["profiles_deprecated"]}
+        )
+        job.qgis_profiles_path = Path(tmp_dir, "profiles")
+        job.qdt_downloaded_repositories = Path(tmp_dir, "downloaded")
+        return job.run().removed
+
+    def test_cleanup_profiles_deprecated(self):
+        """Only installed profiles deprecated in the downloaded repositories are
+        selected, and nothing is removed in dry-run mode."""
+        with tempfile.TemporaryDirectory(prefix="QDT_test_cleanup_") as tmp_dir:
+            profiles = Path(tmp_dir, "profiles")
+            downloaded = Path(tmp_dir, "downloaded/repo")
+            for name, deprecated in (("old", True), ("kept", None), ("gone", True)):
+                self._make_installed_profile(downloaded / name, name, deprecated)
+            # installed copies never carry the flag: deprecated ones aren't synced
+            for name in ("old", "kept", "manual"):
+                self._make_installed_profile(profiles / name, name)
+
+            removed = self._run_profiles_deprecated(tmp_dir)
+
+            self.assertEqual(removed, [profiles / "old"])
+            self.assertTrue(profiles.joinpath("old").is_dir())
+
+    def test_cleanup_profiles_deprecated_keeps_profile_active_elsewhere(self):
+        """A profile deprecated in a repository but active in another one is kept."""
+        with tempfile.TemporaryDirectory(prefix="QDT_test_cleanup_") as tmp_dir:
+            downloaded = Path(tmp_dir, "downloaded")
+            self._make_installed_profile(Path(tmp_dir, "profiles/dup"), "dup")
+            self._make_installed_profile(downloaded / "repo_a/dup", "dup", True)
+            self._make_installed_profile(downloaded / "repo_b/dup", "dup", False)
+
+            self.assertEqual(self._run_profiles_deprecated(tmp_dir), [])
+
+    def test_cleanup_profiles_deprecated_ignores_profile_not_deployed_by_qdt(self):
+        """An installed folder without profile.json (typically created from QGIS) is kept,
+        even if its name matches a deprecated profile."""
+        with tempfile.TemporaryDirectory(prefix="QDT_test_cleanup_") as tmp_dir:
+            self._make_installed_profile(
+                Path(tmp_dir, "downloaded/repo/old"), "old", True
+            )
+            manual = Path(tmp_dir, "profiles/old")
+            manual.mkdir(parents=True)
+
+            self.assertEqual(self._run_profiles_deprecated(tmp_dir), [])
+            self.assertTrue(manual.is_dir())
+
+    def test_cleanup_profiles_deprecated_stays_within_profiles_folder(self):
+        """A profile name escaping the QGIS profiles folder must be ignored."""
+        with tempfile.TemporaryDirectory(prefix="QDT_test_cleanup_") as tmp_dir:
+            Path(tmp_dir, "profiles").mkdir()
+            outside = Path(tmp_dir, "outside")
+            outside.mkdir()
+            self._make_installed_profile(
+                Path(tmp_dir, "downloaded/repo/evil"), "../outside", True
+            )
+
+            self.assertEqual(self._run_profiles_deprecated(tmp_dir), [])
+            self.assertTrue(outside.is_dir())
