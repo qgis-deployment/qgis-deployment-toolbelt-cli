@@ -456,6 +456,78 @@ class QdtProfile:
 
         return True, None
 
+    def is_qgis_version_compatible(
+        self, qgis_version: str
+    ) -> tuple[bool | None, str | None]:
+        """Check if the targeted QGIS version is within this profile's
+        `qgisMinimumVersion` and `qgisMaximumVersion` attributes (if set).
+
+        Versions are compared with `packaging.version.Version`: a `X.Y` bound is read
+        as `X.Y.0`. A missing bound means no limit on this side.
+
+        Args:
+            qgis_version (str): targeted QGIS version, typically `3.40.5`.
+
+        Returns:
+            tuple[bool | None, str | None]: a tuple with a boolean (True if the
+                targeted QGIS version is compatible, False if it's out of bounds,
+                None if the comparison could not be performed) and an explicit
+                message (None if compatible).
+        """
+        # if no versions set in profile.json, YOLO!
+        if not self.qgis_minimum_version and not self.qgis_maximum_version:
+            return True, None
+
+        try:
+            target_version = Version(str(qgis_version))
+            min_version = (
+                Version(str(self.qgis_minimum_version))
+                if self.qgis_minimum_version
+                else None
+            )
+            max_version = (
+                Version(str(self.qgis_maximum_version))
+                if self.qgis_maximum_version
+                else None
+            )
+        except InvalidVersion as err:
+            return (
+                None,
+                f"Unable to check if profile '{self.name}' is compatible with QGIS "
+                f"{qgis_version}. Trace: {err}",
+            )
+
+        if min_version is not None and target_version < min_version:
+            return (
+                False,
+                f"Profile '{self.name}' requires QGIS >= {self.qgis_minimum_version}, "
+                f"but the targeted version is {target_version}.",
+            )
+
+        if max_version is not None and target_version > max_version:
+            # 'X.Y' = 'X.Y.0'
+            missing_segments = 3 - len(max_version.release)
+            if (
+                missing_segments > 0
+                and target_version.release[: len(max_version.release)]
+                == max_version.release
+            ):
+                logger.warning(
+                    f"Profile '{self.name}': qgisMaximumVersion "
+                    f"'{self.qgis_maximum_version}' is read as "
+                    f"'{max_version}{'.0' * missing_segments}', so it excludes QGIS "
+                    f"{target_version}. To include every {max_version}.x release, set "
+                    f"it to '{max_version}{'.99' * missing_segments}' (expected "
+                    "format: X.Y.Z)."
+                )
+            return (
+                False,
+                f"Profile '{self.name}' requires QGIS <= {self.qgis_maximum_version}, "
+                f"but the targeted version is {target_version}.",
+            )
+
+        return True, None
+
     def is_older_than(self, version_to_compare: str | QdtProfile) -> bool | None:
         """Determine if the actual object version is older than the given version to
             compare.
