@@ -141,6 +141,15 @@ class JobQgisInstallationFinder(GenericJob):
         Args:
             version_str (str): QGIS version, typically a SemVer string like `3.40.1`.
         """
+        if getenv(ENV_VAR_QGIS_VERSION) != version_str:
+            logger.debug(
+                f"The detected QGIS version '{version_str}' is different from the one "
+                "defined before in the environment variable "
+                f"{ENV_VAR_QGIS_VERSION}={getenv(ENV_VAR_QGIS_VERSION)}. "
+                "clearing the cache of profiles."
+            )
+            self.clear_profiles_cache()
+
         logger.debug(f"{self.ID}: {ENV_VAR_QGIS_VERSION} is now {version_str}")
         os.environ[ENV_VAR_QGIS_VERSION] = version_str
 

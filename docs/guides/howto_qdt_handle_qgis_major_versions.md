@@ -55,6 +55,17 @@ When QGIS 3 and QGIS 4 are installed side by side, the most recent one wins by d
 
 Or, without editing the scenario, with the `QDT_PREFERRED_QGIS_VERSION` environment variable.
 
+## Deploying a profile only on compatible QGIS versions
+
+> Added in version 0.49
+
+A profile can declare the QGIS versions it supports through its [`qgisMinimumVersion`](../reference/qdt_profile.md#qgisminimumversion) and [`qgisMaximumVersion`](../reference/qdt_profile.md#qgismaximumversion) attributes.
+
+Every job ignores the profiles whose bounds exclude the QGIS version detected by the `qgis-installation-finder` job (`QDT_QGIS_VERSION`), as it does with deprecated profiles or profiles requiring a newer QDT version:
+
+- if the targeted QGIS version is unknown (`qgis-installation-finder` job missing or QGIS not found), profiles are not filtered
+- an installed profile which is out of bounds (after a QGIS upgrade for example) is left as is: it is neither updated nor removed anymore.
+
 ## Migrating profiles authored for QGIS 3
 
 A profile shipping a `QGIS/QGIS3.ini` file deployed on a machine running QGIS 4 keeps working: QDT renames the file to `QGIS/QGIS4.ini` when installing the profile, so the settings it carries are not silently ignored by QGIS 4.
