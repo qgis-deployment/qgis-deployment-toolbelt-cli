@@ -217,7 +217,7 @@ convention = "google"
 qgis_deployment_toolbelt = ["shortcuts/*.template"]
 
 [tool.setuptools.packages.find]
-include = ["qgis_deployment_toolbelt"]
+include = ["qgis_deployment_toolbelt", "qgis_deployment_toolbelt.*"]
 namespaces = false
 where = ["."]
 
