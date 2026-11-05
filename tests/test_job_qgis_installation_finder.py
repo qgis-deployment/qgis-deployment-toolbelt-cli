@@ -18,6 +18,7 @@
 import subprocess
 import unittest
 from os import environ
+from pathlib import Path
 from unittest.mock import patch
 
 # package
@@ -370,6 +371,23 @@ class TestJobQgisInstallationFinder(unittest.TestCase):
             job.run()
 
         self.assertEqual(environ.get(ENV_VAR_QGIS_VERSION), "3.28.15")
+
+    def test_export_qgis_version_clears_profiles_cache_on_change(self):
+        """Profiles listed before the QGIS version is known must be listed again."""
+        job = JobQgisInstallationFinder(options={})
+        with (
+            patch.dict(environ),
+            patch.dict(job.PROFILES_FOLDER_CACHE, clear=True),
+        ):
+            environ.pop(ENV_VAR_QGIS_VERSION, None)
+            job.PROFILES_FOLDER_CACHE[Path("/path/to/profiles")] = None
+            job._export_qgis_version("4.0.1")
+            self.assertEqual(job.PROFILES_FOLDER_CACHE, {})
+
+            # same version exported again: cache is kept
+            job.PROFILES_FOLDER_CACHE[Path("/path/to/profiles")] = None
+            job._export_qgis_version("4.0.1")
+            self.assertIn(Path("/path/to/profiles"), job.PROFILES_FOLDER_CACHE)
 
     def test_run_does_not_export_version_when_undetectable(self):
         """No version is exported when the skip branch could not detect one."""
