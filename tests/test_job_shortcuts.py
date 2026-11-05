@@ -35,8 +35,8 @@ class TestJobShortcuts(unittest.TestCase):
     """Test shortcuts manager job."""
 
     def test_shortcut_not_created_for_not_installed_profile(self):
-        """A shortcut must only target a profile installed in QGIS, otherwise QGIS
-        creates an empty one at launch."""
+        """A shortcut must only target a profile installed by QDT (with its
+        profile.json), otherwise QGIS launches an empty or partial profile."""
         job = JobShortcutsManager(
             options={
                 "action": "create",
@@ -45,9 +45,24 @@ class TestJobShortcuts(unittest.TestCase):
         )
 
         with tempfile.TemporaryDirectory(prefix="QDT_test_shortcuts_") as tmp_dir:
-            for installed in (False, True):
+            installed_folder = Path(tmp_dir, "unit_test")
+            cases = (
+                # (state of the profile folder in QGIS, expected shortcuts created)
+                ("absent", 0),
+                # e.g. created by qplugins-synchronizer with profile_ref: downloaded
+                ("plugins_only", 0),
+                ("installed", 1),
+            )
+            for state, expected_shortcuts in cases:
+                if state == "plugins_only":
+                    installed_folder.joinpath("python/plugins").mkdir(parents=True)
+                elif state == "installed":
+                    installed_folder.joinpath("profile.json").write_text(
+                        '{"name": "unit_test"}', encoding="UTF-8"
+                    )
+
                 with (
-                    self.subTest(installed=installed),
+                    self.subTest(state=state),
                     patch.dict(environ, {"QGIS_CUSTOM_CONFIG_PATH": tmp_dir}),
                     patch(
                         "qgis_deployment_toolbelt.jobs.job_shortcuts.ApplicationShortcut"
@@ -57,18 +72,14 @@ class TestJobShortcuts(unittest.TestCase):
                         name="unit_test",
                         folder=Path(tmp_dir, "downloaded", "unit_test"),
                     )
-                    if installed:
-                        qdt_profile.path_in_qgis.mkdir(parents=True)
-                    self.assertEqual(
-                        qdt_profile.path_in_qgis, Path(tmp_dir, "unit_test")
-                    )
+                    self.assertEqual(qdt_profile.path_in_qgis, installed_folder)
 
                     with patch.object(
                         job, "list_downloaded_profiles", return_value=(qdt_profile,)
                     ):
                         job.run()
 
-                    self.assertEqual(mock_shortcut.call_count, int(installed))
+                    self.assertEqual(mock_shortcut.call_count, expected_shortcuts)
 
 
 # ############################################################################
