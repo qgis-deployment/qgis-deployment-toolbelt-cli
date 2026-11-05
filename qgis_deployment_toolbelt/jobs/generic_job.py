@@ -25,6 +25,7 @@ from python_rule_engine import RuleEngine
 
 # package
 from qgis_deployment_toolbelt.constants import (
+    ENV_VAR_QGIS_VERSION,
     OSConfiguration,
     get_qdt_working_directory,
 )
@@ -309,9 +310,21 @@ class GenericJob(ABC):
             self.PROFILES_FOLDER_CACHE[start_parent_folder] = None
             return
 
+        # filter out profiles incompatible with the targeted QGIS version
+        profiles_compatible_qgis, _ = self.filter_profiles_on_qgis_version(
+            tup_qdt_profiles=tuple(profiles_active)
+        )
+        if not profiles_compatible_qgis:
+            logger.warning(
+                f"None of the {len(profiles_active)} profiles are compatible "
+                "with the taregted QGIS version."
+            )
+            self.PROFILES_FOLDER_CACHE[start_parent_folder] = None
+            return
+
         # filter out profiles that do not match the rules
         profiles_matched, profiles_unmatched = self.filter_profiles_on_rules(
-            tup_qdt_profiles=tuple(profiles_active)
+            tup_qdt_profiles=tuple(profiles_compatible_qgis)
         )
 
         if not len(profiles_matched):
@@ -412,6 +425,51 @@ class GenericJob(ABC):
             # is_compatible is None: qdtMinVersion could not be parsed
             if is_compatible is None:
                 logger.warning(error_message)
+            li_profiles_compatible.append(profile)
+
+        return li_profiles_compatible, li_profiles_incompatible
+
+    def filter_profiles_on_qgis_version(
+        self, tup_qdt_profiles: tuple[QdtProfile, ...], qgis_version: str | None = None
+    ) -> tuple[list[QdtProfile], list[QdtProfile]]:
+        """Evaluate profiles against their optional `qgisMinimumVersion` and
+        `qgisMaximumVersion` attributes.
+
+        Args:
+            tup_qdt_profiles (tuple[QdtProfile, ...]): input tuple of QDT profiles
+            qgis_version (str | None, optional): targeted QGIS version. If None, the
+                `QDT_QGIS_VERSION` environment variable (set by the job
+                `qgis-installation-finder`) is used. Defaults to None.
+
+        Returns:
+            tuple[list[QdtProfile], list[QdtProfile]]: tuple of profiles that are
+            compatible with the targeted QGIS version (or could not be evaluated) and
+            those which are not
+        """
+        qgis_version = qgis_version or getenv(ENV_VAR_QGIS_VERSION)
+        if not qgis_version:
+            logger.info(
+                "Profiles are not filtered on their QGIS version bounds: the targeted "
+                f"QGIS version is unknown ('{ENV_VAR_QGIS_VERSION}' is not set). Run "
+                "the 'qgis-installation-finder' job first in the scenario."
+            )
+            return list(tup_qdt_profiles), []
+
+        li_profiles_compatible: list[QdtProfile] = []
+        li_profiles_incompatible: list[QdtProfile] = []
+
+        for profile in tup_qdt_profiles:
+            is_compatible, message = profile.is_qgis_version_compatible(
+                qgis_version=qgis_version
+            )
+            if is_compatible is False:
+                logger.info(f"{message} It won't be deployed.")
+                li_profiles_incompatible.append(profile)
+                continue
+
+            # is_compatible is None: a version could not be parsed
+            if is_compatible is None:
+                logger.warning(message)
             li_profiles_compatible.append(profile)
 
         return li_profiles_compatible, li_profiles_incompatible
