@@ -42,6 +42,18 @@ Profile's name in a human readable form, allowing special characters. Informativ
 
 Name of profile author and maintainer.
 
+### deprecated
+
+> Added in version 0.49
+
+| Optional  | Default |
+| :-------: | :-----: |
+| `yes`     | `false` |
+
+When it's set to `true`, the profile is not deployed anymore: it's excluded from every job dealing with profiles.
+
+A profile already installed on the end-user machines is not removed by QDT.
+
 ### description
 
 | Optional  | Default |
