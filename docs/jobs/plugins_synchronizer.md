@@ -44,7 +44,7 @@ Which `profile.json` file to use as reference.
 
 Possible_values:
 
-- `downloaded`: read plugins from the profiles downloaded by the running scenario (`repositories/<scenario id>` in the QDT working folder) before they are copied in to the user QGIS data. Profiles downloaded by other scenarios are ignored.
+- `downloaded`: read plugins from the profiles downloaded by the running scenario (`repositories/<scenario id>` in the QDT working folder) before they are copied in to the user QGIS data. Profiles downloaded by other scenarios are ignored, as well as profiles not installed yet. Make sure they exist, typically with running the [`qprofiles-synchronizer`](./profiles_synchronizer.md) job before.
 - `installed`: read plugins from the installed profiles (folders in user data QGIS3). Useful when using a scenario without the `qprofiles-manager` job. Be careful: if the end-user edits the profile.json file located directly into the QGIS profile folder to control the plugins synchronization.
 
 Default: `~/.cache/qgis-deployment-toolbelt/plugins`
