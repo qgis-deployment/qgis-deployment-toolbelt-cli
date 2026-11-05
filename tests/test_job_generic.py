@@ -18,10 +18,12 @@
 import json
 import tempfile
 import unittest
+from os import environ
 from pathlib import Path
 from unittest.mock import patch
 
 # package
+from qgis_deployment_toolbelt.constants import ENV_VAR_QGIS_VERSION
 from qgis_deployment_toolbelt.exceptions import (
     JobOptionBadNameError,
     JobOptionBadValueError,
@@ -131,9 +133,13 @@ class TestJobGeneric(unittest.TestCase):
                 dest_file.parent.mkdir(parents=True, exist_ok=True)
                 dest_file.write_text(p.read_text(encoding="UTF-8"), encoding="UTF-8")
 
-            filtered_profiles = self.generic_job.filter_profiles_folder(
-                start_parent_folder=tmp_folder_path
-            )
+            # fixtures declare QGIS version bounds: do not filter them on the QGIS
+            # version possibly set in the environment running the tests
+            with patch.dict(environ):
+                environ.pop(ENV_VAR_QGIS_VERSION, None)
+                filtered_profiles = self.generic_job.filter_profiles_folder(
+                    start_parent_folder=tmp_folder_path
+                )
 
             self.assertIsInstance(filtered_profiles, tuple)
             self.assertGreater(len(filtered_profiles), 0)
@@ -339,6 +345,73 @@ class TestJobGeneric(unittest.TestCase):
             ]
             self.assertIn("qdt_test_profile_minimal", all_names)
             self.assertIn("qdt_test_profile_deprecated", all_names)
+
+    def test_listing_profiles_folder_qgis_version_compatibility(self):
+        """Profiles out of their QGIS version bounds are filtered out, unless the
+        targeted QGIS version is unknown."""
+        profiles_bounds = {
+            "qgis3_only": {
+                "qgisMinimumVersion": "3.34.0",
+                "qgisMaximumVersion": "3.99.99",
+            },
+            "qgis4_onwards": {"qgisMinimumVersion": "4.0.0"},
+            "unbounded": {},
+        }
+        cases = (
+            # (QDT_QGIS_VERSION, expected profiles names)
+            ("3.40.5", ["qgis3_only", "unbounded"]),
+            ("4.0.1", ["qgis4_onwards", "unbounded"]),
+            (None, sorted(profiles_bounds)),
+            ("", sorted(profiles_bounds)),
+        )
+        with tempfile.TemporaryDirectory(prefix="QDT_test_qgis_bounds_") as tmp_dir:
+            profiles_folder = Path(tmp_dir, "profiles")
+            for name, bounds in profiles_bounds.items():
+                profiles_folder.joinpath(name).mkdir(parents=True)
+                profiles_folder.joinpath(name, "profile.json").write_text(
+                    json.dumps({"name": name, "version": "1.0.0", **bounds}),
+                    encoding="UTF-8",
+                )
+
+            for qgis_version, expected in cases:
+                with (
+                    self.subTest(qgis_version=qgis_version),
+                    patch.dict(GenericJob.PROFILES_FOLDER_CACHE, clear=True),
+                    patch.dict(environ),
+                ):
+                    environ.pop(ENV_VAR_QGIS_VERSION, None)
+                    if qgis_version is not None:
+                        environ[ENV_VAR_QGIS_VERSION] = qgis_version
+
+                    filtered_profiles = self.generic_job.filter_profiles_folder(
+                        start_parent_folder=profiles_folder
+                    )
+                    self.assertEqual(
+                        sorted(p.name for p in filtered_profiles), expected
+                    )
+
+    def test_listing_profiles_folder_none_compatible_with_qgis_version(self):
+        """When no profile is left once incompatible ones excluded, None is cached."""
+        with (
+            tempfile.TemporaryDirectory(prefix="QDT_test_qgis_bounds_") as tmp_dir,
+            patch.dict(GenericJob.PROFILES_FOLDER_CACHE, clear=True),
+            patch.dict(environ, {ENV_VAR_QGIS_VERSION: "3.40.5"}),
+        ):
+            profiles_folder = Path(tmp_dir, "profiles")
+            profiles_folder.joinpath("qgis4").mkdir(parents=True)
+            profiles_folder.joinpath("qgis4", "profile.json").write_text(
+                json.dumps(
+                    {"name": "qgis4", "version": "1.0.0", "qgisMinimumVersion": "4.0.0"}
+                ),
+                encoding="UTF-8",
+            )
+
+            self.assertIsNone(
+                self.generic_job.filter_profiles_folder(
+                    start_parent_folder=profiles_folder
+                )
+            )
+            self.assertIsNone(GenericJob.PROFILES_FOLDER_CACHE[profiles_folder])
 
     def test_get_matching_profile_from_name(self):
         """Test get_matching_profile_from_name method."""
