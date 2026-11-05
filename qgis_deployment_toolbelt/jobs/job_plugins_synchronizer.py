@@ -146,6 +146,15 @@ class JobPluginsSynchronizer(GenericJob):
             # determine folder
             if self.options.get("profile_ref") == "installed":
                 profile_plugins_folder = qdt_profile.folder / "python/plugins"
+            # check if the profile is installed
+            elif not qdt_profile.path_in_qgis.joinpath("profile.json").is_file():
+                if qdt_profile.plugins:
+                    logger.info(
+                        f"Profile '{qdt_profile.name}' is not installed in "
+                        f"{qdt_profile.path_in_qgis}. Its plugins are not "
+                        "synchronized."
+                    )
+                continue
             else:
                 profile_plugins_folder = qdt_profile.path_in_qgis / "python/plugins"
 

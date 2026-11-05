@@ -401,6 +401,71 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
 
             self.assertFalse((qgis_profiles_folder / "profile_a").exists())
 
+    def test_downloaded_profile_not_installed_is_skipped(self):
+        """With profile_ref: downloaded, plugins must not be installed into a profile
+        not installed in QGIS, otherwise a partial profile (plugins only) is created."""
+        with tempfile.TemporaryDirectory(
+            prefix="QDT_test_plugins_sync_not_installed_"
+        ) as tmp_dir:
+            tmp_path = Path(tmp_dir)
+            qdt_working_folder = tmp_path / "qdt"
+            qgis_profiles_folder = tmp_path / "qgis_profiles"
+            profile_json = json.dumps(
+                {
+                    "name": "profile_a",
+                    "folder_name": "profile_a",
+                    "version": "1.0.0",
+                    "plugins": [
+                        {
+                            "name": "Test Plugin",
+                            "folder_name": "test_plugin",
+                            "version": "2.0.0",
+                        }
+                    ],
+                }
+            )
+
+            # profile downloaded by the running scenario, with its plugin archive
+            downloaded_folder = qdt_working_folder / "repositories/running/profile_a"
+            downloaded_folder.mkdir(parents=True)
+            (downloaded_folder / "profile.json").write_text(
+                profile_json, encoding="UTF-8"
+            )
+            (qdt_working_folder / "plugins").mkdir(parents=True)
+            self._create_fake_plugin_zip(
+                qdt_working_folder / "plugins/test-plugin_2-0-0.zip", "test_plugin"
+            )
+
+            installed_folder = qgis_profiles_folder / "profile_a"
+            for installed in (False, True):
+                if installed:
+                    installed_folder.mkdir(parents=True, exist_ok=True)
+                    (installed_folder / "profile.json").write_text(
+                        profile_json, encoding="UTF-8"
+                    )
+
+                with (
+                    self.subTest(installed=installed),
+                    patch.dict(
+                        "os.environ",
+                        {
+                            "QDT_LOCAL_WORK_DIR": str(qdt_working_folder),
+                            "QDT_TMP_RUNNING_SCENARIO_ID": "running",
+                            "QGIS_CUSTOM_CONFIG_PATH": str(qgis_profiles_folder),
+                        },
+                    ),
+                ):
+                    job = JobPluginsSynchronizer(options={"profile_ref": "downloaded"})
+                    self.addCleanup(job.clear_profiles_cache)
+                    job.run()
+                    job.clear_profiles_cache()
+
+                    self.assertEqual(installed_folder.exists(), installed)
+                    self.assertEqual(
+                        (installed_folder / "python/plugins/test_plugin").is_dir(),
+                        installed,
+                    )
+
 
 # #############################################################################
 # ####### Stand-alone run ########
