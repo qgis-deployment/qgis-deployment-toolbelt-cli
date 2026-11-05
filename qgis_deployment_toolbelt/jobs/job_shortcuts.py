@@ -129,6 +129,15 @@ class JobShortcutsManager(GenericJob):
                 if not qdt_profile:
                     continue
 
+                # check if the profile is installed
+                if not qdt_profile.path_in_qgis.is_dir():
+                    logger.info(
+                        f"Profile '{qdt_profile.name}' is not installed in "
+                        f"{qdt_profile.path_in_qgis}. Shortcut "
+                        f"'{inc_shortcut.get('label')}' is not created."
+                    )
+                    continue
+
                 # instanciate shortcut
                 shortcut = ApplicationShortcut(
                     name=inc_shortcut.get("label"),
