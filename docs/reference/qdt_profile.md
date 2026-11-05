@@ -119,7 +119,7 @@ Optional attribute to state the minimum QDT version required to deploy the profi
 
 Maximum QGIS version where the profile can be deployed, included. It should comply with [SemVer](https://semver.org/) (`X.Y.Z`).
 
-Used to exclude the profile from the deployment only when the check is enabled. See [Deploying a profile only on compatible QGIS versions](../guides/howto_qdt_handle_qgis_major_versions.md#deploying-a-profile-only-on-compatible-qgis-versions).
+The profile is not deployed if the targeted QGIS version is out of bounds. See [Deploying a profile only on compatible QGIS versions](../guides/howto_qdt_handle_qgis_major_versions.md#deploying-a-profile-only-on-compatible-qgis-versions).
 
 > [!TIP]
 > Behind the scens, we use [the official Python package 'packaging'](https://pypi.org/project/packaging/) to compare versions. So for example, `"qgisMaximumVersion": "3.40"` is equivalent to `"qgisMaximumVersion": "3.40.0"` so QGIS 3.40.1 and later are out of bounds. Use `3.40.99` to include every 3.40 release.
@@ -132,7 +132,7 @@ Used to exclude the profile from the deployment only when the check is enabled. 
 
 Minimum QGIS version where the profile can be deployed, included. It should comply with SemVer (`X.Y.Z`).
 
-Used to exclude the profile from the deployment only when the check is enabled. See [Deploying a profile only on compatible QGIS versions](../guides/howto_qdt_handle_qgis_major_versions.md#deploying-a-profile-only-on-compatible-qgis-versions).
+The profile is not deployed if the targeted QGIS version is out of bounds. See [Deploying a profile only on compatible QGIS versions](../guides/howto_qdt_handle_qgis_major_versions.md#deploying-a-profile-only-on-compatible-qgis-versions).
 
 ### splash
 
