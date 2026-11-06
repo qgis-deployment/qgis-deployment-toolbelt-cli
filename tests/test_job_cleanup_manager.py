@@ -16,11 +16,15 @@
 import json
 import tempfile
 import unittest
+from os import environ
 from pathlib import Path
 from unittest.mock import patch
 
 # package
-from qgis_deployment_toolbelt.constants import MANAGED_PLUGINS_MANIFEST_FILENAME
+from qgis_deployment_toolbelt.constants import (
+    ENV_VAR_QGIS_VERSION,
+    MANAGED_PLUGINS_MANIFEST_FILENAME,
+)
 from qgis_deployment_toolbelt.jobs.job_cleanup_manager import JobCleanupManager
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 
@@ -44,11 +48,14 @@ class TestJobCleanupManager(unittest.TestCase):
 
     @staticmethod
     def _make_installed_profile(
-        profile_folder: Path, name: str, deprecated: bool | None = None
+        profile_folder: Path,
+        name: str,
+        deprecated: bool | None = None,
+        **extra_attributes: str,
     ) -> Path:
         """Create a profile folder with a profile.json in it."""
         profile_folder.mkdir(parents=True, exist_ok=True)
-        profile_data: dict = {"name": name, "version": "1.0.0"}
+        profile_data: dict = {"name": name, "version": "1.0.0", **extra_attributes}
         if deprecated is not None:
             profile_data["deprecated"] = deprecated
         profile_folder.joinpath("profile.json").write_text(
@@ -194,3 +201,72 @@ class TestJobCleanupManager(unittest.TestCase):
 
             self.assertEqual(self._run_profiles_deprecated(tmp_dir), [])
             self.assertTrue(outside.is_dir())
+
+    def _run_profiles_incompatible_qgis(
+        self, tmp_dir: str, qgis_version: str | None
+    ) -> list[Path]:
+        """Run the job in dry-run mode on the 'profiles_incompatible_qgis' scope only,
+        targeting the given QGIS version (unset if None)."""
+        with patch.dict(environ):
+            environ.pop(ENV_VAR_QGIS_VERSION, None)
+            if qgis_version:
+                environ[ENV_VAR_QGIS_VERSION] = qgis_version
+            job = JobCleanupManager(
+                options={"dry_run": True, "scopes": ["profiles_incompatible_qgis"]}
+            )
+            job.qgis_profiles_path = Path(tmp_dir, "profiles")
+            job.qdt_downloaded_repositories = Path(tmp_dir, "downloaded")
+            return job.run().removed
+
+    def test_cleanup_profiles_incompatible_qgis(self):
+        """Only installed profiles whose downloaded version excludes the targeted QGIS
+        version are selected, and nothing is removed in dry-run mode."""
+        with tempfile.TemporaryDirectory(prefix="QDT_test_cleanup_") as tmp_dir:
+            profiles = Path(tmp_dir, "profiles")
+            downloaded = Path(tmp_dir, "downloaded/repo")
+            for name, bounds in (
+                ("too_old", {"qgisMaximumVersion": "3.34.99"}),
+                ("too_new", {"qgisMinimumVersion": "4.0.0"}),
+                ("in_bounds", {"qgisMinimumVersion": "3.40.0"}),
+                ("no_bounds", {}),
+                ("not_installed", {"qgisMaximumVersion": "3.34.99"}),
+            ):
+                self._make_installed_profile(downloaded / name, name, **bounds)
+            for name in ("too_old", "too_new", "in_bounds", "no_bounds", "manual"):
+                self._make_installed_profile(profiles / name, name)
+
+            removed = self._run_profiles_incompatible_qgis(tmp_dir, "3.40.5")
+
+            self.assertEqual(
+                sorted(removed), [profiles / "too_new", profiles / "too_old"]
+            )
+            self.assertTrue(profiles.joinpath("too_old").is_dir())
+
+    def test_cleanup_profiles_incompatible_qgis_keeps_profile_compatible_elsewhere(
+        self,
+    ):
+        """A profile incompatible in a repository but compatible in another one is
+        kept."""
+        with tempfile.TemporaryDirectory(prefix="QDT_test_cleanup_") as tmp_dir:
+            downloaded = Path(tmp_dir, "downloaded")
+            self._make_installed_profile(Path(tmp_dir, "profiles/dup"), "dup")
+            self._make_installed_profile(
+                downloaded / "repo_a/dup", "dup", qgisMaximumVersion="3.34.99"
+            )
+            self._make_installed_profile(
+                downloaded / "repo_b/dup", "dup", qgisMaximumVersion="3.40.99"
+            )
+
+            self.assertEqual(
+                self._run_profiles_incompatible_qgis(tmp_dir, "3.40.5"), []
+            )
+
+    def test_cleanup_profiles_incompatible_qgis_without_targeted_version(self):
+        """Nothing is removed when the targeted QGIS version is unknown."""
+        with tempfile.TemporaryDirectory(prefix="QDT_test_cleanup_") as tmp_dir:
+            self._make_installed_profile(Path(tmp_dir, "profiles/old"), "old")
+            self._make_installed_profile(
+                Path(tmp_dir, "downloaded/repo/old"), "old", qgisMaximumVersion="3.0.0"
+            )
+
+            self.assertEqual(self._run_profiles_incompatible_qgis(tmp_dir, None), [])

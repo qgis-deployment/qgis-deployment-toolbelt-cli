@@ -64,7 +64,7 @@ A profile can declare the QGIS versions it supports through its [`qgisMinimumVer
 Every job ignores the profiles whose bounds exclude the QGIS version detected by the `qgis-installation-finder` job (`QDT_QGIS_VERSION`), as it does with deprecated profiles or profiles requiring a newer QDT version:
 
 - if the targeted QGIS version is unknown (`qgis-installation-finder` job missing or QGIS not found), profiles are not filtered
-- an installed profile which is out of bounds (after a QGIS upgrade for example) is left as is: it is neither updated nor removed anymore.
+- an installed profile which is out of bounds (after a QGIS upgrade for example) is not updated anymore. To remove it, use the `profiles_incompatible_qgis` scope of [the cleanup-manager job](../jobs/cleanup_manager.md#scopes).
 
 ## Migrating profiles authored for QGIS 3
 
