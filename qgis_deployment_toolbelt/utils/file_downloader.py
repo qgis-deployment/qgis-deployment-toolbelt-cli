@@ -78,6 +78,31 @@ class TruststoreAdapter(HTTPAdapter):
 # ################################
 
 
+def get_http_session(user_agent: str = f"{__title_clean__}/{__version__}") -> Session:
+    """Build a requests session honoring QDT network settings (SSL verification and
+        certificates stores).
+
+    Proxies are not set at the session level since they depend on the requested URL.
+
+    Args:
+        user_agent (str, optional): user agent to use to perform requests. Defaults
+            to f"{__title_clean__}/{__version__}".
+
+    Returns:
+        Session: configured session. Use it as a context manager to close it.
+    """
+    session = Session()
+    session.headers.update({"User-Agent": user_agent})
+    session.verify = str2bool(getenv("QDT_SSL_VERIFY", True))
+
+    # handle local system certificates store
+    if str2bool(getenv("QDT_SSL_USE_SYSTEM_STORES", False)):
+        logger.debug("Option to use native system certificates stores is enabled.")
+        session.mount("https://", TruststoreAdapter())
+
+    return session
+
+
 def download_remote_file_to_local(
     remote_url_to_download: str,
     local_file_path: Path,
@@ -116,26 +141,18 @@ def download_remote_file_to_local(
     local_file_path.parent.mkdir(parents=True, exist_ok=True)
 
     # headers
-    headers = {"User-Agent": user_agent}
+    headers = {}
     if content_type:
         headers["Accept"] = content_type
     if authorization:
         headers["Authorization"] = authorization
 
     try:
-        with Session() as dl_session:
+        with get_http_session(user_agent=user_agent) as dl_session:
             dl_session.headers.update(headers)
             dl_session.proxies.update(
                 get_proxy_settings(url=requote_uri(remote_url_to_download))
             )
-            dl_session.verify = str2bool(getenv("QDT_SSL_VERIFY", True))
-
-            # handle local system certificates store
-            if str2bool(getenv("QDT_SSL_USE_SYSTEM_STORES", False)):
-                logger.debug(
-                    "Option to use native system certificates stores is enabled."
-                )
-                dl_session.mount("https://", TruststoreAdapter())
 
             # Clean url
             parsed_url = urlparse(unquote(remote_url_to_download))
