@@ -222,7 +222,7 @@ class GenericJob(ABC):
     def read_profiles_folder(self, start_parent_folder: Path) -> tuple[QdtProfile, ...]:
         """Read a folder structure to list every QGIS profile handled by QDT,
             without applying any of the deployment filters (QDT version,
-            deprecation, deployment rules).
+            deprecation, QGIS version, deployment rules).
 
         Args:
             start_parent_folder (Path): root directory to scan for profile.json
