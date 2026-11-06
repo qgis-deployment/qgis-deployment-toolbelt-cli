@@ -12,12 +12,14 @@ Author: Julien Moura (https://github.com/guts)
 
 # Standard library
 import logging
+from os import getenv
 from pathlib import Path
 from typing import get_args
 
 # package
 from qgis_deployment_toolbelt.constants import (
     DEFAULT_CLEANUP_SCOPES,
+    ENV_VAR_QGIS_VERSION,
     MANAGED_PLUGINS_MANIFEST_FILENAME,
     CleanupScopes,
     DeletionPolicy,
@@ -102,6 +104,13 @@ class JobCleanupManager(GenericJob):
         if "profiles_deprecated" in scopes:
             logger.debug("Cleaning-up installed QGIS profiles flagged as deprecated...")
             self.cleanup_profiles_deprecated()
+
+        if "profiles_incompatible_qgis" in scopes:
+            logger.debug(
+                "Cleaning-up installed QGIS profiles incompatible with the targeted "
+                "QGIS version..."
+            )
+            self.cleanup_profiles_incompatible_qgis()
 
         # remove files/folders
         self._remove_paths()
@@ -248,6 +257,47 @@ class JobCleanupManager(GenericJob):
                 and folder.joinpath("profile.json").is_file()
             ):
                 logger.info(f"Profile '{folder.name}' is deprecated, removing {folder}")
+                self.report.removed.append(folder)
+
+    def cleanup_profiles_incompatible_qgis(self) -> None:
+        """Remove installed QGIS profiles whose `qgisMinimumVersion` or
+        `qgisMaximumVersion`, as declared in the downloaded repositories, exclude the
+        targeted QGIS version.
+
+        The downloaded repositories are the source of truth.
+        Nothing is removed if the targeted QGIS version is unknown.
+        """
+        downloaded = self.read_profiles_folder(
+            start_parent_folder=self.qdt_downloaded_repositories
+        )
+        compatible, incompatible = self.filter_profiles_on_qgis_version(
+            tup_qdt_profiles=downloaded
+        )
+        incompatible_names = {p.name for p in incompatible} - {
+            p.name for p in compatible
+        }
+        if not incompatible_names:
+            logger.debug(
+                "No profile incompatible with the targeted QGIS version: nothing to "
+                "clean up."
+            )
+            return
+
+        if not self.qgis_profiles_path.is_dir():
+            logger.debug(f"QGIS profiles folder not found: {self.qgis_profiles_path}")
+            return
+
+        # matching on folder names
+        for folder in self.qgis_profiles_path.iterdir():
+            if (
+                folder.is_dir()
+                and folder.name in incompatible_names
+                and folder.joinpath("profile.json").is_file()
+            ):
+                logger.info(
+                    f"Profile '{folder.name}' is incompatible with QGIS "
+                    f"{getenv(ENV_VAR_QGIS_VERSION)}, removing {folder}"
+                )
                 self.report.removed.append(folder)
 
     def _remove_paths(self) -> None:

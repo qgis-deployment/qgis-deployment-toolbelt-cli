@@ -121,6 +121,8 @@ Maximum QGIS version where the profile can be deployed, included. It should comp
 
 The profile is not deployed if the targeted QGIS version is out of bounds. See [Deploying a profile only on compatible QGIS versions](../guides/howto_qdt_handle_qgis_major_versions.md#deploying-a-profile-only-on-compatible-qgis-versions).
 
+Its installed folder can also be removed from the end-user machine by [the cleanup-manager job](../jobs/cleanup_manager.md), through its `profiles_incompatible_qgis` scope.
+
 > [!TIP]
 > Behind the scens, we use [the official Python package 'packaging'](https://pypi.org/project/packaging/) to compare versions. So for example, `"qgisMaximumVersion": "3.40"` is equivalent to `"qgisMaximumVersion": "3.40.0"` so QGIS 3.40.1 and later are out of bounds. Use `3.40.99` to include every 3.40 release.
 
@@ -133,6 +135,8 @@ The profile is not deployed if the targeted QGIS version is out of bounds. See [
 Minimum QGIS version where the profile can be deployed, included. It should comply with SemVer (`X.Y.Z`).
 
 The profile is not deployed if the targeted QGIS version is out of bounds. See [Deploying a profile only on compatible QGIS versions](../guides/howto_qdt_handle_qgis_major_versions.md#deploying-a-profile-only-on-compatible-qgis-versions).
+
+Its installed folder can also be removed from the end-user machine by [the cleanup-manager job](../jobs/cleanup_manager.md), through its `profiles_incompatible_qgis` scope.
 
 ### splash
 
