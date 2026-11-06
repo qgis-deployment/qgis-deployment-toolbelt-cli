@@ -14,14 +14,19 @@ Usage from the repo root folder:
 import filecmp
 import tempfile
 import unittest
-from os import getenv
+from os import environ, getenv
 from pathlib import Path
+from unittest.mock import patch
 
 # 3rd party
 from requests import exceptions as requests_exceptions
 
 # project
-from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
+from qgis_deployment_toolbelt.utils.file_downloader import (
+    TruststoreAdapter,
+    download_remote_file_to_local,
+    get_http_session,
+)
 
 
 # ############################################################################
@@ -41,6 +46,38 @@ class TestUtilsFileDownloader(unittest.TestCase):
         if getenv("GITHUB_TOKEN"):
             return f"Bearer {getenv('GITHUB_TOKEN')}"
         return None
+
+    def test_get_http_session_default(self):
+        """Test HTTP session built without QDT network settings."""
+        with patch.dict(environ):
+            environ.pop("QDT_SSL_VERIFY", None)
+            environ.pop("QDT_SSL_USE_SYSTEM_STORES", None)
+            http_session = get_http_session(user_agent="qdt-test/0.0.0")
+
+        with http_session:
+            self.assertEqual(http_session.headers["User-Agent"], "qdt-test/0.0.0")
+            self.assertTrue(http_session.verify)
+            self.assertNotIsInstance(
+                http_session.get_adapter("https://example.org"), TruststoreAdapter
+            )
+
+    def test_get_http_session_ssl_settings(self):
+        """Test HTTP session honors QDT_SSL_VERIFY and QDT_SSL_USE_SYSTEM_STORES."""
+        with (
+            patch.dict(
+                environ,
+                {"QDT_SSL_VERIFY": "false", "QDT_SSL_USE_SYSTEM_STORES": "true"},
+            ),
+            get_http_session() as http_session,
+        ):
+            self.assertFalse(http_session.verify)
+            self.assertIsInstance(
+                http_session.get_adapter("https://example.org"), TruststoreAdapter
+            )
+            # plain HTTP is not affected
+            self.assertNotIsInstance(
+                http_session.get_adapter("http://example.org"), TruststoreAdapter
+            )
 
     def test_download_file_exists(self):
         """Test download remote file locally to a file which already exists."""
