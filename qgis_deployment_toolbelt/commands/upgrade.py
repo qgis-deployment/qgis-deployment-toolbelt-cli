@@ -36,7 +36,10 @@ from qgis_deployment_toolbelt.utils.bouncer import (
     exit_cli_normal,
     exit_cli_success,
 )
-from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
+from qgis_deployment_toolbelt.utils.file_downloader import (
+    download_remote_file_to_local,
+    get_http_session,
+)
 from qgis_deployment_toolbelt.utils.frozen_app import is_running_pyinstaller
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
@@ -108,14 +111,15 @@ def get_latest_release(api_repo_url: str) -> dict | None:
 
     try:
         release_info = None
-        req = requests.get(
-            url=request_url,
-            headers=headers,
-            proxies=get_proxy_settings(url=request_url),
-            timeout=(30, 60),
-        )
-        req.raise_for_status()
-        release_info = req.json()
+        with get_http_session() as http_session:
+            req = http_session.get(
+                url=request_url,
+                headers=headers,
+                proxies=get_proxy_settings(url=request_url),
+                timeout=(30, 60),
+            )
+            req.raise_for_status()
+            release_info = req.json()
         return release_info
     except requests.HTTPError as err:
         logger.error(f"Unable to retrieve latest release from GitHub API. {err}")

@@ -26,7 +26,10 @@ from qgis_deployment_toolbelt.constants import DeletionPolicy
 from qgis_deployment_toolbelt.profiles.profiles_handler_base import (
     RemoteProfilesHandlerBase,
 )
-from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
+from qgis_deployment_toolbelt.utils.file_downloader import (
+    download_remote_file_to_local,
+    get_http_session,
+)
 from qgis_deployment_toolbelt.utils.formatters import url_ensure_trailing_slash
 from qgis_deployment_toolbelt.utils.proxies import get_proxy_settings
 from qgis_deployment_toolbelt.utils.str2bool import str2bool
@@ -94,16 +97,17 @@ class HttpHandler(RemoteProfilesHandlerBase):
         try:
             logger.debug("Retrieve qdt-files.json ")
             # get qdt-files.json
-            req = requests.get(
-                url=f"{self.SOURCE_REPOSITORY_PATH_OR_URL}qdt-files.json",
-                headers=self.HTTP_HEADERS,
-                proxies=get_proxy_settings(
-                    url=f"{self.SOURCE_REPOSITORY_PATH_OR_URL}qdt-files.json"
-                ),
-                timeout=(30, 60),
-            )
-            req.raise_for_status()
-            qdt_tree = req.json()
+            with get_http_session() as http_session:
+                req = http_session.get(
+                    url=f"{self.SOURCE_REPOSITORY_PATH_OR_URL}qdt-files.json",
+                    headers=self.HTTP_HEADERS,
+                    proxies=get_proxy_settings(
+                        url=f"{self.SOURCE_REPOSITORY_PATH_OR_URL}qdt-files.json"
+                    ),
+                    timeout=(30, 60),
+                )
+                req.raise_for_status()
+                qdt_tree = req.json()
         except (requests.RequestException, ValueError) as err:
             logger.error(
                 f"Downloading {self.SOURCE_REPOSITORY_PATH_OR_URL} to "
