@@ -130,7 +130,7 @@ class JobShortcutsManager(GenericJob):
                     continue
 
                 # check if the profile is installed
-                if not qdt_profile.path_in_qgis.is_dir():
+                if not qdt_profile.path_in_qgis.joinpath("profile.json").is_file():
                     logger.info(
                         f"Profile '{qdt_profile.name}' is not installed in "
                         f"{qdt_profile.path_in_qgis}. Shortcut "
