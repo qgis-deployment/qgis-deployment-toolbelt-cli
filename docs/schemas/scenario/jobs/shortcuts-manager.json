@@ -10,8 +10,7 @@
             "description": "Which action to perform with shortcuts.",
             "enum": [
                 "create",
-                "create_or_restore",
-                "remove"
+                "create_or_restore"
             ],
             "type": "string"
         },

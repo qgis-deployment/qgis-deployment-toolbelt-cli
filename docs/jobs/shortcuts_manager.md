@@ -46,6 +46,9 @@ Possible_values:
 - `create_or_restore` (_default_): add shortcut if not set and replace eventual existing one
 - `remove`: remove shortcut
 
+> [!WARNING]
+> The `remove` action is not implemented. The job logs an error and is skipped, without stopping the deployment. It's planned to remove it in future releases.
+
 ### include
 
 List of shortcuts to create.  
