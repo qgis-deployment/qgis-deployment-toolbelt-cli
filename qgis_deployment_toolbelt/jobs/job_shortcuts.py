@@ -113,6 +113,15 @@ class JobShortcutsManager(GenericJob):
 
     def run(self) -> None:
         """Execute job logic."""
+        # TODO: implement it here or as a scope in the cleanup manager
+        if self.options.get("action") == "remove":
+            logger.error(
+                f"[Not Implemented] the 'action=remove' option of job '{self.ID}' has no "
+                "effect and could be removed in next versions. Remove it from your "
+                "scenario."
+            )
+            return
+
         # check of there are some profiles folders within the downloaded folder
         downloaded_profiles = self.list_downloaded_profiles()
         if downloaded_profiles is None:
