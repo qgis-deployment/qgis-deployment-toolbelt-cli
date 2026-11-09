@@ -16,6 +16,35 @@ Unreleased
 
 -->
 
+## 0.49.0 - 2026-11-09
+
+### Bugs fixes 🐛
+
+- fix(environment-variables-manager): lower log level and check if an env var exists before deleting it by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/940>
+- fix(plugins-synchronizer): do not copy plugins into a profile which is not installed by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/950>
+- fix(profiles-downloader): in HTTP mode, a failed download was not raised correctly by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/941>
+- fix(shortcuts-manager): do not create a shortcut for a profile which is not installed by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/948>
+- fix(packaging): include subpackages in setuptools packages discovery by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/945>
+
+### Features and enhancements 🎉
+
+- feature(profiles): attribute to mark profile as deprecated and logic to ignore them during deployment by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/899>
+- feature(cleanup-manager): add 'profiles_deprecated' scope to remove deprecated profiles by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/943>
+- feature(profiles): check compatibility with a targeted QGIS version by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/947>
+- feature(deployment): ignore profiles incompatible with the detected/targeted QGIS version by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/949>
+- feature(cleanup-manager): add 'profiles_incompatible_qgis' scope to remove profiles incompatible with the targeted QGIS version by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/953>
+- improve(logging): add QdtError base and improve trace catching by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/942>
+- improve(file-downloader): add a method to build HTTP session with every QDT parameters to reuse it everywhere by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/952>
+
+### Tooling 🔧
+
+- update(tooling): make PR autolabeler use scoped labels by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/946>
+
+### Other Changes
+
+- change(plugins-synchronizer): log an error when the option 'action' is used by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/954>
+- change(shortcuts-manager): logs an error when the option 'action=remove' is used by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/955>
+
 ## 0.48.1 - 2026-10-27
 
 ### Bugs fixes 🐛
