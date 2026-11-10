@@ -133,7 +133,6 @@ tooling:
   - changed-files:
       - any-glob-to-any-file:
           - qgis_deployment_toolbelt/jobs/job_splash_screen.py
-          - qgis_deployment_toolbelt/shortcuts/*
           - qgis_deployment_toolbelt/utils/check_image_size.py
 
 "scope: rules":
