@@ -29,6 +29,7 @@ if opersys == "win32":
 
     # 3rd party
     import win32gui
+    from win32comext.shell import shell, shellcon
 
 
 # #############################################################################
@@ -316,3 +317,37 @@ def set_environment_variable(
             f"scope '{scope}' failed. Trace: {err}"
         )
         return False
+
+
+def get_user_desktop_folder() -> Path:
+    """Return the user Desktop folder (`CSIDL_DESKTOP`).
+
+    Returns:
+        Path: path to the current user Desktop folder.
+    """
+    return Path(shell.SHGetFolderPath(0, shellcon.CSIDL_DESKTOP, None, 0))
+
+
+def get_user_home_folder() -> Path:
+    """Return the user home folder.
+
+    Note that we return `CSIDL_PROFILE`, not `CSIDL_APPDATA`, `CSIDL_LOCAL_APPDATA`
+    or `CSIDL_COMMON_APPDATA`.
+    See: https://www.nirsoft.net/articles/find_special_folder_location.html
+    TODO: evaluate use of platformdirs
+
+    Returns:
+        Path: path to the user home
+    """
+    return Path(shell.SHGetFolderPath(0, shellcon.CSIDL_PROFILE, 0, 0))
+
+
+def get_user_startmenu_folder() -> Path:
+    """Return the user Start Menu Programs folder.
+
+    Note that we return `CSIDL_PROGRAMS` not `CSIDL_COMMON_PROGRAMS`.
+
+    Returns:
+        Path: path to the Start Menu Programs folder
+    """
+    return Path(shell.SHGetFolderPath(0, shellcon.CSIDL_PROGRAMS, None, 0))
