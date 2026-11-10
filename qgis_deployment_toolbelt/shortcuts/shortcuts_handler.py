@@ -11,8 +11,6 @@ Author: Julien Moura (https://github.com/guts)
 # ##################################
 # standard
 import logging
-import os
-import re
 import stat
 import sys
 from collections.abc import Iterable
@@ -26,7 +24,6 @@ if opersys == "win32":
     """windows"""
     import pythoncom
     import win32com.client
-    from win32comext.shell import shell, shellcon
 
 # package
 from qgis_deployment_toolbelt.__about__ import __title__, __version__
@@ -37,6 +34,11 @@ from qgis_deployment_toolbelt.constants import (
 )
 from qgis_deployment_toolbelt.utils.check_path import check_path
 from qgis_deployment_toolbelt.utils.frozen_app import is_running_pyinstaller
+from qgis_deployment_toolbelt.utils.os_router import (
+    get_user_desktop_folder,
+    get_user_home_folder,
+    get_user_startmenu_folder,
+)
 from qgis_deployment_toolbelt.utils.slugger import sluggy
 
 
@@ -265,93 +267,28 @@ class ApplicationShortcut:
     def desktop_path(self) -> Path:
         """Return the user Desktop folder.
 
-        Partly inspired from https://stackoverflow.com/a/13742626/2556577.
-
         Returns:
             Path: path to the current user Desktop folder.
         """
-        default_value = Path(Path.home(), "Desktop")
-
-        if opersys == "win32":
-            return Path(shell.SHGetFolderPath(0, shellcon.CSIDL_DESKTOP, None, 0))
-        elif opersys in ("darwin", "linux"):
-            # have a look to XDG configuration file with user folders
-            config_xdg_user_dirs = Path(self.homedir_path, ".config", "user-dirs.dirs")
-            is_config_file_usable = check_path(
-                input_path=config_xdg_user_dirs,
-                must_be_a_file=True,
-                must_be_readable=True,
-                must_exists=True,
-                raise_error=False,
-            )
-            if is_config_file_usable:
-                with config_xdg_user_dirs.open(mode="r", encoding="UTF-8") as bf_config:
-                    data = bf_config.read()
-
-                desktop_paths = re.findall('XDG_DESKTOP_DIR="([^"]*)', data)
-                if len(desktop_paths):
-                    return Path(
-                        re.sub(r"\$HOME", str(Path("~").expanduser()), desktop_paths[0])
-                    )
-
-            return default_value
-        else:
-            logger.warning(
-                f"Unrecognized operating system ({opersys}) so path to the "
-                f"user desktop is using a fallback value: {default_value}"
-            )
-            return default_value
+        return get_user_desktop_folder()
 
     @property
     def homedir_path(self) -> Path | None:
         """Return home directory.
 
-        For Windows, note that we return `CSIDL_PROFILE`, not `CSIDL_APPDATA`,
-        `CSIDL_LOCAL_APPDATA` or `CSIDL_COMMON_APPDATA`.
-        See: https://www.nirsoft.net/articles/find_special_folder_location.html
-        TODO: evaluate use of platformdirs
-
         Returns:
             Path | None: path to the user home
         """
-        if opersys == "win32":
-            return Path(shell.SHGetFolderPath(0, shellcon.CSIDL_PROFILE, 0, 0))
-        elif opersys == "linux":
-            home = None
-            try:
-                home = Path.home()
-            except RuntimeError as err:
-                logger.debug("Home directory can’t be resolved with pathlib: %s", err)
-            # try another way
-            if home is None:
-                home = Path("~").expanduser()
-            if home is None:
-                home = os.path.normpath(os.environ.get("HOME", str(Path().resolve())))
-            return Path(home)
-        elif opersys == "darwin":
-            return Path("~").expanduser()
-        else:
-            logger.error(f"Unrecognized operating system: {opersys}.")
-            return None
+        return get_user_home_folder()
 
     @property
     def startmenu_path(self) -> Path | None:
         """Return user Start Menu Programs folder.
 
-        For Windows, note that we return `CSIDL_PROGRAMS` not `CSIDL_COMMON_PROGRAMS`.
-
         Returns:
             Path: path to the Start Menu Programs folder
         """
-        if opersys == "win32":
-            return Path(shell.SHGetFolderPath(0, shellcon.CSIDL_PROGRAMS, None, 0))
-        elif opersys in ("darwin", "linux"):
-            if isinstance(self.homedir_path, Path):
-                return self.homedir_path / ".local/share/applications"
-            return None
-        else:
-            logger.error(f"Unrecognized operating system: {opersys}.")
-            return None
+        return get_user_startmenu_folder()
 
     # -- PRIVATE --------------------------------------------------------------
     def freedesktop_create(self) -> tuple[Path | None, Path | None]:

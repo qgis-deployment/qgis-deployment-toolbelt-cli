@@ -11,6 +11,7 @@ Author: Julien Moura (https://github.com/guts)
 
 # standard
 import logging
+import os
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -352,3 +353,65 @@ def get_profile_file(scope: Literal["system", "user"]) -> Path | None:
     else:
         logger.error(f"Scope {scope} not handled. Fallback to 'user'.")
         return get_profile_file(scope="user")
+
+
+def get_user_desktop_folder() -> Path:
+    """Return the user Desktop folder, as set in the XDG user directories
+    configuration file (`~/.config/user-dirs.dirs`), else `~/Desktop`.
+
+    Partly inspired from https://stackoverflow.com/a/13742626/2556577.
+
+    Returns:
+        Path: path to the current user Desktop folder.
+    """
+    default_value = Path(Path.home(), "Desktop")
+
+    # have a look to XDG configuration file with user folders
+    config_xdg_user_dirs = Path(get_user_home_folder(), ".config", "user-dirs.dirs")
+    is_config_file_usable = check_path(
+        input_path=config_xdg_user_dirs,
+        must_be_a_file=True,
+        must_be_readable=True,
+        must_exists=True,
+        raise_error=False,
+    )
+    if is_config_file_usable:
+        with config_xdg_user_dirs.open(mode="r", encoding="UTF-8") as bf_config:
+            data = bf_config.read()
+
+        desktop_paths = re.findall('XDG_DESKTOP_DIR="([^"]*)', data)
+        if len(desktop_paths):
+            return Path(
+                re.sub(r"\$HOME", str(Path("~").expanduser()), desktop_paths[0])
+            )
+
+    return default_value
+
+
+def get_user_home_folder() -> Path:
+    """Return the user home folder.
+
+    Returns:
+        Path: path to the user home
+    """
+    home = None
+    try:
+        home = Path.home()
+    except RuntimeError as err:
+        logger.debug("Home directory can’t be resolved with pathlib: %s", err)
+    # try another way
+    if home is None:
+        home = Path("~").expanduser()
+    if home is None:
+        home = os.path.normpath(os.environ.get("HOME", str(Path().resolve())))
+    return Path(home)
+
+
+def get_user_startmenu_folder() -> Path:
+    """Return the folder where FreeDesktop applications launchers are stored for the
+    user, i.e. the equivalent of the Windows Start Menu.
+
+    Returns:
+        Path: path to the user applications folder
+    """
+    return get_user_home_folder() / ".local/share/applications"
