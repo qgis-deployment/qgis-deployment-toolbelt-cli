@@ -34,7 +34,7 @@ else:
     import grp
 
 # package
-from qgis_deployment_toolbelt.utils.win32utils import (
+from qgis_deployment_toolbelt.utils.os_windows import (
     ExtendedNameFormat,
     get_current_user_extended_data,
 )

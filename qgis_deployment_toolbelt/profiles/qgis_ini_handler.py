@@ -30,7 +30,7 @@ from qgis_deployment_toolbelt.utils.ini_interpolation import (
     EnvironmentVariablesInterpolation,
 )
 from qgis_deployment_toolbelt.utils.ini_parser_with_path import CustomConfigParser
-from qgis_deployment_toolbelt.utils.win32utils import normalize_path
+from qgis_deployment_toolbelt.utils.os_windows import normalize_path
 
 
 # #############################################################################

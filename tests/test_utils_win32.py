@@ -17,8 +17,8 @@ from sys import platform as opersys
 from unittest.mock import MagicMock, patch
 
 # project
-from qgis_deployment_toolbelt.utils import win32utils
-from qgis_deployment_toolbelt.utils.os_utils_router import get_environment_variable
+from qgis_deployment_toolbelt.utils import os_windows
+from qgis_deployment_toolbelt.utils.os_router import get_environment_variable
 
 
 # ############################################################################
@@ -54,21 +54,21 @@ class TestUtilsWin32MissingEnvVar(unittest.TestCase):
             ("user_hkey", ("HKCU", "Environment")),
             ("system_hkey", ("HKLM", "Environment")),
         ):
-            patcher = patch.object(win32utils, name, value, create=True)
+            patcher = patch.object(os_windows, name, value, create=True)
             patcher.start()
             self.addCleanup(patcher.stop)
 
     def test_delete_missing_does_not_log_error(self) -> None:
         """Deleting a missing variable is silent above DEBUG (issue #938)."""
-        with self.assertNoLogs(win32utils.logger, level=logging.INFO):
-            self.assertFalse(win32utils.delete_environment_variable("MISSING"))
+        with self.assertNoLogs(os_windows.logger, level=logging.INFO):
+            self.assertFalse(os_windows.delete_environment_variable("MISSING"))
         self.winreg.DeleteValue.assert_not_called()
 
     def test_access_denied_still_logs_error(self) -> None:
         """Registry errors other than 'missing' are never downgraded."""
         self.winreg.QueryValueEx.side_effect = PermissionError
-        with self.assertLogs(win32utils.logger, level=logging.ERROR):
-            self.assertFalse(win32utils.delete_environment_variable("DENIED"))
+        with self.assertLogs(os_windows.logger, level=logging.ERROR):
+            self.assertFalse(os_windows.delete_environment_variable("DENIED"))
 
 
 # ############################################################################

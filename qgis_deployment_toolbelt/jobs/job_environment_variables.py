@@ -23,7 +23,7 @@ from qgis_deployment_toolbelt.utils.check_path import (
     check_path_exists,
     check_var_can_be_path,
 )
-from qgis_deployment_toolbelt.utils.os_utils_router import (
+from qgis_deployment_toolbelt.utils.os_router import (
     delete_environment_variable,
     refresh_environment,
     set_environment_variable,
