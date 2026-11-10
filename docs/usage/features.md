@@ -40,12 +40,12 @@ You can also define (non-exhaustive list):
 - name: Find installed QGIS
   uses: qgis-installation-finder
   with:
-      search_paths:
-        - "%PROGRAMFILES%\\QGIS"
-        - "%PROGRAMFILES%"
-        - "C:\\OSGeo4W"
-        - "/usr/bin/qgis"
-    - version_priority:
+    search_paths:
+      - "%PROGRAMFILES%\\QGIS"
+      - "%PROGRAMFILES%"
+      - "C:\\OSGeo4W"
+      - "/usr/bin/qgis"
+    version_priority:
       - "4.4.7"
       - "3.44"
       - "3.40"
@@ -54,6 +54,18 @@ You can also define (non-exhaustive list):
 ```
 
 ---> 📖 [QGIS Installation Finder](../jobs/qgis_installation_finder.md)
+
+----
+
+## Support QGIS 3 and QGIS 4
+
+🎯 Deploy the same profiles whatever the QGIS major version installed on the workstations:
+
+- ✅ QGIS profiles folder resolved according to the targeted QGIS major version (`QGIS3` or `QGIS4`)
+- ✅ profile settings file (`QGIS3.ini`) renamed to match the targeted version (`QGIS4.ini`)
+- ✅ profiles restricted to the QGIS versions they are compatible with, see [Filter profiles](#filter-profiles-according-to-their-compatibility)
+
+---> 📖 [How QDT support different QGIS major versions](../guides/howto_qdt_handle_qgis_major_versions.md)
 
 ----
 
@@ -67,7 +79,7 @@ You can also define (non-exhaustive list):
     - [QChat](https://geotribu.github.io/qchat/usage/configuration.html#environment-variables) and [QTribu](https://qtribu.geotribu.fr/usage/settings.html#environment-variables)
 - [GDAL](https://gdal.org/en/stable/user/configoptions.html#global-configuration-options)
 - [PostgreSQL](https://docs.postgresql.fr/12/libpq-pgservice.html)
-- the `QGIS3.ini` file with QDT, see [Variabilize QGIS INI files](#variabilize-qgis-ini-files)
+- the QGIS settings file (`QGIS3.ini`, `QGIS4.ini`) with QDT, see [Variabilize QGIS INI files](#variabilize-qgis-ini-files)
 
 ---> 📖 [Environment Variables Manager](../jobs/environment_variables.md)
 
@@ -81,7 +93,7 @@ You can also define (non-exhaustive list):
 - ✅ from an HTTP server
 - ✔️ private project with authentication: [yes using a local proxy](../guides/howto_manage_private_git.md) but not directly (waiting to be funded)
 
----> 📖 [Profiles Downloader](../jobs/profiles_downloader) and [Profiles Synchronizer](../jobs/profiles_synchronizer.md)
+---> 📖 [Profiles Downloader](../jobs/profiles_downloader.md) and [Profiles Synchronizer](../jobs/profiles_synchronizer.md)
 
 ----
 
@@ -94,7 +106,7 @@ You can also define (non-exhaustive list):
 - ✅ plugin stored on a local or network file system without authentication
 - ❌ private plugin repository with authentication - to be funded
 
----> 📖 [Plugins Downloader](../jobs/plugins_downloader) and [Plugins Synchronizer](../jobs/plugins_synchronizer.md)
+---> 📖 [Plugins Downloader](../jobs/plugins_downloader.md) and [Plugins Synchronizer](../jobs/plugins_synchronizer.md)
 
 ----
 
@@ -104,6 +116,8 @@ You can also define (non-exhaustive list):
 
 - ✅ remove unlisted plugins from installed profiles
 - ✅ remove unlisted plugins archives from local cache
+- ✅ remove [deprecated profiles](../reference/qdt_profile.md#deprecated)
+- ✅ remove profiles incompatible with the targeted QGIS version
 
 ---> 📖 Usable as [a job](../jobs/cleanup_manager.md) and/or [command-line](./cli.md#cleanup)
 
@@ -166,6 +180,18 @@ searchPathsForSVG=/usr/share/qgis/svg/,$ORG_QGIS_COMMONS/svg/
 ```
 
 If the `ORG_QGIS_COMMONS` environment variable is defined in QDT's runtime environment, its value will be used to complete the SVG file search path for QGIS.
+
+----
+
+## Filter profiles according to their compatibility
+
+🎯 Keep a profile in the repository without deploying it:
+
+- ✅ [deprecated](../reference/qdt_profile.md#deprecated) profiles are ignored
+- ✅ profiles requiring a more recent QDT are skipped ([`qdtMinVersion`](../reference/qdt_profile.md#qdtminversion))
+- ✅ profiles out of the targeted QGIS version bounds are skipped ([`qgisMinimumVersion`](../reference/qdt_profile.md#qgisminimumversion) and [`qgisMaximumVersion`](../reference/qdt_profile.md#qgismaximumversion))
+
+---> 📖 [Deploying a profile only on compatible QGIS versions](../guides/howto_qdt_handle_qgis_major_versions.md#deploying-a-profile-only-on-compatible-qgis-versions)
 
 ----
 
