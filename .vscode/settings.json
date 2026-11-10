@@ -31,7 +31,8 @@
     // Python
     "python.analysis.autoFormatStrings": true,
     "python.analysis.autoImportCompletions": true,
-    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.languageServerMode": "full",
+    "python.analysis.typeCheckingMode": "standard",
     "python.terminal.activateEnvInCurrentTerminal": true,
     "python.terminal.activateEnvironment": true,
         "python.testing.pytestArgs": [
