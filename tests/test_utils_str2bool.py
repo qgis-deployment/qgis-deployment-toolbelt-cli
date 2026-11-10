@@ -41,6 +41,16 @@ class TestUtilsStrToBool(unittest.TestCase):
         with self.assertRaises(ValueError):
             str2bool(input_var="vrai", raise_exc=True)
 
+    def test_str2bool_surrounding_whitespace(self):
+        """Test str2bool with padded values (e.g. from environment files)."""
+        # padding is ignored
+        self.assertTrue(str2bool(" true "))
+        self.assertFalse(str2bool("\tFALSE\n", raise_exc=True))
+        # empty after stripping is still invalid
+        self.assertIsNone(str2bool("   ", raise_exc=False))
+        with self.assertRaises(ValueError):
+            str2bool(input_var="   ", raise_exc=True)
+
 
 # ############################################################################
 # ####### Stand-alone run ########

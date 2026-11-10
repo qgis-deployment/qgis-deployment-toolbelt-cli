@@ -41,7 +41,7 @@ def str2bool(input_var: bool | str, raise_exc: bool = False) -> bool | None:
     None or Exception if not in any of two sets.
     """
     if isinstance(input_var, str):
-        value = input_var.lower()
+        value = input_var.strip().lower()
         if value in _true_set:
             return True
         if value in _false_set:
