@@ -20,14 +20,14 @@ __all__ = [
 
 
 if opersys == "win32":
-    from qgis_deployment_toolbelt.utils.win32utils import (
+    from qgis_deployment_toolbelt.utils.os_windows import (
         delete_environment_variable,
         get_environment_variable,
         refresh_environment,
         set_environment_variable,
     )
 elif opersys == "linux":
-    from qgis_deployment_toolbelt.utils.linux_utils import (
+    from qgis_deployment_toolbelt.utils.os_linux import (
         delete_environment_variable,
         get_environment_variable,
         refresh_environment,

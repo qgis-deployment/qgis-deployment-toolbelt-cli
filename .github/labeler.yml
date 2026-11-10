@@ -63,6 +63,21 @@ tooling:
       - any-glob-to-any-file:
           - qgis_deployment_toolbelt/utils/journalizer.py
 
+"OS: Linux":
+  - changed-files:
+      - any-glob-to-any-file:
+        - qgis_deployment_toolbelt/utils/os_linux.py
+
+"OS: MacOS":
+  - changed-files:
+      - any-glob-to-any-file:
+        - qgis_deployment_toolbelt/utils/os_mac.py
+
+"OS: Windows":
+  - changed-files:
+      - any-glob-to-any-file:
+        - qgis_deployment_toolbelt/utils/os_windows.py
+
 "scope: jobs":
   - changed-files:
       - any-glob-to-any-file:
@@ -86,7 +101,6 @@ tooling:
   - changed-files:
       - any-glob-to-any-file:
           - qgis_deployment_toolbelt/jobs/job_environment_variables.py
-          - qgis_deployment_toolbelt/utils/os_utils_router.py
 
 "scope:job: plugins-downloader":
   - changed-files:

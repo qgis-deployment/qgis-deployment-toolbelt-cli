@@ -21,14 +21,15 @@ from os import _Environ, environ
 from sys import platform as opersys
 from typing import Any
 
+from qgis_deployment_toolbelt.utils.os_windows import (
+    ExtendedNameFormat,
+    get_current_user_extended_data,
+)
+
 # package
 from qgis_deployment_toolbelt.utils.user_groups import (
     get_user_domain_groups,
     get_user_local_groups,
-)
-from qgis_deployment_toolbelt.utils.win32utils import (
-    ExtendedNameFormat,
-    get_current_user_extended_data,
 )
 
 
