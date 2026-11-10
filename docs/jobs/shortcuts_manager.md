@@ -48,6 +48,8 @@ Possible_values:
 
 > [!WARNING]
 > The `remove` action is not implemented. The job logs an error and is skipped, without stopping the deployment. It's planned to remove it in future releases.
+>
+> To remove shortcuts targeting a profile which is not installed anymore, use the `shortcuts_orphans` scope of [the cleanup manager](./cleanup_manager.md).
 
 ### include
 
