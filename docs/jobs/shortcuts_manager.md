@@ -48,6 +48,8 @@ Possible_values:
 
 > [!WARNING]
 > The `remove` action is not implemented. The job logs an error and is skipped, without stopping the deployment. It's planned to remove it in future releases.
+>
+> To remove shortcuts targeting a profile which is not installed anymore, use the `shortcuts_orphans_manifest` scope of [the cleanup manager](./cleanup_manager.md).
 
 ### include
 
@@ -154,9 +156,7 @@ The path can be customized with the `QDT_SHORTCUTS_MANIFEST_PATH` environment va
 - the QDT version that created it,
 - the creation date.
 
-Shortcuts removed since their creation are dropped from the manifest at each run.
-
-This manifest lets QDT keep track of which shortcuts it actually created for profiles it installed, as opposed to shortcuts created by end-users. It's meant to be internally read by QDT and shouldn't be edited manually.
+This manifest lets QDT keep track of which shortcuts it actually created for profiles it installed, as opposed to shortcuts created by end-users. It's used by the `shortcuts_orphans_manifest` scope of [the cleanup manager](./cleanup_manager.md) to remove shortcuts targeting profiles which are not installed anymore. It's meant to be internally read by QDT and shouldn't be edited manually.
 
 ## Schema
 

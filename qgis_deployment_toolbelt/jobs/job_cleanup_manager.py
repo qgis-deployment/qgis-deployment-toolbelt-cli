@@ -27,6 +27,9 @@ from qgis_deployment_toolbelt.constants import (
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.plugins.manifest import _read_qdt_managed_plugins_manifest
 from qgis_deployment_toolbelt.reports import CleanupReport
+from qgis_deployment_toolbelt.shortcuts.manifest import (
+    _read_qdt_managed_shortcuts_manifest,
+)
 from qgis_deployment_toolbelt.utils.trash_or_delete import move_files_to_trash_or_delete
 
 
@@ -111,6 +114,11 @@ class JobCleanupManager(GenericJob):
                 "QGIS version..."
             )
             self.cleanup_profiles_incompatible_qgis()
+
+        # must run after profiles scopes to take into account profiles removed above
+        if "shortcuts_orphans_manifest" in scopes:
+            logger.debug("Cleaning-up shortcuts targeting not installed profiles...")
+            self.cleanup_shortcuts_orphans_manifest()
 
         # remove files/folders
         self._remove_paths()
@@ -299,6 +307,52 @@ class JobCleanupManager(GenericJob):
                     f"{getenv(ENV_VAR_QGIS_VERSION)}, removing {folder}"
                 )
                 self.report.removed.append(folder)
+
+    def cleanup_shortcuts_orphans_manifest(self) -> None:
+        """Remove shortcuts listed in the QDT managed shortcuts manifest whose profile
+        is not installed anymore, including profiles selected for removal by the
+        previous scopes.
+        """
+        manifest = _read_qdt_managed_shortcuts_manifest(
+            self.os_config.get_qdt_managed_shortcuts_manifest_path()
+        )
+        if not manifest:
+            logger.debug("No shortcut managed by QDT: nothing to clean up.")
+            return
+
+        # include profiles removed in previsous scopes
+        removed_paths = {p.resolve() for p in self.report.removed}
+
+        for shortcut, shortcut_details in sorted(manifest.items()):
+            shortcut_path = Path(shortcut)
+            if (
+                not isinstance(shortcut_details, dict)
+                or not shortcut_details.get("profile_folder")
+                or shortcut_path.suffix != self.os_config.shortcut_extension
+                or not shortcut_path.is_file()
+            ):
+                continue
+
+            profile_folder = Path(shortcut_details["profile_folder"])
+            # check if QGIS profiles folder exist or not
+            if not profile_folder.parent.is_dir():
+                logger.debug(
+                    f"Shortcut {shortcut_path} is kept: the parent folder of its "
+                    f"profile {profile_folder} does not exist."
+                )
+                continue
+
+            if (
+                profile_folder.joinpath("profile.json").is_file()
+                and profile_folder.resolve() not in removed_paths
+            ):
+                continue
+
+            logger.info(
+                f"Shortcut {shortcut_path} targets a profile which is not installed "
+                f"({profile_folder}), removing it."
+            )
+            self.report.removed.append(shortcut_path)
 
     def _remove_paths(self) -> None:
         """Remove files and folders listed in the ``self.report.removed``."""
