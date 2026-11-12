@@ -24,6 +24,7 @@ from unittest.mock import patch
 from qgis_deployment_toolbelt.constants import (
     DEFAULT_QGIS_MAJOR_VERSION,
     ENV_VAR_QGIS_VERSION,
+    MANAGED_SHORTCUTS_MANIFEST_FILENAME,
     OSConfiguration,
     get_qdt_logs_folder,
     get_qdt_working_directory,
@@ -109,6 +110,29 @@ class TestConstants(unittest.TestCase):
             os_config = OSConfiguration.from_opersys("linux")
             self.assertEqual(os_config.qgis_user_data_path, xdg_data_home / "QGIS")
             self.assertEqual(os_config.qdt_user_data_path, xdg_data_home / "QDT")
+
+    def test_get_qdt_managed_shortcuts_manifest_path(self):
+        """QDT_SHORTCUTS_MANIFEST_PATH is used only if it's a JSON file path."""
+        os_config = OSConfiguration.from_opersys()
+        default_path = (
+            os_config.qdt_user_data_path / MANAGED_SHORTCUTS_MANIFEST_FILENAME
+        )
+
+        with patch.dict(
+            environ, {"QDT_SHORTCUTS_MANIFEST_PATH": "~/qdt/manifest.json"}
+        ):
+            self.assertEqual(
+                os_config.get_qdt_managed_shortcuts_manifest_path(),
+                Path.home() / "qdt/manifest.json",
+            )
+
+        with (
+            patch.dict(environ, {"QDT_SHORTCUTS_MANIFEST_PATH": "~/.bashrc"}),
+            self.assertLogs("qgis_deployment_toolbelt.constants", level="WARNING"),
+        ):
+            self.assertEqual(
+                os_config.get_qdt_managed_shortcuts_manifest_path(), default_path
+            )
 
     def test_get_qdt_working_folder(self):
         """Test how QDT working folder is retrieved"""
