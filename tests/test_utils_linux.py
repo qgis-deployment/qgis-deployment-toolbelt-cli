@@ -13,8 +13,10 @@ Usage from the repo root folder:
 # standard library
 import tempfile
 import unittest
+from os import environ
 from pathlib import Path
 from sys import platform as opersys
+from unittest.mock import patch
 
 # project
 from qgis_deployment_toolbelt.utils import os_linux
@@ -65,6 +67,27 @@ class TestUtilsLinux(unittest.TestCase):
                 os_linux.bash_user_which_file_to_store(),
                 tmp_fake_dot_bash_profile,
             )
+
+    def test_get_xdg_data_home(self):
+        """Use XDG_DATA_HOME used only it's an absolute path."""
+        default = Path.home() / ".local/share"
+        with patch.dict(environ, clear=False) as patched_environ:
+            patched_environ.pop("XDG_DATA_HOME", None)
+            self.assertEqual(os_linux.get_xdg_data_home(), default)
+
+        absolute = Path.home() / "xdg_data"
+        for value, expected in (("", default), (str(absolute), absolute)):
+            with (
+                self.subTest(value=value),
+                patch.dict(environ, {"XDG_DATA_HOME": value}),
+            ):
+                self.assertEqual(os_linux.get_xdg_data_home(), expected)
+
+        with (
+            patch.dict(environ, {"XDG_DATA_HOME": "relative/xdg_data"}),
+            self.assertLogs("qgis_deployment_toolbelt.utils.os_linux", level="DEBUG"),
+        ):
+            self.assertEqual(os_linux.get_xdg_data_home(), default)
 
 
 # ############################################################################
