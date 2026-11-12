@@ -19,6 +19,11 @@ from sys import platform as opersys
 from qgis_deployment_toolbelt.__about__ import __title__, __version__
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
+from qgis_deployment_toolbelt.shortcuts.manifest import (
+    _add_shortcut_to_manifest,
+    _read_qdt_managed_shortcuts_manifest,
+    _write_qdt_managed_shortcuts_manifest,
+)
 from qgis_deployment_toolbelt.shortcuts.shortcuts_handler import ApplicationShortcut
 
 
@@ -130,6 +135,15 @@ class JobShortcutsManager(GenericJob):
 
         # check action
         if self.options.get("action") in ("create", "create_or_restore"):
+            # Manifest to keep track of shortutcs managed by QDT
+            qdt_managed_shortcuts_manifest_path = (
+                self.os_config.get_qdt_managed_shortcuts_manifest_path()
+            )
+            qdt_managed_shortcuts_manifest = _read_qdt_managed_shortcuts_manifest(
+                qdt_managed_shortcuts_manifest_path
+            )
+            qdt_managed_shortcuts_manifest_changed: bool = False
+
             for inc_shortcut in self.options.get("include", []):
                 qdt_profile = self.get_matching_profile_from_name(
                     li_profiles=downloaded_profiles,
@@ -161,12 +175,26 @@ class JobShortcutsManager(GenericJob):
                     ),
                     work_dir=qdt_profile.path_in_qgis,
                 )
-                shortcut.create(
+                for shortcut_path in shortcut.create(
                     desktop=inc_shortcut.get("desktop", False),
                     start_menu=inc_shortcut.get("start_menu", True),
-                )
+                ):
+                    if isinstance(shortcut_path, Path):
+                        _add_shortcut_to_manifest(
+                            manifest=qdt_managed_shortcuts_manifest,
+                            shortcut_path=shortcut_path,
+                            profile_folder=qdt_profile.path_in_qgis,
+                        )
+                        qdt_managed_shortcuts_manifest_changed = True
                 logger.info(f"Created shortcut {shortcut.name}")
                 self.SHORTCUTS_CREATED.append(shortcut)
+
+            # Manifest of profile's plugins managed by QDT
+            if qdt_managed_shortcuts_manifest_changed:
+                _write_qdt_managed_shortcuts_manifest(
+                    manifest_path=qdt_managed_shortcuts_manifest_path,
+                    manifest=qdt_managed_shortcuts_manifest,
+                )
 
             logger.debug(f"Job {self.ID} ran successfully.")
         else:

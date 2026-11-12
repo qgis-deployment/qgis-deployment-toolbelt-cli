@@ -68,6 +68,7 @@ SupportedQgisMajorVersion = Literal[3, 4]
 DEFAULT_QGIS_MAJOR_VERSION: SupportedQgisMajorVersion = 3
 
 MANAGED_PLUGINS_MANIFEST_FILENAME: str = ".qdt-managed-plugins.json"
+MANAGED_SHORTCUTS_MANIFEST_FILENAME: str = ".managed-shortcuts.json"
 
 # files to ignore when copying profiles. TODO: make it configurable?
 COPY_IGNORED_PATTERNS: Callable = ignore_patterns("*.lnk", "thumbs.db", ".DS_Store")
@@ -262,6 +263,7 @@ class OSConfiguration:
     qgis_bin_exe_path: Path | None = None
     qgis_profiles_path: Path | None = None
     qgis_user_data_path: Path | None = None
+    qdt_user_data_path: Path | None = None
     qgis_version_major: SupportedQgisMajorVersion = DEFAULT_QGIS_MAJOR_VERSION
     shortcut_extension: str | None = None
     shortcut_forbidden_chars: tuple[str, ...] | None = None
@@ -276,6 +278,17 @@ class OSConfiguration:
             str: name of the profile settings ini file.
         """
         return f"QGIS{self.qgis_version_major}.ini"
+
+    def get_qdt_managed_shortcuts_manifest_path(self) -> Path:
+        """Get the path to the manifest of the shortcuts created by QDT.
+
+        Returns:
+            Path: path to the QDT managed shortcuts manifest file.
+        """
+        if manifest_path_env := getenv("QDT_SHORTCUTS_MANIFEST_PATH"):
+            return Path(expandvars(expanduser(manifest_path_env)))  # noqa: PTH111
+
+        return self.qdt_user_data_path.joinpath(MANAGED_SHORTCUTS_MANIFEST_FILENAME)
 
     def get_qgis_profiles_path(
         self, qgis_version_major: SupportedQgisMajorVersion | None = None
@@ -458,6 +471,7 @@ class OSConfiguration:
                 names_alter=["apple", "mac", "macos"],
                 qgis_bin_exe_path=Path("/usr/bin/qgis"),
                 qgis_user_data_path=Path.home() / "Library/Application Support/QGIS",
+                qdt_user_data_path=Path.home() / "Library/Application Support/QDT",
                 qgis_version_major=qgis_version_major,
                 shortcut_extension="app",
                 shortcut_icon_extensions=("icns",),
@@ -469,6 +483,7 @@ class OSConfiguration:
                 qgis_bin_exe_path=Path("/usr/bin/qgis"),
                 # like QGIS (Qt AppDataLocation), follow XDG Base Directory
                 qgis_user_data_path=get_xdg_data_home() / "QGIS",
+                qdt_user_data_path=get_xdg_data_home() / "QDT",
                 qgis_version_major=qgis_version_major,
                 shortcut_extension=".desktop",
                 shortcut_icon_extensions=("png", "svg"),
@@ -482,6 +497,7 @@ class OSConfiguration:
                     expandvars("%PROGRAMFILES%/QGIS 3.40.11/bin/qgis-ltr-bin.exe")
                 ),
                 qgis_user_data_path=Path(expandvars("%APPDATA%/QGIS")),
+                qdt_user_data_path=Path(expandvars("%APPDATA%/QDT")),
                 qgis_version_major=qgis_version_major,
                 shortcut_extension=".lnk",
                 shortcut_forbidden_chars=("<", ">", ":", '"', "/", "\\", "|", "?", "*"),

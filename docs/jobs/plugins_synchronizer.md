@@ -74,6 +74,11 @@ Default: `~/.cache/qgis-deployment-toolbelt/plugins`
 
 > Added in version 0.44.0
 
-Every plugin installed or upgraded by this job is recorded in a `.qdt-managed-plugins.json` file, stored directly under the profile's `python/plugins` folder (next to the plugin folders themselves). For each plugin, it keeps its version, its plugin ID (when known), the QDT version that deployed it and the installation date.
+Every plugin installed or upgraded by this job is recorded in a `.qdt-managed-plugins.json` file, stored directly under the profile's `python/plugins` folder (next to the plugin folders themselves). For each plugin:
+
+- it keeps its version,
+- its plugin ID (when known)
+- the QDT version that deployed it
+- the installation date
 
 This manifest lets QDT keep track of which plugins it actually deployed, as opposed to plugins installed manually by the end-user within the same profile (for example, through QGIS' own Plugin Manager). It's meant to be internally read by QDT and shouldn't be edited manually.
