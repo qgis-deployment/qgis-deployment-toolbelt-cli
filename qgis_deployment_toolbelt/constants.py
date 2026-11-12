@@ -282,13 +282,20 @@ class OSConfiguration:
         return f"QGIS{self.qgis_version_major}.ini"
 
     def get_qdt_managed_shortcuts_manifest_path(self) -> Path:
-        """Get the path to the manifest of the shortcuts created by QDT.
+        """Get the path to the JSON manifest of the shortcuts created by QDT..
 
         Returns:
             Path: path to the QDT managed shortcuts manifest file.
         """
         if manifest_path_env := getenv("QDT_SHORTCUTS_MANIFEST_PATH"):
-            return Path(expandvars(expanduser(manifest_path_env)))  # noqa: PTH111
+            manifest_path = Path(expandvars(expanduser(manifest_path_env)))  # noqa: PTH111
+            if manifest_path.suffix.lower() == ".json" and not manifest_path.is_dir():
+                return manifest_path
+
+            logger.warning(
+                "QDT_SHORTCUTS_MANIFEST_PATH must be the path to a JSON file, not "
+                f"'{manifest_path}'. Using the default path instead."
+            )
 
         return self.qdt_user_data_path.joinpath(MANAGED_SHORTCUTS_MANIFEST_FILENAME)
 
