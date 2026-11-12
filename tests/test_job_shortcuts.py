@@ -63,7 +63,15 @@ class TestJobShortcuts(unittest.TestCase):
 
                 with (
                     self.subTest(state=state),
-                    patch.dict(environ, {"QGIS_CUSTOM_CONFIG_PATH": tmp_dir}),
+                    patch.dict(
+                        environ,
+                        {
+                            "QGIS_CUSTOM_CONFIG_PATH": tmp_dir,
+                            "QDT_SHORTCUTS_MANIFEST_PATH": str(
+                                Path(tmp_dir, "manifest.json")
+                            ),
+                        },
+                    ),
                     patch(
                         "qgis_deployment_toolbelt.jobs.job_shortcuts.ApplicationShortcut"
                     ) as mock_shortcut,
