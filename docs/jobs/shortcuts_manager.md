@@ -147,6 +147,7 @@ Every shortcut created by this job is recorded in a `.managed-shortcuts.json` fi
 The path can be customized with the `QDT_SHORTCUTS_MANIFEST_PATH` environment variable (see [settings](../usage/settings.md)). For each shortcut, it keeps:
 
 - the targeted profile folder
+- its location: `desktop` or `start_menu`
 - the QDT version that created it
 - the creation date
 

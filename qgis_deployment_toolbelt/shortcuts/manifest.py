@@ -15,6 +15,7 @@ from pathlib import Path
 
 # project
 from qgis_deployment_toolbelt.__about__ import __version_clean__
+from qgis_deployment_toolbelt.constants import ShortcutLocation
 
 
 # #############################################################################
@@ -31,7 +32,10 @@ logger = logging.getLogger(__name__)
 
 
 def _add_shortcut_to_manifest(
-    manifest: dict[str, dict[str, str]], shortcut_path: Path, profile_folder: Path
+    manifest: dict[str, dict[str, str]],
+    shortcut_path: Path,
+    profile_folder: Path,
+    location: ShortcutLocation,
 ) -> None:
     """Add/update a shortcut to the QDT shortcuts manifest.
 
@@ -39,6 +43,7 @@ def _add_shortcut_to_manifest(
         manifest (dict[str, dict[str, str]]): manifest dict to amend, in place
         shortcut_path (Path): path to the plugin that has just been installed
         profile_folder (Path): path to the profile folder targeted by the shortcut
+        location (ShortcutLocation): where the shortcut has been created
     """
     # paths are case-insensitive on Windows so replace an equivalent entry
     for existing_path in [k for k in manifest if Path(k) == shortcut_path]:
@@ -46,6 +51,7 @@ def _add_shortcut_to_manifest(
 
     manifest[str(shortcut_path)] = {
         "created_at": datetime.now(tz=timezone.utc).isoformat(),
+        "location": location,
         "profile_folder": str(profile_folder),
         "qdt_version": f"{__version_clean__}",
     }

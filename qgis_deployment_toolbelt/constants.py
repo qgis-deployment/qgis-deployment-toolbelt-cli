@@ -68,7 +68,9 @@ SupportedQgisMajorVersion = Literal[3, 4]
 DEFAULT_QGIS_MAJOR_VERSION: SupportedQgisMajorVersion = 3
 
 MANAGED_PLUGINS_MANIFEST_FILENAME: str = ".qdt-managed-plugins.json"
+
 MANAGED_SHORTCUTS_MANIFEST_FILENAME: str = ".managed-shortcuts.json"
+ShortcutLocation = Literal["desktop", "start_menu"]
 
 # files to ignore when copying profiles. TODO: make it configurable?
 COPY_IGNORED_PATTERNS: Callable = ignore_patterns("*.lnk", "thumbs.db", ".DS_Store")

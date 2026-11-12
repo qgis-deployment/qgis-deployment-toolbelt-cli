@@ -14,9 +14,11 @@ Author: Julien Moura (https://github.com/guts)
 import logging
 from pathlib import Path
 from sys import platform as opersys
+from typing import get_args
 
 # package
 from qgis_deployment_toolbelt.__about__ import __title__, __version__
+from qgis_deployment_toolbelt.constants import ShortcutLocation
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 from qgis_deployment_toolbelt.shortcuts.manifest import (
@@ -175,15 +177,21 @@ class JobShortcutsManager(GenericJob):
                     ),
                     work_dir=qdt_profile.path_in_qgis,
                 )
-                for shortcut_path in shortcut.create(
-                    desktop=inc_shortcut.get("desktop", False),
-                    start_menu=inc_shortcut.get("start_menu", True),
+                # same order as the paths returned by ApplicationShortcut.create()
+                for location, shortcut_path in zip(
+                    get_args(ShortcutLocation),
+                    shortcut.create(
+                        desktop=inc_shortcut.get("desktop", False),
+                        start_menu=inc_shortcut.get("start_menu", True),
+                    ),
+                    strict=False,
                 ):
                     if isinstance(shortcut_path, Path):
                         _add_shortcut_to_manifest(
                             manifest=qdt_managed_shortcuts_manifest,
                             shortcut_path=shortcut_path,
                             profile_folder=qdt_profile.path_in_qgis,
+                            location=location,
                         )
                         qdt_managed_shortcuts_manifest_changed = True
                 logger.info(f"Created shortcut {shortcut.name}")
