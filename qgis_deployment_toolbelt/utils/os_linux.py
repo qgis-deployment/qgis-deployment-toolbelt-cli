@@ -433,12 +433,14 @@ def get_user_home_folder() -> Path:
 
 def get_user_startmenu_folder() -> Path:
     """Return the folder where FreeDesktop applications launchers are stored for the
-    user, i.e. the equivalent of the Windows Start Menu.
+    user, i.e. the equivalent of the Windows Start Menu: `$XDG_DATA_HOME/applications`.
+
+    See: https://specifications.freedesktop.org/desktop-entry-spec/latest/
 
     Returns:
         Path: path to the user applications folder
     """
-    return get_user_home_folder() / ".local/share/applications"
+    return get_xdg_data_home() / "applications"
 
 
 def get_xdg_data_home() -> Path:
