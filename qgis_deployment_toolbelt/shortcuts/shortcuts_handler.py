@@ -28,7 +28,7 @@ if opersys == "win32":
 # package
 from qgis_deployment_toolbelt.__about__ import __version__
 from qgis_deployment_toolbelt.constants import (
-    QDT_SHORTCUT_WINDOWS_PREFIX,
+    QDT_SHORTCUT_DESCRIPTION_PREFIX,
     QGIS_BIN_WINDOWS_FILENAME,
     QGIS_LTR_BIN_WINDOWS_FILENAME,
     OSConfiguration,
@@ -410,7 +410,9 @@ class ApplicationShortcut:
             if self.description:
                 wscript.Description = self.description
             else:
-                wscript.Description = QDT_SHORTCUT_WINDOWS_PREFIX + f" {__version__}"
+                wscript.Description = (
+                    QDT_SHORTCUT_DESCRIPTION_PREFIX + f" {__version__}"
+                )
             if self.icon_path:
                 if isinstance(self.icon_path, Path):
                     wscript.IconLocation = str(self.icon_path.resolve())
@@ -449,7 +451,9 @@ class ApplicationShortcut:
             if self.description:
                 wscript.Description = self.description
             else:
-                wscript.Description = QDT_SHORTCUT_WINDOWS_PREFIX + f" {__version__}"
+                wscript.Description = (
+                    QDT_SHORTCUT_DESCRIPTION_PREFIX + f" {__version__}"
+                )
             if self.icon_path is not None:
                 wscript.IconLocation = str(self.icon_path.resolve())
             try:

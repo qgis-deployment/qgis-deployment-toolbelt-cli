@@ -83,9 +83,8 @@ ENV_VAR_QGIS_VERSION: str = "QDT_QGIS_VERSION"
 # max size of an HTTP error response body written to logs
 HTTP_ERROR_BODY_MAX_LOGGED_BYTES: int = 500
 
-# Desktop and Start menu shortcuts
-QDT_SHORTCUT_WINDOWS_PREFIX: str = f"Created with {__title__}"
-QDT_SHORTCUT_FREEDESKTOP_PATTERN: str = "qdt.*.qgis.desktop"
+# description to insert in Desktop and Start menu shortcuts to 'mark' shortcuts created
+QDT_SHORTCUT_DESCRIPTION_PREFIX: str = f"Created with {__title__}"
 
 # QGIS executable filenames
 QGIS_BIN_WINDOWS_FILENAME: str = "qgis-bin.exe"

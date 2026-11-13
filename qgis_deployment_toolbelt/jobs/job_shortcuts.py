@@ -17,8 +17,11 @@ from sys import platform as opersys
 from typing import get_args
 
 # package
-from qgis_deployment_toolbelt.__about__ import __title__, __version__
-from qgis_deployment_toolbelt.constants import ShortcutLocation
+from qgis_deployment_toolbelt.__about__ import __version__
+from qgis_deployment_toolbelt.constants import (
+    QDT_SHORTCUT_DESCRIPTION_PREFIX,
+    ShortcutLocation,
+)
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 from qgis_deployment_toolbelt.shortcuts.manifest import (
@@ -167,7 +170,7 @@ class JobShortcutsManager(GenericJob):
                 shortcut = ApplicationShortcut(
                     name=inc_shortcut.get("label"),
                     exec_path=self.os_config.get_qgis_bin_path(),
-                    description=f"Created with {__title__} {__version__}",
+                    description=f"{QDT_SHORTCUT_DESCRIPTION_PREFIX} {__version__}",
                     icon_path=self._get_icon_path(
                         profile=qdt_profile, icon_filename=inc_shortcut.get("profile")
                     ),
