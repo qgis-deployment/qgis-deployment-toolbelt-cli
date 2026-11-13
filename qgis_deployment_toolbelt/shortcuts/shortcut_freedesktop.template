@@ -24,5 +24,5 @@ Icon=folder
 
 [Desktop Action RemoveProfile]
 Name=Remove profile $profile_name from QGIS
-Exec=bash -c "zenity --question --title='Confirm QGIS profile removal' --text='Remove $profile_name_shell_quoted from QGIS profiles?' && gio -r $profile_folder_shell_arg"
+Exec=bash -c "zenity --question --title='Confirm QGIS profile removal' --text='Remove $profile_name_shell_quoted from QGIS profiles?' && gio trash $profile_folder_shell_arg"
 Icon=edit-delete
