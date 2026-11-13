@@ -11,6 +11,7 @@ Author: Julien Moura (Oslandia)
 # ##################################
 
 # Standard library
+import json
 import tempfile
 from os import environ, getenv
 from pathlib import Path
@@ -80,6 +81,20 @@ def test_cli_version(capsys, option):
     assert f"{__about__.__version__}\n" == out
 
     assert err == ""
+
+
+@pytest.fixture(autouse=True)
+def remove_created_shortcuts(monkeypatch, tmp_path):
+    """Keep track of the shortcuts created by the scenarios in a dedicated manifest, to
+    remove them after each test."""
+    manifest_path = tmp_path.joinpath("shortcuts.json")
+    monkeypatch.setenv("QDT_SHORTCUTS_MANIFEST_PATH", str(manifest_path))
+
+    yield
+
+    if manifest_path.is_file():
+        for shortcut in json.loads(manifest_path.read_text(encoding="UTF-8")):
+            Path(shortcut).unlink(missing_ok=True)
 
 
 @pytest.mark.parametrize("option", good_scenarios)

@@ -270,3 +270,78 @@ class TestJobCleanupManager(unittest.TestCase):
             )
 
             self.assertEqual(self._run_profiles_incompatible_qgis(tmp_dir, None), [])
+
+    def _run_shortcuts_orphans_manifest(
+        self, tmp_dir: str, manifest: dict, scopes: list[str] | None = None
+    ) -> list[Path]:
+        """Run the job in dry-run mode with the given shortcuts manifest, on the
+        'shortcuts_orphans_manifest' scope by default."""
+        manifest_path = Path(tmp_dir, "shortcuts.json")
+        manifest_path.write_text(json.dumps(manifest), encoding="UTF-8")
+        with patch.dict(environ, {"QDT_SHORTCUTS_MANIFEST_PATH": str(manifest_path)}):
+            job = JobCleanupManager(
+                options={
+                    "dry_run": True,
+                    "scopes": scopes or ["shortcuts_orphans_manifest"],
+                }
+            )
+            job.qgis_profiles_path = Path(tmp_dir, "profiles")
+            job.qdt_downloaded_repositories = Path(tmp_dir, "downloaded")
+            return job.run().removed
+
+    def test_cleanup_shortcuts_orphans_manifest(self):
+        """Only existing shortcuts listed in the manifest whose profile is not
+        installed are selected, and nothing is removed in dry-run mode."""
+        with tempfile.TemporaryDirectory(prefix="QDT_test_cleanup_") as tmp_dir:
+            profiles = Path(tmp_dir, "profiles")
+            self._make_installed_profile(profiles / "installed", "installed")
+            profiles.joinpath("manual").mkdir()
+
+            extension = JobCleanupManager(options={}).os_config.shortcut_extension
+            manifest = {}
+            for name, profile_folder in (
+                ("installed", profiles / "installed"),
+                ("manual", profiles / "manual"),
+                ("removed", profiles / "removed"),
+                ("unreachable", Path(tmp_dir, "unmounted/profiles/removed")),
+            ):
+                shortcut = Path(tmp_dir, f"{name}{extension}")
+                shortcut.touch()
+                manifest[str(shortcut)] = {"profile_folder": str(profile_folder)}
+            # not a shortcut file, or already deleted
+            Path(tmp_dir, "not_a_shortcut.txt").touch()
+            for name in ("not_a_shortcut.txt", f"deleted{extension}"):
+                manifest[str(Path(tmp_dir, name))] = {
+                    "profile_folder": str(profiles / "removed")
+                }
+
+            removed = self._run_shortcuts_orphans_manifest(tmp_dir, manifest)
+
+            self.assertEqual(
+                sorted(removed),
+                [
+                    Path(tmp_dir, f"manual{extension}"),
+                    Path(tmp_dir, f"removed{extension}"),
+                ],
+            )
+            self.assertTrue(Path(tmp_dir, f"removed{extension}").is_file())
+
+    def test_cleanup_shortcuts_orphans_manifest_after_profiles_scopes(self):
+        """A shortcut targeting a profile removed by a previous scope of the same run
+        is selected."""
+        with tempfile.TemporaryDirectory(prefix="QDT_test_cleanup_") as tmp_dir:
+            profile = self._make_installed_profile(Path(tmp_dir, "profiles/old"), "old")
+            self._make_installed_profile(
+                Path(tmp_dir, "downloaded/repo/old"), "old", deprecated=True
+            )
+            extension = JobCleanupManager(options={}).os_config.shortcut_extension
+            shortcut = Path(tmp_dir, f"old{extension}")
+            shortcut.touch()
+
+            removed = self._run_shortcuts_orphans_manifest(
+                tmp_dir,
+                {str(shortcut): {"profile_folder": str(profile)}},
+                scopes=["profiles_deprecated", "shortcuts_orphans_manifest"],
+            )
+
+            self.assertEqual(removed, [profile, shortcut])

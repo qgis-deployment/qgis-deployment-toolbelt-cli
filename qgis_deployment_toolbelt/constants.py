@@ -52,6 +52,7 @@ CleanupScopes = Literal[
     "plugins_installed",
     "profiles_deprecated",
     "profiles_incompatible_qgis",
+    "shortcuts_orphans_manifest",
 ]
 DEFAULT_CLEANUP_SCOPES: list[CleanupScopes] = ["plugins_cache"]
 
