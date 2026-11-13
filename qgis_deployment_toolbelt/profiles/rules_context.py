@@ -21,6 +21,7 @@ from os import _Environ, environ
 from sys import platform as opersys
 from typing import Any
 
+from qgis_deployment_toolbelt.exceptions import DomainControllerUnreachableError
 from qgis_deployment_toolbelt.utils.os_windows import (
     ExtendedNameFormat,
     get_current_user_extended_data,
@@ -152,9 +153,15 @@ class QdtRulesContext:
             dict: dict user information.
         """
         if opersys == "win32":
-            windows_extended = {
-                k.name: get_current_user_extended_data(k) for k in ExtendedNameFormat
-            }
+            windows_extended = {}
+            for name_format in ExtendedNameFormat:
+                try:
+                    user_data = get_current_user_extended_data(name_format)
+                except DomainControllerUnreachableError as err:
+                    logger.debug(err)
+                    user_data = ""
+                    self.unavailable_facts.add("user.windows_extended")
+                windows_extended[name_format.name] = user_data
         else:
             windows_extended = None
 
