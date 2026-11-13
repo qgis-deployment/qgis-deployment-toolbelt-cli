@@ -389,6 +389,29 @@ def get_user_desktop_folder() -> Path:
     return default_value
 
 
+def escape_freedesktop_exec_quoted(value: str) -> str:
+    """Escape a value to be placed between double quotes in the Exec key of a
+    desktop entry.
+
+    Rules are applied in reverse order of the reading:
+
+    1. quoting rule (backslash before reserved characters)
+    2. then field codes (`%` doubled)
+    3. then string
+    escaping (backslash doubled).
+
+    See: https://specifications.freedesktop.org/desktop-entry-spec/latest/exec-variables.html
+
+    Args:
+        value (str): value to escape
+
+    Returns:
+        str: escaped value, without surrounding quotes
+    """
+    escaped = re.sub(r'(["`$\\])', r"\\\1", value)
+    return escaped.replace("%", "%%").replace("\\", "\\\\")
+
+
 def get_user_home_folder() -> Path:
     """Return the user home folder.
 

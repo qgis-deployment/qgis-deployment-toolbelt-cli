@@ -11,6 +11,7 @@ Author: Julien Moura (https://github.com/guts)
 # ##################################
 # standard
 import logging
+import shlex
 import stat
 import sys
 from collections.abc import Iterable
@@ -35,6 +36,7 @@ from qgis_deployment_toolbelt.constants import (
 )
 from qgis_deployment_toolbelt.utils.check_path import check_path
 from qgis_deployment_toolbelt.utils.frozen_app import is_running_pyinstaller
+from qgis_deployment_toolbelt.utils.os_linux import escape_freedesktop_exec_quoted
 from qgis_deployment_toolbelt.utils.os_router import (
     get_user_desktop_folder,
     get_user_home_folder,
@@ -333,8 +335,10 @@ class ApplicationShortcut:
         # handle case where work dir is not defined
         if isinstance(self.work_dir, Path):
             profile_name = self.work_dir.name
+            profile_folder = str(self.work_dir)
         else:
             profile_name = "default"
+            profile_folder = ""
 
         # subsitute with values
         shortcut_text = tpl.safe_substitute(
@@ -342,7 +346,18 @@ class ApplicationShortcut:
                 "description": self.description,
                 "exec": f"{self.exec_path} {self.exec_arguments}",
                 "icon_path": self.icon_path,
-                "profile_folder": str(self.work_dir),
+                "profile_folder_path_key": profile_folder,
+                # actions arguments, quoted to handle spaces in paths
+                "profile_folder_exec_arg": (
+                    f'"{escape_freedesktop_exec_quoted(profile_folder)}"'
+                ),
+                "profile_folder_shell_arg": escape_freedesktop_exec_quoted(
+                    shlex.quote(profile_folder)
+                ),
+                # profile name within single quotes in a shell command
+                "profile_name_shell_quoted": escape_freedesktop_exec_quoted(
+                    profile_name.replace("'", "'\\''")
+                ),
                 "profile_name": profile_name,
                 "shortcut_name": self.name,
             }
