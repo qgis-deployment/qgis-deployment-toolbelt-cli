@@ -22,6 +22,19 @@ class QdtError(Exception):
         return getattr(self, "message", None) or super().__str__()
 
 
+class DomainControllerUnreachableError(QdtError):
+    """When the domain controller can't be reached to retrieve user data."""
+
+    def __init__(self, data_label: str):
+        """Initialization method.
+
+        Args:
+            data_label (str): label of the user data which can't be retrieved
+        """
+        self.message = f"Domain controller unreachable to retrieve user {data_label}."
+        super().__init__(self.message)
+
+
 class InvalidScenarioError(QdtError, ValueError):
     """When a scenario file can't be parsed: YAML syntax or text encoding.
 
