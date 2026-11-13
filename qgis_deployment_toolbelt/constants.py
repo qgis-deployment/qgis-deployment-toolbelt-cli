@@ -85,6 +85,8 @@ HTTP_ERROR_BODY_MAX_LOGGED_BYTES: int = 500
 
 # description to insert in Desktop and Start menu shortcuts to 'mark' shortcuts created
 QDT_SHORTCUT_DESCRIPTION_PREFIX: str = f"Created with {__title__}"
+# specials chars not allowed in a profile name used in shortcuts
+QDT_SHORTCUT_PROFILE_NAME_FORBIDDEN_CHARS: tuple[str, ...] = ('"', "`", "$", "\\", "%")
 
 # QGIS executable filenames
 QGIS_BIN_WINDOWS_FILENAME: str = "qgis-bin.exe"

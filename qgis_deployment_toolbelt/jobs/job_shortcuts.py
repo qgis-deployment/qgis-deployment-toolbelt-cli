@@ -20,6 +20,7 @@ from typing import get_args
 from qgis_deployment_toolbelt.__about__ import __version__
 from qgis_deployment_toolbelt.constants import (
     QDT_SHORTCUT_DESCRIPTION_PREFIX,
+    QDT_SHORTCUT_PROFILE_NAME_FORBIDDEN_CHARS,
     ShortcutLocation,
 )
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
@@ -162,6 +163,19 @@ class JobShortcutsManager(GenericJob):
                     logger.info(
                         f"Profile '{qdt_profile.name}' is not installed in "
                         f"{qdt_profile.path_in_qgis}. Shortcut "
+                        f"'{inc_shortcut.get('label')}' is not created."
+                    )
+                    continue
+
+                # check if the profile name can be passed to QGIS in a shortcut
+                if forbidden_chars := [
+                    char
+                    for char in QDT_SHORTCUT_PROFILE_NAME_FORBIDDEN_CHARS
+                    if char in qdt_profile.name
+                ]:
+                    logger.error(
+                        f"Profile name '{qdt_profile.name}' contains forbidden "
+                        f"characters ({' '.join(forbidden_chars)}). Shortcut "
                         f"'{inc_shortcut.get('label')}' is not created."
                     )
                     continue

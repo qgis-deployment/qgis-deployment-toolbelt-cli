@@ -37,7 +37,8 @@
             "type": "string"
         },
         "name": {
-            "description": "Profile name without any special characters.",
+            "description": "Profile name without any special characters. Special characters breaking the command-line are forbidden.",
+            "pattern": "^[^\"`$\\\\%]+$",
             "type": "string"
         },
         "qdtMinVersion": {
