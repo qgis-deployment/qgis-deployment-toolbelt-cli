@@ -15,6 +15,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 # project
 from qgis_deployment_toolbelt.profiles.rules_context import QdtRulesContext
@@ -51,6 +52,23 @@ class TestQdtRulesContext(unittest.TestCase):
         self.assertIn("env", context_data)
         self.assertIn("environment", context_data)
         self.assertIn("user", context_data)
+
+    def test_unavailable_domain_groups(self):
+        """Domain groups which can't be retrieved are listed as unavailable until the
+        next successful export."""
+        rules_context = QdtRulesContext()
+        target = (
+            "qgis_deployment_toolbelt.profiles.rules_context.get_user_domain_groups"
+        )
+
+        with patch(target, side_effect=RuntimeError("simulated DC unreachable")):
+            context = rules_context.to_dict()
+        self.assertEqual(context["user"]["groups_domain"], [])
+        self.assertEqual(rules_context.unavailable_facts, {"user.groups_domain"})
+
+        with patch(target, return_value=["GIS"]):
+            rules_context.to_dict()
+        self.assertEqual(rules_context.unavailable_facts, set())
 
 
 # ############################################################################

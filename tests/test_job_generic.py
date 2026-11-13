@@ -285,6 +285,24 @@ class TestJobGeneric(unittest.TestCase):
                 else:
                     self.assertEqual(errors, [])
 
+    def test_unmet_rules_not_established_when_facts_are_unavailable(self):
+        """Unmet rules are neither matched nor unmatched when some facts of the rules
+        context are unavailable, while met rules still match."""
+        always = QdtProfile(name="always", rules=self.ALWAYS_MATCHING_RULES)
+        never = QdtProfile(name="never", rules=self.NEVER_MATCHING_RULES)
+        with (
+            patch.dict(GenericJob.RULES_FILTER_CACHE, clear=True),
+            patch(
+                "qgis_deployment_toolbelt.profiles.rules_context.get_user_domain_groups",
+                side_effect=RuntimeError("simulated domain controller unreachable"),
+            ),
+        ):
+            matched, unmatched = self.generic_job.filter_profiles_on_rules(
+                (always, never)
+            )
+
+        self.assertEqual((matched, unmatched), ([always], []))
+
     def test_rules_verdict_is_reused(self):
         """Identical rules are evaluated only once, whatever the profiles."""
         profiles = tuple(
