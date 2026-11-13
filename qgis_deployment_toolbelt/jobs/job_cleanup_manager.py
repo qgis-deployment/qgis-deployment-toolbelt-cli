@@ -320,7 +320,7 @@ class JobCleanupManager(GenericJob):
             logger.debug("No shortcut managed by QDT: nothing to clean up.")
             return
 
-        # include profiles removed in previsous scopes
+        # include profiles removed in previous scopes
         removed_paths = {p.resolve() for p in self.report.removed}
 
         for shortcut, shortcut_details in sorted(manifest.items()):
