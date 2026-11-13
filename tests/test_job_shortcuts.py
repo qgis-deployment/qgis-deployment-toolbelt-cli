@@ -24,6 +24,9 @@ from unittest.mock import patch
 # package
 from qgis_deployment_toolbelt.jobs.job_shortcuts import JobShortcutsManager
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
+from qgis_deployment_toolbelt.shortcuts.manifest import (
+    _read_qdt_managed_shortcuts_manifest,
+)
 
 
 # #############################################################################
@@ -63,7 +66,15 @@ class TestJobShortcuts(unittest.TestCase):
 
                 with (
                     self.subTest(state=state),
-                    patch.dict(environ, {"QGIS_CUSTOM_CONFIG_PATH": tmp_dir}),
+                    patch.dict(
+                        environ,
+                        {
+                            "QGIS_CUSTOM_CONFIG_PATH": tmp_dir,
+                            "QDT_SHORTCUTS_MANIFEST_PATH": str(
+                                Path(tmp_dir, "manifest.json")
+                            ),
+                        },
+                    ),
                     patch(
                         "qgis_deployment_toolbelt.jobs.job_shortcuts.ApplicationShortcut"
                     ) as mock_shortcut,
@@ -80,6 +91,81 @@ class TestJobShortcuts(unittest.TestCase):
                         job.run()
 
                     self.assertEqual(mock_shortcut.call_count, expected_shortcuts)
+
+    def test_created_shortcuts_are_recorded_in_manifest(self):
+        """Created shortcuts are recorded in the manifest with their location and
+        targeted profile folder."""
+        job = JobShortcutsManager(
+            options={
+                "action": "create",
+                "include": [
+                    {
+                        "label": "QGIS - Unit test",
+                        "profile": "unit_test",
+                        "desktop": True,
+                    }
+                ],
+            }
+        )
+
+        with tempfile.TemporaryDirectory(prefix="QDT_test_shortcuts_") as tmp_dir:
+            # in a folder which doesn't exist yet
+            manifest_path = Path(tmp_dir, "qdt", "manifest.json")
+            installed_folder = Path(tmp_dir, "unit_test")
+            installed_folder.mkdir()
+            installed_folder.joinpath("profile.json").write_text(
+                '{"name": "unit_test"}', encoding="UTF-8"
+            )
+            desktop_shortcut = Path(tmp_dir, "Desktop", "QGIS - Unit test.lnk")
+            startmenu_shortcut = Path(tmp_dir, "Programs", "QGIS - Unit test.lnk")
+
+            with (
+                patch.dict(
+                    environ,
+                    {
+                        "QGIS_CUSTOM_CONFIG_PATH": tmp_dir,
+                        "QDT_SHORTCUTS_MANIFEST_PATH": str(manifest_path),
+                    },
+                ),
+                patch(
+                    "qgis_deployment_toolbelt.jobs.job_shortcuts.ApplicationShortcut"
+                ) as mock_shortcut,
+            ):
+                mock_shortcut.return_value.create.return_value = (
+                    desktop_shortcut,
+                    startmenu_shortcut,
+                )
+                qdt_profile = QdtProfile(
+                    name="unit_test", folder=Path(tmp_dir, "downloaded", "unit_test")
+                )
+                with patch.object(
+                    job, "list_downloaded_profiles", return_value=(qdt_profile,)
+                ):
+                    job.run()
+
+            manifest = _read_qdt_managed_shortcuts_manifest(manifest_path)
+            self.assertEqual(
+                {
+                    path: (entry["location"], entry["profile_folder"])
+                    for path, entry in manifest.items()
+                },
+                {
+                    str(desktop_shortcut): ("desktop", str(installed_folder)),
+                    str(startmenu_shortcut): ("start_menu", str(installed_folder)),
+                },
+            )
+
+    def test_read_corrupted_manifest(self):
+        """A corrupted manifest is read as empty, with a warning."""
+        with tempfile.TemporaryDirectory(prefix="QDT_test_shortcuts_") as tmp_dir:
+            manifest_path = Path(tmp_dir, "manifest.json")
+            manifest_path.write_text("not a JSON content", encoding="UTF-8")
+            with self.assertLogs(
+                "qgis_deployment_toolbelt.shortcuts.manifest", level="WARNING"
+            ):
+                self.assertEqual(
+                    _read_qdt_managed_shortcuts_manifest(manifest_path), {}
+                )
 
 
 # ############################################################################

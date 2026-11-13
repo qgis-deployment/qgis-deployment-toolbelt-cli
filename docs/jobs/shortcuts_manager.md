@@ -134,7 +134,26 @@ Examples:
   icon_converter.py png2ico input.png --output output.ico
 ```
 
-----
+### QDT-managed shortcuts manifest
+
+> Added in version 0.50.0
+
+Every shortcut created by this job is recorded in a `.managed-shortcuts.json` file, stored in the QDT user data folder:
+
+- `%APPDATA%/QDT` on Windows
+- `$XDG_DATA_HOME/QDT` on Linux (`~/.local/share/QDT` by default)
+- `~/Library/Application Support/QDT` on macOS
+
+The path can be customized with the `QDT_SHORTCUTS_MANIFEST_PATH` environment variable (see [settings](../usage/settings.md)). For each shortcut, it keeps:
+
+- the targeted profile folder,
+- its location: `desktop` or `start_menu`,
+- the QDT version that created it,
+- the creation date.
+
+Shortcuts removed since their creation are dropped from the manifest at each run.
+
+This manifest lets QDT keep track of which shortcuts it actually created for profiles it installed, as opposed to shortcuts created by end-users. It's meant to be internally read by QDT and shouldn't be edited manually.
 
 ## Schema
 
