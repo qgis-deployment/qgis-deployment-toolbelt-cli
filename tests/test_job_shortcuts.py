@@ -92,6 +92,44 @@ class TestJobShortcuts(unittest.TestCase):
 
                     self.assertEqual(mock_shortcut.call_count, expected_shortcuts)
 
+    def test_shortcut_not_created_for_profile_name_with_forbidden_chars(self):
+        """A profile name with chars breaking the shortcut command line is refused."""
+        with tempfile.TemporaryDirectory(prefix="QDT_test_shortcuts_") as tmp_dir:
+            for profile_name, expected_shortcuts in (("QDT $HOME", 0), ("QDT Demo", 1)):
+                Path(tmp_dir, profile_name, "profile.json").parent.mkdir()
+                Path(tmp_dir, profile_name, "profile.json").write_text("{}")
+                job = JobShortcutsManager(
+                    options={
+                        "action": "create",
+                        "include": [{"label": "QGIS", "profile": profile_name}],
+                    }
+                )
+                with (
+                    self.subTest(profile_name=profile_name),
+                    patch.dict(
+                        environ,
+                        {
+                            "QGIS_CUSTOM_CONFIG_PATH": tmp_dir,
+                            "QDT_SHORTCUTS_MANIFEST_PATH": str(
+                                Path(tmp_dir, "manifest.json")
+                            ),
+                        },
+                    ),
+                    patch(
+                        "qgis_deployment_toolbelt.jobs.job_shortcuts.ApplicationShortcut"
+                    ) as mock_shortcut,
+                ):
+                    qdt_profile = QdtProfile(
+                        name=profile_name,
+                        folder=Path(tmp_dir, "downloaded", profile_name),
+                    )
+                    with patch.object(
+                        job, "list_downloaded_profiles", return_value=(qdt_profile,)
+                    ):
+                        job.run()
+
+                    self.assertEqual(mock_shortcut.call_count, expected_shortcuts)
+
     def test_created_shortcuts_are_recorded_in_manifest(self):
         """Created shortcuts are recorded in the manifest with their location and
         targeted profile folder."""
