@@ -454,6 +454,9 @@ To help you writing rules, QDT provides a [command to export rules context](../u
 qdt export-rules-context -o qdt_rules_context.json
 ```
 
+> [!NOTE]
+> Some facts may be unavailable during a deployment. For now, it only concerns the user's domain groups (`groups_domain`), which are an empty list when they can't be retrieved from the Active Directory (domain controller unreachable for exemple). In that case, rules which are not met can't be established: the profile is not deployed, as if its rules were not met, and a warning is logged.
+
 ----
 
 ## Model definition

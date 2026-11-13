@@ -533,7 +533,8 @@ class GenericJob(ABC):
 
         Returns:
             bool | None: True if every rule matches, False otherwise. None if the
-                rules could not be evaluated.
+                rules could not be evaluated, or are not met while some facts of the
+                rules context are unavailable.
         """
         logger.debug(
             f"Checking that profile '{profile.name}' matches deployment conditions. "
@@ -555,6 +556,16 @@ class GenericJob(ABC):
                 "deployment rule(s)."
             )
             return True
+
+        # unmet rules can be related to unreachable services like domain controller for example
+        if self.qdt_rules_context.unavailable_facts:
+            logger.warning(
+                f"Deployment rules of profile '{profile.name}' could not be "
+                f"established: {len(results)}/{len(profile.rules)} rule(s) matched "
+                "while some facts of the rules context are unavailable: "
+                f"{', '.join(sorted(self.qdt_rules_context.unavailable_facts))}."
+            )
+            return None
 
         logger.info(
             f"Profile '{profile.name}' does not match the deployment "

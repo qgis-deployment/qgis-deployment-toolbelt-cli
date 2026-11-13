@@ -61,6 +61,8 @@ class QdtRulesContext:
             Defaults to None.
         """
         self.only_prefixed_variables = only_prefixed_variables
+        # facts which could not be retrieved during the last export
+        self.unavailable_facts: set[str] = set()
 
         if variables_prefix is None:
             self.variables_prefix = ["QDT_", "QGIS_"]
@@ -161,6 +163,7 @@ class QdtRulesContext:
         except Exception as err:
             logger.error(f"Unable to retrieve user domain groups. Trace: {err}")
             user_domain_groups = []
+            self.unavailable_facts.add("user.groups_domain")
 
         return {
             "name": getuser(),
@@ -171,11 +174,13 @@ class QdtRulesContext:
 
     # -- EXPORT
     def to_dict(self) -> dict:
-        """Convert object into dictionary.
+        """Convert object into dictionary. Facts which could not be retrieved are
+        listed in ``unavailable_facts``.
 
         Returns:
             dict: object as dictionary
         """
+        self.unavailable_facts.clear()
         result = {}
         for attr in dir(self):
             if isinstance(
