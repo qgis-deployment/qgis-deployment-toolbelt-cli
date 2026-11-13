@@ -13,6 +13,7 @@ Author: Julien Moura (https://github.com/guts)
 import logging
 import re
 from functools import lru_cache
+from os import getenv
 from pathlib import Path
 from typing import Literal
 
@@ -352,3 +353,26 @@ def get_profile_file(scope: Literal["system", "user"]) -> Path | None:
     else:
         logger.error(f"Scope {scope} not handled. Fallback to 'user'.")
         return get_profile_file(scope="user")
+
+
+def get_xdg_data_home() -> Path:
+    """Return the base folder for user data files, following the XDG Base Directory
+    specification: `XDG_DATA_HOME`
+
+    See: https://specifications.freedesktop.org/basedir-spec/latest/
+
+    Returns:
+        Path: path to the base folder for user data files.
+    """
+    xdg_data_home = getenv("XDG_DATA_HOME", "")
+
+    if xdg_data_home and Path(xdg_data_home).is_absolute():
+        return Path(xdg_data_home)
+
+    if xdg_data_home:
+        logger.debug(
+            f"XDG_DATA_HOME environment variable is not an absolute path "
+            f"('{xdg_data_home}'), so it's ignored as required by the XDG Base "
+            "Directory specification."
+        )
+    return Path.home() / ".local/share"

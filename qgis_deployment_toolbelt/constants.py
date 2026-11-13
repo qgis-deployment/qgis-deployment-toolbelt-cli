@@ -31,6 +31,7 @@ from packaging.version import InvalidVersion, Version
 
 # package
 from qgis_deployment_toolbelt.utils.check_path import check_path
+from qgis_deployment_toolbelt.utils.os_linux import get_xdg_data_home
 
 
 if TYPE_CHECKING:
@@ -466,7 +467,8 @@ class OSConfiguration:
                 name_python="linux",
                 names_alter=["kubuntu", "ubuntu"],
                 qgis_bin_exe_path=Path("/usr/bin/qgis"),
-                qgis_user_data_path=Path.home() / ".local/share/QGIS",
+                # like QGIS (Qt AppDataLocation), follow XDG Base Directory
+                qgis_user_data_path=get_xdg_data_home() / "QGIS",
                 qgis_version_major=qgis_version_major,
                 shortcut_extension=".desktop",
                 shortcut_icon_extensions=("png", "svg"),

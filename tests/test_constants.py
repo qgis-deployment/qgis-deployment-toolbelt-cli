@@ -100,6 +100,15 @@ class TestConstants(unittest.TestCase):
         )
         unsetenv("QDT_LOGS_DIR")
 
+    def test_qgis_user_data_path_follows_xdg_data_home_on_linux(self) -> None:
+        """On Linux, QGIS user data folder follows XDG_DATA_HOME, like QGIS."""
+        xdg_data_home = Path.home() / "xdg_data"
+        with patch.dict(environ, {"XDG_DATA_HOME": str(xdg_data_home)}):
+            self.assertEqual(
+                OSConfiguration.from_opersys("linux").qgis_user_data_path,
+                xdg_data_home / "QGIS",
+            )
+
     def test_get_qdt_working_folder(self):
         """Test how QDT working folder is retrieved"""
         # using specific value
