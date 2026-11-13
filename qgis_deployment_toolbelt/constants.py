@@ -30,6 +30,7 @@ from typing import TYPE_CHECKING, Literal, cast, get_args
 from packaging.version import InvalidVersion, Version
 
 # package
+from qgis_deployment_toolbelt.__about__ import __title__
 from qgis_deployment_toolbelt.utils.check_path import check_path
 from qgis_deployment_toolbelt.utils.os_linux import get_xdg_data_home
 
@@ -81,6 +82,9 @@ ENV_VAR_QGIS_VERSION: str = "QDT_QGIS_VERSION"
 
 # max size of an HTTP error response body written to logs
 HTTP_ERROR_BODY_MAX_LOGGED_BYTES: int = 500
+
+# description to insert in Desktop and Start menu shortcuts to 'mark' shortcuts created
+QDT_SHORTCUT_DESCRIPTION_PREFIX: str = f"Created with {__title__}"
 
 # QGIS executable filenames
 QGIS_BIN_WINDOWS_FILENAME: str = "qgis-bin.exe"
