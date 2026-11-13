@@ -11,9 +11,12 @@ Usage from the repo root folder:
 """
 
 # standard lib
+import tempfile
 import unittest
+from os import environ
 from pathlib import Path
 from sys import platform as opersys
+from unittest.mock import patch
 
 # project
 from qgis_deployment_toolbelt.shortcuts.shortcuts_handler import ApplicationShortcut
@@ -120,6 +123,34 @@ class TestShortcut(unittest.TestCase):
                 name="QDT - Test shortcut bad type",
                 exec_path=Path(__file__),
                 work_dir=["C:\\"],
+            )
+
+    @unittest.skipUnless(opersys == "linux", "FreeDesktop shortcuts")
+    def test_freedesktop_shortcut_quotes_profile_folder(self):
+        """Executable path is quoted, profile folder is set as working directory and
+        quoted in actions."""
+        with (
+            tempfile.TemporaryDirectory(prefix="QDT_test_shortcuts_") as tmp_dir,
+            patch.dict(environ, {"HOME": tmp_dir}),
+        ):
+            profile_folder = Path(tmp_dir, "profiles", "unit test").resolve()
+            profile_folder.mkdir(parents=True)
+            desktop_path, _ = ApplicationShortcut(
+                name="QDT - Unit test",
+                exec_path=Path(__file__),
+                work_dir=profile_folder,
+            ).create(desktop=True, start_menu=False)
+
+            lines = desktop_path.read_text(encoding="UTF-8").splitlines()
+            self.assertIn(f'Exec="{Path(__file__)}"', lines)
+            self.assertIn(f"Path={profile_folder}", lines)
+            self.assertIn(f'Exec=xdg-open "{profile_folder}"', lines)
+            self.assertTrue(
+                any(
+                    line.startswith("Exec=bash -c")
+                    and line.endswith(f"gio trash '{profile_folder}'\"")
+                    for line in lines
+                )
             )
 
 
