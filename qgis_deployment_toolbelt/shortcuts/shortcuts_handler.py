@@ -348,9 +348,12 @@ class ApplicationShortcut:
         # subsitute with values
         shortcut_text = tpl.safe_substitute(
             {
-                "description": self.description,
+                # fallback to QDT description
+                "description": self.description
+                or f"{QDT_SHORTCUT_DESCRIPTION_PREFIX} {__version__}",
                 "exec": exec_line,
-                "icon_path": self.icon_path,
+                "icon_path": self.icon_path
+                or self.os_config.shortcut_icon_default_path,
                 "profile_folder_path_key": profile_folder,
                 # actions arguments, quoted to handle spaces in paths
                 "profile_folder_exec_arg": (
