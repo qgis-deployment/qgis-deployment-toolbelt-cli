@@ -340,11 +340,16 @@ class ApplicationShortcut:
             profile_name = "default"
             profile_folder = ""
 
+        # executable path quoted to handle spaces, arguments are already prepared
+        exec_line = f'"{escape_freedesktop_exec_quoted(str(self.exec_path))}"'
+        if self.exec_arguments:
+            exec_line += f" {self.exec_arguments}"
+
         # subsitute with values
         shortcut_text = tpl.safe_substitute(
             {
                 "description": self.description,
-                "exec": f"{self.exec_path} {self.exec_arguments}",
+                "exec": exec_line,
                 "icon_path": self.icon_path,
                 "profile_folder_path_key": profile_folder,
                 # actions arguments, quoted to handle spaces in paths
