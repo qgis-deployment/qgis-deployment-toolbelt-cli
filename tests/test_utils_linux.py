@@ -68,6 +68,23 @@ class TestUtilsLinux(unittest.TestCase):
                 tmp_fake_dot_bash_profile,
             )
 
+    def test_escape_freedesktop_exec_quoted(self):
+        """Reserved characters are escaped following the Desktop Entry
+        specification, as written in the file."""
+        cases = (
+            ("/profiles/unit test", "/profiles/unit test"),
+            ('say "hi"', r'say \\"hi\\"'),
+            ("cost $HOME", r"cost \\$HOME"),
+            ("back`tick`", r"back\\`tick\\`"),
+            ("100%", "100%%"),
+            ("back\\slash", r"back\\\\slash"),
+        )
+        for value, expected in cases:
+            with self.subTest(value=value):
+                self.assertEqual(
+                    os_linux.escape_freedesktop_exec_quoted(value), expected
+                )
+
     def test_get_xdg_data_home(self):
         """Use XDG_DATA_HOME used only it's an absolute path."""
         default = Path.home() / ".local/share"

@@ -75,7 +75,10 @@ Text to display on the shortcut.
 
 Name of the profile to associate with the shortcut.
 
-The profile must be installed in QGIS, typically by the [`qprofiles-synchronizer`](./profiles_synchronizer.md) job running before. Otherwise, the shortcut is not created.
+The shortcut is not created if:
+
+- the profile is not installed in the QGIS profiles folder
+- the profile name contains one of the following characters: `"`, `` ` ``, `$`, `\`, `%`.
 
 #### start_menu
 

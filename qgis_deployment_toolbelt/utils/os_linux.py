@@ -389,6 +389,29 @@ def get_user_desktop_folder() -> Path:
     return default_value
 
 
+def escape_freedesktop_exec_quoted(value: str) -> str:
+    """Escape a value to be placed between double quotes in the Exec key of a
+    desktop entry.
+
+    Rules are applied in reverse order of the reading:
+
+    1. quoting rule (backslash before reserved characters)
+    2. then field codes (`%` doubled)
+    3. then string
+    escaping (backslash doubled).
+
+    See: https://specifications.freedesktop.org/desktop-entry-spec/latest/exec-variables.html
+
+    Args:
+        value (str): value to escape
+
+    Returns:
+        str: escaped value, without surrounding quotes
+    """
+    escaped = re.sub(r'(["`$\\])', r"\\\1", value)
+    return escaped.replace("%", "%%").replace("\\", "\\\\")
+
+
 def get_user_home_folder() -> Path:
     """Return the user home folder.
 
@@ -410,12 +433,14 @@ def get_user_home_folder() -> Path:
 
 def get_user_startmenu_folder() -> Path:
     """Return the folder where FreeDesktop applications launchers are stored for the
-    user, i.e. the equivalent of the Windows Start Menu.
+    user, i.e. the equivalent of the Windows Start Menu: `$XDG_DATA_HOME/applications`.
+
+    See: https://specifications.freedesktop.org/desktop-entry-spec/latest/
 
     Returns:
         Path: path to the user applications folder
     """
-    return get_user_home_folder() / ".local/share/applications"
+    return get_xdg_data_home() / "applications"
 
 
 def get_xdg_data_home() -> Path:
