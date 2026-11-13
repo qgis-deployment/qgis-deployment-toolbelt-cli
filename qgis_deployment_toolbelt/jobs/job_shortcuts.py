@@ -137,7 +137,7 @@ class JobShortcutsManager(GenericJob):
 
         # check action
         if self.options.get("action") in ("create", "create_or_restore"):
-            # Manifest to keep track of shortutcs managed by QDT
+            # Manifest to keep track of shortcuts managed by QDT
             qdt_managed_shortcuts_manifest_path = (
                 self.os_config.get_qdt_managed_shortcuts_manifest_path()
             )
