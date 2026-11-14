@@ -345,3 +345,37 @@ class TestJobCleanupManager(unittest.TestCase):
             )
 
             self.assertEqual(removed, [profile, shortcut])
+
+    def test_cleanup_shortcuts_orphans_mark(self):
+        """Only shortcuts whose profile folder does not exist anymore are selected,
+        and shortcuts already selected from the manifest are not selected twice."""
+        with tempfile.TemporaryDirectory(prefix="QDT_test_cleanup_") as tmp_dir:
+            profiles = Path(tmp_dir, "profiles")
+            self._make_installed_profile(profiles / "installed", "installed")
+            # profile not installed by QDT
+            profiles.joinpath("manual").mkdir()
+
+            shortcuts = {
+                Path(tmp_dir, name): profile_folder
+                for name, profile_folder in (
+                    ("installed", profiles / "installed"),
+                    ("manual", profiles / "manual"),
+                    ("removed", profiles / "removed"),
+                    ("in_manifest", profiles / "removed"),
+                    ("unreachable", Path(tmp_dir, "unmounted/profiles/removed")),
+                )
+            }
+            job = JobCleanupManager(
+                options={"dry_run": True, "scopes": ["shortcuts_orphans_mark"]}
+            )
+            job.report.removed.append(Path(tmp_dir, "in_manifest"))
+
+            with patch(
+                "qgis_deployment_toolbelt.jobs.job_cleanup_manager.list_qdt_shortcuts",
+                return_value=shortcuts,
+            ):
+                removed = job.run().removed
+
+            self.assertEqual(
+                removed, [Path(tmp_dir, "in_manifest"), Path(tmp_dir, "removed")]
+            )

@@ -27,6 +27,7 @@ from qgis_deployment_toolbelt.constants import (
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.plugins.manifest import _read_qdt_managed_plugins_manifest
 from qgis_deployment_toolbelt.reports import CleanupReport
+from qgis_deployment_toolbelt.shortcuts.finder import list_qdt_shortcuts
 from qgis_deployment_toolbelt.shortcuts.manifest import (
     _read_qdt_managed_shortcuts_manifest,
 )
@@ -117,8 +118,18 @@ class JobCleanupManager(GenericJob):
 
         # must run after profiles scopes to take into account profiles removed above
         if "shortcuts_orphans_manifest" in scopes:
-            logger.debug("Cleaning-up shortcuts targeting not installed profiles...")
+            logger.debug(
+                "Cleaning-up shortcuts (based on manifest) "
+                "targeting missing profiles..."
+            )
             self.cleanup_shortcuts_orphans_manifest()
+
+        if "shortcuts_orphans_mark" in scopes:
+            logger.debug(
+                "Cleaning-up shortcuts (based on QDT marks) "
+                "targeting missing profiles..."
+            )
+            self.cleanup_shortcuts_orphans_mark()
 
         # remove files/folders
         self._remove_paths()
@@ -351,6 +362,41 @@ class JobCleanupManager(GenericJob):
             logger.info(
                 f"Shortcut {shortcut_path} targets a profile which is not installed "
                 f"({profile_folder}), removing it."
+            )
+            self.report.removed.append(shortcut_path)
+
+    def cleanup_shortcuts_orphans_mark(self) -> None:
+        """Remove shortcuts recognized from their description as created by QDT,
+        in the user desktop and start menu folders, whose profile folder does not
+        exist anymore, including profiles selected for removal by the
+        previous scopes."""
+
+        # include profiles removed in previous scopes
+        removed_paths = {p.resolve() for p in self.report.removed}
+
+        for shortcut_path, profile_folder in list_qdt_shortcuts(
+            shortcut_extension=self.os_config.shortcut_extension
+        ).items():
+            # already selected by the shortcuts_orphans_manifest scope
+            if shortcut_path in self.report.removed:
+                continue
+
+            if not profile_folder.parent.is_dir():
+                logger.debug(
+                    f"Shortcut {shortcut_path} is kept: the parent folder of its "
+                    f"profile {profile_folder} does not exist."
+                )
+                continue
+
+            if (
+                profile_folder.is_dir()
+                and profile_folder.resolve() not in removed_paths
+            ):
+                continue
+
+            logger.info(
+                f"Shortcut {shortcut_path} targets a profile which does not exist "
+                f"anymore ({profile_folder}), removing it."
             )
             self.report.removed.append(shortcut_path)
 

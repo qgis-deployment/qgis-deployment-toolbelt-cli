@@ -13,6 +13,7 @@ Author: Julien Moura (https://github.com/guts)
 import logging
 import os
 import re
+from configparser import ConfigParser, Error as ConfigParserError
 from functools import lru_cache
 from os import getenv
 from pathlib import Path
@@ -441,6 +442,32 @@ def get_user_startmenu_folder() -> Path:
         Path: path to the user applications folder
     """
     return get_xdg_data_home() / "applications"
+
+
+def read_shortcut(shortcut_path: Path) -> tuple[str, Path | None] | None:
+    """Read the description and the working directory of a FreeDesktop shortcut.
+
+    Args:
+        shortcut_path (Path): path to the .desktop file
+
+    Returns:
+        tuple[str, Path | None] | None: description ('Comment' key) and working
+            directory, or None if the shortcut can't be read
+    """
+    parser = ConfigParser(interpolation=None)
+    try:
+        parser.read(shortcut_path, encoding="UTF-8")
+        description = parser.get("Desktop Entry", "Comment", fallback="")
+        work_dir = parser.get("Desktop Entry", "Path", fallback="") or (
+            parser.get("Desktop Action ProfileFolder", "Exec", fallback="")
+            .removeprefix("xdg-open")
+            .strip()
+        )
+    except (ConfigParserError, UnicodeDecodeError) as err:
+        logger.debug(f"Unable to read shortcut {shortcut_path}: {err}")
+        return None
+
+    return description, Path(work_dir) if work_dir else None
 
 
 def get_xdg_data_home() -> Path:

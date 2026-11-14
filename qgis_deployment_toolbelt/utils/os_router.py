@@ -17,6 +17,7 @@ __all__ = [
     "get_user_desktop_folder",
     "get_user_home_folder",
     "get_user_startmenu_folder",
+    "read_shortcut",
     "refresh_environment",
     "set_environment_variable",
 ]
@@ -29,6 +30,7 @@ if opersys == "win32":
         get_user_desktop_folder,
         get_user_home_folder,
         get_user_startmenu_folder,
+        read_shortcut,
         refresh_environment,
         set_environment_variable,
     )
@@ -39,6 +41,7 @@ elif opersys == "linux":
         get_user_desktop_folder,
         get_user_home_folder,
         get_user_startmenu_folder,
+        read_shortcut,
         refresh_environment,
         set_environment_variable,
     )
@@ -51,6 +54,7 @@ elif opersys == "darwin":
 
     delete_environment_variable = None
     get_environment_variable = None
+    read_shortcut = None
     refresh_environment = None
     set_environment_variable = None
 else:
@@ -59,5 +63,6 @@ else:
     get_user_desktop_folder = None
     get_user_home_folder = None
     get_user_startmenu_folder = None
+    read_shortcut = None
     refresh_environment = None
     set_environment_variable = None

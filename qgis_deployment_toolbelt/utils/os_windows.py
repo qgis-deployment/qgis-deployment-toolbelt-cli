@@ -28,6 +28,8 @@ if opersys == "win32":
     import winreg
 
     # 3rd party
+    import pythoncom
+    import win32com.client
     import win32gui
     from win32comext.shell import shell, shellcon
 
@@ -351,3 +353,27 @@ def get_user_startmenu_folder() -> Path:
         Path: path to the Start Menu Programs folder
     """
     return Path(shell.SHGetFolderPath(0, shellcon.CSIDL_PROGRAMS, None, 0))
+
+
+def read_shortcut(shortcut_path: Path) -> tuple[str, Path | None] | None:
+    """Read the description and the working directory of a Windows shortcut.
+
+    Args:
+        shortcut_path (Path): path to the .lnk file
+
+    Returns:
+        tuple[str, Path | None] | None: description and working directory, or None
+            if the shortcut can't be read
+    """
+    pythoncom.CoInitialize()
+    win_shell = win32com.client.Dispatch("Wscript.Shell")
+    try:
+        # opens the shortcut if it already exists, without writing anything until
+        # see: https://learn.microsoft.com/previous-versions/windows/internet-explorer/ie-developer/windows-scripting/xsy6k3ys(v=vs.84)
+        wscript = win_shell.CreateShortcut(str(shortcut_path))
+        description, work_dir = wscript.Description, wscript.WorkingDirectory
+    except pythoncom.com_error as err:
+        logger.debug(f"Unable to read shortcut {shortcut_path}: {err}")
+        return None
+
+    return description, Path(work_dir) if work_dir else None

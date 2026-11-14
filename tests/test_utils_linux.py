@@ -85,6 +85,33 @@ class TestUtilsLinux(unittest.TestCase):
                     os_linux.escape_freedesktop_exec_quoted(value), expected
                 )
 
+    def test_read_shortcut(self):
+        """Description and working directory are read from the Path key or the
+        'ProfileFolder' action of older shortcuts."""
+        action = '[Desktop Action ProfileFolder]\nExec=xdg-open "/profiles/my profile"'
+        cases = (
+            # (shortcut content, expected working directory)
+            (f"Path=/profiles/my profile\n{action}", "/profiles/my profile"),
+            # created by QDT 0.40 to 0.49: unquoted path in the action only
+            (
+                "[Desktop Action ProfileFolder]\nExec=xdg-open /profiles/my profile",
+                "/profiles/my profile",
+            ),
+            ("", None),
+        )
+        with tempfile.TemporaryDirectory(prefix="QDT_test_os_linux_") as tmp_dir:
+            shortcut_path = Path(tmp_dir, "qdt.my.profile.qgis.desktop")
+            for content, expected in cases:
+                with self.subTest(content=content):
+                    shortcut_path.write_text(
+                        f"[Desktop Entry]\nComment=My shortcut\n{content}\n",
+                        encoding="UTF-8",
+                    )
+                    self.assertEqual(
+                        os_linux.read_shortcut(shortcut_path),
+                        ("My shortcut", Path(expected) if expected else None),
+                    )
+
     def test_get_xdg_data_home(self):
         """Use XDG_DATA_HOME used only it's an absolute path."""
         default = Path.home() / ".local/share"
