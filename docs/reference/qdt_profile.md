@@ -454,6 +454,11 @@ To help you writing rules, QDT provides a [command to export rules context](../u
 qdt export-rules-context -o qdt_rules_context.json
 ```
 
+> [!NOTE]
+> Some context values ("facts" in [the rule engine terms](https://github.com/CacheControl/json-rules-engine)) may be unavailable during a deployment, when the Active Directory can't be reached (domain controller unreachable for example): the user's domain groups (`groups_domain`) are then an empty list and the extended user data (`windows_extended`) depending on the domain are empty strings.
+>
+> A rule that is not met because of an unavailable value is considered undetermined rather than unmet: the profile is not deployed, as if the rule was not met, but a warning is logged naming the unavailable value.
+
 ----
 
 ## Model definition

@@ -20,6 +20,9 @@ from os import sep  # required since pathlib strips trailing whitespace
 from pathlib import Path
 from sys import platform as opersys
 
+# package
+from qgis_deployment_toolbelt.exceptions import DomainControllerUnreachableError
+
 
 # Imports depending on operating system
 if opersys == "win32":
@@ -39,6 +42,9 @@ if opersys == "win32":
 # ##################################
 
 logger = logging.getLogger(__name__)
+
+# https://learn.microsoft.com/windows/win32/debug/system-error-codes--1300-1699-
+ERROR_NO_SUCH_DOMAIN = 1355
 
 if opersys == "win32":
     """windows"""
@@ -200,13 +206,16 @@ def get_current_user_extended_data(extended_name_format: ExtendedNameFormat) -> 
     Inspired from: https://stackoverflow.com/a/70182936/2556577
 
     Returns:
-        str: use data in the specified format
+        str: use data in the specified format, empty if not available
+
+    Raises:
+        DomainControllerUnreachableError: domain controller unavailable
 
     Example:
 
         .. code-block:: python
 
-            from qgis_deployment_toolbelt.utils.win32utils import (
+            from qgis_deployment_toolbelt.utils.os_windows import (
                 ExtendedNameFormat,
                 get_current_user_extended_data,
             )
@@ -220,14 +229,21 @@ def get_current_user_extended_data(extended_name_format: ExtendedNameFormat) -> 
     """
     format_index = extended_name_format.value
 
-    # use system DLL to call API
-    GetUserNameEx = ctypes.windll.secur32.GetUserNameExW  # noqa: N806
+    # use system DLL to call API, keeping its error code
+    secur32 = ctypes.WinDLL("secur32", use_last_error=True)
+    GetUserNameEx = secur32.GetUserNameExW  # noqa: N806
+    GetUserNameEx.restype = ctypes.c_ubyte  # BOOLEAN, not the default C int
 
     size = ctypes.pointer(ctypes.c_ulong(0))
     GetUserNameEx(format_index, None, size)
 
     name_buffer = ctypes.create_unicode_buffer(size.contents.value)
-    GetUserNameEx(format_index, name_buffer, size)
+    # a format not available for the user (local account) is just empty
+    if (
+        not GetUserNameEx(format_index, name_buffer, size)
+        and ctypes.get_last_error() == ERROR_NO_SUCH_DOMAIN
+    ):
+        raise DomainControllerUnreachableError(extended_name_format.name)
 
     return name_buffer.value
 

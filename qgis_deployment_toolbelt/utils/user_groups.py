@@ -90,6 +90,7 @@ def get_user_name_or_guid() -> str:
             logger.info(
                 f"Unable to retrieve user GUID. Fallback to user name. Trace: {err}"
             )
+            user_guid_or_name = getuser()
     else:
         user_guid_or_name = getuser()
         logger.debug(f"Using username to retrieve domain groups: {user_guid_or_name}")
