@@ -1,20 +1,37 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/docs/schemas/profile/rules.json",
-    "$comment": "A set of JSON rules usable for QDT profiles to make conditional deployment.",
+    "$comment": "A rule usable in QDT profiles to make conditional deployment. Rules are evaluated by python-rule-engine (https://github.com/santalvarez/python-rule-engine): this schema follows its models.",
+    "title": "Deployment rule",
     "type": "object",
-    "description": "Rules contain a set of conditions. When the engine is run, each rule condition is evaluated. If the results are truthy, the profile's is installed.",
+    "description": "A rule contains a set of conditions, evaluated against the deployment context (environment variables, operating system, user, date...). The profile is deployed only if all its rules are satisfied.",
     "required": [
         "conditions",
         "name"
     ],
     "properties": {
+        "name": {
+            "title": "Name",
+            "description": "A way of naming the rule, to identify it in logs and reports. It should be unique within the profile, but it has no impact on the evaluation.",
+            "type": "string",
+            "examples": [
+                "Only on Linux"
+            ]
+        },
+        "description": {
+            "title": "Rule description for human",
+            "description": "What the rule checks, in a human readable form.",
+            "type": "string"
+        },
+        "extra": {
+            "title": "Extra metadata",
+            "description": "Additional metadata, not used by the evaluation.",
+            "type": "object"
+        },
         "conditions": {
-            "$id": "#/properties/conditions",
-            "type": "object",
             "title": "Conditions",
-            "description": "Rule conditions are a combination of facts, operators, and values that determine whether the rule is a success or a failure. The simplest form of a condition consists of a fact, an operator, and a value. When the engine runs, the operator is used to compare the fact against the value. Each rule's conditions must have either an all or an any operator at its root, containing an array of conditions. The all operator specifies that all conditions contained within must be truthy for the rule to be considered a success. The any operator only requires one condition to be truthy for the rule to succeed.",
-            "default": {},
+            "description": "Root of the rule conditions: exactly one of all, any or not. The all operator requires every contained condition to be truthy; any requires at least one; not inverts the contained condition.",
+            "$ref": "#/$defs/multiCondition",
             "examples": [
                 {
                     "all": [
@@ -25,8 +42,31 @@
                         }
                     ]
                 }
-            ],
+            ]
+        }
+    },
+    "$defs": {
+        "multiCondition": {
+            "title": "Multi condition",
+            "description": "A group of conditions combined with exactly one of all, any or not. It can contain simple conditions and other multi conditions.",
+            "type": "object",
+            "properties": {
+                "all": {
+                    "$ref": "#/$defs/conditionArray"
+                },
+                "any": {
+                    "$ref": "#/$defs/conditionArray"
+                },
+                "not": {
+                    "$ref": "#/$defs/conditionItem"
+                }
+            },
             "oneOf": [
+                {
+                    "required": [
+                        "all"
+                    ]
+                },
                 {
                     "required": [
                         "any"
@@ -34,51 +74,11 @@
                 },
                 {
                     "required": [
-                        "all"
+                        "not"
                     ]
                 }
             ],
-            "properties": {
-                "any": {
-                    "$ref": "#/defs/conditionArray"
-                },
-                "all": {
-                    "$ref": "#/defs/conditionArray"
-                }
-            }
-        },
-        "name": {
-            "$id": "#/properties/name",
-            "default": {},
-            "description": "A way of naming your rules, allowing them to be easily identifiable in Rule Results. This is usually of type String, but could also be Object, Array, or Number. Note that the name should be unique but it's not mandatory and that it has no impact on execution of the rule.",
-            "examples": [
-                "My Rule Name"
-            ],
-            "title": "The Name Schema",
-            "type": "string"
-        }
-    },
-    "defs": {
-        "conditionArray": {
-            "type": "array",
-            "title": "Condition Array",
-            "description": "An array of conditions with a possible recursive inclusion of another condition array.",
-            "default": [],
-            "items": {
-                "anyOf": [
-                    {
-                        "$ref": "#/defs/condition"
-                    },
-                    {
-                        "$ref": "#/defs/multiCondition"
-                    }
-                ]
-            }
-        },
-        "multiCondition": {
-            "type": "object",
-            "title": "Multi condition",
-            "description": "A nested group of conditions, combined with either an all or an any operator. It can contain simple conditions and other multi conditions.",
+            "additionalProperties": false,
             "examples": [
                 {
                     "all": [
@@ -88,157 +88,119 @@
                             "value": 2026
                         },
                         {
-                            "path": "$.date.current_month",
-                            "operator": "greater_than_inclusive",
-                            "value": 9
+                            "not": {
+                                "path": "$.environment.operating_system_code",
+                                "operator": "equal",
+                                "value": "win32"
+                            }
                         }
                     ]
                 }
-            ],
-            "oneOf": [
+            ]
+        },
+        "conditionArray": {
+            "title": "Condition array",
+            "description": "A non-empty array of simple conditions or multi conditions.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "$ref": "#/$defs/conditionItem"
+            }
+        },
+        "conditionItem": {
+            "anyOf": [
                 {
-                    "required": [
-                        "any"
-                    ]
+                    "$ref": "#/$defs/condition"
                 },
                 {
-                    "required": [
-                        "all"
-                    ]
+                    "$ref": "#/$defs/multiCondition"
                 }
-            ],
-            "properties": {
-                "any": {
-                    "$ref": "#/defs/conditionArray"
-                },
-                "all": {
-                    "$ref": "#/defs/conditionArray"
-                }
-            },
-            "additionalProperties": false
+            ]
         },
         "condition": {
-            "type": "object",
             "title": "Condition",
-            "description": "Rule conditions are a combination of facts, operators, and values that determine whether the rule is a success or a failure. The simplest form of a condition consists of a fact, an operator, and a value. When the engine runs, the operator is used to compare the fact against the value. Sometimes facts require additional input to perform calculations. For this, the params property is passed as an argument to the fact handler. params essentially functions as fact arguments, enabling fact handlers to be more generic and reusable.",
-            "examples": [
-                {
-                    "fact": "gameDuration",
-                    "operator": "equal",
-                    "value": 40.0
-                },
-                {
-                    "value": 5.0,
-                    "fact": "personalFoulCount",
-                    "operator": "greater_than_inclusive"
-                },
-                {
-                    "fact": "product-price",
-                    "operator": "greater_than",
-                    "path": "$.price",
-                    "value": 100.0,
-                    "params": {
-                        "productId": "widget"
-                    }
-                }
-            ],
+            "description": "Compares the value found at path in the deployment context with value, using operator. Without path, the whole context is compared.",
+            "type": "object",
             "required": [
-                "path",
                 "operator",
                 "value"
             ],
             "properties": {
-                "operator": {
+                "path": {
+                    "title": "Path",
+                    "description": "JSONPath expression (jsonpath-ng syntax) to the value to compare, in the deployment context. Run `qdt export-rules-context` to see the available values.",
                     "type": "string",
-                    "anyOf": [
+                    "examples": [
+                        "$.environment.operating_system_code",
+                        "$.env.QDT_PROFILE_FLAVOR"
+                    ]
+                },
+                "operator": {
+                    "title": "Operator",
+                    "description": "Compares the value found at path with value. If the result is truthy, the condition passes.",
+                    "type": "string",
+                    "oneOf": [
                         {
                             "const": "equal",
-                            "title": "fact must equal value"
+                            "title": "the context value must equal value"
                         },
                         {
                             "const": "not_equal",
-                            "title": "fact must not equal value"
+                            "title": "the context value must not equal value"
                         },
                         {
                             "const": "greater_than",
-                            "title": "fact must be greater than value"
+                            "title": "the context value must be greater than value"
                         },
                         {
                             "const": "greater_than_inclusive",
-                            "title": "fact must be greater than or equal to value"
+                            "title": "the context value must be greater than or equal to value"
                         },
                         {
                             "const": "less_than",
-                            "title": "fact must be less than value"
+                            "title": "the context value must be less than value"
                         },
                         {
                             "const": "less_than_inclusive",
-                            "title": "fact must be less than or equal to value"
+                            "title": "the context value must be less than or equal to value"
                         },
                         {
                             "const": "in",
-                            "title": "fact must be included in value (an array)"
+                            "title": "the context value must be included in value (an array)"
                         },
                         {
                             "const": "not_in",
-                            "title": "fact must not be included in value (an array)"
+                            "title": "the context value must not be included in value (an array)"
                         },
                         {
                             "const": "contains",
-                            "title": "fact (an array) must include value"
+                            "title": "the context value (an array or a string) must include value"
                         },
                         {
                             "const": "not_contains",
-                            "title": "fact (an array) must not include value"
+                            "title": "the context value (an array or a string) must not include value"
                         }
-                    ],
-                    "title": "Operator",
-                    "description": "The operator compares the value returned by the fact to what is stored in the value property. If the result is truthy, the condition passes.",
-                    "default": "",
-                    "examples": [
-                        "equal"
                     ]
                 },
                 "value": {
-                    "anyOf": [
-                        {
-                            "type": "string"
-                        },
-                        {
-                            "type": "object"
-                        },
-                        {
-                            "type": "array"
-                        },
-                        {
-                            "type": "number"
-                        },
-                        {
-                            "type": "boolean"
-                        }
-                    ],
                     "title": "Value",
-                    "description": "The value the fact should be compared to.",
-                    "default": 0,
+                    "description": "The value the context value is compared to. Any JSON value, null included.",
                     "examples": [
-                        40
-                    ]
-                },
-                "path": {
-                    "type": "string",
-                    "title": "Path",
-                    "description": "For more complex data structures, writing a separate fact handler for each object property quickly becomes verbose and unwieldy. To address this, a path property may be provided to traverse fact data using json-path syntax. Json-path support is provided by jsonpath-ng.",
-                    "default": "",
-                    "examples": [
-                        "$.price"
+                        "linux",
+                        [
+                            "GIS_Team",
+                            "Admins"
+                        ],
+                        2026
                     ]
                 },
                 "params": {
-                    "type": "array",
                     "title": "Parameters",
-                    "description": "A dict that can provide the operator more information about how to process the object."
+                    "description": "Additional parameters given to the operator.",
+                    "type": "object"
                 }
-            }
+            },
+            "additionalProperties": false
         }
     }
 }
