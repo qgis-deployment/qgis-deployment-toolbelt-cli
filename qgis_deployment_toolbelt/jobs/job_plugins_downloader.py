@@ -13,7 +13,7 @@ Author: Julien Moura (https://github.com/guts)
 
 # Standard library
 import logging
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Future, ThreadPoolExecutor
 from os import getenv
 from pathlib import Path
 from shutil import copy2
@@ -202,6 +202,35 @@ class JobPluginsDownloader(GenericJob):
 
         return copied_plugins, failed_plugins
 
+    @staticmethod
+    def _download_plugin(plugin: QgisPlugin, destination_parent_folder: Path) -> Path:
+        """Download a plugin archive into the specified folder.
+
+        Args:
+            plugin (QgisPlugin): plugin to download
+            destination_parent_folder (Path): where to store the downloaded archive
+
+        Raises:
+            Exception: any error raised while downloading
+
+        Returns:
+            Path: path to the downloaded archive
+        """
+        plugin_download_path = Path(
+            destination_parent_folder, f"{plugin.id_with_version}.zip"
+        )
+        download_remote_file_to_local(
+            local_file_path=plugin_download_path,
+            remote_url_to_download=plugin.download_url,
+            content_type="application/zip, application/x-zip-compressed, application/octet-stream, multipart/x-zip",
+            use_stream=str2bool(getenv("QDT_STREAMED_DOWNLOADS", True)),
+        )
+        logger.info(
+            f"Plugin {plugin.name} from {plugin.download_url} "
+            f"downloaded in {plugin_download_path}"
+        )
+        return plugin_download_path
+
     def download_remote_plugins(
         self,
         plugins_to_download: list[QgisPlugin],
@@ -228,28 +257,14 @@ class JobPluginsDownloader(GenericJob):
                 f"Downloading {len(plugins_to_download)} plugins in a single thread."
             )
             for plugin in plugins_to_download:
-                # local path
-                plugin_download_path = Path(
-                    destination_parent_folder, f"{plugin.id_with_version}.zip"
-                )
                 try:
-                    download_remote_file_to_local(
-                        local_file_path=plugin_download_path,
-                        remote_url_to_download=plugin.download_url,
-                        content_type="application/zip, application/x-zip-compressed, application/octet-stream, multipart/x-zip",
-                        use_stream=str2bool(getenv("QDT_STREAMED_DOWNLOADS", True)),
-                    )
-                    logger.info(
-                        f"Plugin {plugin.name} from {plugin.download_url} "
-                        f"downloaded in {plugin_download_path}"
-                    )
+                    self._download_plugin(plugin, destination_parent_folder)
                     downloaded_plugins.append(plugin)
                 except Exception as err:
                     logger.error(
                         f"Download of plugin {plugin.name} failed. Trace: {err}"
                     )
                     failed_plugins.append(plugin)
-                    continue
         else:
             logger.debug(
                 f"Downloading {len(plugins_to_download)} plugins in {threads} threads."
@@ -257,26 +272,22 @@ class JobPluginsDownloader(GenericJob):
             with ThreadPoolExecutor(
                 max_workers=threads, thread_name_prefix=f"{__title_clean__}"
             ) as executor:
-                for plugin in plugins_to_download:
-                    # local path
-                    plugin_download_path = Path(
-                        destination_parent_folder, f"{plugin.id_with_version}.zip"
-                    )
+                submitted_downloads: dict[Future, QgisPlugin] = {
+                    executor.submit(
+                        self._download_plugin, plugin, destination_parent_folder
+                    ): plugin
+                    for plugin in plugins_to_download
+                }
 
-                    # submit download to pool
+                # a download counts as successful only once its worker has succeded
+                for future, plugin in submitted_downloads.items():
                     try:
-                        executor.submit(
-                            # func to execute
-                            download_remote_file_to_local,
-                            # func parameters
-                            local_file_path=plugin_download_path,
-                            remote_url_to_download=plugin.download_url,
-                            content_type="application/zip, application/x-zip-compressed, application/octet-stream, multipart/x-zip",
-                            use_stream=str2bool(getenv("QDT_STREAMED_DOWNLOADS", True)),
-                        )
+                        future.result()
                         downloaded_plugins.append(plugin)
                     except Exception as err:
-                        logger.error(err)
+                        logger.error(
+                            f"Download of plugin {plugin.name} failed. Trace: {err}"
+                        )
                         failed_plugins.append(plugin)
 
         return downloaded_plugins, failed_plugins
