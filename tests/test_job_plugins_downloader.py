@@ -19,9 +19,11 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 # package
 from qgis_deployment_toolbelt.jobs.job_plugins_downloader import JobPluginsDownloader
+from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 
 
@@ -140,6 +142,52 @@ class TestJobPluginsDownloader(unittest.TestCase):
                     self.assertEqual(
                         plugin["name"] in to_copy, expected_action == "copy"
                     )
+
+    def test_download_remote_plugins_failures_are_counted(self):
+        """Test a failed download is reported as failed, whatever the number of
+        threads (in multithreaded mode, failures used to be counted as success)."""
+        plugins = [
+            QgisPlugin(name="good_plugin", url="https://example.org/good.zip"),
+            QgisPlugin(name="broken_plugin", url="https://example.org/broken.zip"),
+            QgisPlugin(name="other_good", url="https://example.org/other.zip"),
+        ]
+
+        def fake_download(
+            remote_url_to_download: str, local_file_path: Path, **_: object
+        ) -> Path:
+            if "broken" in remote_url_to_download:
+                raise ConnectionError(f"404 Not Found for {remote_url_to_download}")
+            local_file_path.write_bytes(b"fake zip")
+            return local_file_path
+
+        job = JobPluginsDownloader(options={})
+        for threads in (1, 5):
+            with (
+                self.subTest(threads=threads),
+                tempfile.TemporaryDirectory(
+                    prefix="QDT_test_plugins_downloader_failures_"
+                ) as tmp_dir,
+                patch(
+                    "qgis_deployment_toolbelt.jobs.job_plugins_downloader."
+                    "download_remote_file_to_local",
+                    side_effect=fake_download,
+                ),
+                self.assertLogs(
+                    "qgis_deployment_toolbelt.jobs.job_plugins_downloader",
+                    level="ERROR",
+                ) as logs,
+            ):
+                downloaded, failed = job.download_remote_plugins(
+                    plugins_to_download=plugins,
+                    destination_parent_folder=Path(tmp_dir),
+                    threads=threads,
+                )
+
+            self.assertEqual(
+                [p.name for p in downloaded], ["good_plugin", "other_good"]
+            )
+            self.assertEqual([p.name for p in failed], ["broken_plugin"])
+            self.assertTrue(any("broken_plugin" in line for line in logs.output))
 
 
 # ############################################################################
