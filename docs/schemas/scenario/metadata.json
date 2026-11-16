@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/docs/schemas/scenario/metadata.json",
+  "$id": "https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/docs/schemas/scenario/metadata.json",
   "description": "QGIS Deployment Toolbelt - Scenario metadata",
   "title": "Define scenario's metadata.",
   "type": "object",

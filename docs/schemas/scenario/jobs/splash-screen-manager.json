@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/docs/schemas/scenario/jobs/splash-screen-manager.json",
+    "$id": "https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/docs/schemas/scenario/jobs/splash-screen-manager.json",
     "description": "Set your custom splash screen image.",
     "title": "Splash Screen Manager.",
     "type": "object",

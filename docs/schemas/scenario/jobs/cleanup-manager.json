@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/docs/schemas/scenario/jobs/cleanup-manager.json",
+  "$id": "https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/docs/schemas/scenario/jobs/cleanup-manager.json",
   "description": "Job in charge of cleaning up stale resources related to previous QDT deployments.",
   "title": "QDT Cleanup Manager",
   "type": "object",

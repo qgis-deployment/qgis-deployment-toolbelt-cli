@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/docs/schemas/scenario/jobs/manage-env-vars.json",
+  "$id": "https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/docs/schemas/scenario/jobs/manage-env-vars.json",
   "description": "Job in charge of setting/updating/removing environment variables on target computer.",
   "title": "Environment variables manager.",
   "type": "array",
