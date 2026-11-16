@@ -81,6 +81,7 @@ security = ["bandit[toml]>=1.8.3,<2", "safety>=3.3.1,<4"]
 
 test = [
     "GitPython>=3.1,<3.3",
+    "jsonschema>=4.23,<5",
     "Pillow>=12.1.1,<13",
     "pytest-cov>=4,<8",
     "validators>=0.29.0,<0.36",

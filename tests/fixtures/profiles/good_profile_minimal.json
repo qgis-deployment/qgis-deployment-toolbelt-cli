@@ -1,4 +1,6 @@
 {
   "name": "qdt_test_profile_minimal",
+  "author": "QDT tests",
+  "email": "qdt-tests@example.org",
   "version": "1.1.0"
 }
