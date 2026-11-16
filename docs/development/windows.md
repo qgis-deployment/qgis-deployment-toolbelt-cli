@@ -6,7 +6,7 @@ Commands tested on:
 
 ## Requirements
 
-- [Python 3.10+](https://www.python.org/downloads/windows/)
+- [Python 3.11+](https://www.python.org/downloads/windows/)
 - [Git](https://git-scm.com/download/win) and/or [GitHub Desktop](https://desktop.github.com/)
 
 ## Enable remote scripts (for virtual environment)

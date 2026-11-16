@@ -29,7 +29,7 @@ repos:
     hooks:
       - id: pyupgrade
         args:
-          - "--py310-plus"
+          - "--py311-plus"
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.16.10"
@@ -51,7 +51,7 @@ repos:
       - id: bandit
         args:
           - --configfile=pyproject.toml
-        additional_dependencies: [ "bandit[toml]" ]
+        additional_dependencies: ["bandit[toml]"]
 
 ci:
   autoupdate_schedule: quarterly
