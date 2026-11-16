@@ -34,7 +34,7 @@ MacOS version is not tested and is just here to encourage beta-testing and feedb
 
 ### Requirements
 
-- Python 3.10+
+- Python 3.11+
 
 ### Using [pipx](https://pipx.pypa.io/) (recommended)
 
