@@ -26,7 +26,7 @@
     },
     "plugin_id": {
       "description": "Plugin ID as referenced into the repository (XML version). Typically for official repository: https://plugins.qgis.org/plugins/plugins.xml?qgis=3.22",
-      "type": "number"
+      "type": "integer"
     },
     "qgisMaximumVersion": {
       "description": "Maximum QGIS version where the plugin can be installed.",
