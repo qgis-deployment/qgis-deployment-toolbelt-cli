@@ -43,7 +43,7 @@ jobs:
       matrix:
         os:
           - macos-latest
-          - ubuntu-24.04
+          - ubuntu-26.04
           - windows-latest
         python-version:
           - "3.11"
@@ -103,7 +103,7 @@ jobs:
       matrix:
         os:
           - macos-latest
-          - ubuntu-24.04
+          - ubuntu-26.04
           - windows-latest
         python-version:
           - "3.11"
