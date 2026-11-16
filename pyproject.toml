@@ -46,7 +46,7 @@ dependencies = [
     "python-rule-engine>=1.0.0,<1.1",
     "python-win-ad==0.6.4 ; sys_platform == 'win32'",
     "pywin32==312 ; sys_platform == 'win32'",
-    "pyyaml>=5.4,<7",
+    "pyyaml>=6.0.3,<7",
     "requests>=2.32.3,<3",
     "send2trash[nativeLib]>=2.1.0,<2.2.0",
     "truststore>=0.10.5,<1",
