@@ -44,7 +44,7 @@ jobs:
     name: "🐍 Python Wheel"
     permissions:
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
 
     steps:
       - name: Get source code
@@ -127,7 +127,7 @@ jobs:
     name: "🐧 Ubuntu LTS"
     permissions:
       contents: read
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
 
     steps:
       - name: Get source code

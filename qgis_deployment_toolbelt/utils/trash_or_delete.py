@@ -138,7 +138,7 @@ def move_files_to_trash_or_delete(
                 f"Moving {len(files_to_trash)} files to the trash in a single batch "
                 f"operation failed. Let's try it file per file. Trace: {err}"
             )
-            move_files_to_trash_or_delete(
+            return move_files_to_trash_or_delete(
                 files_to_trash=files_to_trash,
                 delete_file_per_file=True,
                 policy=policy,
@@ -149,6 +149,10 @@ def move_files_to_trash_or_delete(
             f"per file operation (policy: '{policy}')."
         )
         for file_to_trash in files_to_trash:
+            # check if the file has been already removed
+            if not (file_to_trash.exists() or file_to_trash.is_symlink()):
+                logger.debug(f"{file_to_trash} does not exist (anymore).")
+                continue
             try:
                 send2trash(paths=file_to_trash)
                 logger.debug(f"{file_to_trash} has been moved to the trash.")

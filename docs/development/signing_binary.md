@@ -13,7 +13,7 @@ The work has been funded by [Grenoble Alpes Métropole](https://www.grenoblealpe
 
 ## System requirements
 
-- most of commands have been tested on Linux (Ubuntu 24.04):
+- most of commands have been tested on Linux (Ubuntu 26.04):
     - openssl >= 3.0
     - optionally the [GitHub CLI](https://cli.github.com/) to set Actions secrets
 - for Windows, see [this guide](../guides/howto_windows_sign_executable.md)
