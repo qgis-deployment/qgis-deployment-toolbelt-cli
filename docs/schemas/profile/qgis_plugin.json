@@ -26,20 +26,20 @@
     },
     "plugin_id": {
       "description": "Plugin ID as referenced into the repository (XML version). Typically for official repository: https://plugins.qgis.org/plugins/plugins.xml?qgis=3.22",
-      "type": "number"
+      "type": "integer"
     },
     "qgisMaximumVersion": {
       "description": "Maximum QGIS version where the plugin can be installed.",
       "maxLength": 14,
       "minLength": 3,
-      "pattern": "^(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)$",
+      "pattern": "^(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)(?:\\.(?:0|[1-9]\\d*))?$",
       "type": "string"
     },
     "qgisMinimumVersion": {
       "description": "Minimum QGIS version where the plugin can be installed.",
       "maxLength": 14,
       "minLength": 3,
-      "pattern": "^(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)$",
+      "pattern": "^(?:0|[1-9]\\d*)\\.(?:0|[1-9]\\d*)(?:\\.(?:0|[1-9]\\d*))?$",
       "type": "string"
     },
     "repository_url_xml": {

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/docs/schemas/scenario/settings.json",
+  "$id": "https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/docs/schemas/scenario/settings.json",
   "title": "QGIS Deployment Toolbelt - Environment variables",
   "description": "This section allow to define certain options applied during QDT execution. Addtionnally, those settings are automatically transformed into environment variables, prefixed with 'QDT_'. Caution, it can be confusing: these settings are impacting QDT only and only during its execution.",
   "type": "object",

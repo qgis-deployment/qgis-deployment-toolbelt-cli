@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/raw/main/docs/schemas/scenario/jobs/qplugins-synchronizer.json",
+    "$id": "https://raw.githubusercontent.com/qgis-deployment/qgis-deployment-toolbelt-cli/main/docs/schemas/scenario/jobs/qplugins-synchronizer.json",
     "description": "Synchronize plugins between those stored locally (typically downloaded by the Plugins Downloader job) and the installed plugins.",
     "title": "QPlugins Synchronizer.",
     "type": "object",
