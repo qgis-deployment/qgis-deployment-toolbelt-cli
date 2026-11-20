@@ -291,26 +291,26 @@ class JobProfilesSynchronizer(GenericJob):
         """
 
         # copy downloaded profiles into this
-        for d in profiles_to_copy:
+        for profile in profiles_to_copy:
             if overwrite:
-                logger.info(f"Copying {d.folder} to {d.path_in_qgis}")
-                d.path_in_qgis.mkdir(parents=True, exist_ok=True)
+                logger.info(f"Copying {profile.folder} to {profile.path_in_qgis}")
+                profile.path_in_qgis.mkdir(parents=True, exist_ok=True)
                 copytree(
-                    d.folder,
-                    d.path_in_qgis,
+                    profile.folder,
+                    profile.path_in_qgis,
                     copy_function=copy2,
                     dirs_exist_ok=True,
                     ignore=COPY_IGNORED_PATTERNS,
                 )
 
             # Environment variable will be converted during merge
-            logger.info(f"Merging {d.folder} to {d.path_in_qgis}")
-            installed_profile = QdtProfile(folder=d.path_in_qgis)
-            d.merge_to(installed_profile)
+            logger.info(f"Merging {profile.folder} to {profile.path_in_qgis}")
+            installed_profile = QdtProfile(folder=profile.path_in_qgis)
+            profile.merge_to(installed_profile)
 
             if self.options.get("qdt_watermark", "none") != "none":
                 self.write_qdt_watermark(
-                    downloaded_profile=d, installed_profile=installed_profile
+                    downloaded_profile=profile, installed_profile=installed_profile
                 )
 
         # Profiles have been written to qgis_profiles_path so let's clear the cache
