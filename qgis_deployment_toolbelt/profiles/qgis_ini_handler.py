@@ -712,10 +712,15 @@ class QgisIniHelper:
 
     def merge_to(self, dst: QgisIniHelper) -> None:
         """Merge INI file to another INI file.
+
         If the destination file exists a merge is done:
+
         - all available sections are kept
-        - if a section is available in both INI files, keep updated parameters in a backup section
-        If environnement variable interpolation is enabled, value are written with current environnement values
+        - if a section is available in both INI files, keep updated parameters in a
+            backup section
+
+        If environnement variable interpolation is enabled, value are written with
+            current environnement values
 
         Args:
             dst (QgisIniHelper): destination ini file
@@ -728,12 +733,12 @@ class QgisIniHelper:
 
         # Read source INI content
         config_src = self.cfg_parser()
-        config_src.read(self.ini_filepath)
+        config_src.read(self.ini_filepath, encoding="UTF-8")
 
         if dst.ini_filepath.exists():
             # Read destination INI content
             config_dest = dst.cfg_parser()
-            config_dest.read(dst.ini_filepath)
+            config_dest.read(dst.ini_filepath, encoding="UTF-8")
             # Add sections in source INI
             for section in config_src:
                 self._backup_section(config_dest, config_src, section, dst.ini_filepath)
