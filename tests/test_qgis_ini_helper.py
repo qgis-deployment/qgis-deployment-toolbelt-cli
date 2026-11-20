@@ -15,6 +15,8 @@ import tempfile
 import unittest
 from configparser import ConfigParser
 from pathlib import Path
+from typing import IO, Any
+from unittest.mock import patch
 
 # project
 from qgis_deployment_toolbelt.profiles.qgis_ini_handler import QgisIniHelper
@@ -314,6 +316,103 @@ class TestQgisIniHelper(unittest.TestCase):
             self.assertNotIn("QDT_backup_Section", cfg_parser)
             self.assertIn("Section", cfg_parser)
             self.assertEqual("new_value", cfg_parser["Section"]["value"])
+
+    def test_merge_preserves_utf8_with_non_utf8_default_encoding(self):
+        """Merge reads INI files as UTF-8 whatever the default encoding of the OS.
+
+        Regression test for issue #951: on Windows (cp1252), accented values were
+        garbled and some characters made the merge crash.
+        """
+        dst_config = "[app]\nrecent=D:\\Dépôt\\carte\nnote=a\u200db\n"
+        src_config = "[PythonPlugins]\nfoo=true\n"
+
+        real_open = open
+
+        def open_with_cp1252_default(
+            file: Path | str,
+            mode: str = "r",
+            *args: Any,
+            encoding: str | None = None,
+            **kwargs: Any,
+        ) -> IO:
+            """Simulate a Windows cp1252 locale for text files opened without an
+            explicit encoding."""
+            if "b" not in mode and encoding in (None, "locale"):
+                encoding = "cp1252"
+            return real_open(file, mode, *args, encoding=encoding, **kwargs)
+
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            dst_ini_path = Path(tmpdirname).joinpath("dst", "QGIS4.ini")
+            dst_ini_path.parent.mkdir(parents=True)
+            dst_ini_path.write_bytes(dst_config.encode("UTF-8"))
+            src_ini_path = Path(tmpdirname).joinpath("src", "QGIS4.ini")
+            src_ini_path.parent.mkdir(parents=True)
+            src_ini_path.write_bytes(src_config.encode("UTF-8"))
+
+            with patch("configparser.open", open_with_cp1252_default, create=True):
+                QgisIniHelper(
+                    ini_filepath=src_ini_path, ini_type="profile_settings"
+                ).merge_to(
+                    QgisIniHelper(
+                        ini_filepath=dst_ini_path, ini_type="profile_settings"
+                    )
+                )
+
+            merged = dst_ini_path.read_text(encoding="UTF-8")
+            self.assertIn("D:\\Dépôt\\carte", merged)
+            self.assertIn("a\u200db", merged)
+            self.assertIn("[PythonPlugins]", merged)
+
+    def test_set_section_options_existing_file(self):
+        """Options are set or removed without altering the rest of the file."""
+        initial_config = (
+            "[qgis]\nstyle=Fusion\n\n"
+            "[variables]\ncurrent_user=$USER\nobsolete_option=to_remove\n"
+        )
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            ini_path = Path(tmpdirname).joinpath("QGIS3.ini")
+            ini_path.write_text(initial_config)
+
+            written_path = QgisIniHelper(
+                ini_filepath=ini_path, ini_type="profile_settings"
+            ).set_section_options(
+                section="variables",
+                options={"qdt_version": "1.0.0", "obsolete_option": None},
+            )
+
+            self.assertEqual(written_path, ini_path)
+            cfg_parser = ConfigParser(interpolation=None)
+            cfg_parser.optionxform = str
+            cfg_parser.read(ini_path)
+            self.assertEqual(cfg_parser["qgis"]["style"], "Fusion")
+            # no environment variables interpolation on the other values
+            self.assertEqual(cfg_parser["variables"]["current_user"], "$USER")
+            self.assertEqual(cfg_parser["variables"]["qdt_version"], "1.0.0")
+            self.assertNotIn("obsolete_option", cfg_parser["variables"])
+
+    def test_set_section_options_not_existing_file(self):
+        """The file and the section are created when missing."""
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_ini_file_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            ini_path = Path(tmpdirname).joinpath("QGIS", "QGIS4.ini")
+
+            QgisIniHelper(
+                ini_filepath=ini_path, ini_type="profile_settings"
+            ).set_section_options(
+                section="QDT",
+                options={"qdt_profile_version": "1.2.0", "qdt_profile_email": None},
+            )
+
+            self.assertTrue(ini_path.is_file())
+            cfg_parser = ConfigParser(interpolation=None)
+            cfg_parser.read(ini_path)
+            self.assertEqual(cfg_parser["QDT"]["qdt_profile_version"], "1.2.0")
+            self.assertNotIn("qdt_profile_email", cfg_parser["QDT"])
 
 
 # ############################################################################
