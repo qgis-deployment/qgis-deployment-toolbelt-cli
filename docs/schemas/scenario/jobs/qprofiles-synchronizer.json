@@ -5,6 +5,16 @@
     "title": "QProfiles Synchronizer",
     "type": "object",
     "properties": {
+        "qdt_watermark": {
+            "default": "none",
+            "description": "Where to write QDT metadata (profile version, author and contact email, QDT version, last synchronization date) in the settings file (QGIS3.ini, QGIS4.ini...) of synchronized profiles: nowhere, in a dedicated [QDT] section or in the [variables] section (global expression variables visible by end-users).",
+            "enum": [
+                "none",
+                "section",
+                "variables"
+            ],
+            "type": "string"
+        },
         "sync_mode": {
             "description": "Synchronization mode to apply with profiles.",
             "enum": [

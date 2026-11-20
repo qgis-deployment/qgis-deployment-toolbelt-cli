@@ -26,6 +26,16 @@ Sample job configurations.
     sync_mode: overwrite
 ```
 
+### Mark synchronized profiles with QDT metadata
+
+```yaml
+- name: Synchronize installed profiles from downloaded ones
+  uses: qprofiles-synchronizer
+  with:
+    sync_mode: only_new_version
+    qdt_watermark: variables
+```
+
 ----
 
 ## Vocabulary
@@ -50,6 +60,37 @@ Possible_values:
 - `only_different_version`: only install profiles that does not exist locally and update those with a different version number (lesser or upper)
 - `only_new_version`: only install profiles that does not exist locally and update those with a lesser version number
 - `overwrite`: systematically overwrite local profiles
+
+### qdt_watermark
+
+Where to write QDT metadata in the settings file (`QGIS3.ini`, `QGIS4.ini`...) of every profile synchronized by the job.
+
+Possible_values:
+
+- `none` (_default_): nothing is written
+- `section`: metadata are written in a dedicated `[QDT]` section
+- `variables`: metadata are written in the `[variables]` section, as global expression variables. End-users see them in _Settings > Options > Variables_ and can use them in expressions (`@qdt_profile_version` in a print layout typically).
+
+Written metadata:
+
+| Key | Value |
+| :-- | :---- |
+| `qdt_profile_author` | `author` of the profile, from its `profile.json` |
+| `qdt_profile_email` | `email` of the profile, from its `profile.json` |
+| `qdt_profile_version` | `version` of the profile, from its `profile.json` |
+| `qdt_profile_last_sync` | date and time of the last synchronization |
+| `qdt_version` | version of QDT which synchronized the profile |
+
+Example of result with `qdt_watermark: section`:
+
+```ini
+[QDT]
+qdt_profile_author=GIS team
+qdt_profile_email=gis-team@example.org
+qdt_profile_last_sync=2026-11-20T14:32:05+01:00
+qdt_profile_version=1.2.0
+qdt_version=1.0.0
+```
 
 ----
 
