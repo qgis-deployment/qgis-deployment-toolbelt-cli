@@ -136,6 +136,23 @@ class JobOptionBadValueTypeError(QdtError, TypeError):
         super().__init__(self.message)
 
 
+class JobOptionMissingError(QdtError, KeyError):
+    """When a required option of a job is not set."""
+
+    def __init__(self, job_id: str, missing_option_name: str) -> None:
+        """Initialization method.
+
+        Args:
+            job_id (str): job ID
+            missing_option_name (str): name of the required option not set
+        """
+        self.message = (
+            f"Job: {job_id}. Option '{missing_option_name}' is required but not set."
+        )
+
+        super().__init__(self.message)
+
+
 class SplashScreenBadDimensionsError(QdtError):
     """When splash screen image does not comply with recomended dimensions."""
 
