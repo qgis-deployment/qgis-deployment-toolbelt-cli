@@ -613,6 +613,51 @@ class QgisIniHelper:
             )
             return False
 
+    def set_section_options(self, section: str, options: dict[str, str | None]) -> Path:
+        """Set options of a section in the ini file. The file and the section are
+            created if they don't exist.
+
+        Values are written as they are, without environment variables interpolation,
+            and the other values of the file are left untouched.
+
+        Args:
+            section (str): section to write into
+            options (dict[str, str | None]): options to set as {name: value}. An
+                option with a None value is removed from the section.
+
+        Returns:
+            Path: path to the written ini file
+        """
+        cfg_parser = CustomConfigParser(strict=self.strict_mode, interpolation=None)
+        cfg_parser.optionxform = str
+
+        if self.ini_filepath.is_file():
+            cfg_parser.read(self.ini_filepath, encoding="UTF-8")
+        else:
+            logger.debug(
+                f"{self.ini_filepath} doesn't exist. It will be created to store "
+                f"options of section '{section}'."
+            )
+
+        for option, value in options.items():
+            if value is None:
+                if cfg_parser.has_section(section):
+                    cfg_parser.remove_option(section=section, option=option)
+                continue
+            if not cfg_parser.has_section(section):
+                cfg_parser.add_section(section)
+            cfg_parser.set(section=section, option=option, value=str(value))
+
+        self.ini_filepath.parent.mkdir(parents=True, exist_ok=True)
+        with self.ini_filepath.open(mode="w", encoding="UTF-8") as config_file:
+            cfg_parser.write(config_file, space_around_delimiters=False)
+
+        logger.debug(
+            f"Options {', '.join(options)} written in section '{section}' of "
+            f"{self.ini_filepath}"
+        )
+        return self.ini_filepath
+
     @staticmethod
     def _copy_section(
         config_dest: CustomConfigParser,

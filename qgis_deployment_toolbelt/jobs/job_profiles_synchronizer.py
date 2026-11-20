@@ -14,13 +14,19 @@ Author: Julien Moura (https://github.com/guts)
 # Standard library
 import logging
 from collections.abc import Iterable
+from datetime import datetime
 from pathlib import Path
 from shutil import copy2, copytree
 
 # package
-from qgis_deployment_toolbelt.constants import COPY_IGNORED_PATTERNS
+from qgis_deployment_toolbelt.__about__ import __version_clean__
+from qgis_deployment_toolbelt.constants import (
+    COPY_IGNORED_PATTERNS,
+    QDT_WATERMARK_SECTIONS,
+)
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
+from qgis_deployment_toolbelt.profiles.qgis_ini_handler import QgisIniHelper
 
 
 # #############################################################################
@@ -44,6 +50,13 @@ class JobProfilesSynchronizer(GenericJob):
 
     ID: str = "qprofiles-synchronizer"
     OPTIONS_SCHEMA: dict = {
+        "qdt_watermark": {
+            "type": str,
+            "required": False,
+            "default": "none",
+            "possible_values": ("none", "section", "variables"),
+            "condition": "in",
+        },
         "sync_mode": {
             "type": str,
             "required": False,
@@ -295,5 +308,49 @@ class JobProfilesSynchronizer(GenericJob):
             installed_profile = QdtProfile(folder=d.path_in_qgis)
             d.merge_to(installed_profile)
 
+            if self.options.get("qdt_watermark", "none") != "none":
+                self.write_qdt_watermark(
+                    downloaded_profile=d, installed_profile=installed_profile
+                )
+
         # Profiles have been written to qgis_profiles_path so let's clear the cache
         self.clear_profiles_cache(folder_path=self.qgis_profiles_path)
+
+    def write_qdt_watermark(
+        self, downloaded_profile: QdtProfile, installed_profile: QdtProfile
+    ) -> Path:
+        """Write QDT metadata into the settings file (QGIS3.ini, QGIS4.ini...) of an
+            installed profile, in the section set by the `qdt_watermark` option.
+
+        Args:
+            downloaded_profile (QdtProfile): downloaded profile, source of the metadata
+            installed_profile (QdtProfile): installed profile to write into
+
+        Returns:
+            Path: path to the written settings file
+        """
+        section = QDT_WATERMARK_SECTIONS[self.options.get("qdt_watermark")]
+
+        watermark: dict[str, str | None] = {
+            "qdt_profile_author": downloaded_profile.author,
+            "qdt_profile_email": downloaded_profile.email,
+            "qdt_profile_version": downloaded_profile.version,
+            "qdt_profile_last_sync": datetime.now()
+            .astimezone()
+            .isoformat(timespec="seconds"),
+            "qdt_version": __version_clean__,
+        }
+
+        # target the settings file read by the targeted QGIS version
+        ini_filepath = installed_profile.folder.joinpath(
+            "QGIS", downloaded_profile.qgis_ini_filename
+        )
+        QgisIniHelper(
+            ini_filepath=ini_filepath, ini_type="profile_settings"
+        ).set_section_options(section=section, options=watermark)
+
+        logger.info(
+            f"QDT watermark written in section '{section}' of {ini_filepath} for "
+            f"profile '{downloaded_profile.name}'."
+        )
+        return ini_filepath

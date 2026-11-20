@@ -90,6 +90,11 @@ QDT_SHORTCUT_DESCRIPTION_PREFIX: str = f"Created with {__title__}"
 # specials chars not allowed in a profile name used in shortcuts
 QDT_SHORTCUT_PROFILE_NAME_FORBIDDEN_CHARS: tuple[str, ...] = ('"', "`", "$", "\\", "%")
 
+QDT_WATERMARK_SECTIONS: dict[str, str] = {
+    "section": "QDT",
+    "variables": "variables",
+}
+
 # QGIS executable filenames
 QGIS_BIN_WINDOWS_FILENAME: str = "qgis-bin.exe"
 QGIS_LTR_BIN_WINDOWS_FILENAME: str = "qgis-ltr-bin.exe"
@@ -100,6 +105,7 @@ QGIS_LTR_BIN_WINDOWS_FILENAME: str = "qgis-ltr-bin.exe"
 # ignored by QGIS 4 as soon as QGIS 4 has written its own XML file.
 QGIS_PROFILE_CUSTOMIZATION_INI_FILENAME: str = "QGISCUSTOMIZATION3.ini"
 QGIS_PROFILE_CUSTOMIZATION_XML_FILENAME: str = "QGISCUSTOMIZATION.xml"
+
 
 # maximum time (in seconds) allowed to a QGIS binary to answer to `--version`
 QGIS_VERSION_LOOKUP_TIMEOUT_SECONDS: int = int(
