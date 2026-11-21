@@ -20,6 +20,7 @@ from shutil import copy2, copytree
 # package
 from qgis_deployment_toolbelt.constants import COPY_IGNORED_PATTERNS
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
+from qgis_deployment_toolbelt.jobs.options import Choice, JobOptions
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 
 
@@ -36,6 +37,20 @@ logger = logging.getLogger(__name__)
 # ##################################
 
 
+class ProfilesSynchronizerOptions(JobOptions):
+    """Options of the qprofiles-synchronizer job."""
+
+    sync_mode = Choice(
+        (
+            "only_missing",
+            "only_different_version",
+            "only_new_version",
+            "overwrite",
+        ),
+        default="only_missing",
+    )
+
+
 class JobProfilesSynchronizer(GenericJob):
     """
     Job to synchronize profiles between downloaded (in QDT working folder) and installed
@@ -43,20 +58,7 @@ class JobProfilesSynchronizer(GenericJob):
     """
 
     ID: str = "qprofiles-synchronizer"
-    OPTIONS_SCHEMA: dict = {
-        "sync_mode": {
-            "type": str,
-            "required": False,
-            "default": "only_missing",
-            "possible_values": (
-                "only_missing",
-                "only_different_version",
-                "only_new_version",
-                "overwrite",
-            ),
-            "condition": "in",
-        },
-    }
+    OPTIONS = ProfilesSynchronizerOptions
     PROFILES_NAMES_DOWNLOADED: list = []
     PROFILES_NAMES_INSTALLED: list = []
 
@@ -64,11 +66,11 @@ class JobProfilesSynchronizer(GenericJob):
         """Instantiate the class.
 
         Args:
-            options (List[dict]): list of dictionary with environment variables to set
-            or remove.
+            options (dict): options set in the ``with`` key of the scenario step, see
+                ProfilesSynchronizerOptions
         """
         super().__init__()
-        self.options: dict = self.validate_options(options)
+        self.options = ProfilesSynchronizerOptions.from_dict(options, job_id=self.ID)
 
         # where QDT downloads remote repositories
         self._ensure_folder_exists(
@@ -171,7 +173,7 @@ class JobProfilesSynchronizer(GenericJob):
         Args:
             downloaded_profiles (tuple[QdtProfile]): list of downloaded profiles objects
         """
-        logger.debug(f"Sync mode: {self.options.get('sync_mode')}.")
+        logger.debug(f"Sync mode: {self.options.sync_mode}.")
         # if local profiles folder exists or it's empty -> copy downloaded profiles
         if not self.qgis_profiles_path.exists() or not any(
             self.qgis_profiles_path.iterdir()
@@ -185,7 +187,7 @@ class JobProfilesSynchronizer(GenericJob):
             # copy all downloaded profiles
             self.sync_overwrite_local_profiles(profiles_to_copy=downloaded_profiles)
 
-        elif self.options.get("sync_mode") == "only_missing":
+        elif self.options.sync_mode == "only_missing":
             already_installed = []
             not_installed = []
             for dl_profile in downloaded_profiles:
@@ -232,7 +234,7 @@ class JobProfilesSynchronizer(GenericJob):
 
             self.sync_overwrite_local_profiles(profiles_to_copy=not_installed)
 
-        elif self.options.get("sync_mode") == "only_new_version":
+        elif self.options.sync_mode == "only_new_version":
             outdated = self.compare_downloaded_with_installed_profiles(
                 li_downloaded_profiles=downloaded_profiles
             )[0]
@@ -242,7 +244,7 @@ class JobProfilesSynchronizer(GenericJob):
                 )
                 return
             self.sync_overwrite_local_profiles(profiles_to_copy=outdated)
-        elif self.options.get("sync_mode") == "only_different_version":
+        elif self.options.sync_mode == "only_different_version":
             outdated, different, same = self.compare_downloaded_with_installed_profiles(
                 li_downloaded_profiles=downloaded_profiles
             )
@@ -252,7 +254,7 @@ class JobProfilesSynchronizer(GenericJob):
                 )
                 return
             self.sync_overwrite_local_profiles(profiles_to_copy=different + outdated)
-        elif self.options.get("sync_mode") == "overwrite":
+        elif self.options.sync_mode == "overwrite":
             logger.debug(
                 "Installed profiles are going to be overridden by downloaded ones."
             )
