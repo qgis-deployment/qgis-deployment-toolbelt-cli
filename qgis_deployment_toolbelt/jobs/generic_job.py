@@ -34,6 +34,7 @@ from qgis_deployment_toolbelt.exceptions import (
     JobOptionBadValueError,
     JobOptionBadValueTypeError,
 )
+from qgis_deployment_toolbelt.jobs.options import JobOptions
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 from qgis_deployment_toolbelt.profiles.rules_context import QdtRulesContext
 from qgis_deployment_toolbelt.reports import CleanupReport
@@ -60,23 +61,30 @@ class GenericJob(ABC):
     validate options. A concrete job must define:
 
     - ``ID``, the identifier used in the ``uses`` key of a scenario step;
-    - ``OPTIONS_SCHEMA``, the options accepted in the ``with`` key, checked by
-      :meth:`validate_options`;
+    - ``OPTIONS``, the options accepted in the ``with`` key: a
+      :class:`~qgis_deployment_toolbelt.jobs.options.JobOptions` subclass, which
+      validates them and applies their default values. Jobs not migrated yet define
+      the legacy ``OPTIONS_SCHEMA`` dict instead, checked by :meth:`validate_options`;
     - :meth:`run`, called by the deployment command once the job is instantiated.
 
-    ``ID`` and ``OPTIONS_SCHEMA`` are declared as abstract properties so that a
-    plain class attribute in the subclass implements them.
+    ``ID`` is declared as an abstract property so that a plain class attribute in
+    the subclass implements it. A job declaring neither ``OPTIONS`` nor
+    ``OPTIONS_SCHEMA`` can't be instantiated.
 
     Example:
         .. code-block:: python
 
+            class ExampleOptions(JobOptions):
+                mode = Choice(("fast", "safe"), default="safe")
+
+
             class JobExample(GenericJob):
                 ID: str = "example-job"
-                OPTIONS_SCHEMA: dict = {}
+                OPTIONS = ExampleOptions
 
                 def __init__(self, options: dict) -> None:
                     super().__init__()
-                    self.options: dict = self.validate_options(options)
+                    self.options = ExampleOptions.from_dict(options, job_id=self.ID)
 
                 def run(self) -> None: ...
 
@@ -89,7 +97,16 @@ class GenericJob(ABC):
     RULES_FILTER_CACHE: dict[str, bool | None] = {}
 
     def __init__(self) -> None:
-        """Object instanciation."""
+        """Object instanciation.
+
+        Raises:
+            TypeError: if the job declares neither ``OPTIONS`` nor ``OPTIONS_SCHEMA``
+        """
+        if self.OPTIONS is None and self.OPTIONS_SCHEMA is None:
+            raise TypeError(
+                f"{type(self).__name__} must define OPTIONS (or the legacy "
+                "OPTIONS_SCHEMA)."
+            )
 
         # QDT rules context
         only_prefixed_variables = str2bool(
@@ -165,11 +182,12 @@ class GenericJob(ABC):
         """Job identifier, used in the ``uses`` key of a scenario step."""
         raise NotImplementedError(f"{type(self).__name__} must define ID.")
 
-    @property
-    @abstractmethod
-    def OPTIONS_SCHEMA(self) -> dict[str, dict[str, Any]]:  # noqa: N802
-        """Options accepted in the ``with`` key of a scenario step."""
-        raise NotImplementedError(f"{type(self).__name__} must define OPTIONS_SCHEMA.")
+    #: Options accepted in the ``with`` key of a scenario step, validated with
+    #: ``OPTIONS.from_dict``. Replaces ``OPTIONS_SCHEMA``, being migrated job by job.
+    OPTIONS: type[JobOptions] | None = None
+
+    #: Legacy declaration of the options, validated by :meth:`validate_options`.
+    OPTIONS_SCHEMA: dict[str, dict[str, Any]] | None = None
 
     @abstractmethod
     def run(self) -> CleanupReport | None:
@@ -583,11 +601,18 @@ class GenericJob(ABC):
             JobOptionBadNameError: if an option name is not in the schema
             JobOptionBadValueError: if an option value fails its condition
             JobOptionBadValueTypeError: if an option value has the wrong type
-            TypeError: if options is not a dict
+            TypeError: if options is not a dict or if the job declares no
+                ``OPTIONS_SCHEMA`` (jobs declaring ``OPTIONS`` use
+                ``OPTIONS.from_dict``)
 
         Returns:
             dict[str, Any]: unchanged when all checks pass
         """
+        if self.OPTIONS_SCHEMA is None:
+            raise TypeError(
+                f"{type(self).__name__} declares no OPTIONS_SCHEMA: validate its "
+                "options with OPTIONS.from_dict."
+            )
         if not isinstance(options, dict):
             raise TypeError(f"Options to validate must be a dict, not {type(options)}.")
 
