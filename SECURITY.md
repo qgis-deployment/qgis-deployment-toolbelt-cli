@@ -29,6 +29,24 @@ Security advisories are published on the [repository's security page](https://gi
 
 ----
 
+## Dependencies relying on compiled code
+
+QDT itself is pure Python, but some of its dependencies ship compiled binaries (`.pyd` on Windows, `.so` on Linux and macOS), installed from the wheels published on PyPI:
+
+| Dependency | Language | Required by | Platforms | Usage in QDT |
+| :--------- | :------- | :---------- | :-------- | :----------- |
+| [charset-normalizer](https://pypi.org/project/charset-normalizer/) | Python compiled with Cython | [requests](https://pypi.org/project/requests/) | all | Detects the encoding of HTTP responses. The same modules are also shipped as pure Python, used when the binaries are missing. |
+| [dukpy](https://pypi.org/project/dukpy/) | C ([Duktape](https://duktape.org/) JavaScript engine) | [pypac](https://pypi.org/project/pypac/) | all | Runs the proxy auto-configuration (PAC) JavaScript files. No pure Python fallback. |
+| [dulwich](https://pypi.org/project/dulwich/) | Rust | QDT | all | Git implementation used to download profiles from Git repositories. The Rust extensions speed up objects, packs and trees handling, with a pure Python fallback when they're missing. Since its version 0.48.0, the official QDT executables install the pure Python version, so those Rust extensions are not embedded. |
+| [pydantic-core](https://pypi.org/project/pydantic-core/) | Rust | [pydantic](https://pypi.org/project/pydantic/), required by [python-rule-engine](https://pypi.org/project/python-rule-engine/) | all | Validation core of pydantic, used to evaluate the profiles deployment rules. No pure Python fallback. |
+| [pyobjc](https://pypi.org/project/pyobjc/) | Objective-C | [Send2Trash](https://pypi.org/project/Send2Trash/) (`nativeLib` extra) | macOS | Moves the deleted files to the macOS Trash. Send2Trash falls back on a ctypes implementation when it's missing. |
+| [pywin32](https://pypi.org/project/pywin32/) | C/C++ | QDT, [python-win-ad](https://pypi.org/project/python-win-ad/), [Send2Trash](https://pypi.org/project/Send2Trash/) (`nativeLib` extra) | Windows | Windows APIs: shortcuts and COM objects, Active Directory user and groups (through python-win-ad), recycle bin. No fallback for QDT and python-win-ad usages. |
+| [PyYAML](https://pypi.org/project/PyYAML/) | C (binding to [LibYAML](https://pyyaml.org/wiki/LibYAML)) | QDT | all | Reads the scenario files. QDT uses the pure Python loader (`yaml.safe_load`): the C extension is shipped but not used. |
+
+These binaries are not signed (no Authenticode signature on Windows). In the official executables, built with [PyInstaller](https://pyinstaller.org/) as a single file, only the executable itself is signed: the embedded binaries are extracted to a temporary folder and loaded from there at each run. This matters on workstations where application control policies (AppLocker, WDAC...) restrict the libraries which can be loaded.
+
+----
+
 ## Reporting a Vulnerability
 
 Please report (suspected) security vulnerabilities to **[qgis+security@oslandia.com](mailto:qgis+security@oslandia.com)**. You will receive a response from us within 48 hours. If the issue is confirmed, we will release a patch as soon as possible depending on complexity but historically within a few days.
