@@ -43,6 +43,7 @@ dependencies = [
     # required by python-rule-engine: 1.10 to 1.13 break the executables (#932)
     "jsonpath-ng>=1.8.0,!=1.10.*,!=1.11.*,!=1.12.*,!=1.13.*,<2",
     "packaging>=26.3,<27",
+    "pydantic>=2.14.2,<3",
     "pypac>=0.19,<1",
     "python-rule-engine>=1.0.0,<1.1",
     "python-win-ad==0.6.4 ; sys_platform == 'win32'",
