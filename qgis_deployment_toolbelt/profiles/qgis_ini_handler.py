@@ -668,13 +668,16 @@ class QgisIniHelper:
     def merge_to(self, dst: QgisIniHelper) -> None:
         """Merge INI file to another INI file.
 
+
         If the destination file exists a merge is done:
 
+
         - all available sections are kept
-        - if a section is available in both INI files, keep updated parameters in a
+        - if a section is available in both INI files, keep updated parameters in a \
             backup section
 
-        If environnement variable interpolation is enabled, value are written with
+
+        If environnement variable interpolation is enabled, value are written with \
             current environnement values
 
         Args:
