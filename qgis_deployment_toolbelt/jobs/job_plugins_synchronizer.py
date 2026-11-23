@@ -54,13 +54,6 @@ class JobPluginsSynchronizer(GenericJob):
 
     ID: str = "qplugins-synchronizer"
     OPTIONS_SCHEMA: dict = {
-        "action": {
-            "type": str,
-            "required": False,
-            "default": "create_or_restore",
-            "possible_values": ("create", "create_or_restore", "remove"),
-            "condition": "in",
-        },
         "deletion_policy": {
             "type": str,
             "required": False,
@@ -91,15 +84,6 @@ class JobPluginsSynchronizer(GenericJob):
         """
         super().__init__()
         self.options: dict = self.validate_options(options)
-
-        # TODO: remove the option in 0.50
-        if "action" in self.options:
-            logger.error(
-                f"[DEPRECATED] the 'action' option of job '{self.ID}' has no effect and "
-                "will be removed in QDT 0.50. Remove it from your scenario. To remove "
-                "plugins no longer listed in profiles, use the 'cleanup-manager' job "
-                "with the 'plugins_installed' scope."
-            )
 
         # where QDT downloads plugins
         self._ensure_folder_exists(
