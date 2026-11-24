@@ -5,17 +5,6 @@
     "title": "QPlugins Synchronizer.",
     "type": "object",
     "properties": {
-        "action": {
-            "default": "create_or_restore",
-            "deprecated": true,
-            "description": "Deprecated: has no effect and will be removed in QDT 0.50. To remove plugins no longer listed in profiles, use the 'cleanup-manager' job with the 'plugins_installed' scope.",
-            "enum": [
-                "create",
-                "create_or_restore",
-                "remove"
-            ],
-            "type": "string"
-        },
         "deletion_mode": {
             "default": "trash_or_delete",
             "deprecated": true,

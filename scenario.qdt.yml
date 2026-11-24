@@ -61,7 +61,6 @@ steps:
   - name: Synchronize downloaded plugins with those in installed profiles
     uses: qplugins-synchronizer
     with:
-      action: create_or_restore
       deletion_policy: "force_delete"
       profile_ref: installed
 

@@ -19,14 +19,6 @@ Sample job configuration in your scenario file:
 
 ## Options
 
-### action
-
-> [!WARNING]
-> Deprecated since 0.48: this option has no effect and will be removed in QDT 0.50. Using it logs a deprecation error. Remove it from your scenarios.
-> To remove plugins no longer listed in profiles, use the [Cleanup manager job](./cleanup_manager.md) with the `plugins_installed` scope, after this job.
-
-Possible_values: `create`, `create_or_restore`, `remove`.
-
 ### deletion_policy
 
 [Deletion policy](../usage/settings.md#deletion-policy) to apply when it comes to removing files from the end-user disk.

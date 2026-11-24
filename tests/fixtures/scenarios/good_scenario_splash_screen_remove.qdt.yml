@@ -40,7 +40,6 @@ steps:
   - name: Synchronize plugins
     uses: qplugins-synchronizer
     with:
-      action: create_or_restore
       profile_ref: downloaded
       source: ~/.cache/qgis-deployment-toolbelt/plugins
 

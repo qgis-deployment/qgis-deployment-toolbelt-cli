@@ -24,6 +24,7 @@ from unittest.mock import patch
 
 # package
 from qgis_deployment_toolbelt.constants import MANAGED_PLUGINS_MANIFEST_FILENAME
+from qgis_deployment_toolbelt.exceptions import JobOptionBadNameError
 from qgis_deployment_toolbelt.jobs import job_plugins_synchronizer
 from qgis_deployment_toolbelt.jobs.job_plugins_synchronizer import (
     JobPluginsSynchronizer,
@@ -80,7 +81,7 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
         with tempfile.TemporaryDirectory(
             prefix="QDT_test_plugins_sync_upgrade_delete_"
         ) as tmp_dir:
-            options = {"action": "create_or_restore"}
+            options = {}
             job = JobPluginsSynchronizer(options=options)
 
             profile = self._make_profile_in_tmpdir(Path(tmp_dir), "test_delete")
@@ -116,28 +117,17 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
             self.assertTrue((plugin_folder / "metadata.txt").exists())
             self.assertTrue((plugin_folder / "__init__.py").exists())
 
-    def test_action_option_is_deprecated(self):
-        """Using the deprecated 'action' option must log a deprecation warning,
-        whatever its value, without failing."""
-        for action in ("create", "create_or_restore", "remove"):
-            with (
-                self.subTest(action=action),
-                self.assertLogs(job_plugins_synchronizer.logger, "WARNING") as logs,
-            ):
-                JobPluginsSynchronizer(options={"action": action})
-            self.assertTrue(any("DEPRECATED" in line for line in logs.output))
-
-    def test_action_option_absent_no_deprecation_warning(self):
-        """No deprecation warning when the 'action' option is not used."""
-        with self.assertNoLogs(job_plugins_synchronizer.logger, "WARNING"):
-            JobPluginsSynchronizer(options={"profile_ref": "installed"})
+    def test_action_option_removed(self):
+        """The 'action' option was removed in QDT 0.50: using it must fail."""
+        with self.assertRaises(JobOptionBadNameError):
+            JobPluginsSynchronizer(options={"action": "create_or_restore"})
 
     def test_install_plugin_upgrade_mode_keep(self):
         """Test that upgrade_mode=keep preserves existing files in the plugin folder."""
         with tempfile.TemporaryDirectory(
             prefix="QDT_test_plugins_sync_upgrade_keep_"
         ) as tmp_dir:
-            options = {"action": "create_or_restore"}
+            options = {}
             job = JobPluginsSynchronizer(options=options)
 
             profile = self._make_profile_in_tmpdir(Path(tmp_dir), "test_keep")
@@ -275,7 +265,7 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
         with tempfile.TemporaryDirectory(
             prefix="QDT_test_plugins_sync_install_manifest_"
         ) as tmp_dir:
-            options = {"action": "create_or_restore"}
+            options = {}
             job = JobPluginsSynchronizer(options=options)
 
             profile = self._make_profile_in_tmpdir(Path(tmp_dir), "test_manifest")
@@ -311,7 +301,7 @@ class TestJobPluginsSynchronizer(unittest.TestCase):
         with tempfile.TemporaryDirectory(
             prefix="QDT_test_plugins_sync_install_manifest_batch_"
         ) as tmp_dir:
-            options = {"action": "create_or_restore"}
+            options = {}
             job = JobPluginsSynchronizer(options=options)
 
             profile = self._make_profile_in_tmpdir(Path(tmp_dir), "test_batch")
