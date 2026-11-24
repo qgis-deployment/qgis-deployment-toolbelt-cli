@@ -196,4 +196,4 @@ current_user=alice
 > [!NOTE]
 > The merge is applied to the QGIS settings file (`QGIS3.ini`, `QGIS4.ini`...) and `QGISCUSTOMIZATION3.ini` (but not the `QGISCUSTOMIZATION.xml` introduced in QGIS 4) when the **downloaded** profile ships them.
 >
-> If the **installed** profile does not have the file yet (typically for the first installation of the profile), the downloaded file is written as is, except that environment variables are converted. No `QDT_backup_<section>` is created in that case.
+> If the **installed** profile does not have the file yet (typically for the first installation of the profile), the downloaded file is written as is, except that environment variables are interpolated. No `QDT_backup_<section>` is created in that case.
