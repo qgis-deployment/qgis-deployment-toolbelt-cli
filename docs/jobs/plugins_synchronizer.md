@@ -27,9 +27,6 @@ Possible_values: see [Deletion policy](../usage/settings.md#deletion-policy) sec
 
 Default: `trash_or_delete`
 
-> [!WARNING]
-> This option was named `deletion_mode` until QDT 0.45. The old name is still accepted as a deprecated alias, logging a warning, and will be removed in a future version.
-
 ### profile_ref
 
 Which `profile.json` file to use as reference.
