@@ -5,7 +5,7 @@ metadata:
   id: qdt-demo-scenario-http
   description: >-
     Demonstration scenario of QGIS Deployment Toolbelt that uses HTTP (without git) to download remote profiles.
-  qdt_min_version: 0.45.0
+  qdt_min_version: "0.50.0"
 
 # Toolbelt settings
 settings:
@@ -43,6 +43,7 @@ steps:
   - name: Synchronize downloaded profiles with installed ones
     uses: qprofiles-synchronizer
     with:
+      qdt_watermark: section
       sync_mode: overwrite
 
   - name: Download plugins
@@ -87,3 +88,7 @@ steps:
       scopes:
         - plugins_cache
         - plugins_installed
+        - profiles_deprecated
+        - profiles_incompatible_qgis
+        - shortcuts_orphans_manifest
+        - shortcuts_orphans_mark
