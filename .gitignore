@@ -154,3 +154,4 @@ safety_report.html
 builder/*.key
 builder/*.pfx
 builder/*.pfx.b64
+reports/
