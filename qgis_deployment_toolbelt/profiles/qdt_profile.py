@@ -784,26 +784,27 @@ class QdtProfile:
             tmp_profile.rename_qgis_ini_file_to_target_version()
 
             # profile settings file: QGIS3.ini, QGIS4.ini...
-            if self.has_qgis_ini_file() and dst.has_qgis_ini_file():
-                # Copy current installed file
-                copy2(
-                    dst.get_qgis_ini_helper().ini_filepath,
-                    tmp_profile.get_qgis_ini_helper().ini_filepath,
-                )
-                # Merge
+            if self.has_qgis_ini_file():
+                if dst.has_qgis_ini_file():
+                    # Copy current installed file
+                    copy2(
+                        dst.get_qgis_ini_helper().ini_filepath,
+                        tmp_profile.get_qgis_ini_helper().ini_filepath,
+                    )
+                # merge/interpolate even if destination has no ini file (for example at
+                # the first deployment)
                 self.get_qgis_ini_helper().merge_to(tmp_profile.get_qgis_ini_helper())
 
             # profile customization file
-            if (
-                self.has_qgis_customization_ini_file()
-                and dst.has_qgis_customization_ini_file()
-            ):
-                # Copy current installed file
-                copy2(
-                    dst.get_qgis_customization_ini_helper().ini_filepath,
-                    tmp_profile.get_qgis_customization_ini_helper().ini_filepath,
-                )
-                # Merge
+            if self.has_qgis_customization_ini_file():
+                if dst.has_qgis_customization_ini_file():
+                    # Copy current installed file
+                    copy2(
+                        dst.get_qgis_customization_ini_helper().ini_filepath,
+                        tmp_profile.get_qgis_customization_ini_helper().ini_filepath,
+                    )
+                # merge/interpolate even if destination has no ini file (for example at
+                # the first deployment)
                 self.get_qgis_customization_ini_helper().merge_to(
                     tmp_profile.get_qgis_customization_ini_helper()
                 )

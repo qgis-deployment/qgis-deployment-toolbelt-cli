@@ -15,6 +15,7 @@ import tempfile
 import unittest
 from os import environ
 from pathlib import Path
+from unittest import mock
 
 # project
 from qgis_deployment_toolbelt.__about__ import __version_clean__
@@ -464,6 +465,55 @@ class TestQdtProfile(unittest.TestCase):
             # settings shipped by the profile and set by the end-user are both kept
             self.assertIn("fromProfileRepo", merged_content)
             self.assertIn("setByEndUser", merged_content)
+
+    def test_profile_merge_to_not_installed_profile_interpolates_env_vars(self):
+        """Environment variables are interpolated even when the profile is installed
+        for the first time (no INI file to merge with)."""
+        with tempfile.TemporaryDirectory(
+            prefix="qdt_test_profile_merge_", ignore_cleanup_errors=True
+        ) as tmpdirname:
+            qgis_profiles_path = Path(tmpdirname).joinpath("QGIS3", "profiles")
+
+            downloaded_folder = Path(tmpdirname).joinpath("downloaded", "demo")
+            downloaded_folder.joinpath("QGIS").mkdir(parents=True)
+            downloaded_folder.joinpath("QGIS", "QGIS3.ini").write_text(
+                "[qgis]\nprojOpenAtLaunchPath=$QDT_TEST_PROFILE_DIR/demo.qgz\n",
+                encoding="UTF8",
+            )
+            downloaded_folder.joinpath("QGIS", "QGISCUSTOMIZATION3.ini").write_text(
+                "[Customization]\nbrowser=$QDT_TEST_PROFILE_DIR/custom\n",
+                encoding="UTF8",
+            )
+
+            # the profile is not installed yet: its folder does not exist
+            installed_folder = qgis_profiles_path.joinpath("demo")
+
+            # sandbox the installed profiles folder, as QGIS itself allows
+            with mock.patch.dict(
+                environ,
+                {
+                    "QGIS_CUSTOM_CONFIG_PATH": f"{qgis_profiles_path}",
+                    "QDT_TEST_PROFILE_DIR": "/opt/qdt",
+                },
+            ):
+                downloaded_profile = QdtProfile(name="demo", folder=downloaded_folder)
+                downloaded_profile.os_config.qgis_version_major = 3
+                installed_profile = QdtProfile(name="demo", folder=installed_folder)
+                installed_profile.os_config.qgis_version_major = 3
+
+                downloaded_profile.merge_to(installed_profile)
+
+            for ini_filename, expected_value in (
+                ("QGIS3.ini", "/opt/qdt/demo.qgz"),
+                ("QGISCUSTOMIZATION3.ini", "/opt/qdt/custom"),
+            ):
+                with self.subTest(ini_filename=ini_filename):
+                    installed_content = installed_folder.joinpath(
+                        "QGIS", ini_filename
+                    ).read_text(encoding="UTF8")
+                    self.assertIn(expected_value, installed_content)
+                    self.assertNotIn("$QDT_TEST_PROFILE_DIR", installed_content)
+                    self.assertNotIn("QDT_backup_", installed_content)
 
 
 # ############################################################################

@@ -193,6 +193,7 @@ current_user=alice
 - **environment variables are converted at write time**: a value like `$USER` in the downloaded profile is converted to the actual username of the machine running QDT.
 - **`overwrite` mode skips all of this**: with `sync_mode: overwrite`, the profile folder is copied without any merge nor backup sections. Use it only when you want a full reset of the installed profile.
 
-:::{note}
-The merge is applied to both `QGIS3.ini` and `QGISCUSTOMIZATION3.ini` if both files exist in the downloaded **and** installed profiles. If only one side has the file, no merge is attempted for that file.
-:::
+> [!NOTE]
+> The merge is applied to the QGIS settings file (`QGIS3.ini`, `QGIS4.ini`...) and `QGISCUSTOMIZATION3.ini` (but not the `QGISCUSTOMIZATION.xml` introduced in QGIS 4) when the **downloaded** profile ships them.
+>
+> If the **installed** profile does not have the file yet (typically for the first installation of the profile), the downloaded file is written as is, except that environment variables are interpolated. No `QDT_backup_<section>` is created in that case.
