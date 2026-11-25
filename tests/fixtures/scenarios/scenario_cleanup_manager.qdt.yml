@@ -25,3 +25,13 @@ steps:
       scopes:
         - plugins_cache
         - plugins_installed
+
+  - name: Cleanup profiles and orphan shortcuts (dry run)
+    uses: cleanup-manager
+    with:
+      dry_run: true
+      scopes:
+        - profiles_deprecated
+        - profiles_incompatible_qgis
+        - shortcuts_orphans_manifest
+        - shortcuts_orphans_mark

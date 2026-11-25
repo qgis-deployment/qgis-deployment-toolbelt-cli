@@ -27,6 +27,7 @@ You can also define (non-exhaustive list):
 - the location of the QDT local working directory
 - the path to the QGIS executable to use
 - the behavior of plugin downloads
+- the location of the QDT-managed shortcuts manifest
 
 ---> 📖 [QDT Environment Variables](./settings.md#using-environment-variables)
 
@@ -92,6 +93,7 @@ You can also define (non-exhaustive list):
 - ✅ from a public Git project (internet or local network)
 - ✅ from an HTTP server
 - ✔️ private project with authentication: [yes using a local proxy](../guides/howto_manage_private_git.md) but not directly (waiting to be funded)
+- ✅ mark synchronized profiles with QDT metadata
 
 ---> 📖 [Profiles Downloader](../jobs/profiles_downloader.md) and [Profiles Synchronizer](../jobs/profiles_synchronizer.md)
 
@@ -118,6 +120,7 @@ You can also define (non-exhaustive list):
 - ✅ remove unlisted plugins archives from local cache
 - ✅ remove [deprecated profiles](../reference/qdt_profile.md#deprecated)
 - ✅ remove profiles incompatible with the targeted QGIS version
+- ✅ remove shortcuts pointing to profiles which are not installed anymore, identified either from the QDT-managed shortcuts manifest or from the QDT mark in shortcut descriptions
 
 ---> 📖 Usable as [a job](../jobs/cleanup_manager.md) and/or [command-line](./cli.md#cleanup)
 
@@ -135,7 +138,9 @@ On Linux ([freedesktop](https://www.freedesktop.org)), this also integrates a co
 
 ![Shortcut created by QDT - Context menu on Linux](../static/shortcut_linux_freedesktop_context-menu.png)
 
----> 📖 [Shortcuts Manager](../jobs/shortcuts_manager.md)
+Every shortcut created by QDT is recorded in a manifest, so that the cleanup manager can later remove the shortcuts of profiles which are not installed anymore.
+
+---> 📖 [Shortcuts Manager](../jobs/shortcuts_manager.md) and [Cleanup Manager](../jobs/cleanup_manager.md)
 
 ----
 
@@ -203,6 +208,8 @@ If the `ORG_QGIS_COMMONS` environment variable is defined in QDT's runtime envir
 - domain (AD) or local groups of the current user
 - date and time
 - technical environment (operating system, etc.)
+
+A rule which cannot be established is reported separately from a rule which simply does not match.
 
 ```json
 {

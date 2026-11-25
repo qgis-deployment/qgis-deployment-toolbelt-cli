@@ -16,6 +16,51 @@ Unreleased
 
 -->
 
+## 0.50.0 - 2026-11-25
+
+### Security 🔒
+
+- chore(deps): bump dulwich to 1.2.21 to get upstream vulnerability fix by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/975>
+
+### Bugs fixes 🐛
+
+- fix(profiles-downloader): a failed download was not raised correctly by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/972>
+- fix(profiles-synchronizer): make sure to read and write in UTF-8 by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/991>
+- fix(profiles-synchronizer): ini interpolation was not functional at first deployment by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/992>
+
+### Features and enhancements 🎉
+
+- feature(shortcuts-manager): add a JSON manifest to track shortcuts managed by QDT by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/964>
+- feature(cleanup-manager): add `shortcuts_orphans_manifest` scope by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/966>
+- feature(cleanup manager): add  `shortcuts_orphans_mark` to remove shortcuts using the QDT "mark" by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/969>
+- feature(profiles-sync): option `qdt_watermark` to automatically insert QDT metadata into QGISx.ini by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/983>
+- improve(linux): comply with XDG Base Directory to get standard folders paths by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/963>
+- improve(shortcuts-manager): variabilize shortcuts QDT marks by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/967>
+- improve(shortcuts/linux): escape, block reserved chars in some fields and fix gio by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/968>
+- improve(deletion): return list of paths after a failed batch deletion by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/982>
+- improve(rules): distinguish unmatched rules from ones which could not be established by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/970>
+
+### Tooling 🔧
+
+- improve(tests): add a conftest with fixtures meant to isolate pytest environment by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/971>
+- chore(packaging): remove Python 3.10 support (EOL) by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/974>
+- chore(packaging): add Python 3.15 support by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/981>
+- update(ci): run on Ubuntu 26.04 by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/980>
+
+### Documentation 📖
+
+- add(docs): list of dependencies relying on compiled code by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/986>
+- remove(deletion-mode): remove former name 'deletion_mode', replaced by 'deletion_policy' by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/988>
+- improve(docs/schemas): refactor rules validation and improve consistency by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/973>
+- update(docs): complete features page after 0.49 release by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/958>
+
+### Other Changes
+
+- remove(plugins-synchronizer): as planned, option "action" is removed by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/987>
+- chore(deps): bump minimal versions by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/978>
+- chore(deps): bump minimal python-rule-engine version to 1.0.0 by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/977>
+- refacto(utils): rename operating system modules to improve consistency by @Guts in <https://github.com/qgis-deployment/qgis-deployment-toolbelt-cli/pull/959>
+
 ## 0.49.0 - 2026-11-09
 
 ### Bugs fixes 🐛
