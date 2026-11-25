@@ -322,7 +322,7 @@ class JobProfilesSynchronizer(GenericJob):
             installed_profile = QdtProfile(folder=profile.path_in_qgis)
             profile.merge_to(installed_profile)
 
-            if self.options.get("qdt_watermark", "none") != "none":
+            if self.options.qdt_watermark != "none":
                 self.write_qdt_watermark(
                     downloaded_profile=profile, installed_profile=installed_profile
                 )
@@ -343,7 +343,7 @@ class JobProfilesSynchronizer(GenericJob):
         Returns:
             Path: path to the written settings file
         """
-        section = QDT_WATERMARK_SECTIONS[self.options.get("qdt_watermark")]
+        section = QDT_WATERMARK_SECTIONS[self.options.qdt_watermark]
 
         watermark: dict[str, str | None] = {
             "qdt_profile_author": downloaded_profile.author,
