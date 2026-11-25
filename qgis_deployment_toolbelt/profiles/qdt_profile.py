@@ -210,6 +210,24 @@ class QdtProfile:
         return self._alias
 
     @property
+    def author(self) -> str | None:
+        """Returns the profile's author.
+
+        Returns:
+            str | None: profile author, None if not set.
+        """
+        return self._author
+
+    @property
+    def email(self) -> str | None:
+        """Returns the profile's contact email.
+
+        Returns:
+            str | None: profile contact email, None if not set.
+        """
+        return self._email
+
+    @property
     def folder(self) -> Path | None:
         """Returns the path to the folder where the profile is stored.
 
