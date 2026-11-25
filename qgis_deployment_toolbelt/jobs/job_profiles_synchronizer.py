@@ -62,28 +62,11 @@ class JobProfilesSynchronizer(GenericJob):
         profiles (in QGIS profiles'folder).
     """
 
+    # inherited
     ID: str = "qprofiles-synchronizer"
-    OPTIONS_SCHEMA: dict = {
-        "qdt_watermark": {
-            "type": str,
-            "required": False,
-            "default": "none",
-            "possible_values": ("none", "section", "variables"),
-            "condition": "in",
-        },
-        "sync_mode": {
-            "type": str,
-            "required": False,
-            "default": "only_missing",
-            "possible_values": (
-                "only_missing",
-                "only_different_version",
-                "only_new_version",
-                "overwrite",
-            ),
-            "condition": "in",
-        },
-    }
+    OPTIONS = ProfilesSynchronizerOptions
+
+    # custom
     PROFILES_NAMES_DOWNLOADED: list = []
     PROFILES_NAMES_INSTALLED: list = []
 
