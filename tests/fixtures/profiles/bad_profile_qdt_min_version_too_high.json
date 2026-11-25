@@ -1,6 +1,8 @@
 {
   "$schema": "../../../docs/schemas/profile/qgis_profile.json",
   "name": "qdt_test_profile_qdt_min_version_too_high",
+  "author": "QDT tests",
+  "email": "qdt-tests@example.org",
   "version": "1.0.0",
   "qdtMinVersion": "999.0.0"
 }
