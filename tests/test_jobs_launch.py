@@ -59,6 +59,29 @@ class TestJobsLaunch(unittest.TestCase):
             )
             self.assertIsNotNone(job)
 
+    def test_step_without_options(self):
+        """A step without 'with' key is valid and the job gets its default options.
+
+        Regression: in 0.50.0, such a step crashed with "Options to validate must
+        be a dict, not <class 'NoneType'>".
+        """
+        scenario = ScenarioReader(
+            in_yaml=Path(
+                "tests/fixtures/scenarios/scenario_step_without_options.qdt.yml"
+            )
+        )
+        is_valid, errors = scenario.validate_scenario()
+        self.assertTrue(is_valid, errors)
+
+        step = scenario.steps[0]
+        self.assertNotIn("with", step)
+
+        job = JobsOrchestrator().init_job_class_from_id(
+            job_id=step.get("uses"), options=step.get("with")
+        )
+        self.assertEqual(job.options.sync_mode, "only_missing")
+        self.assertEqual(job.options.qdt_watermark, "none")
+
     def test_cleanup_manager_full_scenario(self):
         """Validate a full scenario fixture using cleanup-manager."""
         scenario_path = Path(

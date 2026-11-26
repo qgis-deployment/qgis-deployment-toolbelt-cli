@@ -110,7 +110,6 @@ class TestJobGeneric(unittest.TestCase):
         """Abstract members fail loudly when reached through super()."""
         for member in (
             GenericJob.ID.fget,
-            GenericJob.OPTIONS_SCHEMA.fget,
             GenericJob.run,
         ):
             with (
