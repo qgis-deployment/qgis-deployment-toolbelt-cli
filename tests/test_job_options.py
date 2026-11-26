@@ -57,6 +57,13 @@ class OptionsFixture(JobOptions):
     source: str
 
 
+class OptionalOptionsFixture(JobOptions):
+    """Options all having a default value."""
+
+    mode: Literal["fast", "safe"] = "safe"
+    threads: int = 5
+
+
 class TestJobOptions(unittest.TestCase):
     """Test the base model of jobs options."""
 
@@ -127,9 +134,20 @@ class TestJobOptions(unittest.TestCase):
 
         self.assertIn("fast,safe", str(ctx.exception))
 
+    def test_options_none(self):
+        """None options (step without 'with' key) are handled as no options set:
+        default values are applied, required options are reported missing."""
+        options = OptionalOptionsFixture.from_dict(None, job_id="test")
+        self.assertEqual(options.mode, "safe")
+        self.assertEqual(options.threads, 5)
+
+        with self.assertRaises(JobOptionMissingError) as ctx:
+            OptionsFixture.from_dict(None, job_id="test-job")
+        self.assertIn("'source'", str(ctx.exception))
+
     def test_options_not_a_mapping(self):
-        """Options must be a mapping."""
-        for raw_options in (None, ["source"], "source"):
+        """Options must be a mapping (or None)."""
+        for raw_options in (["source"], "source"):
             with self.subTest(options=raw_options), self.assertRaises(TypeError):
                 OptionsFixture.from_dict(raw_options, job_id="test")
 
@@ -142,6 +160,13 @@ class TestJobProfilesSynchronizerOptions(unittest.TestCase):
         job = JobProfilesSynchronizer(options={})
 
         self.assertEqual(job.options.sync_mode, "only_missing")
+
+    def test_without_options(self):
+        """A step without 'with' key gives None options: defaults are used."""
+        job = JobProfilesSynchronizer(options=None)
+
+        self.assertEqual(job.options.sync_mode, "only_missing")
+        self.assertEqual(job.options.qdt_watermark, "none")
 
     def test_sync_mode_set(self):
         """A valid sync_mode is kept, an invalid one is rejected."""

@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../../../docs/schemas/scenario/qdt_scenario.json
+
+# Scenario with a step without 'with' key, which is allowed by the scenario schema
+# (only 'name' and 'uses' are required): the job must use its default options.
+
+metadata:
+  title: "Test scenario of QDT with a step without options"
+  id: test-scenario-step-without-options
+  description: >-
+    A step without 'with' key must run with the default values of the job options.
+  qdt_min_version: "0.1.0"
+
+settings:
+  DEBUG: false
+  SCENARIO_VALIDATION: true
+
+steps:
+  - name: Synchronize downloaded profiles with installed ones
+    uses: qprofiles-synchronizer
