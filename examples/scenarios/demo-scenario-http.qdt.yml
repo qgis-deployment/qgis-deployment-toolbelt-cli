@@ -54,6 +54,9 @@ steps:
 
   - name: Synchronize plugins
     uses: qplugins-synchronizer
+    with:
+      deletion_policy: trash_or_delete
+      profile_ref: installed
 
   - name: Create shortcuts for profiles
     uses: shortcuts-manager
