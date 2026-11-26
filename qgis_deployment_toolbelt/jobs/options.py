@@ -65,16 +65,17 @@ class JobOptions(BaseModel):
     )
 
     @classmethod
-    def from_dict(cls, options: Mapping[str, Any], job_id: str) -> Self:
+    def from_dict(cls, options: Mapping[str, Any] | None, job_id: str) -> Self:
         """Validate the options set in the ``with`` key of a scenario step and
         complete them with the default values.
 
         Args:
-            options: options to validate
+            options: options to validate. None (step without ``with`` key) means that
+                the default values apply and the required options are reported missing.
             job_id: job identifier, used in error messages
 
         Raises:
-            TypeError: if options is not a mapping
+            TypeError: if options is neither a mapping nor None
             JobOptionBadNameError: if an option is not declared
             JobOptionMissingError: if a required option is not set
             JobOptionBadValueTypeError: if an option value has the wrong type
@@ -83,7 +84,9 @@ class JobOptions(BaseModel):
         Returns:
             validated options
         """
-        if not isinstance(options, Mapping):
+        if options is None:
+            options = {}
+        elif not isinstance(options, Mapping):
             raise TypeError(f"Options to validate must be a dict, not {type(options)}.")
 
         try:
