@@ -26,6 +26,12 @@ from qgis_deployment_toolbelt.constants import (
     ENV_VAR_QGIS_EXE_PATH,
     ENV_VAR_QGIS_VERSION,
 )
+from qgis_deployment_toolbelt.exceptions import (
+    JobOptionBadNameError,
+    JobOptionBadValueError,
+    JobOptionBadValueTypeError,
+    QgisInstallNotFoundError,
+)
 from qgis_deployment_toolbelt.jobs.job_qgis_installation_finder import (
     JobQgisInstallationFinder,
 )
@@ -38,6 +44,102 @@ from qgis_deployment_toolbelt.jobs.job_qgis_installation_finder import (
 
 class TestJobQgisInstallationFinder(unittest.TestCase):
     """Test module."""
+
+    # -- OPTIONS -------------------------------------------------------
+    def test_options_defaults(self):
+        """Without options (empty or no 'with' key), the defaults apply."""
+        for raw_options in ({}, None):
+            with self.subTest(options=raw_options):
+                job = JobQgisInstallationFinder(options=raw_options)
+                self.assertEqual(job.options.if_not_found, "warning")
+                self.assertEqual(job.options.version_priority, [])
+                # empty: default install locations are searched, not a fixed list
+                self.assertEqual(job.options.search_paths, [])
+
+    def test_options_set(self):
+        """Valid options are kept as set."""
+        job = JobQgisInstallationFinder(
+            options={
+                "if_not_found": "error",
+                "version_priority": ["3.40", "3.34"],
+                "search_paths": ["D:/Apps/QGIS"],
+            }
+        )
+        self.assertEqual(job.options.if_not_found, "error")
+        self.assertEqual(job.options.version_priority, ["3.40", "3.34"])
+        self.assertEqual(job.options.search_paths, ["D:/Apps/QGIS"])
+
+    def test_options_invalid(self):
+        """Invalid options raise the matching QDT errors."""
+        cases = (
+            ({"unknown": True}, JobOptionBadNameError),
+            ({"if_not_found": "ignore"}, JobOptionBadValueError),
+            # a string was accepted but iterated char by char: now rejected
+            ({"version_priority": "3.40"}, JobOptionBadValueTypeError),
+            ({"search_paths": "D:/Apps/QGIS"}, JobOptionBadValueTypeError),
+            ({"version_priority": [3.40]}, JobOptionBadValueTypeError),
+        )
+        for raw_options, expected_error in cases:
+            with self.subTest(options=raw_options), self.assertRaises(expected_error):
+                JobQgisInstallationFinder(options=raw_options)
+
+    def test_search_paths_expanded(self):
+        """Search paths are expanded, an environment variable name gives its value."""
+        environ["QDT_TEST_QGIS_DIR"] = "/opt/qgis"
+        self.addCleanup(environ.pop, "QDT_TEST_QGIS_DIR", None)
+
+        job = JobQgisInstallationFinder(
+            options={"search_paths": ["QDT_TEST_QGIS_DIR", "~/qgis"]}
+        )
+
+        self.assertEqual(
+            job._get_search_paths_with_environment_variable(),
+            ["/opt/qgis", str(Path("~/qgis").expanduser())],
+        )
+
+    def test_preferred_version_does_not_modify_options(self):
+        """QDT_PREFERRED_QGIS_VERSION is tried first without being added to the
+        version_priority option, even after several lookups."""
+        environ["QDT_PREFERRED_QGIS_VERSION"] = "3.40"
+        self.addCleanup(environ.pop, "QDT_PREFERRED_QGIS_VERSION", None)
+
+        job = JobQgisInstallationFinder(options={"version_priority": ["3.34"]})
+        with (
+            patch(
+                "qgis_deployment_toolbelt.jobs.job_qgis_installation_finder.opersys",
+                "linux",
+            ),
+            patch.object(
+                JobQgisInstallationFinder,
+                "_get_linux_installed_qgis_path",
+                return_value={
+                    "3.34.1": "/path/to/qgis-3.34",
+                    "3.40.5": "/path/to/qgis-3.40",
+                    "3.44.0": "/path/to/qgis-3.44",
+                },
+            ),
+        ):
+            for _ in range(2):
+                self.assertEqual(
+                    job.get_installed_qgis_version_and_path(),
+                    ("3.40.5", "/path/to/qgis-3.40"),
+                )
+
+        self.assertEqual(job.options.version_priority, ["3.34"])
+
+    def test_if_not_found_error(self):
+        """With if_not_found: error, no installation found stops the deployment."""
+        job = JobQgisInstallationFinder(options={"if_not_found": "error"})
+        with (
+            patch(
+                "qgis_deployment_toolbelt.jobs.job_qgis_installation_finder.opersys",
+                "linux",
+            ),
+            patch.object(job, "run_needed", return_value=True),
+            patch.object(job, "get_installed_qgis_version_and_path", return_value=None),
+            self.assertRaises(QgisInstallNotFoundError),
+        ):
+            job.run()
 
     # -- TESTS ---------------------------------------------------------
     def test_get_windows_startupinfo_kwargs_non_windows(self):

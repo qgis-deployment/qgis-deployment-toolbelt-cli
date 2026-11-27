@@ -19,6 +19,7 @@ from os.path import expanduser, expandvars
 from pathlib import Path
 from shutil import which
 from sys import platform as opersys
+from typing import Literal
 
 # 3rd party
 from packaging.version import InvalidVersion, Version
@@ -33,6 +34,7 @@ from qgis_deployment_toolbelt.constants import (
 )
 from qgis_deployment_toolbelt.exceptions import QgisInstallNotFoundError
 from qgis_deployment_toolbelt.jobs.generic_job import GenericJob
+from qgis_deployment_toolbelt.jobs.options import JobOptions
 from qgis_deployment_toolbelt.utils.check_path import check_path_exists
 
 
@@ -49,55 +51,40 @@ logger = logging.getLogger(__name__)
 # ##################################
 
 
-class JobQgisInstallationFinder(GenericJob):
-    """
-    Class to find installed QGIS version
-    """
+class QgisInstallationFinderOptions(JobOptions):
+    """Options of the qgis-installation-finder job."""
 
+    #: behavior when no QGIS installation is found
+    if_not_found: Literal["warning", "error"] = "warning"
+    #: QGIS versions (prefixes like ``3.40``) to look for first, in order
+    version_priority: list[str] = []
+    #: folders (or names of environment variables holding one) where to look for
+    #: QGIS. Empty: default install locations (see the job documentation).
+    search_paths: list[str] = []
+
+
+class JobQgisInstallationFinder(GenericJob):
+    """Class to find installed QGIS binaries and version(s)."""
+
+    # inherited
     ID: str = "qgis-installation-finder"
+
+    # custom
     ENSURE_QGIS_PROFILES_FOLDER: bool = False
+    OPTIONS = QgisInstallationFinderOptions
 
     # -- CACHE --
     CACHE_DETECTED_QGIS_VERSION: str | None = None
 
-    OPTIONS_SCHEMA: dict = {
-        "if_not_found": {
-            "type": str,
-            "required": False,
-            "default": "warning",
-            "possible_values": ("warning", "error"),
-            "condition": "in",
-        },
-        "version_priority": {
-            "type": (list, str),
-            "required": False,
-            "default": None,
-            "possible_values": None,
-            "condition": None,
-        },
-        "search_paths": {
-            "type": (list, str),
-            "required": False,
-            "default": (
-                expandvars("%PROGRAMFILES%"),
-                expandvars(
-                    expanduser(getenv("QDT_OSGEO4W_INSTALL_DIR", "C:\\OSGeo4W"))
-                ),  # noqa: PTH111
-            ),
-            "possible_values": None,
-            "condition": None,
-        },
-    }
-
-    def __init__(self, options: dict) -> None:
+    def __init__(self, options: dict | None) -> None:
         """Instantiate the class.
 
         Args:
-            options (dict): job options
+            options (dict | None): options set in the ``with`` key of the scenario
+                step, see QgisInstallationFinderOptions
         """
-
         super().__init__()
-        self.options: dict = self.validate_options(options)
+        self.options = QgisInstallationFinderOptions.from_dict(options, job_id=self.ID)
 
     def run(self) -> None:
         """Define QDT_QGIS_EXE_PATH and QDT_QGIS_VERSION for version-dependent jobs,
@@ -124,7 +111,7 @@ class JobQgisInstallationFinder(GenericJob):
             os.environ[ENV_VAR_QGIS_EXE_PATH] = installed_qgis_path
             self._export_qgis_version(version_str)
         else:
-            if self.options.get("if_not_found", "warning") == "error":
+            if self.options.if_not_found == "error":
                 raise QgisInstallNotFoundError()
             else:
                 logger.warning(
@@ -217,12 +204,9 @@ class JobQgisInstallationFinder(GenericJob):
             versions=list(found_versions.keys())
         )
 
-        # Define used version from version priority
-        version_priority: list[str] = []
-        if "version_priority" in self.options:
-            version_priority = self.options["version_priority"]
-
-        # Add preferred qgis version on top of the list
+        # Define used version from version priority, the preferred QGIS version on
+        # top. A new list: the options must not be modified.
+        version_priority: list[str] = list(self.options.version_priority)
         if "QDT_PREFERRED_QGIS_VERSION" in environ:
             version_priority.insert(0, environ["QDT_PREFERRED_QGIS_VERSION"])
 
@@ -238,7 +222,7 @@ class JobQgisInstallationFinder(GenericJob):
         latest_qgis = found_versions[latest_version]
         if len(version_priority) != 0:
             # No version found in version priority
-            version_priority_str = ",".join(self.options["version_priority"])
+            version_priority_str = ",".join(version_priority)
             logger.info(
                 f"QGIS version(s) [{version_priority_str}] not found. Using most "
                 f"recent found version {latest_version} : {latest_qgis}"
@@ -337,9 +321,8 @@ class JobQgisInstallationFinder(GenericJob):
         """
         # search_paths
         search_paths = []
-        if "search_paths" in self.options:
-            for path in self.options["search_paths"]:
-                search_paths.append(expandvars(expanduser(getenv(path, path))))  # noqa: PTH111
+        for path in self.options.search_paths:
+            search_paths.append(expandvars(expanduser(getenv(path, path))))  # noqa: PTH111
         return search_paths
 
     def _get_windows_installed_qgis_path(self) -> dict[str, str]:
