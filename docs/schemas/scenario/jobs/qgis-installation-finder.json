@@ -6,7 +6,7 @@
   "type": "object",
   "properties": {
     "version_priority": {
-      "default": "",
+      "default": [],
       "description": "Define QGIS version priority for search.",
       "type": "array",
       "uniqueItems": true,
@@ -24,7 +24,7 @@
       "type": "string"
     },
     "search_paths": {
-      "default": "",
+      "default": [],
       "description": "Define search paths for QGIS installation.",
       "type": "array",
       "items": {
