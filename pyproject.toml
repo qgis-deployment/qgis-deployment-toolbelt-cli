@@ -86,6 +86,7 @@ test = [
     "jsonschema>=4.23,<5",
     "Pillow>=12.1.1,<13",
     "pytest-cov>=4,<8",
+    "pytest-httpserver>=1.1,<2",
     "validators>=0.29.0,<0.36",
 ]
 
@@ -129,7 +130,6 @@ omit = [".venv/*", "*tests*"]
 [tool.pytest.ini_options]
 addopts = """
     --junitxml=junit/test-results.xml
-    --cov-append tests/
     --cov-config=pyproject.toml
     --cov=qgis_deployment_toolbelt
     --cov-report=html

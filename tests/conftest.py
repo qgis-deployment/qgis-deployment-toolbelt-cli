@@ -16,6 +16,10 @@ test modules, because several paths are computed at import time from
 
 On Windows, the user folders come from ``USERPROFILE``, ``APPDATA`` and the
 registry: they are left untouched.
+
+Provides the ``qgis_plugins_repository`` fixture, a local HTTP server standing for the
+official QGIS plugins repository (plugins.qgis.org), so that tests don't depend on its
+availability.
 """
 
 # #############################################################################
@@ -24,13 +28,20 @@ registry: they are left untouched.
 
 # Standard library
 import os
+import re
 import shutil
 import sys
 import tempfile
+from collections.abc import Iterator
 from pathlib import Path
 
 # 3rd party
 import pytest
+from pytest_httpserver import HTTPServer
+from werkzeug import Request, Response
+
+# test helpers
+from tests.helpers import build_fake_plugin_zip
 
 
 # #############################################################################
@@ -92,3 +103,69 @@ def restore_environment_variables():
     for name, value in environment_before.items():
         if os.environ.get(name) != value:
             os.environ[name] = value
+
+
+# #############################################################################
+# ########## Fake QGIS plugins repository ################
+# ########################################################
+
+# download URL path of a plugin in the official repository, relative to its base URL
+RE_FAKE_PLUGIN_DOWNLOAD_PATH = re.compile(
+    r"^/plugins/(?P<folder_name>[^/]+)/version/(?P<version>[^/]+)/download/$"
+)
+
+
+def _serve_fake_plugin(request: Request) -> Response:
+    """Answer a plugin download request with a ZIP archive matching the requested
+    plugin folder name and version.
+
+    Args:
+        request: incoming HTTP request
+
+    Returns:
+        HTTP response with the plugin ZIP archive
+    """
+    match = RE_FAKE_PLUGIN_DOWNLOAD_PATH.match(request.path)
+    return Response(
+        build_fake_plugin_zip(
+            folder_name=match.group("folder_name"), version=match.group("version")
+        ),
+        content_type="application/zip",
+    )
+
+
+@pytest.fixture
+def qgis_plugins_repository(monkeypatch: pytest.MonkeyPatch) -> Iterator[HTTPServer]:
+    """Simulate the official QGIS plugins repository with a local HTTP server.
+
+    Any ``/plugins/<folder_name>/version/<version>/download/`` request returns a
+    minimal plugin ZIP archive built on the fly. The official repository URLs used by
+    the plugin model are redirected to this server for the duration of the test.
+
+    Args:
+        monkeypatch: pytest fixture used to redirect the official repository URLs
+
+    Yields:
+        started HTTP server
+    """
+    server = HTTPServer()  # random free port
+    server.expect_request(RE_FAKE_PLUGIN_DOWNLOAD_PATH).respond_with_handler(
+        _serve_fake_plugin
+    )
+    server.start()
+
+    base_url = server.url_for("/")
+    monkeypatch.setattr(
+        "qgis_deployment_toolbelt.plugins.plugin.QGIS_PLUGINS_OFFICIAL_REPOSITORY_URL_BASE",
+        base_url,
+    )
+    monkeypatch.setattr(
+        "qgis_deployment_toolbelt.plugins.plugin.QGIS_PLUGINS_OFFICIAL_REPOSITORY_XML",
+        f"{base_url}plugins/plugins.xml",
+    )
+
+    yield server
+
+    server.clear()
+    if server.is_running():
+        server.stop()

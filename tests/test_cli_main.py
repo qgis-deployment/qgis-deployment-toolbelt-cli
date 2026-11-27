@@ -28,6 +28,10 @@ from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 # ######## Globals #################
 # ##################################
 
+# plugins referenced in profiles are downloaded from a local server
+# instead of the official repository (plugins.qgis.org)
+pytestmark = pytest.mark.usefixtures("qgis_plugins_repository")
+
 sample_scenario_good: Path = Path(
     "tests/fixtures/scenarios/good_scenario_sample.qdt.yml"
 )

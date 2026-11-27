@@ -99,6 +99,12 @@ QDT_WATERMARK_SECTIONS: dict[str, str] = {
 QGIS_BIN_WINDOWS_FILENAME: str = "qgis-bin.exe"
 QGIS_LTR_BIN_WINDOWS_FILENAME: str = "qgis-ltr-bin.exe"
 
+# QGIS official plugins repository
+QGIS_PLUGINS_OFFICIAL_REPOSITORY_URL_BASE: str = "https://plugins.qgis.org/"
+QGIS_PLUGINS_OFFICIAL_REPOSITORY_XML: str = (
+    f"{QGIS_PLUGINS_OFFICIAL_REPOSITORY_URL_BASE}plugins/plugins.xml"
+)
+
 # QGIS configuration files stored under `<profile>/QGIS/`.
 # the settings file is named after the QGIS major version: QGIS3.ini, QGIS4.ini...
 # TODO: QDT only handles the ini file so far, so customization changes it writes are
