@@ -15,10 +15,14 @@ import unittest
 from pathlib import Path
 from shutil import rmtree
 
+# 3rd party
+from pytest_httpserver import HTTPServer
+
 # project
 from qgis_deployment_toolbelt.plugins.plugin import QgisPlugin
 from qgis_deployment_toolbelt.profiles.qdt_profile import QdtProfile
 from qgis_deployment_toolbelt.utils.file_downloader import download_remote_file_to_local
+from tests.helpers import build_fake_plugin_zip
 
 
 # ############################################################################
@@ -135,64 +139,6 @@ class TestQgisPluginObject(unittest.TestCase):
 
         self.assertEqual(plugin_obj.location, "remote")
         self.assertIn("distant", logs.output[0])
-
-    def test_qplugin_load_from_zip(self):
-        """Test plugin object loading from a ZIP archive downloaded."""
-        # plugin as dict
-        sample_plugin_complex = {
-            "name": "Layers menu from project",
-            "version": "2.1.0",
-            "url": "https://plugins.qgis.org/plugins/menu_from_project/version/2.1.0/download/",
-            "location": "remote",
-            "plugin_id": 1846,
-        }
-        # plugin as object
-        plugin_obj: QgisPlugin = QgisPlugin.from_dict(sample_plugin_complex)
-
-        # some attributes are not set
-        self.assertIsNone(plugin_obj.folder_name)
-
-        # prepare local download path
-        local_plugin_download = Path(
-            f"{self.sample_plugin_downloaded.parent.parent}/{plugin_obj.installation_folder_name}/"
-            f"{plugin_obj.id_with_version}.zip"
-        )
-
-        # some attributes have been set
-        self.assertIsNotNone(plugin_obj.folder_name)
-
-        # download plugin zip archive
-        download_remote_file_to_local(
-            remote_url_to_download=plugin_obj.download_url,
-            local_file_path=local_plugin_download.resolve(),
-            content_type="application/zip",
-        )
-
-        # check download worked
-        self.assertTrue(local_plugin_download.is_file())
-
-        # load from zip
-        plugin_obj_from_zip: QgisPlugin = QgisPlugin.from_zip(
-            input_zip_path=local_plugin_download
-        )
-
-        # check types
-        self.assertIsInstance(plugin_obj_from_zip.name, str)
-        self.assertIsInstance(plugin_obj_from_zip.version, str)
-        self.assertIsInstance(plugin_obj_from_zip.folder_name, str)
-        self.assertIsInstance(plugin_obj_from_zip.qgis_maximum_version, str)
-        self.assertIsInstance(plugin_obj_from_zip.qgis_minimum_version, str)
-
-        # check values
-        self.assertEqual(plugin_obj.name, plugin_obj_from_zip.name)
-        self.assertEqual(plugin_obj.version, plugin_obj_from_zip.version)
-        self.assertEqual(plugin_obj.folder_name, plugin_obj_from_zip.folder_name)
-        self.assertEqual(plugin_obj.url, sample_plugin_complex.get("url"))
-        self.assertEqual(plugin_obj.download_url, sample_plugin_complex.get("url"))
-        self.assertEqual(plugin_obj.uri_to_zip, sample_plugin_complex.get("url"))
-
-        # clean up
-        rmtree(path=local_plugin_download.parent, ignore_errors=True)
 
     def test_qplugin_versions_comparison_semver(self):
         """Test plugin compare versions semver"""
@@ -333,6 +279,86 @@ class TestQgisPluginObject(unittest.TestCase):
         )
 
         self.assertIsNone(plugin_v1.is_older_than(plugin_bad_version))
+
+
+# ############################################################################
+# ########## Functions ###########
+# ################################
+
+
+def test_qplugin_load_from_zip(qgis_plugins_repository: HTTPServer, tmp_path: Path):
+    """Test plugin object loading from a ZIP archive downloaded from the official
+    repository (simulated by a local server)."""
+    # the repository serves the plugin with its real name in metadata.txt
+    plugin_download_path = "/plugins/menu_from_project/version/2.4.4/download/"
+    qgis_plugins_repository.expect_oneshot_request(
+        plugin_download_path
+    ).respond_with_data(
+        build_fake_plugin_zip(
+            folder_name="menu_from_project",
+            version="2.4.4",
+            name="Layers menu from project",
+        ),
+        content_type="application/zip",
+    )
+
+    # plugin as dict
+    sample_plugin_complex = {
+        "name": "Layers menu from project",
+        "version": "2.4.4",
+        "url": qgis_plugins_repository.url_for(plugin_download_path),
+        "location": "remote",
+        "plugin_id": 1846,
+    }
+    # plugin as object
+    plugin_obj: QgisPlugin = QgisPlugin.from_dict(sample_plugin_complex)
+
+    # official repository is detected from the URL
+    assert plugin_obj.official_repository is True
+
+    # some attributes are not set
+    assert plugin_obj.folder_name is None
+
+    # prepare local download path
+    local_plugin_download = tmp_path.joinpath(
+        plugin_obj.installation_folder_name, f"{plugin_obj.id_with_version}.zip"
+    )
+
+    # some attributes have been set
+    assert plugin_obj.folder_name == "menu_from_project"
+
+    # download plugin zip archive
+    download_remote_file_to_local(
+        remote_url_to_download=plugin_obj.download_url,
+        local_file_path=local_plugin_download,
+        content_type="application/zip",
+    )
+
+    # check download worked
+    assert local_plugin_download.is_file()
+    qgis_plugins_repository.check_assertions()
+    # the dedicated answer has been used
+    assert not qgis_plugins_repository.oneshot_handlers
+
+    # load from zip
+    plugin_obj_from_zip: QgisPlugin = QgisPlugin.from_zip(
+        input_zip_path=local_plugin_download
+    )
+
+    # check types
+    assert isinstance(plugin_obj_from_zip.name, str)
+    assert isinstance(plugin_obj_from_zip.version, str)
+    assert isinstance(plugin_obj_from_zip.folder_name, str)
+    assert isinstance(plugin_obj_from_zip.qgis_maximum_version, str)
+    assert isinstance(plugin_obj_from_zip.qgis_minimum_version, str)
+
+    # check values
+    assert plugin_obj.name == plugin_obj_from_zip.name
+    assert plugin_obj.version == plugin_obj_from_zip.version
+    assert plugin_obj.folder_name == plugin_obj_from_zip.folder_name
+    assert plugin_obj.url == sample_plugin_complex.get("url")
+    assert plugin_obj.download_url == sample_plugin_complex.get("url")
+    assert plugin_obj.uri_to_zip == sample_plugin_complex.get("url")
 
 
 # ############################################################################
