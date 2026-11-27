@@ -30,6 +30,8 @@ from packaging.version import InvalidVersion, Version
 # package
 from qgis_deployment_toolbelt.constants import (
     DEFAULT_QGIS_PLUGIN_LOCATION,
+    QGIS_PLUGINS_OFFICIAL_REPOSITORY_URL_BASE,
+    QGIS_PLUGINS_OFFICIAL_REPOSITORY_XML,
     QgisPluginLocation,
 )
 from qgis_deployment_toolbelt.utils.check_path import check_path
@@ -59,9 +61,6 @@ class QgisPlugin:
         "qgis_maximum_version": "qgisMaximumVersion",
         "qgis_minimum_version": "qgisMinimumVersion",
     }
-
-    OFFICIAL_REPOSITORY_URL_BASE = "https://plugins.qgis.org/"
-    OFFICIAL_REPOSITORY_XML = "https://plugins.qgis.org/plugins/plugins.xml"
 
     name: str
     folder_name: str | None = None
@@ -105,26 +104,28 @@ class QgisPlugin:
             input_dict["location"] = DEFAULT_QGIS_PLUGIN_LOCATION
 
         # official repository autodetection
-        if input_dict.get("repository_url_xml") == cls.OFFICIAL_REPOSITORY_XML:
+        if input_dict.get("repository_url_xml") == QGIS_PLUGINS_OFFICIAL_REPOSITORY_XML:
             input_dict["official_repository"] = True
         elif (
             input_dict.get("url")
             and isinstance(input_dict.get("url"), str)
-            and input_dict.get("url").startswith(cls.OFFICIAL_REPOSITORY_URL_BASE)
+            and input_dict.get("url").startswith(
+                QGIS_PLUGINS_OFFICIAL_REPOSITORY_URL_BASE
+            )
         ):
             input_dict["official_repository"] = True
-            input_dict["repository_url_xml"] = cls.OFFICIAL_REPOSITORY_XML
+            input_dict["repository_url_xml"] = QGIS_PLUGINS_OFFICIAL_REPOSITORY_XML
         else:
             pass
 
         # URL auto build
         if input_dict.get("official_repository") is True and not input_dict.get("url"):
             input_dict["url"] = (
-                f"{cls.OFFICIAL_REPOSITORY_URL_BASE}"
+                f"{QGIS_PLUGINS_OFFICIAL_REPOSITORY_URL_BASE}"
                 f"plugins/{input_dict.get('folder_name') or input_dict.get('name')}/"
                 f"version/{input_dict.get('version')}/download/"
             )
-            input_dict["repository_url_xml"] = cls.OFFICIAL_REPOSITORY_XML
+            input_dict["repository_url_xml"] = QGIS_PLUGINS_OFFICIAL_REPOSITORY_XML
             input_dict["location"] = "remote"
 
         # remove keys which are not in object attributes
