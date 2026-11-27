@@ -68,7 +68,7 @@ For example if you define:
 - name: Find installed QGIS
   uses: qgis-installation-finder
   with:
-    - version_priority:
+    version_priority:
       - "3.34"
       - "3.36"
 ```
@@ -91,9 +91,9 @@ For example if you define:
 - name: Find installed QGIS
   uses: qgis-installation-finder
   with:
-    - version_priority:
+    version_priority:
       - "3.36"
-    - search_paths:
+    search_paths:
       - D:/Install/QGIS 3.36
       - D:/OtherInstall/QGIS 3.36
 ```
