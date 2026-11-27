@@ -130,7 +130,6 @@ omit = [".venv/*", "*tests*"]
 [tool.pytest.ini_options]
 addopts = """
     --junitxml=junit/test-results.xml
-    --cov-append tests/
     --cov-config=pyproject.toml
     --cov=qgis_deployment_toolbelt
     --cov-report=html
